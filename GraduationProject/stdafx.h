@@ -71,11 +71,7 @@ using Microsoft::WRL::ComPtr;
 #endif
 
 
-#define BULLETS 10
-#define ROOM_INDEX 1
-#define MIRROR_BACK_INDEX 0
 #define OBJECT_NUM 15
-#define ROOMSIZE 300.0f
 
 //#define _WITH_SWAPCHAIN_FULLSCREEN_STATE
 

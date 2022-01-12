@@ -1,7 +1,6 @@
 ﻿#pragma once
 #include "Timer.h"
 #include "Shader.h"
-// shader -> object .h ?
 
 class CScene
 {
@@ -37,19 +36,9 @@ public:
 	CHeightMapTerrain* GetTerrain() { return(m_pTerrain); }
 
 	void OnPrepareRender(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
-	void RenderParticle(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
-	
-	void MovePlayerToRoom();
-	bool IsPlayerInRoom(XMFLOAT3& RoomPosition, XMFLOAT3& PlayerPosition);
-	void CheckPlayerInRoom();
 
 public:
 	CPlayer* m_pPlayer = NULL;
-	
-	CGameObject** m_ppObjects = NULL;
-	int	m_nObjects = 0;
-	CShader* m_pReflectShader = NULL;
-	CPlayer* m_pReflectPlayer = NULL;
 
 	CHeightMapTerrain* m_pTerrain = NULL;
 	CShader** m_ppShaders = NULL;
@@ -59,8 +48,6 @@ public:
 	ID3D12RootSignature* m_pd3dComputeRootSignature = NULL;
 	ID3D12RootSignature* m_pd3dGraphicsRootSignature = NULL;
 protected:
-	CParticleObject** m_ppParticleObjects = NULL;
-	int	m_nParticleObjects = 0;
 
 	CSkyBox* m_pSkyBox = NULL;
 	CRawFormatImage* m_pRawFormatImage;

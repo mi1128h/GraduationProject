@@ -289,56 +289,6 @@ void CScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* p
 
 	m_pSkyBox = new CSkyBox(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 
-	m_nShaders = 1;
-	m_ppShaders = new CShader*[m_nShaders];
-
-	CObjectsShader* pObjectsShader = new CObjectsShader();
-	DXGI_FORMAT pdxgiRtvFormats[3] = { DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM };
-
-	pObjectsShader->CreateShader(pd3dDevice, m_pd3dGraphicsRootSignature,3, pdxgiRtvFormats, DXGI_FORMAT_D32_FLOAT);
-	pObjectsShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pTerrain);
-	m_ppShaders[0] = pObjectsShader;
-
-	m_nObjects = ((CObjectsShader*)m_ppShaders[0])->GetObjectsNum();
-	m_ppObjects = new CGameObject * [m_nObjects];
-
-
-	m_pReflectShader = new CObjectsShader();
-	m_pReflectShader->CreateShader(pd3dDevice, m_pd3dGraphicsRootSignature, 3, pdxgiRtvFormats, DXGI_FORMAT_D32_FLOAT);
-	m_pReflectShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pTerrain);
-	m_pReflectShader->m_bReflect = true;
-
-	m_ppObjects = ((CObjectsShader*)m_pReflectShader)->GetObjects();
-
-	CGameObject** ppObject = new CGameObject * [m_nObjects];
-	ppObject = ((CObjectsShader*)m_ppShaders[0])->GetObjects();
-	for (int i = 0; i < m_nObjects; ++i) m_ppObjects[i]->m_xmf4x4World = ppObject[i]->m_xmf4x4World;
-
-	float fxPitch = 80.0f * 3.5f;
-	float fzPitch = 80.0f * 3.5f;
-
-	float fTerrainWidth = m_pTerrain->GetWidth();
-	float fTerrainLength = m_pTerrain->GetLength();
-
-	int xObjects = int(fTerrainWidth / fxPitch);
-	int zObjects = int(fTerrainLength / fzPitch);
-	m_nParticleObjects = (xObjects * zObjects);
-
-	m_ppParticleObjects = new CParticleObject * [m_nParticleObjects];
-
-	XMFLOAT3 xmf3RotateAxis, xmf3SurfaceNormal;
-	CParticleObject* pRotatingObject = NULL;
-	for (int i = 0, x = 0; x < xObjects; x++)
-	{
-		for (int z = 0; z < zObjects; z++)
-		{
-			float xPosition = x * fxPitch;
-			float zPosition = z * fzPitch;
-			float fHeight = m_pTerrain->GetHeight(xPosition, zPosition);
-			pRotatingObject = new CParticleObject(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, XMFLOAT3(xPosition, fHeight, zPosition), XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(1.0f, 0.0f, 0.0f), XMFLOAT2(15.0f, 15.0f), 15.0f, MAX_PARTICLES);
-			m_ppParticleObjects[i++] = pRotatingObject;			
-		}
-	}
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 }
 
@@ -358,12 +308,6 @@ void CScene::ReleaseObjects()
 		delete[] m_ppShaders;
 	}
 
-	if (m_ppParticleObjects)
-	{
-		for (int i = 0; i < m_nParticleObjects; i++) delete m_ppParticleObjects[i];
-		delete[] m_ppParticleObjects;
-	}
-
 	if (m_pTerrain) delete m_pTerrain;
 	if (m_pSkyBox) delete m_pSkyBox;
 }
@@ -371,7 +315,6 @@ void CScene::ReleaseObjects()
 void CScene::ReleaseUploadBuffers()
 {
 	for (int i = 0; i < m_nShaders; i++) m_ppShaders[i]->ReleaseUploadBuffers();
-	for (int i = 0; i < m_nParticleObjects; i++) m_ppParticleObjects[i]->ReleaseUploadBuffers();
 	if (m_pTerrain) m_pTerrain->ReleaseUploadBuffers();
 	if (m_pSkyBox) m_pSkyBox->ReleaseUploadBuffers();
 }
@@ -408,9 +351,6 @@ bool CScene::ProcessInput(UCHAR* pKeysBuffer)
 void CScene::AnimateObjects(float fTimeElapsed, CCamera* pCamrea)
 {
 	for (int i = 0; i < m_nShaders; i++) m_ppShaders[i]->AnimateObjects(fTimeElapsed, pCamrea);
-	for (int i = 0; i < m_nParticleObjects; i++) m_ppParticleObjects[i]->Animate(fTimeElapsed, pCamrea);
-	
-	CheckPlayerInRoom();
 }
 
 void CScene::OnPrepareRender(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
@@ -434,44 +374,5 @@ void CScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera
 	for (int i = 0; i < m_nShaders; i++)
 	{
 		m_ppShaders[i]->Render(pd3dCommandList, pCamera);
-	}
-
-	if(m_nShaders) ((CObjectsShader*)m_ppShaders[0])->MirrorBackRender(pd3dCommandList, pCamera,m_pPlayer->m_bRoom);
-}
-
-void CScene::RenderParticle(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
-{
-	for (int i = 0; i < m_nParticleObjects; i++) m_ppParticleObjects[i]->Render(pd3dCommandList, pCamera);
-}
-
-void CScene::MovePlayerToRoom()
-{
-	XMFLOAT3 RoomPosition = m_ppObjects[ROOM_INDEX]->GetPosition();
-	m_pPlayer->SetPosition(RoomPosition);
-}
-
-bool CScene::IsPlayerInRoom(XMFLOAT3& RoomPosition, XMFLOAT3& PlayerPosition)
-{
-	if (PlayerPosition.x > RoomPosition.x + 150.0f) return false;
-	if (PlayerPosition.x < RoomPosition.x - 150.0f) return false;
-	if (PlayerPosition.z > RoomPosition.z + 150.0f) return false;
-	if (PlayerPosition.z < RoomPosition.z - 150.0f) return false;
-	if (PlayerPosition.y > RoomPosition.y + 150.0f) return false;
-	//if (PlayerPosition.y < RoomPosition.y - 150.0f) return false;
-	return true;
-}
-
-void CScene::CheckPlayerInRoom()
-{
-	XMFLOAT3 RoomPosition = m_ppObjects[ROOM_INDEX]->GetPosition();
-	XMFLOAT3 PlayerPosition = m_pPlayer->GetPosition();
-
-	m_pPlayer->m_bRoom = (IsPlayerInRoom(RoomPosition, PlayerPosition)) ? true : false;
-
-	if (m_pPlayer->m_bRoom)
-	{
-		float fBottom = RoomPosition.y - ROOMSIZE / 2.0f + 6.0f;
-		PlayerPosition.y = fBottom;
-		m_pPlayer->SetPosition(PlayerPosition);
 	}
 }

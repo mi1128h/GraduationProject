@@ -150,8 +150,6 @@ public:
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-//“CObjectsShader” 클래스는 게임 객체들을 포함하는 셰이더 객체이다.
 class CObjectsShader : public CTexturedShader
 {
 public:
@@ -183,21 +181,6 @@ protected:
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-class CTerrainShader : public CTexturedShader
-{
-public:
-	CTerrainShader();
-	virtual ~CTerrainShader();
-
-	virtual D3D12_INPUT_LAYOUT_DESC CreateInputLayout();
-	virtual D3D12_SHADER_BYTECODE CreateVertexShader(ID3DBlob** ppd3dShaderBlob);
-	virtual D3D12_SHADER_BYTECODE CreatePixelShader(ID3DBlob** ppd3dShaderBlob);
-	
-	virtual void CreateShader(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3dGraphicsRootSignature, UINT nRenderTargets, DXGI_FORMAT* pdxgiRtvFormats, DXGI_FORMAT dxgiDsvFormat);
-};
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 class CSkyBoxShader : public CTexturedShader
 {
@@ -207,97 +190,6 @@ public:
 
 	virtual D3D12_DEPTH_STENCIL_DESC CreateDepthStencilState();
 	virtual D3D12_SHADER_BYTECODE CreatePixelShader(ID3DBlob** ppd3dShaderBlob);
-};
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-struct VS_VB_BILLBOARD_INSTANCE
-{
-	XMFLOAT3						m_xmf3Position;
-	XMFLOAT4						m_xmf4BillboardInfo;
-};
-
-class CInstBillboardObjectsShader : public CTexturedShader
-{
-public:
-	CInstBillboardObjectsShader();
-	virtual ~CInstBillboardObjectsShader();
-
-	virtual D3D12_INPUT_LAYOUT_DESC CreateInputLayout();
-	virtual D3D12_RASTERIZER_DESC CreateRasterizerState();
-	virtual D3D12_DEPTH_STENCIL_DESC CreateDepthStencilState();
-	virtual D3D12_BLEND_DESC CreateBlendState();
-
-	virtual void CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList);
-	virtual void UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList);
-	virtual void ReleaseShaderVariables();
-
-	virtual void BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, void* pContext = NULL);
-	virtual void ReleaseObjects();
-	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
-
-	virtual D3D12_SHADER_BYTECODE CreateVertexShader(ID3DBlob** ppd3dShaderBlob);
-	virtual D3D12_SHADER_BYTECODE CreatePixelShader(ID3DBlob** ppd3dShaderBlob);
-
-	virtual void ReleaseUploadBuffers();
-
-	CMaterial* m_pBillboardMaterial = NULL;
-
-	CBillboardMesh* m_pBillboardMesh = NULL;
-
-	//ID3D12Resource*					m_pd3dVertexBuffer = NULL;
-	//ID3D12Resource*					m_pd3dVertexUploadBuffer = NULL;
-	//D3D12_VERTEX_BUFFER_VIEW		m_d3dVertexBufferView;
-
-	int								m_nInstances = 0;
-	ID3D12Resource* m_pd3dInstancesBuffer = NULL;
-	ID3D12Resource* m_pd3dInstanceUploadBuffer = NULL;
-	D3D12_VERTEX_BUFFER_VIEW		m_d3dInstancingBufferView;
-
-};
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-
-class CBulletsShader : public CObjectsShader
-{
-public:
-	CBulletsShader();
-	virtual ~CBulletsShader();
-
-	D3D12_SHADER_BYTECODE CreateVertexShader(ID3DBlob** ppd3dShaderBlob);
-	D3D12_SHADER_BYTECODE CreatePixelShader(ID3DBlob** ppd3dShaderBlob);
-	virtual void BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList);
-
-	virtual void CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList);
-	virtual void UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList);
-};
-
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-class CParticleShader : public CTexturedShader
-{
-public:
-	CParticleShader();
-	virtual ~CParticleShader();
-
-	virtual D3D12_PRIMITIVE_TOPOLOGY_TYPE GetPrimitiveTopologyType(int nPipelineState);
-	virtual UINT GetNumRenderTargets(int nPipelineState);
-	virtual DXGI_FORMAT GetRTVFormat(int nPipelineState, int nRenderTarget);
-	virtual DXGI_FORMAT GetDSVFormat(int nPipelineState);
-
-	virtual D3D12_SHADER_BYTECODE CreateVertexShader(ID3DBlob** ppd3dShaderBlob, int nPipelineState);
-	virtual D3D12_SHADER_BYTECODE CreateGeometryShader(ID3DBlob** ppd3dShaderBlob, int nPipelineState);
-	virtual D3D12_SHADER_BYTECODE CreatePixelShader(ID3DBlob** ppd3dShaderBlob, int nPipelineState);
-
-	virtual D3D12_RASTERIZER_DESC CreateRasterizerState(int nPipelineState);
-	virtual D3D12_INPUT_LAYOUT_DESC CreateInputLayout(int nPipelineState);
-	virtual D3D12_STREAM_OUTPUT_DESC CreateStreamOuputState(int nPipelineState);
-	virtual D3D12_BLEND_DESC CreateBlendState(int nPipelineState);
-	virtual D3D12_DEPTH_STENCIL_DESC CreateDepthStencilState(int nPipelineState);
-
-	virtual void CreateGraphicsPipelineState(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3dGraphicsRootSignature, int nPipelineState);
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -320,33 +212,6 @@ public:
 	virtual void OnPrepareRender(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera, void* pContext);
 };
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-class CMirrorShader : public CShader
-{
-public:
-	CMirrorShader();
-	virtual ~CMirrorShader();
-
-	virtual void CreateShader(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3dGraphicsRootSignature, UINT nRenderTargets, DXGI_FORMAT* pdxgiRtvFormats, DXGI_FORMAT dxgiDsvFormat);
-	 D3D12_DEPTH_STENCIL_DESC CreateMirrorToDepthStencilState();
-	 D3D12_BLEND_DESC CreateTurnOffBlendState();
-	 D3D12_BLEND_DESC CreateTransparentBlendState();
-	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera, D3D12_CPU_DESCRIPTOR_HANDLE d3dDsvCPUHandle);
-	void BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList);
-
-	virtual D3D12_SHADER_BYTECODE CreateVertexShader(ID3DBlob** ppd3dShaderBlob);
-	virtual D3D12_SHADER_BYTECODE CreatePixelShader(ID3DBlob** ppd3dShaderBlob);
-
-	virtual D3D12_INPUT_LAYOUT_DESC CreateInputLayout();
-	virtual void CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList);
-
-public:
-	CScene* m_pScene = NULL;
-	CGameObject *m_pMirrorObject = NULL;
-
-	ID3D12Resource* m_pd3dcbGameObjects = NULL;
-};
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class CPostProcessingShader : public CShader

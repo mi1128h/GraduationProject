@@ -328,26 +328,12 @@ void CGameFramework::BuildObjects()
 	m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList);
 
 	CCubeMeshDiffused* pCubeMesh = new CCubeMeshDiffused(m_pd3dDevice, m_pd3dCommandList, 4.0f, 12.0f, 4.0f);
-	CCubeMeshDiffused* pCubeMesh2 = pCubeMesh;
 
 	m_pPlayer = new CTerrainPlayer(m_pd3dDevice, m_pd3dCommandList, m_pScene->GetGraphicsRootSignature(), m_pScene->GetTerrain(), 1);
 	m_pCamera = m_pPlayer->GetCamera();
 
 	m_pScene->m_pPlayer = m_pPlayer;
 	m_pPlayer->SetMesh(0, pCubeMesh);
-
-	CPlayer* pPlayer = new CTerrainPlayer(m_pd3dDevice, m_pd3dCommandList, m_pScene->GetGraphicsRootSignature(), m_pScene->GetTerrain(), 1);
-	UINT ncbElementBytes = ((sizeof(CB_PLAYER_INFO) + 255) & ~255); //256의 배수
-	pPlayer->SetMesh(0, pCubeMesh2);
-
-	m_pScene->m_pReflectPlayer = pPlayer;
-	m_pScene->m_pReflectPlayer->m_pMaterial->m_pShader->m_bReflect = true;
-
-	m_pMirror = new CMirrorShader();
-	m_pMirror->m_pScene = m_pScene;
-	DXGI_FORMAT pdxgiRtvFormats[3] = { DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM };
-	m_pMirror->CreateShader(m_pd3dDevice, m_pScene->m_pd3dGraphicsRootSignature,3, pdxgiRtvFormats, DXGI_FORMAT_D32_FLOAT);
-	m_pMirror->BuildObjects(m_pd3dDevice, m_pd3dCommandList);
 
 	CreateShaderVariables();
 
@@ -460,9 +446,6 @@ void CGameFramework::OnProcessingKeyboardMessage
 	case WM_KEYUP:
 		switch (wParam)
 		{
-		case 'I':
-			m_pScene->MovePlayerToRoom();
-			break;
 		case VK_ESCAPE:
 			::PostQuitMessage(0);
 			break;
@@ -670,9 +653,6 @@ void CGameFramework::FrameAdvance()
 
 	// 3인칭 카메라일 때 플레이어를 렌더링한다. 
 	if (m_pPlayer) m_pPlayer->Render(m_pd3dCommandList, m_pCamera);
-	if (m_pMirror) m_pMirror->Render(m_pd3dCommandList, m_pCamera, m_d3dDsvDescriptorCPUHandle);
-
-	m_pScene->RenderParticle(m_pd3dCommandList, m_pCamera);
 
 	m_pPostProcessingShader->OnPostRenderTarget(m_pd3dCommandList);
 

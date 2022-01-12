@@ -356,8 +356,8 @@ CTerrainPlayer::CTerrainPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLi
 
 	CPlayerShader* pShader = new CPlayerShader();
 
-	DXGI_FORMAT pdxgiRtvFormats[1] = { DXGI_FORMAT_R8G8B8A8_UNORM };
-	pShader->CreateShader(pd3dDevice, pd3dGraphicsRootSignature, 1, pdxgiRtvFormats, DXGI_FORMAT_D32_FLOAT);
+	DXGI_FORMAT pdxgiRtvFormats[3] = { DXGI_FORMAT_R8G8B8A8_UNORM,DXGI_FORMAT_R8G8B8A8_UNORM,DXGI_FORMAT_R8G8B8A8_UNORM };
+	pShader->CreateShader(pd3dDevice, pd3dGraphicsRootSignature, 3, pdxgiRtvFormats, DXGI_FORMAT_D32_FLOAT);
 	pShader->CreateShaderVariables(pd3dDevice, pd3dCommandList);
 	pShader->CreateCbvSrvUavDescriptorHeaps(pd3dDevice, 1, 0,0);
 	pShader->CreateConstantBufferViews(pd3dDevice, 1, m_pd3dcbPlayer, ncbElementBytes);
