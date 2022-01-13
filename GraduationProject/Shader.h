@@ -12,8 +12,6 @@ class CShader
 public:
 	CShader();
 	virtual ~CShader();
-
-	bool m_bReflect = false;
 private:
 	int m_nReferences = 0;
 
@@ -69,9 +67,6 @@ public:
 	D3D12_GPU_DESCRIPTOR_HANDLE GetGPUSrvDescriptorStartHandle() { return(m_d3dSrvGPUDescriptorStartHandle); }
 	D3D12_CPU_DESCRIPTOR_HANDLE GetUavCPUDescriptorStartHandle() { return(m_d3dSrvCPUDescriptorStartHandle); }
 	D3D12_GPU_DESCRIPTOR_HANDLE GetUavGPUDescriptorStartHandle() { return(m_d3dSrvGPUDescriptorStartHandle); }
-
-	D3D12_RASTERIZER_DESC CreateReflectRasterizerState();
-	D3D12_DEPTH_STENCIL_DESC CreateReflectDepthStencilState();
 
 public:
 	virtual D3D12_INPUT_LAYOUT_DESC CreateInputLayout(int nPipelineState);
