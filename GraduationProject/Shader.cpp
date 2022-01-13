@@ -1099,7 +1099,7 @@ CBlurringShader::CBlurringShader()
 
 CBlurringShader::~CBlurringShader()
 {
-	ReleaseShaderVariables();
+
 }
 
 void CBlurringShader::CreateResourcesAndViews(ID3D12Device* pd3dDevice, UINT nResources, DXGI_FORMAT* pdxgiFormats, UINT nWidth, UINT nHeight, D3D12_CPU_DESCRIPTOR_HANDLE d3dRtvCPUDescriptorHandle, UINT nShaderResources)
