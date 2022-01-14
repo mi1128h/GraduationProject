@@ -17,11 +17,6 @@ cbuffer cbGameObjectInfo : register(b2)
 	matrix		gmtxGameObject : packoffset(c0);
 };
 
-cbuffer cbBulletObjectsInfo : register(b3)
-{
-	int		TextureIndex;
-};
-
 cbuffer cbFrameworkInfo : register(b4)
 {
 	float		gfCurrentTime : packoffset(c0.x);
@@ -71,28 +66,6 @@ PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSPlayer(VS_DIFFUSED_OUTPUT input) : SV_TARGET
 	return(output);
 }
 
-
-VS_DIFFUSED_OUTPUT VSMirror(VS_DIFFUSED_INPUT input)
-{
-	VS_DIFFUSED_OUTPUT output;
-
-	output.position = mul(mul(mul(float4(input.position, 1.0f), gmtxGameObject), gmtxView), gmtxProjection);
-	output.color = input.color;
-
-	return(output);
-}
-
-PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSMirror(VS_DIFFUSED_OUTPUT input) : SV_TARGET
-{
-	input.color.a = 0.5f;
-
-	float4 cColor = input.color;
-
-	PS_MULTIPLE_RENDER_TARGETS_OUTPUT output;
-	output.f4Scene = output.f4Color = cColor;
-	output.fDepth = 1.0f - input.position.z;
-	return(output);
-}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 Texture2D gtxtTexture : register(t0);
@@ -133,59 +106,6 @@ PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSTextured(VS_TEXTURED_OUTPUT input) : SV_TARG
 	return(output);
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////////////
-Texture2D<float4> gtxtTerrainBaseTexture : register(t1);
-Texture2D<float4> gtxtTerrainDetailTextures[3] : register(t2); //t2, t3, t4
-Texture2D<float4> gtxtTerrainAlphaTexture[2] : register(t5); // t5, t6
-
-struct VS_TERRAIN_INPUT
-{
-	float3 position : POSITION;
-	float4 color : COLOR;
-	float2 uv0 : TEXCOORD0;
-	float2 uv1 : TEXCOORD1;
-};
-
-struct VS_TERRAIN_OUTPUT
-{
-	float4 position : SV_POSITION;
-	float4 color : COLOR;
-	float2 uv0 : TEXCOORD0;
-	float2 uv1 : TEXCOORD1;
-};
-
-VS_TERRAIN_OUTPUT VSTerrain(VS_TERRAIN_INPUT input)
-{
-	VS_TERRAIN_OUTPUT output;
-
-	output.position = mul(mul(mul(float4(input.position, 1.0f), gmtxGameObject), gmtxView), gmtxProjection);
-	output.color = input.color;
-	output.uv0 = input.uv0;
-	output.uv1 = input.uv1;
-
-	return(output);
-}
-
-float4 PSTerrain(VS_TERRAIN_OUTPUT input) : SV_TARGET
-{
-	float4 cBaseTexColor = gtxtTerrainBaseTexture.Sample(gSamplerState, input.uv0);
-	float fAlphas[2];
-	fAlphas[0] = gtxtTerrainAlphaTexture[0].Sample(gSamplerState, input.uv0).w;
-	fAlphas[1] = gtxtTerrainAlphaTexture[1].Sample(gSamplerState, input.uv0).w;
-
-	float4 cDetailTexColors[3];
-	cDetailTexColors[0] = gtxtTerrainDetailTextures[0].Sample(gSamplerState, input.uv1 * 2.0f);
-	cDetailTexColors[1] = gtxtTerrainDetailTextures[1].Sample(gSamplerState, input.uv1 * 2.0f);
-	cDetailTexColors[2] = gtxtTerrainDetailTextures[2].Sample(gSamplerState, input.uv1 * 2.0f);
-
-	float4 cColor = input.color * saturate((cBaseTexColor * 0.6f) + (cDetailTexColors[1]*0.4f));
-	cColor += lerp(cBaseTexColor * 0.25f, cDetailTexColors[2], 1.0f - fAlphas[0]);
-
-	if (fAlphas[1] < 0.35f) cColor = saturate((cBaseTexColor * 0.3f) + (cDetailTexColors[0] * 0.7f));
-
-	return(cColor);
-}
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 Texture2D gtxtSkyBox : register(t7);
@@ -202,172 +122,20 @@ PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSSkyBox(VS_TEXTURED_OUTPUT input) : SV_TARGET
 
 	return(output);
 }
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-//#define _WITH_BILLBOARD_ANIMATION
-
-struct VS_BILLBOARD_INSTANCING_INPUT
-{
-	float3 position : POSITION;
-	float2 uv : TEXCOORD;
-	float3 instancePosition : INSTANCEPOSITION;
-	float4 billboardInfo : BILLBOARDINFO; //(cx, cy, type, texture)
-};
-
-struct VS_BILLBOARD_INSTANCING_OUTPUT
-{
-	float4 position : SV_POSITION;
-	float2 uv : TEXCOORD;
-	int textureID : TEXTUREID;
-};
-
-VS_BILLBOARD_INSTANCING_OUTPUT VSBillboardInstancing(VS_BILLBOARD_INSTANCING_INPUT input)
-{
-	VS_BILLBOARD_INSTANCING_OUTPUT output;
-
-	input.position.x *= (input.billboardInfo.x * 0.5f);
-	input.position.y *= (input.billboardInfo.y * 0.5f);
-
-	float3 f3Look = normalize(gvCameraPosition - input.instancePosition);
-	float3 f3Up = float3(0.0f, 1.0f, 0.0f);
-	float3 f3Right = normalize(cross(f3Up, f3Look));
-
-	matrix mtxWorld;
-	mtxWorld[0] = float4(f3Right, 0.0f);
-	mtxWorld[1] = float4(f3Up, 0.0f);
-	mtxWorld[2] = float4(f3Look, 0.0f);
-	mtxWorld[3] = float4(input.instancePosition, 1.0f);
-
-	output.position = mul(mul(mul(float4(input.position, 1.0f), mtxWorld), gmtxView), gmtxProjection);
-
-	output.uv = input.uv;
-
-	output.textureID = (int)input.billboardInfo.w - 1;
-
-	return(output);
-}
-
-Texture2D<float4> gtxtBillInstTextures[7] : register(t8); //  t8, t9, t10, t11, t12, t13, t14
-
-float4 PSBillboardInstancing(VS_BILLBOARD_INSTANCING_OUTPUT input) : SV_TARGET
-{
-	float4 cColor = gtxtBillInstTextures[NonUniformResourceIndex(input.textureID)].Sample(gSamplerState, input.uv);
-
-	return(cColor);
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-VS_TEXTURED_OUTPUT VSBulletBillboard(VS_TEXTURED_INPUT input)
-{
-	VS_TEXTURED_OUTPUT output;
-	output.position = mul(mul(mul(float4(input.position, 1.0f), gmtxGameObject), gmtxView), gmtxProjection);
-	output.uv = input.uv;
-
-	return(output);
-}
-
-Texture2D<float4> gtxtBulletTextures[7] : register(t15); // t15, 16, 17, 18, 19, 20, 21
-
-float4 PSBulletBillboard(VS_TEXTURED_OUTPUT input) :SV_TARGET
-{
-	float4 cColor = gtxtBulletTextures[TextureIndex].SampleLevel(gSamplerState, input.uv,0);
-	if (cColor.a <= 0.3f) discard;
-
-	return(cColor);
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-struct VS_BILLBOARD_OUT{
-	float3 centerW:POSITION;
-	float2 sizeW:SIZE;
-};
-
-struct VS_BILLBOARD_IN{
-	float3 posW:POSITION;
-	float2 sizeW:SIZE;
-	float3 instancePosition : INSTANCEPOSITION;
-};
-
-struct GS_BILLBOARD_OUT {
-	float4 posH:SV_POSITION;
-	float3 posW:POSITION;
-	float3 normalW : NORMAL;
-	float2 uv: TEXCOORD;
-	uint primID:SV_PrimitiveID;
-};
-
-VS_BILLBOARD_OUT VSBillboard(VS_BILLBOARD_IN input)
-{
-	VS_BILLBOARD_OUT output;
-	output.centerW = input.instancePosition;
-	output.sizeW = input.sizeW;
-	return(output);
-}
-
-[maxvertexcount(4)]
-void GSBillboard(point VS_BILLBOARD_OUT input[1],uint primID:SV_PrimitiveID, inout TriangleStream<GS_BILLBOARD_OUT> outStream)
-{
-	float3 vUp = float3(0.0f, 1.0f, 0.0f);
-	float3 vLook = gvCameraPosition.xyz - input[0].centerW;
-	vLook = normalize(vLook);
-	float3 vRight = cross(vUp, vLook);
-	float fHalfW = input[0].sizeW.x * 0.5f;
-	float fHalfH = input[0].sizeW.y * 0.5f;
-
-	float4 pVertices[4];
-	pVertices[0] = float4(input[0].centerW + fHalfW * vRight - fHalfH * vUp, 1.0f);
-	pVertices[1] = float4(input[0].centerW + fHalfW * vRight + fHalfH * vUp, 1.0f);
-	pVertices[2] = float4(input[0].centerW - fHalfW * vRight - fHalfH * vUp, 1.0f);
-	pVertices[3] = float4(input[0].centerW - fHalfW * vRight + fHalfH * vUp, 1.0f);
-
-	float2 pUVs[4] = { float2(0.0f,1.0f),float2(0.0f,0.0f),float2(1.0f,1.0f),float2(1.0f,0.0f) };
-	GS_BILLBOARD_OUT output;
-	for (int i = 0; i < 4; ++i) {
-		output.posW = pVertices[i].xyz;
-		output.posH =mul(mul(pVertices[i], gmtxView), gmtxProjection);
-		output.normalW = vLook;
-		output.uv = pUVs[i];
-		output.primID = primID;
-		outStream.Append(output);
-	}
-}
-
-Texture2D<float4> gtxtBillboardTexture[3] : register(t22); // 22,23, 24
-
-PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSBillboard(GS_BILLBOARD_OUT input): SV_TARGET
-{
-	//float4 cColor0 = gtxtBillboardTexture[0].SampleLevel(gSamplerState, input.uv, 0);
-	//float4 cColor1 = gtxtBillboardTexture[1].SampleLevel(gMirrorSamplerState, float2(input.uv.x, frac(input.uv.y + gfCurrentTime)), 0);
-	//float4 cColor2 = gtxtBillboardTexture[2].SampleLevel(gMirrorSamplerState, float2(input.uv.x, frac(input.uv.y + gfCurrentTime)), 0);
-	//float4 cColor3 = gtxtBillboardTexture[0].SampleLevel(gSamplerState, float2(input.uv.x, saturate(input.uv.y + cColor1.r)), 0);
-	//float4 cColor4 = gtxtBillboardTexture[0].SampleLevel(gSamplerState, float2(input.uv.x, saturate(input.uv.y + cColor2.r)), 0);
-
-	////float4 cOutput = float4(lerp(cColor3.rgb, cColor4.rgb, 0.3f), lerp(cColor3.a, cColor4.a, 0.7f));
-
-	//float alpha0 = gtxtBillboardTexture[1].Sample(gSamplerState, input.uv).w;
-	//float alpha1 = gtxtBillboardTexture[2].Sample(gSamplerState, input.uv).w;
-
-	//float4 cOutput = cColor0 * alpha0;
-
-	float4 cColor0 = gtxtBillboardTexture[0].SampleLevel(gSamplerState, input.uv, 0);
-	float4 cColor1 = gtxtBillboardTexture[1].SampleLevel(gMirrorSamplerState, float2(input.uv.x, input.uv.y + gfCurrentTime), 0);
-	//float4 cColor1 = gtxtBillboardTexture[1].SampleLevel(gMirrorSamplerState, float2(input.uv.x, input.uv.y), 0);
-
-	if (cColor0.a > 0.15) cColor0.a = 0.6;
-	float4 cOutput = float4(cColor0.rgb + (cColor0.rgb * cColor1.rgb), cColor0.a);
-
-//	float4 cColor = gtxtBillboardTexture.Sample(gSamplerState, input.uv);
-
-	PS_MULTIPLE_RENDER_TARGETS_OUTPUT output;
-	output.f4Scene = output.f4Color = cOutput;
-	output.fDepth = 1.0f - input.posH.z;
-	return(output);
-}
-
 
 //--------------------------------------------------------------------------------------
-//
+Texture2D<float4> gtxtTerrainBaseTexture : register(t1);
+Texture2D<float4> gtxtTerrainDetailTextures[3] : register(t2); //t2, t3, t4
+Texture2D<float4> gtxtTerrainAlphaTexture[2] : register(t5); // t5, t6
+
+struct VS_TERRAIN_INPUT
+{
+	float3 position : POSITION;
+	float4 color : COLOR;
+	float2 uv0 : TEXCOORD0;
+	float2 uv1 : TEXCOORD1;
+};
+
 struct VS_TERRAIN_TESSELLATION_OUTPUT
 {
 	float3 position : POSITION;
@@ -554,8 +322,6 @@ PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSTerrainTessellation(DS_TERRAIN_TESSELLATION_
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
 RWTexture2D<float4> gtxtRWOutput : register(u0);
 Texture2D<float4> gtxtInputTextures[3] : register(t25);
 Texture2D gtxtOutput : register(t28);
@@ -669,153 +435,3 @@ float4 PSPostProcessing(VS_TEXTURED_OUTPUT input) : SV_Target
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#define PARTICLE_TYPE_EMITTER	0
-#define PARTICLE_TYPE_FLARE		0x0ff
-
-struct VS_PARTICLE_INPUT
-{
-	float3 position : POSITION;
-	float3 color : COLOR;
-	float3 velocity : VELOCITY;
-	float3 acceleration : ACCELERATION;
-	float2 size : SIZE;
-	float2 age : AGELIFETIME; //(Age, Lifetime)
-	uint type : PARTICLETYPE;
-};
-
-VS_PARTICLE_INPUT VSParticleStreamOutput(VS_PARTICLE_INPUT input)
-{
-	return(input);
-}
-
-Buffer<float4> gRandomBuffer : register(t30);
-
-float3 GetParticleColor(float fAge, float fLifetime)
-{
-	float3 cColor = float3(1.0f, 1.0f, 1.0f);
-
-	if (fAge == 0.0f) cColor = float3(0.0f, 1.0f, 0.0f);
-	else if (fLifetime == 0.0f)
-		cColor = float3(1.0f, 1.0f, 0.0f);
-	else
-	{
-		float t = fAge / fLifetime;
-		cColor = lerp(float3(1.0f, 0.0f, 0.0f), float3(0.0f, 0.0f, 1.0f), t * 1.0f);
-	}
-
-	return(cColor);
-}
-
-void GetBillboardCorners(float3 position, float2 size, out float4 pf4Positions[4])
-{
-	float3 f3Up = float3(0.0f, 1.0f, 0.0f);
-	float3 f3Look = normalize(gvCameraPosition - position);
-	float3 f3Right = normalize(cross(f3Up, f3Look));
-
-	pf4Positions[0] = float4(position + size.x * f3Right - size.y * f3Up, 1.0f);
-	pf4Positions[1] = float4(position + size.x * f3Right + size.y * f3Up, 1.0f);
-	pf4Positions[2] = float4(position - size.x * f3Right - size.y * f3Up, 1.0f);
-	pf4Positions[3] = float4(position - size.x * f3Right + size.y * f3Up, 1.0f);
-}
-
-void GetPositions(float3 position, float2 f2Size, out float3 pf3Positions[8])
-{
-	float3 f3Right = float3(1.0f, 0.0f, 0.0f);
-	float3 f3Up = float3(0.0f, 1.0f, 0.0f);
-	float3 f3Look = float3(0.0f, 0.0f, 1.0f);
-
-	float3 f3Extent = normalize(float3(1.0f, 1.0f, 1.0f));
-
-	pf3Positions[0] = position + float3(-f2Size.x/0.8f, 0.0f, -f2Size.y);
-	pf3Positions[1] = position + float3(-f2Size.x, 0.0f, +f2Size.y);
-	pf3Positions[2] = position + float3(+f2Size.x, 0.0f, -f2Size.y/0.7f);
-	pf3Positions[3] = position + float3(+f2Size.x, 0.0f, +f2Size.y);
-	pf3Positions[4] = position + float3(-f2Size.x, 0.0f, 0.0f);
-	pf3Positions[5] = position + float3(+f2Size.x/0.9f, 0.0f, 0.0f);
-	pf3Positions[6] = position + float3(0.0f, 0.0f, +f2Size.y);
-	pf3Positions[7] = position + float3(0.0f, 0.0f, -f2Size.y);
-}
-
-[maxvertexcount(9)]
-void GSParticleStreamOutput(point VS_PARTICLE_INPUT input[1], inout PointStream<VS_PARTICLE_INPUT> output)
-{
-	input[0].age.x += gfElapsedTime;
-	VS_PARTICLE_INPUT particle = input[0];
-	if (particle.type == PARTICLE_TYPE_EMITTER)
-	{
-		particle.color = float3(1.0f, 0.0f, 0.0f);
-		output.Append(particle);
-
-		float4 f4Random = gRandomBuffer.Load(int(fmod(gfCurrentTime - floor(gfCurrentTime) * 1000.0f, 1000.0f)));
-
-		if (particle.age.x > 0.005f)
-		{
-			float3 pf3Positions[8];
-			GetPositions(particle.position, float2(5.5, 6.3f), pf3Positions);
-
-			particle.color = float3(0.0f, 0.0f, 1.0f);
-			particle.age.x = 0.0f;
-
-			for (int j = 0; j < 8; j++)
-			{
-				particle.type = (j >= 4) ? PARTICLE_TYPE_EMITTER : PARTICLE_TYPE_FLARE;
-				particle.position = pf3Positions[j].xyz;
-				particle.age.y = (particle.type == PARTICLE_TYPE_EMITTER) ? 0.25f : 4.0f;
-				output.Append(particle);
-			}
-		}
-	}
-	else
-	{
-		if (particle.age.x < particle.age.y) output.Append(particle);
-	}
-}
-
-VS_PARTICLE_INPUT VSParticleDraw(VS_PARTICLE_INPUT input)
-{
-	return(input);
-}
-
-struct GS_PARTICLE_OUTPUT
-{
-	float4 position : SV_Position;
-	float3 color : COLOR;
-	float2 uv : TEXCOORD;
-	float2 age : AGELIFETIME; //(Age, Lifetime)
-	uint type : PARTICLETYPE;
-};
-
-static float2 gf2QuadUVs[4] = { float2(0.0f,1.0f), float2(0.0f,0.0f), float2(1.0f,1.0f), float2(1.0f,0.0f) };
-
-[maxvertexcount(4)]
-void GSParticleDraw(point VS_PARTICLE_INPUT input[1], inout TriangleStream<GS_PARTICLE_OUTPUT> outputStream)
-{
-	float4 pVertices[4];
-	//	GetBillboardCorners(input[0].position, input[0].size * 0.5f, pVertices);
-	GetBillboardCorners(mul(float4(input[0].position, 1.0f), gmtxGameObject).xyz, input[0].size * 0.5f, pVertices);
-
-	GS_PARTICLE_OUTPUT output = (GS_PARTICLE_OUTPUT)0;
-	output.color = input[0].color;
-	output.age = input[0].age;
-	output.type = input[0].type;
-	for (int i = 0; i < 4; i++)
-	{
-		output.position = mul(mul(pVertices[i], gmtxView), gmtxProjection);
-		output.uv = gf2QuadUVs[i];
-
-		outputStream.Append(output);
-	}
-}
-
-Texture2D<float4> gtxtParticleTexture : register(t29);
-
-PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSParticleDraw(GS_PARTICLE_OUTPUT input) : SV_TARGET
-{
-	float4 cColor = gtxtParticleTexture.Sample(gSamplerState, input.uv);
-
-	PS_MULTIPLE_RENDER_TARGETS_OUTPUT output;
-	output.f4Scene = output.f4Color = cColor;
-	output.fDepth = 1.0f - input.position.z;
-
-	return(output);
-}
