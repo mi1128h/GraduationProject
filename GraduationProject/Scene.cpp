@@ -163,7 +163,7 @@ ID3D12RootSignature* CScene::CreateComputeRootSignature(ID3D12Device* pd3dDevice
 
 	pd3dDescriptorRanges[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
 	pd3dDescriptorRanges[0].NumDescriptors = 3;
-	pd3dDescriptorRanges[0].BaseShaderRegister = 25; //t0: Texture2D
+	pd3dDescriptorRanges[0].BaseShaderRegister = 8; //t0: Texture2D
 	pd3dDescriptorRanges[0].RegisterSpace = 0;
 	pd3dDescriptorRanges[0].OffsetInDescriptorsFromTableStart = 0;
 
