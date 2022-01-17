@@ -1,7 +1,6 @@
 cbuffer cbPlayerInfo : register(b0)
 {
 	matrix		gmtxPlayerWorld : packoffset(c0);
-	float3		f3PlayerVelocity : packoffset(c4);
 };
 
 cbuffer cbCameraInfo : register(b1)
@@ -17,7 +16,7 @@ cbuffer cbGameObjectInfo : register(b2)
 	matrix		gmtxGameObject : packoffset(c0);
 };
 
-cbuffer cbFrameworkInfo : register(b4)
+cbuffer cbFrameworkInfo : register(b6)
 {
 	float		gfCurrentTime : packoffset(c0.x);
 	float		gfElapsedTime : packoffset(c0.y);
@@ -71,7 +70,6 @@ PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSPlayer(VS_DIFFUSED_OUTPUT input) : SV_TARGET
 Texture2D gtxtTexture : register(t0);
 SamplerState gSamplerState : register(s0);
 SamplerState gClampSamplerState : register(s1);
-SamplerState gMirrorSamplerState : register(s2);
 
 struct VS_TEXTURED_INPUT
 {
@@ -323,9 +321,8 @@ PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSTerrainTessellation(DS_TERRAIN_TESSELLATION_
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 RWTexture2D<float4> gtxtRWOutput : register(u0);
-Texture2D<float4> gtxtInputTextures[3] : register(t25);
-Texture2D gtxtOutput : register(t28);
-//Texture2D<float4> gtxtInputTextures[3] : register(t0);
+Texture2D<float4> gtxtInputTextures[3] : register(t8);
+Texture2D gtxtOutput : register(t11);
 
 groupshared float4 gTextureCache[(480 + 2 * 5)];
 groupshared float4 gHorzCache[(640 + 2 * 5)];
@@ -427,8 +424,7 @@ VS_SCREEN_RECT_TEXTURED_OUTPUT VSPostProcessing(uint nVertexID : SV_VertexID)
 float4 PSPostProcessing(VS_TEXTURED_OUTPUT input) : SV_Target
 {
 	float4 cColor;
-	if (f3PlayerVelocity.x > 0.02f || f3PlayerVelocity.y > 0.02f) cColor = gtxtOutput.Sample(gSamplerState, input.uv);
-	else if (gnBlurMode & (DEBUG_BLURRING)) cColor = gtxtOutput.Sample(gSamplerState, input.uv);
+	if (gnBlurMode & (DEBUG_BLURRING)) cColor = gtxtOutput.Sample(gSamplerState, input.uv);
 	else cColor = gtxtInputTextures[0].Sample(gSamplerState, input.uv);
 
 	return(cColor);

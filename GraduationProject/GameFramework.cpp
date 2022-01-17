@@ -376,7 +376,6 @@ void CGameFramework::BuildObjects()
 	m_GameTimer.Reset();
 }
 
-
 void CGameFramework::CreateShaderVariables()
 {
 	UINT ncbElementBytes = ((sizeof(CB_FRAMEWORK_INFO) + 255) & ~255);				//256의 배수
@@ -392,7 +391,7 @@ void CGameFramework::UpdateShaderVariables()
 	m_pcbMappedFrameworkInfo->m_fElapsedTime = m_GameTimer.GetTimeElapsed();
 
 	D3D12_GPU_VIRTUAL_ADDRESS d3dGpuVirtualAddress = m_pd3dcbFrameworkInfo->GetGPUVirtualAddress();
-	m_pd3dCommandList->SetGraphicsRootConstantBufferView(10, d3dGpuVirtualAddress);
+	m_pd3dCommandList->SetGraphicsRootConstantBufferView(2, d3dGpuVirtualAddress);
 }
 
 void CGameFramework::ReleaseShaderVariables()
@@ -403,7 +402,6 @@ void CGameFramework::ReleaseShaderVariables()
 		m_pd3dcbFrameworkInfo->Release();
 	}
 }
-
 
 void CGameFramework::ReleaseObjects()
 {
