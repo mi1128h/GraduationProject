@@ -16,6 +16,8 @@ cbuffer cbGameObjectInfo : register(b2)
 	matrix		gmtxGameObject : packoffset(c0);
 };
 
+#include "Light.hlsl"
+
 cbuffer cbFrameworkInfo : register(b6)
 {
 	float		gfCurrentTime : packoffset(c0.x);
