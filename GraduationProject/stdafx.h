@@ -25,14 +25,11 @@
 // Direct3D 12 API 함수 사용 위해 반드시 포함해야 함
 #include <d3d12.h>	
 #include <dxgi1_4.h>
-
 #include <D3Dcompiler.h>
-
 #include <DirectXMath.h>
 #include <DirectXPackedVector.h>
 #include <DirectXColors.h>
 #include <DirectXCollision.h>
-
 
 #include <Mmsystem.h>
 
@@ -59,6 +56,15 @@ using Microsoft::WRL::ComPtr;
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "dxguid.lib")
+
+
+#define MAX_LIGHTS 8 
+#define MAX_MATERIALS 8 
+
+#define POINT_LIGHT 1
+#define SPOT_LIGHT 2
+#define DIRECTIONAL_LIGHT 3
+
 
 #define FRAME_BUFFER_WIDTH 640
 #define FRAME_BUFFER_HEIGHT 480
