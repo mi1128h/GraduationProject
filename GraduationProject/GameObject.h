@@ -160,7 +160,7 @@ public:
 
 	bool							m_bActive = true;
 
-	BoundingOrientedBox				m_xmBoundingBox;
+	BoundingBox						m_xmBoundingBox;
 
 	ID3D12Resource* m_pd3dcbGameObject = NULL;
 	CB_GAMEOBJECT_INFO* m_pcbMappedGameObject = NULL;
@@ -209,7 +209,7 @@ public:
 	void  Rotate(XMFLOAT3* pxmf3Axis, float fAngle);
 
 	void SetActive(bool bActive) { m_bActive = bActive; }
-	virtual void UpdateBoundingBox();
+	void CalculateBoundingBox();
 };
 
 class CRotatingObject : public CGameObject

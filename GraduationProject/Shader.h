@@ -165,7 +165,7 @@ public:
 	virtual CGameObject** GetObjects() { return(m_ppObjects); }
 	virtual int GetObjectsNum() { return(m_nObjects); }
 
-	void MirrorBackRender(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera, bool bRoom);
+	BoundingBox CalculateBoundingBox();
 
 	ID3D12Resource* m_pd3dcbGameObjects = NULL;
 	CB_GAMEOBJECT_INFO* m_pcbMappedGameObjects = NULL;
