@@ -44,6 +44,8 @@ public:
 	CShader** m_ppShaders = NULL;
 	int	m_nShaders = 0;
 
+	BoundingBox						m_xmBoundingBox;
+
 	//루트 시그너쳐를 나타내는 인터페이스 포인터이다. 
 	ID3D12RootSignature* m_pd3dComputeRootSignature = NULL;
 	ID3D12RootSignature* m_pd3dGraphicsRootSignature = NULL;

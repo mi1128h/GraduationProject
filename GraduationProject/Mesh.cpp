@@ -44,6 +44,10 @@ void CMesh::Render(ID3D12GraphicsCommandList* pd3dCommandList)
 	}
 }
 
+void CMesh::CalculateBoundingBox(XMFLOAT3* pxmf3Points, UINT nStride)
+{
+	BoundingBox::CreateFromPoints(m_xmBoundingBox, m_nVertices, pxmf3Points, nStride);
+}
 /////////////////////////////////////////////////////////////////////////////////////////////////
 
 CTriangleMesh::CTriangleMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
@@ -234,7 +238,7 @@ CCubeMeshDiffused::CCubeMeshDiffused(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	m_d3dIndexBufferView.Format = DXGI_FORMAT_R32_UINT;
 	m_d3dIndexBufferView.SizeInBytes = sizeof(UINT) * m_nIndices;
 
-	m_xmBoundingBox = BoundingOrientedBox(XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(fx, fy, fz), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
+	CalculateBoundingBox((XMFLOAT3*)pVertices, m_nStride);
 }
 
 CCubeMeshDiffused::~CCubeMeshDiffused()
@@ -676,7 +680,7 @@ CBillboardMesh::CBillboardMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLi
 	m_d3dVertexBufferView.StrideInBytes = m_nStride;
 	m_d3dVertexBufferView.SizeInBytes = m_nStride * m_nVertices;
 
-	m_xmBoundingBox = BoundingOrientedBox(XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(fx, fy, 0.1f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
+	CalculateBoundingBox((XMFLOAT3*)pVertices, m_nStride);
 }
 
 CBillboardMesh::~CBillboardMesh()

@@ -127,7 +127,6 @@ public:
 	void Release() { if (--m_nReferences <= 0) delete this; }
 
 	void ReleaseUploadBuffers();
-	BoundingOrientedBox GetBoundingBox() { return(m_xmBoundingBox); }
 
 protected:
 	ID3D12Resource* m_pd3dVertexBuffer = NULL;
@@ -155,13 +154,16 @@ protected:
 	//인덱스 버퍼의 인덱스에 더해질 인덱스이다. 
 	int m_nBaseVertex = 0;
 public:
-	BoundingOrientedBox m_xmBoundingBox;
+	BoundingBox			m_xmBoundingBox;
+
+public:
 	D3D12_VERTEX_BUFFER_VIEW GetVertexBufferView() { return(m_d3dVertexBufferView); }
 
 	virtual void PreRender(ID3D12GraphicsCommandList* pd3dCommandList, int nPipelineState) { }
 	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList);
 	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, int nPipelineState) { }
 	virtual void PostRender(ID3D12GraphicsCommandList* pd3dCommandList, int nPipelineState) { }
+	void CalculateBoundingBox(XMFLOAT3* pxmf3Points, UINT nStride);
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

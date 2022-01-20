@@ -511,7 +511,6 @@ void CGameObject::Rotate(XMFLOAT3* pxmf3Axis, float fAngle)
 void CGameObject::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
 {
 	OnPrepareRender();
-	UpdateBoundingBox();
 	
 	if (!m_bActive) return;
 
@@ -542,17 +541,12 @@ void CGameObject::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pC
 	}
 }
 
-void CGameObject::UpdateBoundingBox()
+void CGameObject::CalculateBoundingBox()
 {
-	if (m_ppMeshes)
-	{
-		for (int i = 0; i < m_nMeshes; i++)
-		{
-			if (m_ppMeshes[i])
-				m_ppMeshes[i]->m_xmBoundingBox.Transform(m_xmBoundingBox, XMLoadFloat4x4(&m_xmf4x4World));
-			XMStoreFloat4(&m_xmBoundingBox.Orientation, XMQuaternionNormalize(XMLoadFloat4(&m_xmBoundingBox.Orientation)));
-		}
-	}
+	m_xmBoundingBox = m_ppMeshes[0]->m_xmBoundingBox;
+	for (int i = 1; i < m_nMeshes; i++)BoundingBox::CreateMerged(m_xmBoundingBox, m_xmBoundingBox, m_ppMeshes[i]->m_xmBoundingBox);
+
+	m_xmBoundingBox.Transform(m_xmBoundingBox, XMLoadFloat4x4(&m_xmf4x4World));
 }
 
 /////////////////////////////////////////////////////////////////////////////////
