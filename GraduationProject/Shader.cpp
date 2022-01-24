@@ -737,6 +737,7 @@ void CObjectsShader::UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dComman
 	{
 		CB_GAMEOBJECT_INFO* pbMappedcbGameObject = (CB_GAMEOBJECT_INFO*)((UINT8*)m_pcbMappedGameObjects + (j * ncbElementBytes));
 		XMStoreFloat4x4(&pbMappedcbGameObject->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_ppObjects[j]->m_xmf4x4World)));
+		pbMappedcbGameObject->m_nMaterial = m_ppObjects[j]->m_pMaterial->m_nReflection;
 	}
 }
 
@@ -1145,7 +1146,7 @@ void CBlurringShader::CreateResourcesAndViews(ID3D12Device* pd3dDevice, UINT nRe
 	m_pTexture->SetComputeSrvRootParameterIndex(0, 0, 0);
 	m_pTexture->SetComputeUavRootParameterIndex(0, 1, nResources);
 
-	m_pTexture->SetGraphicsSrvRootParameterIndex(1, 8, nResources);
+	m_pTexture->SetGraphicsSrvRootParameterIndex(1, 10, nResources);
 
 }
 

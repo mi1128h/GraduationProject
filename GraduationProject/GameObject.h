@@ -16,6 +16,7 @@ class CShader;
 struct CB_GAMEOBJECT_INFO
 {
 	XMFLOAT4X4 m_xmf4x4World;
+	UINT m_nMaterial;
 };
 
 class CTexture
@@ -125,10 +126,12 @@ public:
 
 	XMFLOAT4						m_xmf4Albedo = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 
+	UINT							m_nReflection = 0;
 	CTexture* m_pTexture = NULL;
 	CShader* m_pShader = NULL;
 
 	void SetAlbedo(XMFLOAT4 xmf4Albedo) { m_xmf4Albedo = xmf4Albedo; }
+	void SetReflection(UINT nReflection) { m_nReflection = nReflection; }
 	void SetTexture(CTexture* pTexture);
 	void SetShader(CShader* pShader);
 
