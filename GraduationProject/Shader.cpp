@@ -732,7 +732,7 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComman
 	CreateCbvSrvUavDescriptorHeaps(pd3dDevice, m_nObjects, 1,0);
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 	CreateConstantBufferViews(pd3dDevice, m_nObjects, m_pd3dcbGameObjects, ncbElementBytes);
-	CreateShaderResourceViews(pd3dDevice, pTexture, 0, 4);
+	CreateShaderResourceViews(pd3dDevice, pTexture, 0, 6);
 }
 
 void CObjectsShader::ReleaseObjects()
@@ -1086,7 +1086,7 @@ void CBlurringShader::CreateResourcesAndViews(ID3D12Device* pd3dDevice, UINT nRe
 
 	CreateCbvSrvUavDescriptorHeaps(pd3dDevice, 0, nShaderResources,1);
 #ifdef _WITH_SCENE_ROOT_SIGNATURE
-	CreateShaderResourceViews(pd3dDevice, m_pTexture, 0,7);
+	CreateShaderResourceViews(pd3dDevice, m_pTexture, 0,9);
 #else
 	CreateShaderResourceViews(pd3dDevice, m_pTexture, 0, 0);
 #endif
