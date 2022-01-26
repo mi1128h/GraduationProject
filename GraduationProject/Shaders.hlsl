@@ -112,6 +112,7 @@ struct VS_LIGHTING_INPUT
 {
 	float3 position : POSITION;
 	float3 normal : NORMAL;
+	float2 uv : TEXCOORD;
 };
 
 struct VS_LIGHTING_OUTPUT
@@ -119,6 +120,7 @@ struct VS_LIGHTING_OUTPUT
 	float4 position : SV_POSITION;
 	float3 positionW : POSITION;
 	float3 normalW : NORMAL;
+	float2 uv : TEXCOORD;
 };
 
 VS_LIGHTING_OUTPUT VSLighting(VS_LIGHTING_INPUT input)
@@ -134,12 +136,13 @@ VS_LIGHTING_OUTPUT VSLighting(VS_LIGHTING_INPUT input)
 
 PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSLighting(VS_LIGHTING_OUTPUT input) : SV_TARGET
 {
+	float4 cColor = gtxtTexture.Sample(gSamplerState, input.uv);
 	input.normalW = normalize(input.normalW);
 	float4 uvs[MAX_LIGHTS];
 	float4 cIllumination = Lighting(input.positionW, input.normalW, false, uvs);
 
 	PS_MULTIPLE_RENDER_TARGETS_OUTPUT output;
-	output.f4Scene = output.f4Color = cIllumination;
+	output.f4Scene = output.f4Color = cColor*cIllumination;
 	output.fDepth = 1.0f - input.position.z;
 
 	return(output);

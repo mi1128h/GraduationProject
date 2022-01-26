@@ -782,12 +782,21 @@ void CMeshIlluminated::CalculateVertexNormals(XMFLOAT3* pxmf3Normals, XMFLOAT3* 
 	}
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+CMeshIlluminatedTextured::CMeshIlluminatedTextured(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList) : CMeshIlluminated(pd3dDevice, pd3dCommandList)
+{
+}
+
+CMeshIlluminatedTextured::~CMeshIlluminatedTextured()
+{
+}
 //////////////////////////////////////////////////////////////////////////////////
 //
-CCubeMeshIlluminated::CCubeMeshIlluminated(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, float fWidth, float fHeight, float fDepth) : CMeshIlluminated(pd3dDevice, pd3dCommandList)
+CCubeMeshIlluminatedTextured::CCubeMeshIlluminatedTextured(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, float fWidth, float fHeight, float fDepth) : CMeshIlluminatedTextured(pd3dDevice, pd3dCommandList)
 {
 	m_nVertices = 36;
-	m_nStride = sizeof(CIlluminatedVertex);
+	m_nStride = sizeof(CIlluminatedTexturedVertex);
 	m_nOffset = 0;
 	m_nSlot = 0;
 	m_d3dPrimitiveTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
@@ -844,11 +853,61 @@ CCubeMeshIlluminated::CCubeMeshIlluminated(ID3D12Device* pd3dDevice, ID3D12Graph
 	pxmf3Positions[i++] = XMFLOAT3(+fx, -fy, +fz);
 	pxmf3Positions[i++] = XMFLOAT3(+fx, -fy, -fz);
 
+	XMFLOAT2 pxmf2TexCoords[36];
+	i = 0;
+	pxmf2TexCoords[i++] = XMFLOAT2(0.0f, 0.0f);
+	pxmf2TexCoords[i++] = XMFLOAT2(1.0f, 0.0f);
+	pxmf2TexCoords[i++] = XMFLOAT2(1.0f, 1.0f);
+
+	pxmf2TexCoords[i++] = XMFLOAT2(0.0f, 0.0f);
+	pxmf2TexCoords[i++] = XMFLOAT2(1.0f, 1.0f);
+	pxmf2TexCoords[i++] = XMFLOAT2(0.0f, 1.0f);
+
+	pxmf2TexCoords[i++] = XMFLOAT2(0.0f, 0.0f);
+	pxmf2TexCoords[i++] = XMFLOAT2(1.0f, 0.0f);
+	pxmf2TexCoords[i++] = XMFLOAT2(1.0f, 1.0f);
+
+	pxmf2TexCoords[i++] = XMFLOAT2(0.0f, 0.0f);
+	pxmf2TexCoords[i++] = XMFLOAT2(1.0f, 1.0f);
+	pxmf2TexCoords[i++] = XMFLOAT2(0.0f, 1.0f);
+
+	pxmf2TexCoords[i++] = XMFLOAT2(0.0f, 0.0f);
+	pxmf2TexCoords[i++] = XMFLOAT2(1.0f, 0.0f);
+	pxmf2TexCoords[i++] = XMFLOAT2(1.0f, 1.0f);
+
+	pxmf2TexCoords[i++] = XMFLOAT2(0.0f, 0.0f);
+	pxmf2TexCoords[i++] = XMFLOAT2(1.0f, 1.0f);
+	pxmf2TexCoords[i++] = XMFLOAT2(0.0f, 1.0f);
+
+	pxmf2TexCoords[i++] = XMFLOAT2(0.0f, 0.0f);
+	pxmf2TexCoords[i++] = XMFLOAT2(1.0f, 0.0f);
+	pxmf2TexCoords[i++] = XMFLOAT2(1.0f, 1.0f);
+
+	pxmf2TexCoords[i++] = XMFLOAT2(0.0f, 0.0f);
+	pxmf2TexCoords[i++] = XMFLOAT2(1.0f, 1.0f);
+	pxmf2TexCoords[i++] = XMFLOAT2(0.0f, 1.0f);
+
+	pxmf2TexCoords[i++] = XMFLOAT2(0.0f, 0.0f);
+	pxmf2TexCoords[i++] = XMFLOAT2(1.0f, 0.0f);
+	pxmf2TexCoords[i++] = XMFLOAT2(1.0f, 1.0f);
+
+	pxmf2TexCoords[i++] = XMFLOAT2(0.0f, 0.0f);
+	pxmf2TexCoords[i++] = XMFLOAT2(1.0f, 1.0f);
+	pxmf2TexCoords[i++] = XMFLOAT2(0.0f, 1.0f);
+
+	pxmf2TexCoords[i++] = XMFLOAT2(0.0f, 0.0f);
+	pxmf2TexCoords[i++] = XMFLOAT2(1.0f, 0.0f);
+	pxmf2TexCoords[i++] = XMFLOAT2(1.0f, 1.0f);
+
+	pxmf2TexCoords[i++] = XMFLOAT2(0.0f, 0.0f);
+	pxmf2TexCoords[i++] = XMFLOAT2(1.0f, 1.0f);
+	pxmf2TexCoords[i++] = XMFLOAT2(0.0f, 1.0f);
+
 	XMFLOAT3 pxmf3Normals[36];
 	CalculateVertexNormals(pxmf3Normals, pxmf3Positions, m_nVertices, NULL, 0);
 
-	CIlluminatedVertex pVertices[36];
-	for (int i = 0; i < 36; i++) pVertices[i] = CIlluminatedVertex(pxmf3Positions[i], pxmf3Normals[i]);
+	CIlluminatedTexturedVertex pVertices[36];
+	for (int i = 0; i < 36; i++) pVertices[i] = CIlluminatedTexturedVertex(pxmf3Positions[i], pxmf3Normals[i], pxmf2TexCoords[i]);
 
 	m_pd3dVertexBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList, pVertices, m_nStride * m_nVertices, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, &m_pd3dVertexUploadBuffer);
 
@@ -859,7 +918,7 @@ CCubeMeshIlluminated::CCubeMeshIlluminated(ID3D12Device* pd3dDevice, ID3D12Graph
 	CalculateBoundingBox((XMFLOAT3*)pxmf3Positions, sizeof(XMFLOAT3));
 }
 
-CCubeMeshIlluminated::~CCubeMeshIlluminated()
+CCubeMeshIlluminatedTextured::~CCubeMeshIlluminatedTextured()
 {
 }
 
