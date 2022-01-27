@@ -47,7 +47,7 @@ void CPlayer::ReleaseShaderVariables()
 		m_pd3dcbPlayer->Unmap(0, NULL);
 		m_pd3dcbPlayer->Release();
 	}
-	//	CGameObject::ReleaseShaderVariables();
+	CGameObject::ReleaseShaderVariables();
 }
 
 void CPlayer::UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList)

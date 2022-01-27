@@ -303,13 +303,13 @@ void CScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* p
 
 	DXGI_FORMAT pdxgiRtvFormats[3] = { DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM };
 
-	m_nShaders = 1;
-	m_ppShaders = new CShader * [m_nShaders];
+	//m_nShaders = 1;
+	//m_ppShaders = new CShader * [m_nShaders];
 
-	CObjectsShader* pObjectsShader = new CObjectsShader();
-	pObjectsShader->CreateShader(pd3dDevice, m_pd3dGraphicsRootSignature, 3, pdxgiRtvFormats, DXGI_FORMAT_D32_FLOAT);
-	pObjectsShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pTerrain);
-	m_ppShaders[0] = pObjectsShader;
+	//CObjectsShader* pObjectsShader = new CObjectsShader();
+	//pObjectsShader->CreateShader(pd3dDevice, m_pd3dGraphicsRootSignature, 3, pdxgiRtvFormats, DXGI_FORMAT_D32_FLOAT);
+	//pObjectsShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pTerrain);
+	//m_ppShaders[0] = pObjectsShader;
 
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
@@ -319,24 +319,30 @@ void CScene::ReleaseObjects()
 {
 	if (m_pd3dGraphicsRootSignature) 
 		m_pd3dGraphicsRootSignature->Release();
+	if (m_pd3dComputeRootSignature)
+		m_pd3dComputeRootSignature->Release();
 
 	if (m_ppShaders)
 	{
 		for (int i = 0; i < m_nShaders; i++)
 		{
+			m_ppShaders[i]->ReleaseShaderVariables();
 			m_ppShaders[i]->ReleaseObjects();
 			m_ppShaders[i]->Release();
 		}
 		delete[] m_ppShaders;
 	}
 
+	ReleaseShaderVariables();
+
 	if (m_pTerrain) delete m_pTerrain;
 	if (m_pSkyBox) delete m_pSkyBox;
 
-	ReleaseShaderVariables();
-
 	if (m_pLights) delete m_pLights;
 	if (m_pMaterials) delete m_pMaterials;
+
+	if (m_pRawFormatImage) delete m_pRawFormatImage;
+	if (m_pPlayer) delete m_pPlayer;
 }
 
 void CScene::ReleaseUploadBuffers()

@@ -87,7 +87,7 @@ private:
 	CBlurringShader* m_pPostProcessingShader = NULL;
 
 	CComputeShader** m_ppComputeShaders = NULL;
-	int								m_nComputeShaders = 0;
+	int	m_nComputeShaders = 0;
 
 	D3D12_CPU_DESCRIPTOR_HANDLE		m_d3dDsvDescriptorCPUHandle;
 	D3D12_CPU_DESCRIPTOR_HANDLE		m_pd3dSwapChainBackBufferRTVCPUHandles[m_nSwapChainBuffers];
