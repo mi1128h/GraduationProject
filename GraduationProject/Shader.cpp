@@ -17,7 +17,11 @@ CShader::~CShader()
 
 	if (m_ppd3dPipelineStates)
 	{
-		for (int i = 0; i < m_nPipelineStates; i++) if (m_ppd3dPipelineStates[i]) m_ppd3dPipelineStates[i]->Release();
+		for (int i = 0; i < m_nPipelineStates; i++)
+		{
+			if (m_ppd3dPipelineStates[i])
+				m_ppd3dPipelineStates[i]->Release();
+		}
 		delete[] m_ppd3dPipelineStates;
 	}
 }
@@ -353,7 +357,7 @@ void CShader::UpdateShaderVariable(ID3D12GraphicsCommandList* pd3dCommandList, X
 
 void CShader::ReleaseShaderVariables()
 {
-	if (m_pd3dCbvSrvUavDescriptorHeap) m_pd3dCbvSrvUavDescriptorHeap->Release();
+
 }
 
 void CShader::ReleaseUploadBuffers()
@@ -1249,6 +1253,7 @@ CComputeShader::CComputeShader()
 
 CComputeShader::~CComputeShader()
 {
+	if (m_pTexture) delete m_pTexture;
 }
 
 D3D12_SHADER_BYTECODE CComputeShader::CreateComputeShader(ID3DBlob** ppd3dShaderBlob)
@@ -1294,7 +1299,7 @@ void CComputeShader::CreateShader(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 void CComputeShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
 {
 
-}
+} 
 
 void CComputeShader::Dispatch(ID3D12GraphicsCommandList* pd3dCommandList)
 {
