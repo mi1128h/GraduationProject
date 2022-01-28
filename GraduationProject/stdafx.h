@@ -80,6 +80,43 @@ using Microsoft::WRL::ComPtr;
 
 #define OBJECT_NUM 15
 
+namespace Signature {
+	enum Graphics {
+		player,
+		camera,
+		object,
+		meterial,
+		light,
+		gfw,
+		texture,
+		terrain,
+		skybox,
+		g_input,
+		g_output
+	};
+
+	enum Compute {
+		c_input,
+		c_output
+	};
+}
+
+namespace Descriptor {
+	enum Graphics {
+		object,
+		texture,
+		terrain,
+		skybox,
+		g_input,
+		g_output
+	};
+
+	enum Compute {
+		c_input,
+		c_output
+	};
+}
+
 //#define _WITH_SWAPCHAIN_FULLSCREEN_STATE
 
 //#define _WITH_PRESENT_PARAMETERS

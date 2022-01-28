@@ -783,7 +783,7 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComman
 	CreateCbvSrvUavDescriptorHeaps(pd3dDevice, m_nObjects, 1, 0);
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 	CreateConstantBufferViews(pd3dDevice, m_nObjects, m_pd3dcbGameObjects, ncbElementBytes);
-	CreateShaderResourceViews(pd3dDevice, pTexture, 0, 6);
+	CreateShaderResourceViews(pd3dDevice, pTexture, 0, Signature::Graphics::texture);
 
 #ifdef _WITH_BATCH_MATERIAL
 	m_pMaterial = new CMaterial();
@@ -1204,10 +1204,10 @@ void CBlurringShader::CreateResourcesAndViews(ID3D12Device* pd3dDevice, UINT nRe
 	}
 	CreateUnorderedAccessView(pd3dDevice, m_pTexture, nResources);
 
-	m_pTexture->SetComputeSrvRootParameterIndex(0, 0, 0);
-	m_pTexture->SetComputeUavRootParameterIndex(0, 1, nResources);
+	m_pTexture->SetComputeSrvRootParameterIndex(0, Signature::Compute::c_input, 0);
+	m_pTexture->SetComputeUavRootParameterIndex(0, Signature::Compute::c_output, nResources);
 
-	m_pTexture->SetGraphicsSrvRootParameterIndex(1, 10, nResources);
+	m_pTexture->SetGraphicsSrvRootParameterIndex(1, Signature::Graphics::g_output, nResources);
 
 }
 
