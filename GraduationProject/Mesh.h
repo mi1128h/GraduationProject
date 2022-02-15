@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+class CGameObject;
+
 //정점을 표현하기 위한 클래스를 선언한다.
 class CVertex
 {
@@ -165,6 +167,8 @@ public:
 	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, int nPipelineState) { }
 	virtual void PostRender(ID3D12GraphicsCommandList* pd3dCommandList, int nPipelineState) { }
 	void CalculateBoundingBox(XMFLOAT3* pxmf3Points, UINT nStride);
+
+	void LoadMeshFromFile(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, FILE* pInFile);
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -308,4 +312,55 @@ class CPlaneMeshIlluminated : public CMeshIlluminated
 public:
 	CPlaneMeshIlluminated(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, float fWidth = 20.0f, float fHeight = 20.0f, float fDepth = 20.0f, float fxPosition = 0.0f, float fyPosition = 0.0f, float fzPosition = 0.0f);
 	virtual ~CPlaneMeshIlluminated();
+};
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+#define SKINNED_ANIMATION_BONES		128
+
+class CSkinnedMesh : public CMesh
+{
+public:
+	CSkinnedMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList);
+	virtual ~CSkinnedMesh();
+
+protected:
+	int								m_nBonesPerVertex = 4;
+
+	XMINT4* m_pxmn4BoneIndices = NULL;
+
+	ID3D12Resource* m_pd3dBoneIndexBuffer = NULL;
+	ID3D12Resource* m_pd3dBoneIndexUploadBuffer = NULL;
+	D3D12_VERTEX_BUFFER_VIEW		m_d3dBoneIndexBufferView;
+
+	XMFLOAT4* m_pxmf4BoneWeights = NULL;
+
+	ID3D12Resource* m_pd3dBoneWeightBuffer = NULL;
+	ID3D12Resource* m_pd3dBoneWeightUploadBuffer = NULL;
+	D3D12_VERTEX_BUFFER_VIEW		m_d3dBoneWeightBufferView;
+
+public:
+	int								m_nSkinningBones = 0;
+
+	char(*m_ppstrSkinningBoneNames)[64];
+	CGameObject** m_ppSkinningBoneFrameCaches = NULL;
+
+	XMFLOAT4X4* m_pxmf4x4BindPoseBoneOffsets = NULL;
+
+	ID3D12Resource* m_pd3dcbBindPoseBoneOffsets = NULL;
+	XMFLOAT4X4* m_pcbxmf4x4MappedBindPoseBoneOffsets = NULL; //Transposed
+
+	ID3D12Resource* m_pd3dcbSkinningBoneTransforms = NULL;
+	XMFLOAT4X4* m_pcbxmf4x4MappedSkinningBoneTransforms = NULL;
+
+public:
+	void PrepareSkinning(CGameObject* pModelRootObject);
+	void LoadSkinDeformationsFromFile(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, FILE* pInFile);
+
+	virtual void CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList);
+	virtual void UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList);
+	virtual void ReleaseShaderVariables();
+
+	virtual void ReleaseUploadBuffers();
+
+	virtual void OnPreRender(ID3D12GraphicsCommandList* pd3dCommandList, void* pContext);
 };
