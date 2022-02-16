@@ -72,7 +72,7 @@ void CMesh::LoadMeshFromFile(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 			m_nVertices = ::ReadUnsignedIntegerFromFile(pInFile);
 			if (m_nVertices > 0)
 			{
-				m_nType |= VERTEXT_POSITION;
+				m_nType |= VERTEXT::Position;
 				m_pxmf3Positions = new XMFLOAT3[m_nVertices];
 				nReads = (UINT)::fread(m_pxmf3Positions, sizeof(XMFLOAT3), m_nVertices, pInFile);
 
@@ -1228,7 +1228,7 @@ void CSkinnedMesh::LoadSkinDeformationsFromFile(ID3D12Device* pd3dDevice, ID3D12
 		}
 		else if (!strcmp(pstrToken, "<BoneIndices>:"))
 		{
-			m_nType |= VERTEXT_BONE_INDEX_WEIGHT;
+			m_nType |= VERTEXT::Bone_Index_Weight;
 
 			m_nVertices = ::ReadIntegerFromFile(pInFile);
 			if (m_nVertices > 0)
@@ -1245,7 +1245,7 @@ void CSkinnedMesh::LoadSkinDeformationsFromFile(ID3D12Device* pd3dDevice, ID3D12
 		}
 		else if (!strcmp(pstrToken, "<BoneWeights>:"))
 		{
-			m_nType |= VERTEXT_BONE_INDEX_WEIGHT;
+			m_nType |= VERTEXT::Bone_Index_Weight;
 
 			m_nVertices = ::ReadIntegerFromFile(pInFile);
 			if (m_nVertices > 0)

@@ -2,6 +2,24 @@
 
 class CGameObject;
 
+enum VERTEXT
+{
+	Position = 0x0001,
+	Color = 0x0002,
+	Normal = 0x0004,
+	Tangent = 0x0008,
+	Texture_Coord0 = 0x0010,
+	Texture_Coord1 = 0x0020,
+	Bone_Index_Weight = 0x1000,
+
+	Texture = (VERTEXT::Position | VERTEXT::Texture_Coord0),
+	Detail = (VERTEXT::Position | VERTEXT::Texture_Coord0 | VERTEXT::Texture_Coord1),
+	Normal_Texture = (VERTEXT::Position | VERTEXT::Normal | VERTEXT::Texture_Coord0),
+	Normal_Tangent_Texture = (VERTEXT::Position | VERTEXT::Normal | VERTEXT::Tangent | VERTEXT::Texture_Coord0),
+	Normal_Detail = (VERTEXT::Position | VERTEXT::Normal | VERTEXT::Texture_Coord0 | VERTEXT::Texture_Coord1),
+	Normal_Tangent_Detail =	(VERTEXT::Position | VERTEXT::Normal | VERTEXT::Tangent | VERTEXT::Texture_Coord0 | VERTEXT::Texture_Coord1),
+};	
+
 //정점을 표현하기 위한 클래스를 선언한다.
 class CVertex
 {
@@ -132,16 +150,35 @@ public:
 	void ReleaseUploadBuffers();
 
 protected:
+	UINT							m_nType = 0x00;
+
+	XMFLOAT3						m_xmf3AABBCenter = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	XMFLOAT3						m_xmf3AABBExtents = XMFLOAT3(0.0f, 0.0f, 0.0f);
+
+
 	ID3D12Resource* m_pd3dVertexBuffer = NULL;
 	ID3D12Resource* m_pd3dVertexUploadBuffer = NULL;
 
 	D3D12_VERTEX_BUFFER_VIEW m_d3dVertexBufferView;
-	/*인덱스 버퍼(인덱스의 배열)와 인덱스 버퍼를 위한 업로드 버퍼에 대한 인터페이스 포인터이다.
-	인덱스 버퍼는 정점 버퍼(배열)에 대한 인덱스를 가진다.*/
 	D3D12_INDEX_BUFFER_VIEW m_d3dIndexBufferView;
 
 	ID3D12Resource* m_pd3dIndexBuffer = NULL;
 	ID3D12Resource* m_pd3dIndexUploadBuffer = NULL;
+
+
+	XMFLOAT3* m_pxmf3Positions = NULL;
+
+	ID3D12Resource* m_pd3dPositionBuffer = NULL;
+	ID3D12Resource* m_pd3dPositionUploadBuffer = NULL;
+	D3D12_VERTEX_BUFFER_VIEW		m_d3dPositionBufferView;
+
+	int								m_nSubMeshes = 0;
+	int* m_pnSubSetIndices = NULL;
+	UINT** m_ppnSubSetIndices = NULL;
+
+	ID3D12Resource** m_ppd3dSubSetIndexBuffers = NULL;
+	ID3D12Resource** m_ppd3dSubSetIndexUploadBuffers = NULL;
+	D3D12_INDEX_BUFFER_VIEW* m_pd3dSubSetIndexBufferViews = NULL;
 
 
 	D3D12_PRIMITIVE_TOPOLOGY m_d3dPrimitiveTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
@@ -158,6 +195,7 @@ protected:
 	int m_nBaseVertex = 0;
 public:
 	BoundingBox			m_xmBoundingBox;
+	char							m_pstrMeshName[64] = { 0 };
 
 public:
 	D3D12_VERTEX_BUFFER_VIEW GetVertexBufferView() { return(m_d3dVertexBufferView); }

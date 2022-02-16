@@ -122,6 +122,11 @@ namespace Descriptor {
 //#define _WITH_PRESENT_PARAMETERS
 //#define _WITH_SYNCH_SWAPCHAIN
 
+extern int ReadStringFromFile(FILE* pInFile, char* pstrToken);
+extern UINT ReadUnsignedIntegerFromFile(FILE* pInFile);
+extern int ReadIntegerFromFile(FILE* pInFile);
+extern float ReadFloatFromFile(FILE* pInFile);
+
 /// 디스크립터 힙의 시작주소를 가져와 힙 타입에 따라 인크리먼트 하기위해 필요
 extern UINT	gnCbvSrvUavDescriptorIncrementSize;
 extern UINT	gnRtvDescriptorIncrementSize;
