@@ -151,68 +151,107 @@ public:
 	virtual ~CGameObject();
 
 public:
+	char m_pstrFrameName[64];
+
+	bool m_bActive = true;
+
+	XMFLOAT4X4 m_xmf4x4ToParent;
 	XMFLOAT4X4 m_xmf4x4World;
 
-	//게임 객체는 여러 개의 메쉬를 포함하는 경우 게임 객체가 가지는 메쉬들에 대한 포인터와 그 개수이다.
+	XMFLOAT3 m_xmf3Scale;
+	XMFLOAT3 m_xmf3Rotation;
+	XMFLOAT3 m_xmf3Translation;
+
+	CGameObject* m_pParent = NULL;
+	CGameObject* m_pChild = NULL;
+	CGameObject* m_pSibling = NULL;
+
 	CMesh **m_ppMeshes = NULL;
 	int m_nMeshes = 0;
 
-	CMaterial* m_pMaterial = NULL;
-
-	D3D12_GPU_DESCRIPTOR_HANDLE		m_d3dCbvGPUDescriptorHandle;
-
-	bool							m_bActive = true;
+	int	m_nMaterials = 0;
+	CMaterial** m_ppMaterials = NULL;
 
 	BoundingBox						m_xmBoundingBox;
 
+
+	D3D12_GPU_DESCRIPTOR_HANDLE		m_d3dCbvGPUDescriptorHandle;
 	ID3D12Resource* m_pd3dcbGameObject = NULL;
 	CB_GAMEOBJECT_INFO* m_pcbMappedGameObject = NULL;
-protected:
 
 public:
-	virtual void SetMesh(int nIndex, CMesh* pMesh);
-	virtual void SetShader(CShader* pShader);
-	void SetMaterial(CMaterial* pMaterial);
+	void SetMesh(int nIndex, CMesh* pMesh);
+	void SetShader(CShader* pShader);
+	void SetShader(int nMaterial, CShader* pShader);
+	void SetWireFrameShader();
+	void SetSkinnedAnimationWireFrameShader();
+	void SetMaterial(int nMaterial, CMaterial* pMaterial);
+
+	void SetChild(CGameObject* pChild, bool bReferenceUpdate = false);
+
+	virtual void BuildMaterials(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList) { }
+
+	virtual void OnPrepareAnimate() { }
+	virtual void Animate(float fTimeElapsed, CCamera* pCamrea = NULL);
+
+	virtual void OnPrepareRender() {};
+	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
 
 	void SetCbvGPUDescriptorHandle(D3D12_GPU_DESCRIPTOR_HANDLE d3dCbvGPUDescriptorHandle) { m_d3dCbvGPUDescriptorHandle = d3dCbvGPUDescriptorHandle; }
 	void SetCbvGPUDescriptorHandlePtr(UINT64 nCbvGPUDescriptorHandlePtr) { m_d3dCbvGPUDescriptorHandle.ptr = nCbvGPUDescriptorHandlePtr; }
 	D3D12_GPU_DESCRIPTOR_HANDLE GetCbvGPUDescriptorHandle() { return(m_d3dCbvGPUDescriptorHandle); }
 
 	// 상수 버퍼를 생성한다. 
-	virtual void CreateShaderVariables(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList 
-	*pd3dCommandList);
-	// 상수 버퍼의 내용을 갱신한다.
+	virtual void CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList);
 	virtual void UpdateShaderVariables(ID3D12GraphicsCommandList *pd3dCommandList);
 	virtual void ReleaseShaderVariables();
 
-	virtual void Animate(float fTimeElapsed, CCamera* pCamrea = NULL);
-	virtual void OnPrepareRender() {};
-	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
-	
-	//virtual void BuildMaterials(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList) { }
+	virtual void UpdateShaderVariable(ID3D12GraphicsCommandList* pd3dCommandList, XMFLOAT4X4* pxmf4x4World);
+	virtual void UpdateShaderVariable(ID3D12GraphicsCommandList* pd3dCommandList, CMaterial* pMaterial);
+
 	void ReleaseUploadBuffers();
 
-// 게임 객체의 월드 변환 행렬에서 위치 벡터와 방향(x-축, y-축, z-축) 벡터를 반환한다. 
 	XMFLOAT3 GetPosition();
 	XMFLOAT3 GetLook();
 	XMFLOAT3 GetUp();
 	XMFLOAT3 GetRight();
 
-// 게임 객체의 위치를 설정한다.
 	void SetPosition(float x, float y, float z);
 	void SetPosition(XMFLOAT3 xmf3Position);
+	void SetScale(float x, float y, float z);
 
-// 게임 객체를 로컬 x-축, y-축, z-축 방향으로 이동한다.
 	void MoveStrafe(float fDistance = 1.0f);
 	void MoveUp(float fDistance = 1.0f);
 	void MoveForward(float fDistance = 1.0f);
 
-// 게임 객체를 회전(x-축, y-축, z-축)한다. 
 	void Rotate(float fPitch = 10.0f, float fYaw = 10.0f, float fRoll = 10.0f);
-	void  Rotate(XMFLOAT3* pxmf3Axis, float fAngle);
+	void Rotate(XMFLOAT3* pxmf3Axis, float fAngle);
+	void Rotate(XMFLOAT4* pxmf4Quaternion);
 
 	void SetActive(bool bActive) { m_bActive = bActive; }
 	void CalculateBoundingBox();
+
+	CGameObject* GetParent() { return(m_pParent); }
+	void UpdateTransform(XMFLOAT4X4* pxmf4x4Parent = NULL);
+
+	CGameObject* FindFrame(char* pstrFrameName);
+	UINT GetMeshType(int n) { return((m_ppMesh) ? m_pMesh->GetType() : 0x00); }
+
+public:
+	CAnimationController* m_pSkinnedAnimationController = NULL;
+
+	CSkinnedMesh* FindSkinnedMesh(char* pstrSkinnedMeshName);
+	void FindAndSetSkinnedMesh(CSkinnedMesh** ppSkinnedMeshes, int* pnSkinnedMesh);
+
+	void SetTrackAnimationSet(int nAnimationTrack, int nAnimationSet);
+	void SetTrackAnimationPosition(int nAnimationTrack, float fPosition);
+
+	static void LoadAnimationFromFile(FILE* pInFile, CLoadedModelInfo* pLoadedModel);
+	static CGameObject* LoadFrameHierarchyFromFile(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CGameObject* pParent, FILE* pInFile, CShader* pShader, int* pnSkinnedMeshes);
+
+	static CLoadedModelInfo* LoadGeometryAndAnimationFromFile(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, char* pstrFileName, CShader* pShader);
+
+	static void PrintFrameInfo(CGameObject* pGameObject, CGameObject* pParent);
 };
 
 class CRotatingObject : public CGameObject
