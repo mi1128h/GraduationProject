@@ -341,16 +341,8 @@ CGameObject::CGameObject()
 	m_xmf4x4World = Matrix4x4::Identity();
 }
 
-CGameObject::CGameObject(int nMeshes, int nMaterials) : CGameObject()
+CGameObject::CGameObject(int nMaterials) : CGameObject()
 {
-	m_nMeshes = nMeshes;
-	m_ppMeshes = NULL;
-	if (m_nMeshes > 0)
-	{
-		m_ppMeshes = new CMesh * [m_nMeshes];
-		for (int i = 0; i < m_nMeshes; i++) m_ppMeshes[i] = NULL;
-	}
-
 	m_nMaterials = nMaterials;
 	if (m_nMaterials > 0)
 	{
@@ -361,13 +353,7 @@ CGameObject::CGameObject(int nMeshes, int nMaterials) : CGameObject()
 
 CGameObject::~CGameObject()
 {
-	if (m_ppMeshes > 0) {
-		for (int i = 0; i < m_nMeshes; i++)
-		{
-			if (m_ppMeshes[i]) m_ppMeshes[i]->Release();
-		}
-	}
-	if (m_ppMeshes) delete[] m_ppMeshes;
+	if (m_pMesh) m_pMesh->Release();
 
 	if (m_nMaterials > 0)
 	{
@@ -395,14 +381,11 @@ void CGameObject::Release()
 	if (--m_nReferences <= 0) delete this;
 }
 
-void CGameObject::SetMesh(int nIndex, CMesh* pMesh)
+void CGameObject::SetMesh(CMesh* pMesh)
 {
-	if (m_ppMeshes)
-	{
-		if (m_ppMeshes[nIndex]) m_ppMeshes[nIndex]->Release();
-		m_ppMeshes[nIndex] = pMesh;
-		if (pMesh) pMesh->AddRef();
-	}
+	if (m_pMesh) m_pMesh->Release();
+	m_pMesh = pMesh;
+	if (m_pMesh) m_pMesh->AddRef();
 }
 
 void CGameObject::SetShader(CShader* pShader)
@@ -620,7 +603,14 @@ void CGameObject::ReleaseShaderVariables()
 		m_pd3dcbGameObject->Unmap(0, NULL);
 		m_pd3dcbGameObject->Release();
 	}
-	if (m_pMaterial) m_pMaterial->ReleaseShaderVariables();
+
+	if (m_nMaterials > 0)
+	{
+		for (int i = 0; i < m_nMaterials; i++)
+		{
+			if (m_ppMaterials[i]) m_ppMaterials[i]->ReleaseShaderVariables();
+		}
+	}
 }
 
 void CGameObject::UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList)
@@ -639,14 +629,7 @@ void CGameObject::UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandLi
 
 void CGameObject::ReleaseUploadBuffers()
 {
-	//정점 버퍼를 위한 업로드 버퍼를 소멸시킨다.
-	if (m_ppMeshes)
-	{
-		for (int i = 0; i < m_nMeshes; i++)
-		{
-			if (m_ppMeshes[i]) m_ppMeshes[i]->ReleaseUploadBuffers();
-		}
-	}
+	if (m_pMesh) m_pMesh->ReleaseUploadBuffers();
 
 	for (int i = 0; i < m_nMaterials; i++)
 	{
@@ -670,38 +653,38 @@ void CGameObject::Animate(float fTimeElapsed, CCamera* pCamrea)
 
 void CGameObject::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
 {
-	OnPrepareRender();
-	
 	if (!m_bActive) return;
 
-	if (m_pMaterial)
+	if (m_pSkinnedAnimationController) m_pSkinnedAnimationController->UpdateShaderVariables(pd3dCommandList);
+
+	if (m_pMesh)
 	{
-		if (m_pMaterial->m_pShader)
+		UpdateShaderVariable(pd3dCommandList, &m_xmf4x4World);
+
+		if (m_nMaterials > 0)
 		{
-			m_pMaterial->m_pShader->Render(pd3dCommandList, pCamera);
-			m_pMaterial->m_pShader->UpdateShaderVariables(pd3dCommandList);
-		}
-		// 객체의 정보를 셰이더 변수(상수 버퍼)로 복사한다. 
-		UpdateShaderVariables(pd3dCommandList);
-		if (m_pMaterial->m_pTexture)
-		{
-			m_pMaterial->m_pTexture->UpdateGraphicsShaderVariables(pd3dCommandList);
+			for (int i = 0; i < m_nMaterials; i++)
+			{
+				if (m_ppMaterials[i])
+				{
+					if (m_ppMaterials[i]->m_pShader) m_ppMaterials[i]->m_pShader->Render(pd3dCommandList, pCamera);
+					m_ppMaterials[i]->UpdateShaderVariable(pd3dCommandList);
+				}
+				// 인자: int Subset 으로 변경필요
+				m_pMesh->Render(pd3dCommandList, i);
+			}
 		}
 	}
 
-	if (m_ppMeshes)
-	{
-		for (int i = 0; i < m_nMeshes; i++)
-		{
-			if (m_ppMeshes[i]) m_ppMeshes[i]->Render(pd3dCommandList);
-		}
-	}
+	if (m_pSibling) m_pSibling->Render(pd3dCommandList, pCamera);
+	if (m_pChild) m_pChild->Render(pd3dCommandList, pCamera);
 }
 
 void CGameObject::CalculateBoundingBox()
 {
-	m_xmBoundingBox = m_ppMeshes[0]->m_xmBoundingBox;
-	for (int i = 1; i < m_nMeshes; i++)BoundingBox::CreateMerged(m_xmBoundingBox, m_xmBoundingBox, m_ppMeshes[i]->m_xmBoundingBox);
+	// 자식 & 형제노드들로부터 순차적으로 바운딩 박스를 Merge 하도록 변경필요
+	//m_xmBoundingBox = m_ppMeshes[0]->m_xmBoundingBox;
+	//for (int i = 1; i < m_nMeshes; i++)BoundingBox::CreateMerged(m_xmBoundingBox, m_xmBoundingBox, m_ppMeshes[i]->m_xmBoundingBox);
 
 	m_xmBoundingBox.Transform(m_xmBoundingBox, XMLoadFloat4x4(&m_xmf4x4World));
 }
@@ -765,7 +748,7 @@ CGameObject* CGameObject::LoadFrameHierarchyFromFile(ID3D12Device* pd3dDevice, I
 		{
 			CMesh* pMesh = new CMesh(pd3dDevice, pd3dCommandList);
 			pMesh->LoadMeshFromFile(pd3dDevice, pd3dCommandList, pInFile);
-			pGameObject->SetMesh(0,pMesh);
+			pGameObject->SetMesh(pMesh);
 
 			/**/pGameObject->SetWireFrameShader();
 		}
@@ -780,7 +763,7 @@ CGameObject* CGameObject::LoadFrameHierarchyFromFile(ID3D12Device* pd3dDevice, I
 			::ReadStringFromFile(pInFile, pstrToken); //<Mesh>:
 			if (!strcmp(pstrToken, "<Mesh>:")) pSkinnedMesh->LoadMeshFromFile(pd3dDevice, pd3dCommandList, pInFile);
 
-			pGameObject->SetMesh(0,pSkinnedMesh);
+			pGameObject->SetMesh(pSkinnedMesh);
 
 			/**/pGameObject->SetSkinnedAnimationWireFrameShader();
 		}

@@ -155,7 +155,7 @@ public:
 
 public:
 	CGameObject();
-	CGameObject(int nMeshes, int nMaterials);
+	CGameObject(int nMaterials);
 	virtual ~CGameObject();
 
 public:
@@ -174,8 +174,7 @@ public:
 	CGameObject* m_pChild = NULL;
 	CGameObject* m_pSibling = NULL;
 
-	CMesh **m_ppMeshes = NULL;
-	int m_nMeshes = 0;
+	CMesh* m_pMesh = NULL;
 
 	int	m_nMaterials = 0;
 	CMaterial** m_ppMaterials = NULL;
@@ -188,7 +187,7 @@ public:
 	CB_GAMEOBJECT_INFO* m_pcbMappedGameObject = NULL;
 
 public:
-	void SetMesh(int nIndex, CMesh* pMesh);
+	void SetMesh(CMesh* pMesh);
 	void SetShader(CShader* pShader);
 	void SetShader(int nMaterial, CShader* pShader);
 	void SetWireFrameShader();
