@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "Mesh.h"
 #include "Camera.h"
-
+#include "Animation.h"
 
 #define RESOURCE_TEXTURE2D			0x01
 #define RESOURCE_TEXTURE2D_ARRAY	0x02	//[]
@@ -146,8 +146,16 @@ public:
 
 class CGameObject
 {
+private:
+	int								m_nReferences = 0;
+
 public:
-	CGameObject(int nMeshes = 1);
+	void AddRef();
+	void Release();
+
+public:
+	CGameObject();
+	CGameObject(int nMeshes, int nMaterials);
 	virtual ~CGameObject();
 
 public:
@@ -235,6 +243,7 @@ public:
 	void UpdateTransform(XMFLOAT4X4* pxmf4x4Parent = NULL);
 
 	CGameObject* FindFrame(char* pstrFrameName);
+	void SetActive(char* pstrFrameName, bool bActive);
 	UINT GetMeshType(int n) { return((m_ppMesh) ? m_pMesh->GetType() : 0x00); }
 
 public:
