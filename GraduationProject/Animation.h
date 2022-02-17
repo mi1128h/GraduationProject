@@ -76,7 +76,7 @@ public:
 	float							m_fLength = 0.0f;
 
 	float 							m_fPosition = 0.0f;
-	int 							m_nType = ANIMATION_TYPE_LOOP; //Once, Loop, PingPong
+	int 							m_nType = Animation::Type::Loop; //Once, Loop, PingPong
 
 	int 							m_nCallbackKeys = 0;
 	CALLBACKKEY* m_pCallbackKeys = NULL;

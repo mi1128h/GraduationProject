@@ -114,7 +114,7 @@ void CAnimationSet::HandleCallback()
 	{
 		for (int i = 0; i < m_nCallbackKeys; i++)
 		{
-			if (::IsEqual(m_pCallbackKeys[i].m_fTime, m_fPosition, ANIMATION_CALLBACK_EPSILON))
+			if (::IsEqual(m_pCallbackKeys[i].m_fTime, m_fPosition, Animation::Callback_Epsilon))
 			{
 				if (m_pCallbackKeys[i].m_pCallbackData) m_pAnimationCallbackHandler->HandleCallback(m_pCallbackKeys[i].m_pCallbackData, m_fPosition);
 				break;
@@ -127,7 +127,7 @@ float CAnimationSet::SetPosition(float fElapsedTime, float fTrackStartTime, floa
 {
 	switch (m_nType)
 	{
-	case ANIMATION_TYPE_LOOP:
+	case Animation::Type::Loop:
 	{
 		m_fPosition += fElapsedTime;
 		if (m_fPosition < fTrackStartTime) m_fPosition = fTrackStartTime;
@@ -137,9 +137,9 @@ float CAnimationSet::SetPosition(float fElapsedTime, float fTrackStartTime, floa
 		//			m_fPosition = fTrackPosition - int(fTrackPosition / m_fLength) * m_fLength;
 		break;
 	}
-	case ANIMATION_TYPE_ONCE:
+	case Animation::Type::Once:
 		break;
-	case ANIMATION_TYPE_PINGPONG:
+	case Animation::Type::PingPong:
 		break;
 	}
 

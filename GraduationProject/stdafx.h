@@ -80,6 +80,16 @@ using Microsoft::WRL::ComPtr;
 
 #define OBJECT_NUM 15
 
+namespace Animation {
+	enum Type {
+		Once = 0,
+		Loop,
+		PingPong,
+	};
+
+	const double Callback_Epsilon = 0.015;
+}
+
 namespace Signature {
 	enum Graphics {
 		player,
@@ -146,11 +156,11 @@ extern void ExecuteCommandList(ID3D12GraphicsCommandList* pd3dCommandList, ID3D1
 #define EPSILON 1.0e-10f
 
 inline bool IsZero(float fValue) { return((fabsf(fValue) < EPSILON)); }
+inline bool IsZero(float fValue, float fEpsilon) { return((fabsf(fValue) < fEpsilon)); }
 inline bool IsEqual(float fA, float fB) { return(::IsZero(fA - fB)); }
+inline bool IsEqual(float fA, float fB, float fEpsilon) { return(::IsZero(fA - fB, fEpsilon)); }
 inline float InverseSqrt(float fValue) { return 1.0f / sqrtf(fValue); }
-inline void Swap(float* pfS, float* pfT) { 
-	float fTemp = *pfS; *pfS = *pfT; *pfT = fTemp; 
-}
+inline void Swap(float* pfS, float* pfT) { float fTemp = *pfS; *pfS = *pfT; *pfT = fTemp; }
 
 
 // 3차원 벡터의 연산 
