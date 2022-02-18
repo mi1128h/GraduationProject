@@ -114,31 +114,60 @@ public:
 class CMaterial
 {
 public:
-	CMaterial();
+	CMaterial(int nTextures);
 	virtual ~CMaterial();
 
 private:
-	int								m_nReferences = 0;
+	int						m_nReferences = 0;
 
 public:
 	void AddRef() { m_nReferences++; }
 	void Release() { if (--m_nReferences <= 0) delete this; }
 
-	XMFLOAT4						m_xmf4Albedo = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+public:
+	XMFLOAT4				m_xmf4AlbedoColor = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+	XMFLOAT4				m_xmf4EmissiveColor = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
+	XMFLOAT4				m_xmf4SpecularColor = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
+	XMFLOAT4				m_xmf4AmbientColor = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 
-	UINT							m_nReflection = 0;
-	CTexture* m_pTexture = NULL;
-	CShader* m_pShader = NULL;
+	UINT					m_nReflection = 0;
+	CShader*				m_pShader = NULL;
 
-	void SetAlbedo(XMFLOAT4 xmf4Albedo) { m_xmf4Albedo = xmf4Albedo; }
+	UINT					m_nType = 0x00;
+
+	float					m_fGlossiness = 0.0f;
+	float					m_fSmoothness = 0.0f;
+	float					m_fSpecularHighlight = 0.0f;
+	float					m_fMetallic = 0.0f;
+	float					m_fGlossyReflection = 0.0f;
+
+	int 					m_nTextures = 0;
+	CTexture** m_ppTextures = NULL; //0:Albedo, 1:Specular, 2:Metallic, 3:Normal, 4:Emission, 5:DetailAlbedo, 6:DetailNormal
+	_TCHAR(*m_ppstrTextureNames)[64] = NULL;
+
+public:
+	static CShader* m_pWireFrameShader;
+	static CShader* m_pSkinnedAnimationWireFrameShader;
+
+public:
+
+	void SetAlbedo(XMFLOAT4 xmf4Albedo) { m_xmf4AlbedoColor = xmf4Albedo; }
 	void SetReflection(UINT nReflection) { m_nReflection = nReflection; }
-	void SetTexture(CTexture* pTexture);
+	void SetMaterialType(UINT nType) { m_nType |= nType; }
+	void SetTexture(CTexture* pTexture, UINT nTexture = 0);
 	void SetShader(CShader* pShader);
 
 	void UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList);
+	void UpdateShaderVariable(ID3D12GraphicsCommandList* pd3dCommandList);
 	void ReleaseShaderVariables();
-
 	void ReleaseUploadBuffers();
+
+	//void LoadTextureFromFile(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, UINT nType, UINT nRootParameter, _TCHAR* pwstrTextureName, CTexture** ppTexture, CGameObject* pParent, FILE* pInFile, CShader* pShader);
+
+	static void CMaterial::PrepareShaders(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature);
+
+	void SetWireFrameShader() { CMaterial::SetShader(m_pWireFrameShader); }
+	void SetSkinnedAnimationWireFrameShader() { CMaterial::SetShader(m_pSkinnedAnimationWireFrameShader); }
 };
 
 
@@ -243,7 +272,7 @@ public:
 
 	CGameObject* FindFrame(char* pstrFrameName);
 	void SetActive(char* pstrFrameName, bool bActive);
-	UINT GetMeshType(int n) { return((m_ppMesh) ? m_pMesh->GetType() : 0x00); }
+	UINT GetMeshType(int n) { return((m_pMesh) ? m_pMesh->GetType() : 0x00); }
 
 public:
 	CAnimationController* m_pSkinnedAnimationController = NULL;

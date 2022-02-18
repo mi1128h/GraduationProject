@@ -294,21 +294,35 @@ D3D12_UNORDERED_ACCESS_VIEW_DESC CTexture::GetUnorderedAccessViewDesc(int nIndex
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
-CMaterial::CMaterial()
+CMaterial::CMaterial(int nTextures)
 {
+	m_nTextures = nTextures;
+
+	m_ppTextures = new CTexture * [m_nTextures];
+	m_ppstrTextureNames = new _TCHAR[m_nTextures][64];
+	for (int i = 0; i < m_nTextures; i++) m_ppTextures[i] = NULL;
+	for (int i = 0; i < m_nTextures; i++) m_ppstrTextureNames[i][0] = '\0';
 }
+
 
 CMaterial::~CMaterial()
 {
-	if (m_pTexture) m_pTexture->Release();
+	if (m_nTextures > 0)
+	{
+		for (int i = 0; i < m_nTextures; i++) if (m_ppTextures[i]) m_ppTextures[i]->Release();
+		delete[] m_ppTextures;
+
+		if (m_ppstrTextureNames) delete[] m_ppstrTextureNames;
+	}
+
 	if (m_pShader) m_pShader->Release();
 }
 
-void CMaterial::SetTexture(CTexture* pTexture)
+void CMaterial::SetTexture(CTexture* pTexture, UINT nTexture)
 {
-	if (m_pTexture) m_pTexture->Release();
-	m_pTexture = pTexture;
-	if (m_pTexture) m_pTexture->AddRef();
+	if (m_ppTextures[nTexture]) m_ppTextures[nTexture]->Release();
+	m_ppTextures[nTexture] = pTexture;
+	if (m_ppTextures[nTexture]) m_ppTextures[nTexture]->AddRef();
 }
 
 void CMaterial::SetShader(CShader* pShader)
@@ -320,18 +334,49 @@ void CMaterial::SetShader(CShader* pShader)
 
 void CMaterial::UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList)
 {
-	if (m_pTexture) m_pTexture->UpdateGraphicsShaderVariables(pd3dCommandList);
+	for (int i = 0; i < m_nTextures; i++)
+	{
+		if (m_ppTextures[i]) m_ppTextures[i]->UpdateGraphicsShaderVariables(pd3dCommandList);
+	}
+}
+
+void CMaterial::UpdateShaderVariable(ID3D12GraphicsCommandList* pd3dCommandList)
+{
+	for (int i = 0; i < m_nTextures; i++)
+	{
+		if (m_ppTextures[i]) m_ppTextures[i]->UpdateShaderVariable(pd3dCommandList, 0);
+	}
 }
 
 void CMaterial::ReleaseShaderVariables()
 {
 	if (m_pShader) m_pShader->ReleaseShaderVariables();
-	if (m_pTexture) m_pTexture->ReleaseShaderVariables();
+	for (int i = 0; i < m_nTextures; i++)
+	{
+		if (m_ppTextures[i]) m_ppTextures[i]->ReleaseShaderVariables();
+	}
 }
 
 void CMaterial::ReleaseUploadBuffers()
 {
-	if (m_pTexture) m_pTexture->ReleaseUploadBuffers();
+	for (int i = 0; i < m_nTextures; i++)
+	{
+		if (m_ppTextures[i]) m_ppTextures[i]->ReleaseUploadBuffers();
+	}
+}
+
+CShader* CMaterial::m_pWireFrameShader = NULL;
+CShader* CMaterial::m_pSkinnedAnimationWireFrameShader = NULL;
+
+void CMaterial::PrepareShaders(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature)
+{
+	m_pWireFrameShader = new CWireFrameShader();
+	m_pWireFrameShader->CreateShader(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature);
+	m_pWireFrameShader->CreateShaderVariables(pd3dDevice, pd3dCommandList);
+
+	m_pSkinnedAnimationWireFrameShader = new CSkinnedAnimationWireFrameShader();
+	m_pSkinnedAnimationWireFrameShader->CreateShader(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature);
+	m_pSkinnedAnimationWireFrameShader->CreateShaderVariables(pd3dDevice, pd3dCommandList);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
