@@ -147,8 +147,6 @@ public:
 	void AddRef() { m_nReferences++; }
 	void Release() { if (--m_nReferences <= 0) delete this; }
 
-	void ReleaseUploadBuffers();
-
 protected:
 	UINT							m_nType = 0x00;
 
@@ -156,54 +154,64 @@ protected:
 	XMFLOAT3						m_xmf3AABBExtents = XMFLOAT3(0.0f, 0.0f, 0.0f);
 
 
-	ID3D12Resource* m_pd3dVertexBuffer = NULL;
-	ID3D12Resource* m_pd3dVertexUploadBuffer = NULL;
+	ID3D12Resource*					m_pd3dVertexBuffer = NULL;
+	ID3D12Resource*					m_pd3dVertexUploadBuffer = NULL;
 
-	D3D12_VERTEX_BUFFER_VIEW m_d3dVertexBufferView;
-	D3D12_INDEX_BUFFER_VIEW m_d3dIndexBufferView;
+	D3D12_VERTEX_BUFFER_VIEW		m_d3dVertexBufferView;
+	D3D12_INDEX_BUFFER_VIEW			m_d3dIndexBufferView;
 
-	ID3D12Resource* m_pd3dIndexBuffer = NULL;
-	ID3D12Resource* m_pd3dIndexUploadBuffer = NULL;
+	UINT m_nIndices = 0;
+	UINT m_nStartIndex = 0;
+	int m_nBaseVertex = 0;
+
+	ID3D12Resource*					m_pd3dIndexBuffer = NULL;
+	ID3D12Resource*					m_pd3dIndexUploadBuffer = NULL;
 
 
-	XMFLOAT3* m_pxmf3Positions = NULL;
-
-	ID3D12Resource* m_pd3dPositionBuffer = NULL;
-	ID3D12Resource* m_pd3dPositionUploadBuffer = NULL;
+	ID3D12Resource*					m_pd3dPositionBuffer = NULL;
+	ID3D12Resource*					m_pd3dPositionUploadBuffer = NULL;
 	D3D12_VERTEX_BUFFER_VIEW		m_d3dPositionBufferView;
 
 	int								m_nSubMeshes = 0;
-	int* m_pnSubSetIndices = NULL;
-	UINT** m_ppnSubSetIndices = NULL;
+	int*							m_pnSubSetIndices = NULL;
+	UINT**							m_ppnSubSetIndices = NULL;
 
-	ID3D12Resource** m_ppd3dSubSetIndexBuffers = NULL;
-	ID3D12Resource** m_ppd3dSubSetIndexUploadBuffers = NULL;
-	D3D12_INDEX_BUFFER_VIEW* m_pd3dSubSetIndexBufferViews = NULL;
+	ID3D12Resource**				m_ppd3dSubSetIndexBuffers = NULL;
+	ID3D12Resource**				m_ppd3dSubSetIndexUploadBuffers = NULL;
+	D3D12_INDEX_BUFFER_VIEW*		m_pd3dSubSetIndexBufferViews = NULL;
 
 
-	D3D12_PRIMITIVE_TOPOLOGY m_d3dPrimitiveTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	D3D12_PRIMITIVE_TOPOLOGY		m_d3dPrimitiveTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 	UINT m_nSlot = 0;
 	UINT m_nVertices = 0;
 	UINT m_nStride = 0;
 	UINT m_nOffset = 0;
 
-	//인덱스 버퍼에 포함되는 인덱스의 개수이다.
-	UINT m_nIndices = 0;
-	//인덱스 버퍼에서 메쉬를 그리기 위해 사용되는 시작 인덱스이다.
-	UINT m_nStartIndex = 0;
-	//인덱스 버퍼의 인덱스에 더해질 인덱스이다. 
-	int m_nBaseVertex = 0;
+	XMFLOAT3*						m_pxmf3Positions = NULL;
 public:
-	BoundingBox			m_xmBoundingBox;
+	BoundingBox						m_xmBoundingBox;
 	char							m_pstrMeshName[64] = { 0 };
 
 public:
+	UINT GetType() { return(m_nType); }
+
+	virtual void CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList) { }
+	virtual void UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList) { }
+	virtual void ReleaseShaderVariables() { }
+	
+	void ReleaseUploadBuffers();
+
 	D3D12_VERTEX_BUFFER_VIEW GetVertexBufferView() { return(m_d3dVertexBufferView); }
 
 	virtual void PreRender(ID3D12GraphicsCommandList* pd3dCommandList, int nPipelineState) { }
 	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList);
 	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, int nPipelineState) { }
 	virtual void PostRender(ID3D12GraphicsCommandList* pd3dCommandList, int nPipelineState) { }
+
+	virtual void OnPreRender(ID3D12GraphicsCommandList* pd3dCommandList, void* pContext);
+	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, int nSubSet);
+	virtual void OnPostRender(ID3D12GraphicsCommandList* pd3dCommandList, void* pContext);
+
 	void CalculateBoundingBox(XMFLOAT3* pxmf3Points, UINT nStride);
 
 	void LoadMeshFromFile(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, FILE* pInFile);
