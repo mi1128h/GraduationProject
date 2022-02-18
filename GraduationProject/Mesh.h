@@ -203,14 +203,12 @@ public:
 
 	D3D12_VERTEX_BUFFER_VIEW GetVertexBufferView() { return(m_d3dVertexBufferView); }
 
-	virtual void PreRender(ID3D12GraphicsCommandList* pd3dCommandList, int nPipelineState) { }
+	//virtual void PreRender(ID3D12GraphicsCommandList* pd3dCommandList, int nPipelineState) { }
 	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList);
-	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, int nPipelineState) { }
-	virtual void PostRender(ID3D12GraphicsCommandList* pd3dCommandList, int nPipelineState) { }
+	//virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, int nPipelineState) { }
+	//virtual void PostRender(ID3D12GraphicsCommandList* pd3dCommandList, int nPipelineState) { }
 
-	virtual void OnPreRender(ID3D12GraphicsCommandList* pd3dCommandList, void* pContext);
 	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, int nSubSet);
-	virtual void OnPostRender(ID3D12GraphicsCommandList* pd3dCommandList, void* pContext);
 
 	void CalculateBoundingBox(XMFLOAT3* pxmf3Points, UINT nStride);
 
