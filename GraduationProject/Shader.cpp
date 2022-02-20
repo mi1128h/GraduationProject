@@ -742,7 +742,8 @@ void CObjectsShader::UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dComman
 	{
 		CB_GAMEOBJECT_INFO* pbMappedcbGameObject = (CB_GAMEOBJECT_INFO*)((UINT8*)m_pcbMappedGameObjects + (j * ncbElementBytes));
 		XMStoreFloat4x4(&pbMappedcbGameObject->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_ppObjects[j]->m_xmf4x4World)));
-		pbMappedcbGameObject->m_nMaterial = m_ppObjects[j]->m_pMaterial->m_nReflection;
+		// ★ 수정필요
+		pbMappedcbGameObject->m_nMaterial = m_ppObjects[j]->m_ppMaterials[0]->m_nReflection;
 	}
 }
 
@@ -789,7 +790,7 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComman
 	m_pMaterial = new CMaterial();
 	m_pMaterial->SetTexture(pTexture);
 #else
-	CMaterial* pCubeMaterial = new CMaterial();
+	CMaterial* pCubeMaterial = new CMaterial(1);
 	pCubeMaterial->SetTexture(pTexture);
 #endif
 
@@ -806,10 +807,10 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComman
 			for (int y = 0; y < yObjects; y++)
 			{
 				pRotatingObject = new CRotatingObject(1);
-				pRotatingObject->SetMesh(0, pCubeMesh);
+				pRotatingObject->SetMesh(pCubeMesh);
 #ifndef _WITH_BATCH_MATERIAL
-				pRotatingObject->SetMaterial(pCubeMaterial);
-				pRotatingObject->m_pMaterial->SetReflection(i % MAX_MATERIALS);
+				pRotatingObject->SetMaterial(1,pCubeMaterial);
+				pRotatingObject->m_ppMaterials[0]->SetReflection(i % MAX_MATERIALS);
 #endif
 				float xPosition = x * fxPitch;
 				float zPosition = z * fzPitch;
