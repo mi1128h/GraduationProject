@@ -111,6 +111,10 @@ protected:
 	D3D12_GPU_DESCRIPTOR_HANDLE			m_d3dSrvGPUDescriptorNextHandle;
 	D3D12_CPU_DESCRIPTOR_HANDLE			m_d3dUavCPUDescriptorNextHandle;
 	D3D12_GPU_DESCRIPTOR_HANDLE			m_d3dUavGPUDescriptorNextHandle;
+
+	ID3DBlob* m_pd3dVertexShaderBlob = NULL;
+	ID3DBlob* m_pd3dPixelShaderBlob = NULL;
+	float								m_fElapsedTime = 0.0f;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -336,4 +340,66 @@ public:
 	virtual void ReleaseUploadBuffers();
 
 	virtual void Dispatch(ID3D12GraphicsCommandList* pd3dCommandList, UINT cxThreadGroups, UINT cyThreadGroups, UINT czThreadGroups);
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+class CWireFrameShader : public CShader
+{
+public:
+	CWireFrameShader();
+	virtual ~CWireFrameShader();
+
+	virtual D3D12_INPUT_LAYOUT_DESC CreateInputLayout();
+	virtual D3D12_RASTERIZER_DESC CreateRasterizerState();
+
+	virtual D3D12_SHADER_BYTECODE CreateVertexShader();
+	virtual D3D12_SHADER_BYTECODE CreatePixelShader();
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+class CSkinnedAnimationWireFrameShader : public CShader
+{
+public:
+	CSkinnedAnimationWireFrameShader();
+	virtual ~CSkinnedAnimationWireFrameShader();
+
+	virtual D3D12_INPUT_LAYOUT_DESC CreateInputLayout();
+	virtual D3D12_RASTERIZER_DESC CreateRasterizerState();
+
+	virtual D3D12_SHADER_BYTECODE CreateVertexShader();
+	virtual D3D12_SHADER_BYTECODE CreatePixelShader();
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+class CSkinnedAnimationObjectsWireFrameShader : public CSkinnedAnimationWireFrameShader
+{
+public:
+	CSkinnedAnimationObjectsWireFrameShader();
+	virtual ~CSkinnedAnimationObjectsWireFrameShader();
+
+	virtual void BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, void* pContext = NULL);
+	virtual void AnimateObjects(float fTimeElapsed);
+	virtual void ReleaseObjects();
+
+	virtual void ReleaseUploadBuffers();
+
+	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
+
+protected:
+	CGameObject** m_ppObjects = 0;
+	int								m_nObjects = 0;
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+class CAngrybotObjectsShader : public CSkinnedAnimationObjectsWireFrameShader
+{
+public:
+	CAngrybotObjectsShader();
+	virtual ~CAngrybotObjectsShader();
+
+	virtual void BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, void* pContext = NULL);
 };
