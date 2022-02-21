@@ -277,3 +277,54 @@ public:
 
 	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera = NULL);
 };
+
+class CCoverObject : public CGameObject
+{
+public:
+	CCoverObject(int nMeshes = 1);
+	virtual ~CCoverObject();
+
+	virtual void Animate(float fTimeElapsed);
+};
+
+class CMovingCoverObject : public CCoverObject
+{
+public:
+	CMovingCoverObject(int nMeshes = 1);
+	virtual ~CMovingCoverObject();
+
+private:
+	// 정해진 방향대로 움직이다가 point1/point2에 도달하면 방향을 바꿈
+	XMFLOAT3 m_xmf3Direction;
+	float m_fSpeed;
+
+	XMFLOAT3 m_xmf3Point1;
+	XMFLOAT3 m_xmf3Point2;
+
+public:
+	void SetMovingDirection(XMFLOAT3 xmf3Direction) { m_xmf3Direction = xmf3Direction; }
+	void SetMovingSpeed(float fSpeed) { m_fSpeed = fSpeed; }
+	void SetPoints(XMFLOAT3 xmf3Center);
+
+public:
+	virtual void Animate(float fTimeElapsed);
+};
+
+class CInteractiveCoverObject : public CCoverObject
+{
+public:
+	CInteractiveCoverObject(int nMeshes = 1);
+	virtual ~CInteractiveCoverObject();
+
+private:
+	// 플레이어가 상호작용 키를 누르면 5.0f가 되고 엄폐 가능
+	// Animate 함수에서 시간이 감소하다가 0.0f가 되면 엄폐 불가능 상태로 전환
+	float m_fInteractTime;
+
+public:
+	void InteractedByPlayer() { m_fInteractTime = 5.0f; }
+	bool IsInteracted() { return (m_fInteractTime > 0.0f) ? true : false; }
+
+public:
+	virtual void Animate(float fTimeElapsed);
+};

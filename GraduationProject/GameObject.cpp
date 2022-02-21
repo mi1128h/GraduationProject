@@ -738,3 +738,61 @@ void CSkyBox::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamer
 		}
 	}
 }
+
+////////////////////////////////////////////////////
+
+CCoverObject::CCoverObject(int nMeshes) : CGameObject(nMeshes)
+{
+}
+
+CCoverObject::~CCoverObject()
+{
+}
+
+void CCoverObject::Animate(float fTimeElapsed)
+{
+}
+
+//
+
+CMovingCoverObject::CMovingCoverObject(int nMeshes) : CCoverObject(nMeshes)
+{
+}
+
+CMovingCoverObject::~CMovingCoverObject()
+{
+}
+
+void CMovingCoverObject::SetPoints(XMFLOAT3 xmf3Center)
+{
+	m_xmf3Point1 = XMFLOAT3(xmf3Center.x, xmf3Center.y, xmf3Center.z - 20.0f);
+	m_xmf3Point2 = XMFLOAT3(xmf3Center.x, xmf3Center.y, xmf3Center.z + 20.0f);
+}
+
+void CMovingCoverObject::Animate(float fTimeElapsed)
+{
+	XMFLOAT3 xmf3Position = GetPosition();
+
+	if (xmf3Position.z < m_xmf3Point1.z || xmf3Position.z > m_xmf3Point2.z) {
+		m_xmf3Direction = XMFLOAT3(m_xmf3Direction.x, m_xmf3Direction.y, m_xmf3Direction.z * -1.0f);
+	}
+
+	xmf3Position = Vector3::Add(xmf3Position, m_xmf3Direction, m_fSpeed * fTimeElapsed);
+	SetPosition(xmf3Position);
+}
+
+//
+
+CInteractiveCoverObject::CInteractiveCoverObject(int nMeshes) : CCoverObject(nMeshes)
+{
+	m_fInteractTime = 0.0f;
+}
+
+CInteractiveCoverObject::~CInteractiveCoverObject()
+{
+}
+
+void CInteractiveCoverObject::Animate(float fTimeElapsed)
+{
+	m_fInteractTime -= fTimeElapsed;
+}
