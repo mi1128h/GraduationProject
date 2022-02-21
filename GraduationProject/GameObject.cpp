@@ -1115,49 +1115,27 @@ float CHeightMapTerrain::GetHeight(float fx, float fz) //World Coordinates
 // 
 CSkyBox::CSkyBox(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature) : CGameObject(6)
 {
-	CTexturedRectMesh* pSkyBoxMesh = new CTexturedRectMesh(pd3dDevice, pd3dCommandList, 20.0f, 20.0f, 0.0f, 0.0f, 0.0f, +10.0f);
-	SetMesh(0, pSkyBoxMesh);
-	pSkyBoxMesh = new CTexturedRectMesh(pd3dDevice, pd3dCommandList, 20.0f, 20.0f, 0.0f, 0.0f, 0.0f, -10.0f);
-	SetMesh(1, pSkyBoxMesh);
-	pSkyBoxMesh = new CTexturedRectMesh(pd3dDevice, pd3dCommandList, 0.0f, 20.0f, 20.0f, -10.0f, 0.0f, 0.0f);
-	SetMesh(2, pSkyBoxMesh);
-	pSkyBoxMesh = new CTexturedRectMesh(pd3dDevice, pd3dCommandList, 0.0f, 20.0f, 20.0f, +10.0f, 0.0f, 0.0f);
-	SetMesh(3, pSkyBoxMesh);
-	pSkyBoxMesh = new CTexturedRectMesh(pd3dDevice, pd3dCommandList, 20.0f, 0.0f, 20.0f, 0.0f, +10.0f, 0.0f);
-	SetMesh(4, pSkyBoxMesh);
-	pSkyBoxMesh = new CTexturedRectMesh(pd3dDevice, pd3dCommandList, 20.0f, 0.0f, 20.0f, 0.0f, -10.0f, 0.0f);
-	SetMesh(5, pSkyBoxMesh);
+	CSkyBoxMesh* pSkyBoxMesh = new CSkyBoxMesh(pd3dDevice, pd3dCommandList, 20.0f, 20.0f, 2.0f);
+	SetMesh(pSkyBoxMesh);
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
-	CTexture* pSkyBoxTexture = new CTexture(6, RESOURCE_TEXTURE2D, 0, 1,0,0);
-
-	pSkyBoxTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/SkyBox_Front_0.dds", RESOURCE_TEXTURE2D, 0);
-	pSkyBoxTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/SkyBox_Back_0.dds", RESOURCE_TEXTURE2D, 1);
-	pSkyBoxTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/SkyBox_Left_0.dds", RESOURCE_TEXTURE2D, 2);
-	pSkyBoxTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/SkyBox_Right_0.dds", RESOURCE_TEXTURE2D, 3);
-	pSkyBoxTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/SkyBox_Top_0.dds", RESOURCE_TEXTURE2D, 4);
-	pSkyBoxTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/SkyBox_Bottom_0.dds", RESOURCE_TEXTURE2D, 5);
-
-	UINT ncbElementBytes = ((sizeof(CB_GAMEOBJECT_INFO) + 255) & ~255); //256의 배수
+	CTexture* pSkyBoxTexture = new CTexture(1, RESOURCE_TEXTURE_CUBE, 0, 1,0,0);
+	pSkyBoxTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/SkyBox_0.dds", RESOURCE_TEXTURE_CUBE, 0);
 
 	CSkyBoxShader* pSkyBoxShader = new CSkyBoxShader();
-
 	DXGI_FORMAT pdxgiRtvFormats[3] = { DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM };
 
 	pSkyBoxShader->CreateShader(pd3dDevice, pd3dGraphicsRootSignature, 3, pdxgiRtvFormats, DXGI_FORMAT_D32_FLOAT);
 	pSkyBoxShader->CreateShaderVariables(pd3dDevice, pd3dCommandList);
-	pSkyBoxShader->CreateCbvSrvUavDescriptorHeaps(pd3dDevice, 1, 6,0);
-	pSkyBoxShader->CreateConstantBufferViews(pd3dDevice, 1, m_pd3dcbGameObject, ncbElementBytes);
-	pSkyBoxShader->CreateShaderResourceViews(pd3dDevice, pSkyBoxTexture, 0, Signature::Graphics::skybox);
-	CMaterial* pSkyBoxMaterial = new CMaterial();
+	
+	CScene::CreateShaderResourceViews(pd3dDevice, pSkyBoxTexture, Signature::Graphics::skybox, false);
+
+	CMaterial* pSkyBoxMaterial = new CMaterial(1);
 	pSkyBoxMaterial->SetTexture(pSkyBoxTexture);
+	pSkyBoxMaterial->SetShader(pSkyBoxShader);
 
-	SetMaterial(pSkyBoxMaterial);
-
-	SetCbvGPUDescriptorHandle(pSkyBoxShader->GetGPUCbvDescriptorStartHandle());
-
-	SetShader(pSkyBoxShader);
+	SetMaterial(0,pSkyBoxMaterial);
 }
 
 CSkyBox::~CSkyBox()
@@ -1169,28 +1147,5 @@ void CSkyBox::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamer
 	XMFLOAT3 xmf3CameraPos = pCamera->GetPosition();
 	SetPosition(xmf3CameraPos.x, xmf3CameraPos.y, xmf3CameraPos.z);
 
-	OnPrepareRender();
-
-	if (m_pMaterial)
-	{
-		if (m_pMaterial->m_pShader)
-		{
-			m_pMaterial->m_pShader->Render(pd3dCommandList, pCamera);
-			m_pMaterial->m_pShader->UpdateShaderVariables(pd3dCommandList);
-
-			UpdateShaderVariables(pd3dCommandList);
-		}
-	}
-
-	if (m_ppMeshes)
-	{
-		for (int i = 0; i < m_nMeshes; i++)
-		{
-			if (m_pMaterial)
-			{
-				if (m_pMaterial->m_pTexture) m_pMaterial->m_pTexture->UpdateShaderVariable(pd3dCommandList, 0, i);
-			}
-			if (m_ppMeshes[i]) m_ppMeshes[i]->Render(pd3dCommandList);
-		}
-	}
+	CGameObject::Render(pd3dCommandList, pCamera);
 }

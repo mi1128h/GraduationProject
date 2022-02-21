@@ -150,16 +150,35 @@ PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSLighting(VS_LIGHTING_OUTPUT input) : SV_TARG
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
-Texture2D gtxtSkyBox : register(t7);
-
-PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSSkyBox(VS_TEXTURED_OUTPUT input) : SV_TARGET
+struct VS_SKYBOX_CUBEMAP_INPUT
 {
-	float4 cColor = gtxtSkyBox.Sample(gClampSamplerState, input.uv);
+	float3 position : POSITION;
+};
 
+struct VS_SKYBOX_CUBEMAP_OUTPUT
+{
+	float3	positionL : POSITION;
+	float4	position : SV_POSITION;
+};
+
+TextureCube gtxtSkyBox : register(t7);
+
+VS_SKYBOX_CUBEMAP_OUTPUT VSSkyBox(VS_SKYBOX_CUBEMAP_INPUT input)
+{
+	VS_SKYBOX_CUBEMAP_OUTPUT output;
+
+	output.position = mul(mul(mul(float4(input.position, 1.0f), gmtxGameObject), gmtxView), gmtxProjection);
+	output.positionL = input.position;
+
+	return(output);
+}
+
+PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSSkyBox(VS_SKYBOX_CUBEMAP_OUTPUT input) : SV_TARGET
+{
+	float4 cColor = gtxtSkyCubeTexture.Sample(gClampSamplerState, input.positionL);
 
 	PS_MULTIPLE_RENDER_TARGETS_OUTPUT output;
 	output.f4Scene = output.f4Color = cColor;
-	
 	output.fDepth = 1.0f - input.position.z;
 
 	return(output);
@@ -475,3 +494,79 @@ float4 PSPostProcessing(VS_TEXTURED_OUTPUT input) : SV_Target
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Animation
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+struct VS_WIREFRAME_INPUT
+{
+	float3 position : POSITION;
+};
+
+struct VS_WIREFRAME_OUTPUT
+{
+	float4 position : SV_POSITION;
+};
+
+VS_WIREFRAME_OUTPUT VSWireFrame(VS_WIREFRAME_INPUT input)
+{
+	VS_WIREFRAME_OUTPUT output;
+
+	output.position = mul(mul(mul(float4(input.position, 1.0f), gmtxGameObject), gmtxView), gmtxProjection);
+
+	return(output);
+}
+
+float4 PSWireFrame(VS_WIREFRAME_OUTPUT input) : SV_TARGET
+{
+	return(float4(0.0f, 0.0f, 1.0f, 1.0f));
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+#define MAX_VERTEX_INFLUENCES			4
+#define SKINNED_ANIMATION_BONES			128
+
+cbuffer cbBoneOffsets : register(b7)
+{
+	float4x4 gpmtxBoneOffsets[SKINNED_ANIMATION_BONES];
+};
+
+cbuffer cbBoneTransforms : register(b8)
+{
+	float4x4 gpmtxBoneTransforms[SKINNED_ANIMATION_BONES];
+};
+
+struct VS_SKINNED_WIREFRAME_INPUT
+{
+	float3 position : POSITION;
+	int4 indices : BONEINDEX;
+	float4 weights : BONEWEIGHT;
+};
+
+struct VS_SKINNED_WIREFRAME_OUTPUT
+{
+	float4 position : SV_POSITION;
+};
+
+VS_SKINNED_WIREFRAME_OUTPUT VSSkinnedAnimationWireFrame(VS_SKINNED_WIREFRAME_INPUT input)
+{
+	VS_SKINNED_WIREFRAME_OUTPUT output;
+
+	float3 positionW = float3(0.0f, 0.0f, 0.0f);
+	matrix mtxVertexToBoneWorld;
+	for (int i = 0; i < MAX_VERTEX_INFLUENCES; i++)
+	{
+		mtxVertexToBoneWorld = mul(gpmtxBoneOffsets[input.indices[i]], gpmtxBoneTransforms[input.indices[i]]);
+		positionW += input.weights[i] * mul(float4(input.position, 1.0f), mtxVertexToBoneWorld).xyz;
+	}
+
+	output.position = mul(mul(float4(positionW, 1.0f), gmtxView), gmtxProjection);
+	//	output.position = mul(mul(mul(float4(input.position, 1.0f), gmtxGameObject), gmtxView), gmtxProjection);
+
+	return(output);
+}
+
+float4 PSSkinnedAnimationWireFrame(VS_SKINNED_WIREFRAME_OUTPUT input) : SV_TARGET
+{
+	return(float4(1.0f, 0.0f, 0.0f, 1.0f));
+}
