@@ -848,7 +848,7 @@ void CObjectsShader::AnimateObjects(float fTimeElapsed, CCamera* pCamrea)
 {
 	for (int j = 0; j < m_nObjects; j++)
 	{
-		m_ppObjects[j]->Animate(fTimeElapsed,pCamrea);
+		m_ppObjects[j]->Animate(fTimeElapsed, pCamrea);
 	}
 }
 
@@ -864,7 +864,7 @@ void CObjectsShader::ReleaseUploadBuffers()
 void CObjectsShader::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
 {
 	CIlluminatedShader::Render(pd3dCommandList, pCamera);
-	for (int j = 1; j < m_nObjects; j++)
+	for (int j = 0; j < m_nObjects; j++)
 	{
 		if (m_ppObjects[j])
 		{
@@ -872,6 +872,93 @@ void CObjectsShader::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera*
 		}
 	}
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+CCoverObjectsShader::CCoverObjectsShader()
+{
+}
+
+CCoverObjectsShader::~CCoverObjectsShader()
+{
+}
+
+void CCoverObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, void* pContext)
+{
+	CHeightMapTerrain* pTerrain = (CHeightMapTerrain*)pContext;
+
+	float fTerrainWidth = pTerrain->GetWidth();
+	float fTerrainLength = pTerrain->GetLength();
+
+	m_nObjects = 2;
+
+	CTexture* pTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
+	pTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/stones.dds", RESOURCE_TEXTURE2D, 0);
+
+	UINT ncbElementBytes = ((sizeof(CB_GAMEOBJECT_INFO) + 255) & ~255);
+
+	CreateCbvSrvUavDescriptorHeaps(pd3dDevice, m_nObjects, 1, 0);
+	CreateShaderVariables(pd3dDevice, pd3dCommandList);
+	CreateConstantBufferViews(pd3dDevice, m_nObjects, m_pd3dcbGameObjects, ncbElementBytes);
+	CreateShaderResourceViews(pd3dDevice, pTexture, 0, Signature::Graphics::texture);
+
+#ifdef _WITH_BATCH_MATERIAL
+	m_pMaterial = new CMaterial();
+	m_pMaterial->SetTexture(pTexture);
+#else
+	CMaterial* pCubeMaterial = new CMaterial();
+	pCubeMaterial->SetTexture(pTexture);
+#endif
+
+	CCubeMeshIlluminatedTextured* pCubeMesh = new CCubeMeshIlluminatedTextured(pd3dDevice, pd3dCommandList, 2.0f, 10.0f, 15.0f);
+
+	m_ppObjects = new CGameObject * [m_nObjects];
+
+	// 고정형
+	CCoverObject* pCoverObject = NULL;
+
+	pCoverObject = new CCoverObject(1);
+	pCoverObject->SetMesh(0, pCubeMesh);
+#ifndef _WITH_BATCH_MATERIAL
+	pCoverObject->SetMaterial(pCubeMaterial);
+	pCoverObject->m_pMaterial->SetReflection(0);
+#endif
+	float xPosition = fTerrainWidth * 0.5f;
+	float zPosition = fTerrainLength * 0.5f;
+	float fHeight = pTerrain->GetHeight(xPosition, zPosition);
+	pCoverObject->SetPosition(xPosition, fHeight + 10.0f, zPosition);
+
+	pCoverObject->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvUavDescriptorIncrementSize * 0));
+	m_ppObjects[0] = pCoverObject;
+
+	// 이동형
+	CMovingCoverObject* pMovingCoverObject = NULL;
+
+	pMovingCoverObject = new CMovingCoverObject(1);
+	pMovingCoverObject->SetMesh(0, pCubeMesh);
+#ifndef _WITH_BATCH_MATERIAL
+	pMovingCoverObject->SetMaterial(pCubeMaterial);
+	pMovingCoverObject->m_pMaterial->SetReflection(0);
+#endif
+	xPosition = fTerrainWidth * 0.5f + 10.0f;
+	zPosition = fTerrainLength * 0.5f;
+	fHeight = pTerrain->GetHeight(xPosition, zPosition);
+	pMovingCoverObject->SetPosition(xPosition, fHeight + 10.0f, zPosition);
+	pMovingCoverObject->SetPoints(pMovingCoverObject->GetPosition());
+	pMovingCoverObject->SetMovingDirection(XMFLOAT3(0.0f, 0.0f, 1.0f));
+	pMovingCoverObject->SetMovingSpeed(20.0f);
+
+	pMovingCoverObject->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvUavDescriptorIncrementSize * 1));
+	m_ppObjects[1] = pMovingCoverObject;
+
+	// 상호작용형
+
+}
+
+void CCoverObjectsShader::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
+{
+	CObjectsShader::Render(pd3dCommandList, pCamera);
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 CSkyBoxShader::CSkyBoxShader()

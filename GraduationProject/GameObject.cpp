@@ -562,7 +562,7 @@ CRotatingObject::~CRotatingObject()
 {
 }
 
-void CRotatingObject::Animate(float fTimeElapsed)
+void CRotatingObject::Animate(float fTimeElapsed, CCamera* pCamrea)
 {
 	CGameObject::Rotate(&m_xmf3RotationAxis, m_fRotationSpeed * fTimeElapsed);
 }
@@ -749,7 +749,7 @@ CCoverObject::~CCoverObject()
 {
 }
 
-void CCoverObject::Animate(float fTimeElapsed)
+void CCoverObject::Animate(float fTimeElapsed, CCamera* pCamrea)
 {
 }
 
@@ -769,12 +769,15 @@ void CMovingCoverObject::SetPoints(XMFLOAT3 xmf3Center)
 	m_xmf3Point2 = XMFLOAT3(xmf3Center.x, xmf3Center.y, xmf3Center.z + 20.0f);
 }
 
-void CMovingCoverObject::Animate(float fTimeElapsed)
+void CMovingCoverObject::Animate(float fTimeElapsed, CCamera* pCamrea)
 {
 	XMFLOAT3 xmf3Position = GetPosition();
 
-	if (xmf3Position.z < m_xmf3Point1.z || xmf3Position.z > m_xmf3Point2.z) {
-		m_xmf3Direction = XMFLOAT3(m_xmf3Direction.x, m_xmf3Direction.y, m_xmf3Direction.z * -1.0f);
+	if (xmf3Position.z < m_xmf3Point1.z) {
+		m_xmf3Direction = XMFLOAT3(0.0f, 0.0f, 1.0f);
+	}
+	if (xmf3Position.z > m_xmf3Point2.z) {
+		m_xmf3Direction = XMFLOAT3(0.0f, 0.0f, -1.0f);
 	}
 
 	xmf3Position = Vector3::Add(xmf3Position, m_xmf3Direction, m_fSpeed * fTimeElapsed);
@@ -792,7 +795,7 @@ CInteractiveCoverObject::~CInteractiveCoverObject()
 {
 }
 
-void CInteractiveCoverObject::Animate(float fTimeElapsed)
+void CInteractiveCoverObject::Animate(float fTimeElapsed, CCamera* pCamrea)
 {
 	m_fInteractTime -= fTimeElapsed;
 }

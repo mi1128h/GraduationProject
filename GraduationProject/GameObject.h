@@ -230,7 +230,7 @@ public:
 	void SetRotationAxis(XMFLOAT3 xmf3RotationAxis) {
 		m_xmf3RotationAxis = xmf3RotationAxis;
 	}
-	virtual void Animate(float fTimeElapsed);
+	virtual void Animate(float fTimeElapsed, CCamera* pCamrea = NULL);
 };
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -278,13 +278,15 @@ public:
 	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera = NULL);
 };
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 class CCoverObject : public CGameObject
 {
 public:
 	CCoverObject(int nMeshes = 1);
 	virtual ~CCoverObject();
 
-	virtual void Animate(float fTimeElapsed);
+	virtual void Animate(float fTimeElapsed, CCamera* pCamrea = NULL);
 };
 
 class CMovingCoverObject : public CCoverObject
@@ -307,7 +309,7 @@ public:
 	void SetPoints(XMFLOAT3 xmf3Center);
 
 public:
-	virtual void Animate(float fTimeElapsed);
+	virtual void Animate(float fTimeElapsed, CCamera* pCamrea = NULL);
 };
 
 class CInteractiveCoverObject : public CCoverObject
@@ -326,5 +328,5 @@ public:
 	bool IsInteracted() { return (m_fInteractTime > 0.0f) ? true : false; }
 
 public:
-	virtual void Animate(float fTimeElapsed);
+	virtual void Animate(float fTimeElapsed, CCamera* pCamrea = NULL);
 };
