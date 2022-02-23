@@ -2,6 +2,22 @@
 #include "Scene.h"
 #include "Player.h"
 
+ID3D12DescriptorHeap* CScene::m_pd3dCbvSrvUavDescriptorHeap = NULL;
+
+D3D12_CPU_DESCRIPTOR_HANDLE	CScene::m_d3dCbvCPUDescriptorStartHandle;
+D3D12_GPU_DESCRIPTOR_HANDLE	CScene::m_d3dCbvGPUDescriptorStartHandle;
+D3D12_CPU_DESCRIPTOR_HANDLE	CScene::m_d3dSrvCPUDescriptorStartHandle;
+D3D12_GPU_DESCRIPTOR_HANDLE	CScene::m_d3dSrvGPUDescriptorStartHandle;
+D3D12_CPU_DESCRIPTOR_HANDLE	CScene::m_d3dUavCPUDescriptorStartHandle;
+D3D12_GPU_DESCRIPTOR_HANDLE	CScene::m_d3dUavGPUDescriptorStartHandle;
+
+D3D12_CPU_DESCRIPTOR_HANDLE	CScene::m_d3dCbvCPUDescriptorNextHandle;
+D3D12_GPU_DESCRIPTOR_HANDLE	CScene::m_d3dCbvGPUDescriptorNextHandle;
+D3D12_CPU_DESCRIPTOR_HANDLE	CScene::m_d3dSrvCPUDescriptorNextHandle;
+D3D12_GPU_DESCRIPTOR_HANDLE	CScene::m_d3dSrvGPUDescriptorNextHandle;
+D3D12_CPU_DESCRIPTOR_HANDLE	CScene::m_d3dUavCPUDescriptorNextHandle;
+D3D12_GPU_DESCRIPTOR_HANDLE	CScene::m_d3dUavGPUDescriptorNextHandle;
+
 CScene::CScene()
 {
 }
@@ -397,6 +413,102 @@ bool CScene::ProcessInput(UCHAR* pKeysBuffer)
 	return(false);
 }
 
+
+void CScene::CreateCbvSrvUavDescriptorHeaps(ID3D12Device* pd3dDevice, int nConstantBufferViews, int nShaderResourceViews, int nUnorderedAccessViews)
+{
+	D3D12_DESCRIPTOR_HEAP_DESC d3dDescriptorHeapDesc;
+	d3dDescriptorHeapDesc.NumDescriptors = nConstantBufferViews + nShaderResourceViews + nUnorderedAccessViews; //CBVs + SRVs + UAVs
+	d3dDescriptorHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+	d3dDescriptorHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+	d3dDescriptorHeapDesc.NodeMask = 0;
+	pd3dDevice->CreateDescriptorHeap(&d3dDescriptorHeapDesc, __uuidof(ID3D12DescriptorHeap), (void**)&m_pd3dCbvSrvUavDescriptorHeap);
+
+	m_d3dCbvCPUDescriptorNextHandle = m_d3dCbvCPUDescriptorStartHandle = m_pd3dCbvSrvUavDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
+	m_d3dCbvGPUDescriptorNextHandle = m_d3dCbvGPUDescriptorStartHandle = m_pd3dCbvSrvUavDescriptorHeap->GetGPUDescriptorHandleForHeapStart();
+	m_d3dSrvCPUDescriptorNextHandle.ptr = m_d3dSrvCPUDescriptorStartHandle.ptr = m_d3dCbvCPUDescriptorStartHandle.ptr + (::gnCbvSrvUavDescriptorIncrementSize * nConstantBufferViews);
+	m_d3dSrvGPUDescriptorNextHandle.ptr = m_d3dSrvGPUDescriptorStartHandle.ptr = m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvUavDescriptorIncrementSize * nConstantBufferViews);
+}
+
+D3D12_GPU_DESCRIPTOR_HANDLE CScene::CreateConstantBufferViews(ID3D12Device* pd3dDevice, int nConstantBufferViews, ID3D12Resource* pd3dConstantBuffers, UINT nStride)
+{
+	D3D12_GPU_DESCRIPTOR_HANDLE d3dCbvGPUDescriptorHandle = m_d3dCbvGPUDescriptorNextHandle;
+	D3D12_GPU_VIRTUAL_ADDRESS d3dGpuVirtualAddress = pd3dConstantBuffers->GetGPUVirtualAddress();
+	D3D12_CONSTANT_BUFFER_VIEW_DESC d3dCBVDesc;
+	d3dCBVDesc.SizeInBytes = nStride;
+	for (int j = 0; j < nConstantBufferViews; j++)
+	{
+		d3dCBVDesc.BufferLocation = d3dGpuVirtualAddress + (nStride * j);
+		m_d3dCbvCPUDescriptorNextHandle.ptr = m_d3dCbvCPUDescriptorNextHandle.ptr + ::gnCbvSrvUavDescriptorIncrementSize;
+		pd3dDevice->CreateConstantBufferView(&d3dCBVDesc, m_d3dCbvCPUDescriptorNextHandle);
+		m_d3dCbvGPUDescriptorNextHandle.ptr = m_d3dCbvGPUDescriptorNextHandle.ptr + ::gnCbvSrvUavDescriptorIncrementSize;
+	}
+	return(d3dCbvGPUDescriptorHandle);
+}
+
+D3D12_SHADER_RESOURCE_VIEW_DESC GetShaderResourceViewDesc(D3D12_RESOURCE_DESC d3dResourceDesc, UINT nTextureType)
+{
+	D3D12_SHADER_RESOURCE_VIEW_DESC d3dShaderResourceViewDesc;
+	d3dShaderResourceViewDesc.Format = d3dResourceDesc.Format;
+	d3dShaderResourceViewDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	switch (nTextureType)
+	{
+	case RESOURCE_TEXTURE2D: //(d3dResourceDesc.Dimension == D3D12_RESOURCE_DIMENSION_TEXTURE2D)(d3dResourceDesc.DepthOrArraySize == 1)
+	case RESOURCE_TEXTURE2D_ARRAY:
+		d3dShaderResourceViewDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+		d3dShaderResourceViewDesc.Texture2D.MipLevels = -1;
+		d3dShaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
+		d3dShaderResourceViewDesc.Texture2D.PlaneSlice = 0;
+		d3dShaderResourceViewDesc.Texture2D.ResourceMinLODClamp = 0.0f;
+		break;
+	case RESOURCE_TEXTURE2DARRAY: //(d3dResourceDesc.Dimension == D3D12_RESOURCE_DIMENSION_TEXTURE2D)(d3dResourceDesc.DepthOrArraySize != 1)
+		d3dShaderResourceViewDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2DARRAY;
+		d3dShaderResourceViewDesc.Texture2DArray.MipLevels = -1;
+		d3dShaderResourceViewDesc.Texture2DArray.MostDetailedMip = 0;
+		d3dShaderResourceViewDesc.Texture2DArray.PlaneSlice = 0;
+		d3dShaderResourceViewDesc.Texture2DArray.ResourceMinLODClamp = 0.0f;
+		d3dShaderResourceViewDesc.Texture2DArray.FirstArraySlice = 0;
+		d3dShaderResourceViewDesc.Texture2DArray.ArraySize = d3dResourceDesc.DepthOrArraySize;
+		break;
+	case RESOURCE_TEXTURE_CUBE: //(d3dResourceDesc.Dimension == D3D12_RESOURCE_DIMENSION_TEXTURE2D)(d3dResourceDesc.DepthOrArraySize == 6)
+		d3dShaderResourceViewDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURECUBE;
+		d3dShaderResourceViewDesc.TextureCube.MipLevels = -1;
+		d3dShaderResourceViewDesc.TextureCube.MostDetailedMip = 0;
+		d3dShaderResourceViewDesc.TextureCube.ResourceMinLODClamp = 0.0f;
+		break;
+	case RESOURCE_BUFFER: //(d3dResourceDesc.Dimension == D3D12_RESOURCE_DIMENSION_BUFFER)
+		d3dShaderResourceViewDesc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
+		d3dShaderResourceViewDesc.Buffer.FirstElement = 0;
+		d3dShaderResourceViewDesc.Buffer.NumElements = 0;
+		d3dShaderResourceViewDesc.Buffer.StructureByteStride = 0;
+		d3dShaderResourceViewDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
+		break;
+	}
+	return(d3dShaderResourceViewDesc);
+}
+
+D3D12_GPU_DESCRIPTOR_HANDLE CScene::CreateShaderResourceViews(ID3D12Device* pd3dDevice, CTexture* pTexture, UINT nRootParameter, bool bAutoIncrement)
+{
+	D3D12_GPU_DESCRIPTOR_HANDLE d3dSrvGPUDescriptorHandle = m_d3dSrvGPUDescriptorNextHandle;
+	if (pTexture)
+	{
+		int nTextures = pTexture->GetTextures();
+		int nTextureType = pTexture->GetTextureType();
+		for (int i = 0; i < nTextures; i++)
+		{
+			ID3D12Resource* pShaderResource = pTexture->GetTexture(i);
+			D3D12_RESOURCE_DESC d3dResourceDesc = pShaderResource->GetDesc();
+			D3D12_SHADER_RESOURCE_VIEW_DESC d3dShaderResourceViewDesc = GetShaderResourceViewDesc(d3dResourceDesc, nTextureType);
+			pd3dDevice->CreateShaderResourceView(pShaderResource, &d3dShaderResourceViewDesc, m_d3dSrvCPUDescriptorNextHandle);
+			m_d3dSrvCPUDescriptorNextHandle.ptr += ::gnCbvSrvUavDescriptorIncrementSize;
+
+			pTexture->SetRootArgument(i, (bAutoIncrement) ? (nRootParameter + i) : nRootParameter, m_d3dSrvGPUDescriptorNextHandle);
+			m_d3dSrvGPUDescriptorNextHandle.ptr += ::gnCbvSrvUavDescriptorIncrementSize;
+		}
+	}
+	return(d3dSrvGPUDescriptorHandle);
+}
+
+
 void CScene::AnimateObjects(float fTimeElapsed, CCamera* pCamrea)
 {
 	for (int i = 0; i < m_nShaders; i++) m_ppShaders[i]->AnimateObjects(fTimeElapsed, pCamrea);
@@ -436,3 +548,4 @@ void CScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera
 		m_ppShaders[i]->Render(pd3dCommandList, pCamera);
 	}
 }
+
