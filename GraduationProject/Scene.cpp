@@ -486,6 +486,38 @@ D3D12_SHADER_RESOURCE_VIEW_DESC GetShaderResourceViewDesc(D3D12_RESOURCE_DESC d3
 	return(d3dShaderResourceViewDesc);
 }
 
+D3D12_UNORDERED_ACCESS_VIEW_DESC GetUnorderedAccessViewDesc(D3D12_RESOURCE_DESC d3dResourceDesc, UINT nTextureType)
+{
+	D3D12_UNORDERED_ACCESS_VIEW_DESC d3dUnorderedAccessViewDesc;
+	d3dUnorderedAccessViewDesc.Format = d3dResourceDesc.Format;
+
+	switch (nTextureType)
+	{
+	case RESOURCE_TEXTURE2D: //(d3dResourceDesc.Dimension == D3D12_RESOURCE_DIMENSION_TEXTURE2D)(d3dResourceDesc.DepthOrArraySize == 1)
+	case RESOURCE_TEXTURE2D_ARRAY: //[]
+		d3dUnorderedAccessViewDesc.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2D;
+		d3dUnorderedAccessViewDesc.Texture2D.MipSlice = 0;
+		d3dUnorderedAccessViewDesc.Texture2D.PlaneSlice = 0;
+		break;
+	case RESOURCE_TEXTURE2DARRAY: //(d3dResourceDesc.Dimension == D3D12_RESOURCE_DIMENSION_TEXTURE2D)(d3dResourceDesc.DepthOrArraySize != 1)
+		d3dUnorderedAccessViewDesc.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2DARRAY;
+		d3dUnorderedAccessViewDesc.Texture2DArray.MipSlice = 0;
+		d3dUnorderedAccessViewDesc.Texture2DArray.FirstArraySlice = 0;
+		d3dUnorderedAccessViewDesc.Texture2DArray.ArraySize = d3dResourceDesc.DepthOrArraySize;
+		d3dUnorderedAccessViewDesc.Texture2DArray.PlaneSlice = 0;
+		break;
+	case RESOURCE_BUFFER: //(d3dResourceDesc.Dimension == D3D12_RESOURCE_DIMENSION_BUFFER)
+		d3dUnorderedAccessViewDesc.ViewDimension = D3D12_UAV_DIMENSION_BUFFER;
+		d3dUnorderedAccessViewDesc.Buffer.FirstElement = 0;
+		d3dUnorderedAccessViewDesc.Buffer.NumElements = 0;
+		d3dUnorderedAccessViewDesc.Buffer.StructureByteStride = 0;
+		d3dUnorderedAccessViewDesc.Buffer.CounterOffsetInBytes = 0;
+		d3dUnorderedAccessViewDesc.Buffer.Flags = D3D12_BUFFER_UAV_FLAG_NONE;
+		break;
+	}
+	return(d3dUnorderedAccessViewDesc);
+}
+
 D3D12_GPU_DESCRIPTOR_HANDLE CScene::CreateShaderResourceViews(ID3D12Device* pd3dDevice, CTexture* pTexture, UINT nRootParameter, bool bAutoIncrement)
 {
 	D3D12_GPU_DESCRIPTOR_HANDLE d3dSrvGPUDescriptorHandle = m_d3dSrvGPUDescriptorNextHandle;
@@ -518,11 +550,9 @@ D3D12_GPU_DESCRIPTOR_HANDLE CScene::CreateUnorderedAccessViews(ID3D12Device* pd3
 		for (int i = 0; i < nTextures; i++)
 		{
 			ID3D12Resource* pShaderResource = pTexture->GetTexture(i);
-			////
 			D3D12_RESOURCE_DESC d3dResourceDesc = pShaderResource->GetDesc();
-			D3D12_SHADER_RESOURCE_VIEW_DESC d3dShaderResourceViewDesc = GetShaderResourceViewDesc(d3dResourceDesc, nTextureType);
-			pd3dDevice->CreateUnorderedAccessView(pShaderResource, &d3dShaderResourceViewDesc, m_d3dUavCPUDescriptorNextHandle);
-			////
+			D3D12_UNORDERED_ACCESS_VIEW_DESC d3dUnorderedAccessViewDesc = GetUnorderedAccessViewDesc(d3dResourceDesc, nTextureType);
+			pd3dDevice->CreateUnorderedAccessView(pShaderResource,NULL, &d3dUnorderedAccessViewDesc, m_d3dUavCPUDescriptorNextHandle);
 			m_d3dUavCPUDescriptorNextHandle.ptr += ::gnCbvSrvUavDescriptorIncrementSize;
 
 			pTexture->SetRootArgument(i, (bAutoIncrement) ? (nRootParameter + i) : nRootParameter, m_d3dUavGPUDescriptorNextHandle);
