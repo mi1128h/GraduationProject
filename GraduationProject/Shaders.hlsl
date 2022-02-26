@@ -148,6 +148,20 @@ PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSLighting(VS_LIGHTING_OUTPUT input) : SV_TARG
 
 	return(output);
 }
+PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSLighting_Transparent(VS_LIGHTING_OUTPUT input) : SV_TARGET
+{
+	float4 cColor = gtxtTexture.Sample(gSamplerState, input.uv);
+	cColor.a = 0.5f;
+	input.normalW = normalize(input.normalW);
+	float4 uvs[MAX_LIGHTS];
+	float4 cIllumination = Lighting(input.positionW, input.normalW, false, uvs);
+
+	PS_MULTIPLE_RENDER_TARGETS_OUTPUT output;
+	output.f4Scene = output.f4Color = cColor*cIllumination;
+	output.fDepth = 1.0f - input.position.z;
+
+	return(output);
+}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 Texture2D gtxtSkyBox : register(t7);
