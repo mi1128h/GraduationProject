@@ -889,7 +889,7 @@ void CCoverObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsC
 	float fTerrainWidth = pTerrain->GetWidth();
 	float fTerrainLength = pTerrain->GetLength();
 
-	m_nObjects = 2;
+	m_nObjects = 3;
 
 	CTexture* pTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
 	pTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/stones.dds", RESOURCE_TEXTURE2D, 0);
@@ -922,7 +922,7 @@ void CCoverObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsC
 	pCoverObject->SetMaterial(pCubeMaterial);
 	pCoverObject->m_pMaterial->SetReflection(0);
 #endif
-	float xPosition = fTerrainWidth * 0.5f;
+	float xPosition = fTerrainWidth * 0.5f - 10.0f;
 	float zPosition = fTerrainLength * 0.5f;
 	float fHeight = pTerrain->GetHeight(xPosition, zPosition);
 	pCoverObject->SetPosition(xPosition, fHeight + 10.0f, zPosition);
@@ -951,7 +951,21 @@ void CCoverObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsC
 	m_ppObjects[1] = pMovingCoverObject;
 
 	// 상호작용형
+	CInteractiveCoverObject* pInteractiveCoverObject = NULL;
 
+	pInteractiveCoverObject = new CInteractiveCoverObject(1);
+	pInteractiveCoverObject->SetMesh(0, pCubeMesh);
+#ifndef _WITH_BATCH_MATERIAL
+	pInteractiveCoverObject->SetMaterial(pCubeMaterial);
+	pInteractiveCoverObject->m_pMaterial->SetReflection(0);
+#endif
+	xPosition = fTerrainWidth * 0.5f + 20.0f;
+	zPosition = fTerrainLength * 0.5f;
+	fHeight = pTerrain->GetHeight(xPosition, zPosition);
+	pInteractiveCoverObject->SetPosition(xPosition, fHeight + 10.0f, zPosition);
+
+	pInteractiveCoverObject->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvUavDescriptorIncrementSize * 2));
+	m_ppObjects[2] = pInteractiveCoverObject;
 }
 
 void CCoverObjectsShader::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
