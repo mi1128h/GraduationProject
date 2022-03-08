@@ -223,7 +223,7 @@ protected:
 
 public:
 	CTexture* GetTexture() { return(m_pTexture); }
-	ID3D12Resource* GetTextureResource(UINT nIndex) { return(m_pTexture->GetResource(nIndex)); }
+	ID3D12Resource* GetTextureResource(UINT nIndex) { return(m_pTexture->GetTexture(nIndex)); }
 
 	D3D12_CPU_DESCRIPTOR_HANDLE GetRtvCPUDescriptorHandle(UINT nIndex) { return(m_pd3dRtvCPUDescriptorHandles[nIndex]); }
 };
