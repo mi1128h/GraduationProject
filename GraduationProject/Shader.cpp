@@ -260,7 +260,7 @@ void CShader::CreateShaderResourceViews(ID3D12Device* pd3dDevice, CTexture* pTex
 	UINT nTextureType = pTexture->GetTextureType();
 	for (int i = 0; i < nTextures; i++)
 	{
-		ID3D12Resource* pShaderResource = pTexture->GetResource(i);
+		ID3D12Resource* pShaderResource = pTexture->GetTexture(i);
 		if (pShaderResource)
 		{
 			D3D12_SHADER_RESOURCE_VIEW_DESC d3dShaderResourceViewDesc = pTexture->GetShaderResourceViewDesc(i);
@@ -1217,7 +1217,7 @@ void CBlurringShader::CreateResourcesAndViews(ID3D12Device* pd3dDevice, UINT nRe
 	for (UINT i = 0; i < nResources; i++)
 	{
 		d3dRenderTargetViewDesc.Format = pdxgiFormats[i];
-		ID3D12Resource* pd3dTextureResource = m_pTexture->GetResource(i);
+		ID3D12Resource* pd3dTextureResource = m_pTexture->GetTexture(i);
 		pd3dDevice->CreateRenderTargetView(pd3dTextureResource, &d3dRenderTargetViewDesc, d3dRtvCPUDescriptorHandle);
 		m_pd3dRtvCPUDescriptorHandles[i] = d3dRtvCPUDescriptorHandle;
 		d3dRtvCPUDescriptorHandle.ptr += ::gnRtvDescriptorIncrementSize;

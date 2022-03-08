@@ -1,6 +1,7 @@
 ﻿#include "stdafx.h"
 #include "GameObject.h"
 #include "Shader.h"
+#include "Scene.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -131,12 +132,14 @@ void CTexture::UpdateComputeShaderVariables(ID3D12GraphicsCommandList* pd3dComma
 {
 	for (int i = 0; i < m_nComputeSrvRootParameters; i++)
 	{
-		if ((m_pnComputeSrvRootParameterIndices[i] != -1) && (m_pd3dComputeRootParameterSrvGpuDescriptorHandles[i].ptr != NULL)) pd3dCommandList->SetComputeRootDescriptorTable(m_pnComputeSrvRootParameterIndices[i], m_pd3dComputeRootParameterSrvGpuDescriptorHandles[i]);
+		if ((m_pnComputeSrvRootParameterIndices[i] != -1) && (m_pd3dComputeRootParameterSrvGpuDescriptorHandles[i].ptr != NULL))
+			pd3dCommandList->SetComputeRootDescriptorTable(m_pnComputeSrvRootParameterIndices[i], m_pd3dComputeRootParameterSrvGpuDescriptorHandles[i]);
 	}
 
 	for (int i = 0; i < m_nComputeUavRootParameters; i++)
 	{
-		if ((m_pnComputeUavRootParameterIndices[i] != -1) && (m_pd3dComputeRootParameterUavGpuDescriptorHandles[i].ptr != NULL)) pd3dCommandList->SetComputeRootDescriptorTable(m_pnComputeUavRootParameterIndices[i], m_pd3dComputeRootParameterUavGpuDescriptorHandles[i]);
+		if ((m_pnComputeUavRootParameterIndices[i] != -1) && (m_pd3dComputeRootParameterUavGpuDescriptorHandles[i].ptr != NULL))
+			pd3dCommandList->SetComputeRootDescriptorTable(m_pnComputeUavRootParameterIndices[i], m_pd3dComputeRootParameterUavGpuDescriptorHandles[i]);
 	}
 }
 
@@ -144,7 +147,8 @@ void CTexture::UpdateGraphicsShaderVariables(ID3D12GraphicsCommandList* pd3dComm
 {
 	for (int i = 0; i < m_nGraphicsSrvRootParameters; i++)
 	{
-		if ((m_pnGraphicsSrvRootParameterIndices[i] != -1) && (m_pd3dGraphicsRootParameterSrvGpuDescriptorHandles[i].ptr != NULL)) pd3dCommandList->SetGraphicsRootDescriptorTable(m_pnGraphicsSrvRootParameterIndices[i], m_pd3dGraphicsRootParameterSrvGpuDescriptorHandles[i]);
+		if ((m_pnGraphicsSrvRootParameterIndices[i] != -1) && (m_pd3dGraphicsRootParameterSrvGpuDescriptorHandles[i].ptr != NULL)) 
+			pd3dCommandList->SetGraphicsRootDescriptorTable(m_pnGraphicsSrvRootParameterIndices[i], m_pd3dGraphicsRootParameterSrvGpuDescriptorHandles[i]);
 	}
 }
 
@@ -199,7 +203,7 @@ void CTexture::LoadBuffer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* p
 
 D3D12_SHADER_RESOURCE_VIEW_DESC CTexture::GetShaderResourceViewDesc(int nIndex)
 {
-	ID3D12Resource* pShaderResource = GetResource(nIndex);
+	ID3D12Resource* pShaderResource = GetTexture(nIndex);
 	D3D12_RESOURCE_DESC d3dResourceDesc = pShaderResource->GetDesc();
 
 	D3D12_SHADER_RESOURCE_VIEW_DESC d3dShaderResourceViewDesc;
@@ -256,7 +260,7 @@ D3D12_SHADER_RESOURCE_VIEW_DESC CTexture::GetShaderResourceViewDesc(int nIndex)
 
 D3D12_UNORDERED_ACCESS_VIEW_DESC CTexture::GetUnorderedAccessViewDesc(int nIndex)
 {
-	ID3D12Resource* pShaderResource = GetResource(nIndex);
+	ID3D12Resource* pShaderResource = GetTexture(nIndex);
 	D3D12_RESOURCE_DESC d3dResourceDesc = pShaderResource->GetDesc();
 
 	D3D12_UNORDERED_ACCESS_VIEW_DESC d3dUnorderedAccessViewDesc;

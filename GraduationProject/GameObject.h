@@ -97,7 +97,7 @@ public:
 	D3D12_GPU_DESCRIPTOR_HANDLE GetUavGpuDescriptorHandle(int nIndex) { return(m_pd3dUavGpuDescriptorHandles[nIndex]); }
 
 	int GetTextures() { return(m_nTextures); }
-	ID3D12Resource* GetResource(int nIndex) { return(m_ppd3dTextures[nIndex]); }
+	ID3D12Resource* GetTexture(int nIndex) { return(m_ppd3dTextures[nIndex]); }
 	_TCHAR* GetTextureName(int nIndex) { return(m_ppstrTextureNames[nIndex]); }
 
 	UINT GetTextureType() { return(m_nTextureType); }
