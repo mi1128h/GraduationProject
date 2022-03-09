@@ -590,7 +590,7 @@ void CScene::CreateUnorderedAccessView(ID3D12Device* pd3dDevice, CTexture* pText
 	int nTextureType = pTexture->GetTextureType();
 	if (pShaderResource)
 	{
-		ID3D12Resource* pShaderResource = pTexture->GetTexture(i);
+		ID3D12Resource* pShaderResource = pTexture->GetTexture(nIndex);
 		D3D12_RESOURCE_DESC d3dResourceDesc = pShaderResource->GetDesc();
 		D3D12_UNORDERED_ACCESS_VIEW_DESC d3dUnorderedAccessViewDesc = GetUnorderedAccessViewDesc(d3dResourceDesc, nTextureType);
 		pd3dDevice->CreateUnorderedAccessView(pShaderResource, NULL, &d3dUnorderedAccessViewDesc, m_d3dUavCPUDescriptorNextHandle);
