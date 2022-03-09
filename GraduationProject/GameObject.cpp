@@ -34,15 +34,6 @@ CTexture::CTexture(int nTextures, UINT nTextureType, int nSamplers, int nGraphic
 		for (int i = 0; i < m_nTextures; i++) m_pnBufferStrides[i] = 0;
 	}
 
-	m_nGraphicsSrvRootParameters = nGraphicsSrvRootParameters;
-	if (m_nGraphicsSrvRootParameters > 0)
-	{
-		m_pnGraphicsSrvRootParameterIndices = new int[m_nGraphicsSrvRootParameters];
-		for (int i = 0; i < m_nGraphicsSrvRootParameters; i++) m_pnGraphicsSrvRootParameterIndices[i] = -1;
-		m_pd3dGraphicsRootParameterSrvGpuDescriptorHandles = new D3D12_GPU_DESCRIPTOR_HANDLE[m_nGraphicsSrvRootParameters];
-		for (int i = 0; i < m_nGraphicsSrvRootParameters; i++) m_pd3dGraphicsRootParameterSrvGpuDescriptorHandles[i].ptr = NULL;
-	}
-
 	m_nComputeUavRootParameters = nComputeUavRootParameters;
 	if (m_nComputeUavRootParameters > 0)
 	{
@@ -80,8 +71,6 @@ CTexture::~CTexture()
 	if (m_pnBufferElements) delete[] m_pnBufferElements;
 	if (m_pnBufferStrides) delete[] m_pnBufferStrides;
 
-	if (m_pnGraphicsSrvRootParameterIndices) delete[] m_pnGraphicsSrvRootParameterIndices;
-	if (m_pd3dGraphicsRootParameterSrvGpuDescriptorHandles) delete[] m_pd3dGraphicsRootParameterSrvGpuDescriptorHandles;
 
 	if (m_pnComputeUavRootParameterIndices) delete[] m_pnComputeUavRootParameterIndices;
 	if (m_pd3dComputeRootParameterUavGpuDescriptorHandles) delete[] m_pd3dComputeRootParameterUavGpuDescriptorHandles;
@@ -107,8 +96,6 @@ void CTexture::SetUavGpuDescriptorHandle(int nIndex, D3D12_GPU_DESCRIPTOR_HANDLE
 
 void CTexture::SetGraphicsSrvRootParameterIndex(int nIndex, int nRootParameterIndex, int nGpuHandleIndex)
 {
-	m_pnGraphicsSrvRootParameterIndices[nIndex] = nRootParameterIndex;
-	m_pd3dGraphicsRootParameterSrvGpuDescriptorHandles[nIndex] = m_pd3dSrvGpuDescriptorHandles[nGpuHandleIndex];
 }
 
 void CTexture::SetComputeUavRootParameterIndex(int nIndex, int nRootParameterIndex, int nGpuHandleIndex)
@@ -145,10 +132,7 @@ void CTexture::UpdateComputeShaderVariables(ID3D12GraphicsCommandList* pd3dComma
 
 void CTexture::UpdateGraphicsShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList)
 {
-	for (int i = 0; i < m_nGraphicsSrvRootParameters; i++)
 	{
-		if ((m_pnGraphicsSrvRootParameterIndices[i] != -1) && (m_pd3dGraphicsRootParameterSrvGpuDescriptorHandles[i].ptr != NULL)) 
-			pd3dCommandList->SetGraphicsRootDescriptorTable(m_pnGraphicsSrvRootParameterIndices[i], m_pd3dGraphicsRootParameterSrvGpuDescriptorHandles[i]);
 	}
 }
 
