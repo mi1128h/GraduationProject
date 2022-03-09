@@ -546,6 +546,22 @@ D3D12_GPU_DESCRIPTOR_HANDLE CScene::CreateShaderResourceViews(ID3D12Device* pd3d
 	return(d3dSrvGPUDescriptorHandle);
 }
 
+void CScene::CreateShaderResourceView(ID3D12Device* pd3dDevice, CTexture* pTexture, UINT nIndex)
+{
+	ID3D12Resource* pShaderResource = pTexture->GetTexture(nIndex);
+	int nTextureType = pTexture->GetTextureType();
+	if (pShaderResource)
+	{
+		ID3D12Resource* pShaderResource = pTexture->GetTexture(nIndex);
+		D3D12_RESOURCE_DESC d3dResourceDesc = pShaderResource->GetDesc();
+		D3D12_SHADER_RESOURCE_VIEW_DESC d3dShaderResourceViewDesc = GetShaderResourceViewDesc(d3dResourceDesc, nTextureType);
+		pd3dDevice->CreateShaderResourceView(pShaderResource, &d3dShaderResourceViewDesc, m_d3dSrvCPUDescriptorNextHandle);
+		m_d3dSrvCPUDescriptorNextHandle.ptr += ::gnCbvSrvUavDescriptorIncrementSize;
+		pTexture->SetSrvGpuDescriptorHandle(nIndex, m_d3dSrvGPUDescriptorNextHandle);
+		m_d3dSrvGPUDescriptorNextHandle.ptr += ::gnCbvSrvUavDescriptorIncrementSize;
+	}
+}
+
 D3D12_GPU_DESCRIPTOR_HANDLE CScene::CreateUnorderedAccessViews(ID3D12Device* pd3dDevice, CTexture* pTexture, UINT nRootParameter, bool bAutoIncrement)
 {
 	D3D12_GPU_DESCRIPTOR_HANDLE d3dSrvGPUDescriptorHandle = m_d3dUavGPUDescriptorNextHandle;
@@ -566,6 +582,22 @@ D3D12_GPU_DESCRIPTOR_HANDLE CScene::CreateUnorderedAccessViews(ID3D12Device* pd3
 	}
 
 	return(d3dSrvGPUDescriptorHandle);
+}
+
+void CScene::CreateUnorderedAccessView(ID3D12Device* pd3dDevice, CTexture* pTexture, UINT nIndex)
+{
+	ID3D12Resource* pShaderResource = pTexture->GetTexture(nIndex);
+	int nTextureType = pTexture->GetTextureType();
+	if (pShaderResource)
+	{
+		ID3D12Resource* pShaderResource = pTexture->GetTexture(i);
+		D3D12_RESOURCE_DESC d3dResourceDesc = pShaderResource->GetDesc();
+		D3D12_UNORDERED_ACCESS_VIEW_DESC d3dUnorderedAccessViewDesc = GetUnorderedAccessViewDesc(d3dResourceDesc, nTextureType);
+		pd3dDevice->CreateUnorderedAccessView(pShaderResource, NULL, &d3dUnorderedAccessViewDesc, m_d3dUavCPUDescriptorNextHandle);
+		m_d3dUavCPUDescriptorNextHandle.ptr += ::gnCbvSrvUavDescriptorIncrementSize;
+		pTexture->SetUavGpuDescriptorHandle(nIndex, m_d3dUavGPUDescriptorNextHandle);
+		m_d3dUavGPUDescriptorNextHandle.ptr += ::gnCbvSrvUavDescriptorIncrementSize;
+	}
 }
 
 void CScene::AnimateObjects(float fTimeElapsed, CCamera* pCamrea)
