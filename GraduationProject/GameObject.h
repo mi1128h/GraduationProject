@@ -105,9 +105,6 @@ public:
 	DXGI_FORMAT GetBufferFormat(int nIndex) { return(m_pdxgiBufferFormats[nIndex]); }
 	int GetBufferElements(int nIndex) { return(m_pnBufferElements[nIndex]); }
 
-	D3D12_SHADER_RESOURCE_VIEW_DESC GetShaderResourceViewDesc(int nIndex);
-	D3D12_UNORDERED_ACCESS_VIEW_DESC GetUnorderedAccessViewDesc(int nIndex);
-
 	void ReleaseUploadBuffers();
 };
 
