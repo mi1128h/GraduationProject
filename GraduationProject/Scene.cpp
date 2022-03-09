@@ -532,11 +532,15 @@ D3D12_GPU_DESCRIPTOR_HANDLE CScene::CreateShaderResourceViews(ID3D12Device* pd3d
 			D3D12_SHADER_RESOURCE_VIEW_DESC d3dShaderResourceViewDesc = GetShaderResourceViewDesc(d3dResourceDesc, nTextureType);
 			pd3dDevice->CreateShaderResourceView(pShaderResource, &d3dShaderResourceViewDesc, m_d3dSrvCPUDescriptorNextHandle);
 			m_d3dSrvCPUDescriptorNextHandle.ptr += ::gnCbvSrvUavDescriptorIncrementSize;
-
-			pTexture->SetRootArgument(i, (bAutoIncrement) ? (nRootParameter + i) : nRootParameter, m_d3dSrvGPUDescriptorNextHandle);
+			pTexture->SetSrvGpuDescriptorHandle(i, m_d3dSrvGPUDescriptorNextHandle);
 			m_d3dSrvGPUDescriptorNextHandle.ptr += ::gnCbvSrvUavDescriptorIncrementSize;
 		}
 	}
+
+	int nRootParameters = pTexture->GetGraphicsSrvRootParameters();
+	for (int i = 0; i < nRootParameters; ++i)
+		pTexture->SetGraphicsSrvRootParameterIndex(i, (bAutoIncrement) ? (nRootParameter + i) : nRootParameter, i);
+
 	return(d3dSrvGPUDescriptorHandle);
 }
 
@@ -554,11 +558,11 @@ D3D12_GPU_DESCRIPTOR_HANDLE CScene::CreateUnorderedAccessViews(ID3D12Device* pd3
 			D3D12_UNORDERED_ACCESS_VIEW_DESC d3dUnorderedAccessViewDesc = GetUnorderedAccessViewDesc(d3dResourceDesc, nTextureType);
 			pd3dDevice->CreateUnorderedAccessView(pShaderResource,NULL, &d3dUnorderedAccessViewDesc, m_d3dUavCPUDescriptorNextHandle);
 			m_d3dUavCPUDescriptorNextHandle.ptr += ::gnCbvSrvUavDescriptorIncrementSize;
-
-			pTexture->SetRootArgument(i, (bAutoIncrement) ? (nRootParameter + i) : nRootParameter, m_d3dUavGPUDescriptorNextHandle);
+			pTexture->SetUavGpuDescriptorHandle(i, m_d3dUavGPUDescriptorNextHandle);
 			m_d3dUavGPUDescriptorNextHandle.ptr += ::gnCbvSrvUavDescriptorIncrementSize;
 		}
 	}
+
 	return(d3dSrvGPUDescriptorHandle);
 }
 
