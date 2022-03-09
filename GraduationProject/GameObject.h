@@ -311,11 +311,12 @@ public:
 class CHeightMapTerrain : public CGameObject
 {
 public:
-	CHeightMapTerrain(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, LPCTSTR pFileName, int nWidth, int nLength, int nBlockWidth, int nBlockLength, XMFLOAT3 xmf3Scale, XMFLOAT4 xmf4Color);
+	CHeightMapTerrain(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, LPCTSTR pFileName, 
+		int nWidth, int nLength, XMFLOAT3 xmf3Scale, XMFLOAT4 xmf4Color);
 	virtual ~CHeightMapTerrain();
 
 private:
-	CHeightMapImage* m_pHeightMapImage;
+	CHeightMapImage*			m_pHeightMapImage;
 
 	int							m_nWidth; //Width of HeightMapImage
 	int							m_nLength; //Height of HeightMapImage

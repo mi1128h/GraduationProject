@@ -933,79 +933,39 @@ void CRotatingObject::Animate(float fTimeElapsed)
 }
 
 //////////////////////////////////////////////////////////////////////////////
-CHeightMapTerrain::CHeightMapTerrain(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, LPCTSTR pFileName, int nWidth, int nLength, int nBlockWidth, int nBlockLength, XMFLOAT3 xmf3Scale, XMFLOAT4 xmf4Color) : CGameObject(0)
+CHeightMapTerrain::CHeightMapTerrain(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, LPCTSTR pFileName, int nWidth, int nLength, XMFLOAT3 xmf3Scale, XMFLOAT4 xmf4Color) : CGameObject(1)
 {
-	m_pHeightMapImage = new CHeightMapImage(pFileName, nWidth, nLength);
-
-	int cxQuadsPerBlock = nBlockWidth - 1;
-	int czQuadsPerBlock = nBlockLength - 1;
-
-	long cxBlocks = (nWidth - 1) / cxQuadsPerBlock;
-	long czBlocks = (nLength - 1) / czQuadsPerBlock;
-
-#ifdef _WITH_VERTICES_AS_SCALING
-	nWidth = int(nWidth * xmf3Scale.x);
-	nLength = int(nLength * xmf3Scale.z);
-	nBlockWidth = int(nBlockWidth * xmf3Scale.x);
-	nBlockLength = int(nBlockLength * xmf3Scale.z);
-#endif
-
 	m_nWidth = nWidth;
 	m_nLength = nLength;
 
 	m_xmf3Scale = xmf3Scale;
 
-	m_nMeshes = cxBlocks * czBlocks;
-	m_ppMeshes = new CMesh * [m_nMeshes];
-	for (int i = 0; i < m_nMeshes; i++)	m_ppMeshes[i] = NULL;
+	m_pHeightMapImage = new CHeightMapImage(pFileName, nWidth, nLength, xmf3Scale);
 
-	CHeightMapGridMesh* pHeightMapGridMesh = NULL;
-	for (int z = 0, zStart = 0; z < czBlocks; z++)
-	{
-		for (int x = 0, xStart = 0; x < cxBlocks; x++)
-		{
-			xStart = x * (nBlockWidth - 1);
-			zStart = z * (nBlockLength - 1);
-			pHeightMapGridMesh = new CHeightMapGridMesh(pd3dDevice, pd3dCommandList,
-				xStart, zStart, nBlockWidth, nBlockLength, xmf3Scale, xmf4Color, m_pHeightMapImage);
-			SetMesh(x + (z * cxBlocks), pHeightMapGridMesh);
-		}
-	}
+	CHeightMapGridMesh* pMesh = new CHeightMapGridMesh(pd3dDevice, pd3dCommandList, 0, 0, nWidth, nLength, xmf3Scale, xmf4Color, m_pHeightMapImage);
+	SetMesh(pMesh);
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
-	CTexture* pTerrainTexture = new CTexture(6, RESOURCE_TEXTURE2D, 0, 1,0,0);
+	CTexture* pTerrainBaseTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0,1,0,0);
+	pTerrainBaseTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"Terrain/Base_Texture.dds", RESOURCE_TEXTURE2D, 0);
 
-	pTerrainTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/Texture/AerialTexture.dds", RESOURCE_TEXTURE2D, 0);
-	pTerrainTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/Texture/Detail_Texture_7.dds", RESOURCE_TEXTURE2D, 1);
-	pTerrainTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/Texture/CloversTexture.dds", RESOURCE_TEXTURE2D, 2);
-	pTerrainTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/Texture/Brick02.dds", RESOURCE_TEXTURE2D, 3);
-	pTerrainTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/Alpha/RoadAlphaMap.dds", RESOURCE_TEXTURE2D, 4);
-	pTerrainTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/Alpha/CloversAlphaMap.dds", RESOURCE_TEXTURE2D, 5);
+	CTexture* pTerrainDetailTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0,1,0,0);
+	pTerrainDetailTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"Terrain/Detail_Texture_7.dds", RESOURCE_TEXTURE2D, 0);
 
-	UINT ncbElementBytes = ((sizeof(CB_GAMEOBJECT_INFO) + 255) & ~255); //256의 배수
-
-#ifdef _WITH_TERRAIN_TESSELATION
-	CTerrainTessellationShader* pTerrainShader = new CTerrainTessellationShader();
-#else
 	CTerrainShader* pTerrainShader = new CTerrainShader();
-#endif
-	DXGI_FORMAT pdxgiRtvFormats[3] = { DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM };
-
-	pTerrainShader->CreateShader(pd3dDevice, pd3dGraphicsRootSignature, 3, pdxgiRtvFormats, DXGI_FORMAT_D32_FLOAT);
+	pTerrainShader->CreateShader(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature);
 	pTerrainShader->CreateShaderVariables(pd3dDevice, pd3dCommandList);
-	pTerrainShader->CreateCbvSrvUavDescriptorHeaps(pd3dDevice, 1, 6,0);
-	pTerrainShader->CreateConstantBufferViews(pd3dDevice, 1, m_pd3dcbGameObject, ncbElementBytes);
-	pTerrainShader->CreateShaderResourceViews(pd3dDevice, pTerrainTexture, 0, Signature::Graphics::terrain);
 
-	CMaterial* pTerrainMaterial = new CMaterial();
-	pTerrainMaterial->SetTexture(pTerrainTexture);
+	CScene::CreateShaderResourceViews(pd3dDevice, pTerrainBaseTexture, 13, false);
+	CScene::CreateShaderResourceViews(pd3dDevice, pTerrainDetailTexture, 14, false);
 
-	SetMaterial(pTerrainMaterial);
+	CMaterial* pTerrainMaterial = new CMaterial(2);
+	pTerrainMaterial->SetTexture(pTerrainBaseTexture, 0);
+	pTerrainMaterial->SetTexture(pTerrainDetailTexture, 1);
+	pTerrainMaterial->SetShader(pTerrainShader);
 
-	SetCbvGPUDescriptorHandle(pTerrainShader->GetGPUCbvDescriptorStartHandle());
-
-	SetShader(pTerrainShader);
+	SetMaterial(0, pTerrainMaterial);
 }
 
 CHeightMapTerrain::~CHeightMapTerrain(void)
@@ -1058,3 +1018,16 @@ void CSkyBox::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamer
 
 	CGameObject::Render(pd3dCommandList, pCamera);
 }
+
+// 해야할일1
+// 3. 터레인 메쉬 수정(HeightMapImage)
+// 5. Scene 루트파라미터 인덱스 수정
+// 6. 텍스쳐파일 확인
+
+// 해야할일2
+// CreateShader 인자 변경
+// 인자에 필요한 부분 새로 선언
+// MTR에 필요한 내용인지 확인필요
+
+// 해야할일3
+// 기존에 UpdateShaderVariables 내용들을 Scene::으로 수정
