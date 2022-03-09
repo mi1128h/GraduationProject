@@ -330,3 +330,37 @@ public:
 public:
 	virtual void Animate(float fTimeElapsed, CCamera* pCamrea = NULL);
 };
+
+////////////////////////////////////////////////////
+
+class CCannonballObject : public CGameObject
+{
+public:
+	CCannonballObject();
+	virtual ~CCannonballObject();
+
+private:
+	XMFLOAT3 m_xmf3Origin;
+	XMFLOAT3 m_xmf3Dest;
+
+public:
+	virtual void Animate(float fTimeElapsed, CCamera* pCamrea = NULL);
+	bool IsReadyToFire();
+	void SetPositions(XMFLOAT3 origin, XMFLOAT3 dest) { m_xmf3Origin = origin, m_xmf3Dest = dest; }
+};
+
+//
+
+class CCannonObject : public CGameObject
+{
+public:
+	CCannonObject();
+	virtual ~CCannonObject();
+
+private:
+	CCannonballObject m_Cannonball;
+
+public:
+	virtual void Animate(float fTimeElapsed, CCamera* pCamera = NULL);
+	void FireCannonBall();
+};

@@ -799,3 +799,43 @@ void CInteractiveCoverObject::Animate(float fTimeElapsed, CCamera* pCamrea)
 {
 	m_fInteractTime -= fTimeElapsed;
 }
+
+//////////////////////////////////////////
+
+CCannonballObject::CCannonballObject()
+{
+}
+
+CCannonballObject::~CCannonballObject()
+{
+}
+
+void CCannonballObject::Animate(float fTimeElapsed, CCamera* pCamera)
+{
+
+}
+
+bool CCannonballObject::IsReadyToFire()
+{
+	return true;
+}
+
+//
+
+CCannonObject::CCannonObject()
+{
+}
+
+CCannonObject::~CCannonObject()
+{
+}
+
+void CCannonObject::Animate(float fTimeElapsed, CCamera* pCamera)
+{
+
+}
+
+void CCannonObject::FireCannonBall()
+{
+
+}
