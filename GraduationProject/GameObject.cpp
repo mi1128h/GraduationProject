@@ -812,12 +812,21 @@ CCannonballObject::~CCannonballObject()
 
 void CCannonballObject::Animate(float fTimeElapsed, CCamera* pCamera)
 {
+	XMFLOAT3 xmf3Gravity = XMFLOAT3(0.0f, -10.0f, 0.0f);
+	m_xmf3Velocity = Vector3::Add(m_xmf3Velocity, Vector3::ScalarProduct(xmf3Gravity, fTimeElapsed * 1.5f, false));
 
+	SetPosition(Vector3::Add(GetPosition(), m_xmf3Velocity));
 }
 
 bool CCannonballObject::IsReadyToFire()
 {
-	return true;
+	return m_bIsFired ? false : true;
+}
+
+void CCannonballObject::SetValues(XMFLOAT3 origin, XMFLOAT3 velocity)
+{
+	SetPosition(origin);
+	m_xmf3Velocity = velocity;
 }
 
 //
@@ -835,7 +844,10 @@ void CCannonObject::Animate(float fTimeElapsed, CCamera* pCamera)
 
 }
 
-void CCannonObject::FireCannonBall()
+void CCannonObject::FireCannonBall(XMFLOAT3 Origin, XMFLOAT3 Velocity)
 {
-
+	if (m_Cannonball.IsReadyToFire()) {
+		m_Cannonball.SetValues(Origin, Velocity);
+		m_Cannonball.SetFire(true);
+	}
 }

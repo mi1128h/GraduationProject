@@ -341,12 +341,14 @@ public:
 
 private:
 	XMFLOAT3 m_xmf3Origin;
-	XMFLOAT3 m_xmf3Dest;
+	XMFLOAT3 m_xmf3Velocity;
+	bool m_bIsFired = false;
 
 public:
 	virtual void Animate(float fTimeElapsed, CCamera* pCamrea = NULL);
 	bool IsReadyToFire();
-	void SetPositions(XMFLOAT3 origin, XMFLOAT3 dest) { m_xmf3Origin = origin, m_xmf3Dest = dest; }
+	void SetValues(XMFLOAT3 origin, XMFLOAT3 velocity) { m_xmf3Origin = origin, m_xmf3Velocity = velocity; }
+	void SetFire(bool fire) { m_bIsFired = fire; }
 };
 
 //
@@ -362,5 +364,5 @@ private:
 
 public:
 	virtual void Animate(float fTimeElapsed, CCamera* pCamera = NULL);
-	void FireCannonBall();
+	void FireCannonBall(XMFLOAT3 Origin, XMFLOAT3 Velocity);
 };
