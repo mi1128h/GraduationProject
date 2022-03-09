@@ -649,7 +649,7 @@ void CGameFramework::FrameAdvance()
 
 	m_pPostProcessingShader->OnPostRenderTarget(m_pd3dCommandList);
 
-	::SynchronizeResourceTransition(m_pd3dCommandList, (m_pPostProcessingShader->GetTexture())->GetResource(3),
+	::SynchronizeResourceTransition(m_pd3dCommandList, (m_pPostProcessingShader->GetTexture())->GetTexture(3),
 		D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
 	if (m_pScene->m_pd3dComputeRootSignature) m_pd3dCommandList->SetComputeRootSignature(m_pScene->m_pd3dComputeRootSignature);
 
@@ -661,7 +661,7 @@ void CGameFramework::FrameAdvance()
 			m_ppComputeShaders[i]->Dispatch(m_pd3dCommandList);
 	}
 
-	::SynchronizeResourceTransition(m_pd3dCommandList, (m_pPostProcessingShader->GetTexture())->GetResource(3), 
+	::SynchronizeResourceTransition(m_pd3dCommandList, (m_pPostProcessingShader->GetTexture())->GetTexture(3), 
 		D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_COMMON);
 
 	if (m_pScene->m_pd3dGraphicsRootSignature) m_pd3dCommandList->SetComputeRootSignature(m_pScene->m_pd3dGraphicsRootSignature);
