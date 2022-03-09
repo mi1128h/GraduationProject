@@ -94,8 +94,16 @@ void CTexture::SetUavGpuDescriptorHandle(int nIndex, D3D12_GPU_DESCRIPTOR_HANDLE
 	m_pd3dUavGpuDescriptorHandles[nIndex] = d3dUavGpuDescriptorHandle;
 }
 
+void CTexture::SetGraphicsRootArgument(int nIndex, UINT nRootParameterIndex, D3D12_GPU_DESCRIPTOR_HANDLE d3dSrvGpuDescriptorHandle)
+{
+	m_pRootSrvGraphicsArgumentInfos[nIndex].m_nRootParameterIndex = nRootParameterIndex;
+	m_pRootSrvGraphicsArgumentInfos[nIndex].m_d3dSrvGpuDescriptorHandle = d3dSrvGpuDescriptorHandle;
+}
+
 void CTexture::SetGraphicsSrvRootParameterIndex(int nIndex, int nRootParameterIndex, int nGpuHandleIndex)
 {
+	m_pRootSrvGraphicsArgumentInfos[nIndex].m_nRootParameterIndex = nRootParameterIndex;
+	m_pRootSrvGraphicsArgumentInfos[nIndex].m_d3dSrvGpuDescriptorHandle = m_pd3dSrvGpuDescriptorHandles[nGpuHandleIndex];
 }
 
 void CTexture::SetComputeUavRootParameterIndex(int nIndex, int nRootParameterIndex, int nGpuHandleIndex)
@@ -132,13 +140,22 @@ void CTexture::UpdateComputeShaderVariables(ID3D12GraphicsCommandList* pd3dComma
 
 void CTexture::UpdateGraphicsShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList)
 {
+	if (m_nTextureType == RESOURCE_TEXTURE2D_ARRAY)
 	{
+		pd3dCommandList->SetGraphicsRootDescriptorTable(m_pRootSrvGraphicsArgumentInfos[0].m_nRootParameterIndex, m_pRootSrvGraphicsArgumentInfos[0].m_d3dSrvGpuDescriptorHandle);
+	}
+	else
+	{
+		for (int i = 0; i < m_nTextures; i++)
+		{
+			pd3dCommandList->SetGraphicsRootDescriptorTable(m_pRootSrvGraphicsArgumentInfos[i].m_nRootParameterIndex, m_pRootSrvGraphicsArgumentInfos[i].m_d3dSrvGpuDescriptorHandle);
+		}
 	}
 }
 
-void CTexture::UpdateShaderVariable(ID3D12GraphicsCommandList* pd3dCommandList, int nParameterIndex, int nTextureIndex)
+void CTexture::UpdateShaderVariable(ID3D12GraphicsCommandList* pd3dCommandList, int nIndex)
 {
-	pd3dCommandList->SetGraphicsRootDescriptorTable(m_pnGraphicsSrvRootParameterIndices[nParameterIndex], m_pd3dSrvGpuDescriptorHandles[nTextureIndex]);
+	pd3dCommandList->SetGraphicsRootDescriptorTable(m_pRootSrvGraphicsArgumentInfos[nIndex].m_nRootParameterIndex, m_pRootSrvGraphicsArgumentInfos[nIndex].m_d3dSrvGpuDescriptorHandle);
 }
 
 void CTexture::ReleaseShaderVariables()

@@ -19,6 +19,12 @@ struct CB_GAMEOBJECT_INFO
 	UINT m_nMaterial;
 };
 
+struct SrvRootArgumentInfo
+{
+	int								m_nRootParameterIndex = 0;
+	D3D12_GPU_DESCRIPTOR_HANDLE		m_d3dSrvGpuDescriptorHandle;
+};
+
 class CTexture
 {
 public:
@@ -56,14 +62,17 @@ private:
 	D3D12_GPU_DESCRIPTOR_HANDLE* m_pd3dSamplerGpuDescriptorHandles = NULL;
 
 public:
+	SrvRootArgumentInfo* m_pRootSrvGraphicsArgumentInfos = NULL;
+public:
 	void AddRef() { m_nReferences++; }
 	void Release() { if (--m_nReferences <= 0) delete this; }
 
 	void SetSampler(int nIndex, D3D12_GPU_DESCRIPTOR_HANDLE d3dSamplerGpuDescriptorHandle);
 
+	void SetGraphicsRootArgument(int nIndex, UINT nRootParameterIndex, D3D12_GPU_DESCRIPTOR_HANDLE d3dsrvGpuDescriptorHandle);
 	void UpdateComputeShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList);
 	void UpdateGraphicsShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList);
-	void UpdateShaderVariable(ID3D12GraphicsCommandList* pd3dCommandList, int nParameterIndex, int nTextureIndex);
+	void UpdateShaderVariable(ID3D12GraphicsCommandList* pd3dCommandList, int nIndex);
 	void ReleaseShaderVariables();
 
 	void LoadTextureFromFile(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, wchar_t* pszFileName, UINT nResourceType, UINT nIndex);
