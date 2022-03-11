@@ -1055,6 +1055,73 @@ void CCoverObjectsShader::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCa
 	}
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+CCannonObjectsShader::CCannonObjectsShader()
+{
+}
+
+CCannonObjectsShader::~CCannonObjectsShader()
+{
+}
+
+void CCannonObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, void* pContext)
+{
+	CHeightMapTerrain* pTerrain = (CHeightMapTerrain*)pContext;
+
+	float fTerrainWidth = pTerrain->GetWidth();
+	float fTerrainLength = pTerrain->GetLength();
+
+	m_nObjects = 1;
+
+	CTexture* pTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
+	pTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/Floor.dds", RESOURCE_TEXTURE2D, 0);
+
+	UINT ncbElementBytes = ((sizeof(CB_GAMEOBJECT_INFO) + 255) & ~255);
+
+	CreateCbvSrvUavDescriptorHeaps(pd3dDevice, m_nObjects, 1, 0);
+	CreateShaderVariables(pd3dDevice, pd3dCommandList);
+	CreateConstantBufferViews(pd3dDevice, m_nObjects, m_pd3dcbGameObjects, ncbElementBytes);
+	CreateShaderResourceViews(pd3dDevice, pTexture, 0, Signature::Graphics::texture);
+
+#ifdef _WITH_BATCH_MATERIAL
+	m_pMaterial = new CMaterial();
+	m_pMaterial->SetTexture(pTexture);
+#else
+	CMaterial* pCubeMaterial = new CMaterial();
+	pCubeMaterial->SetTexture(pTexture);
+#endif
+
+	CCubeMeshIlluminatedTextured* pCubeMesh = new CCubeMeshIlluminatedTextured(pd3dDevice, pd3dCommandList, 10.0f, 10.0f, 10.0f);
+
+	m_ppObjects = new CGameObject * [m_nObjects];
+
+	//
+	CCannonObject* pCannonObject = NULL;
+
+	pCannonObject = new CCannonObject;
+	pCannonObject->SetMesh(0, pCubeMesh);
+#ifndef _WITH_BATCH_MATERIAL
+	pCannonObject->SetMaterial(pCubeMaterial);
+	pCannonObject->m_pMaterial->SetReflection(1);
+#endif
+	float xPosition = fTerrainWidth * 0.5f;
+	float zPosition = fTerrainLength * 0.5f - 10.0f;
+	float fHeight = pTerrain->GetHeight(xPosition, zPosition);
+	pCannonObject->SetPosition(xPosition, fHeight + 10.0f, zPosition);
+
+	pCannonObject->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvUavDescriptorIncrementSize * 0));
+	m_ppObjects[0] = pCannonObject;
+}
+
+void CCannonObjectsShader::ActivateCannon()
+{
+	// Test
+	XMFLOAT3 origin = ((CCannonObject*)m_ppObjects[0])->GetPosition();
+	XMFLOAT3 velocity = Vector3::Add(((CCannonObject*)m_ppObjects[0])->GetLook(), XMFLOAT3(0.0f, 20.0f, 0.0f));
+
+	((CCannonObject*)m_ppObjects[0])->FireCannonBall(origin, velocity);
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 CSkyBoxShader::CSkyBoxShader()

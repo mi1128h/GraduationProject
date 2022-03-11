@@ -481,6 +481,9 @@ void CGameFramework::OnProcessingKeyboardMessage
 		case 'W':
 			m_fSpeedVal -= 10.0f;
 			break;
+		case 'F':
+			((CCannonObjectsShader*)m_pScene->m_ppShaders[1])->ActivateCannon();
+			break;
 		default:
 			break;
 		}

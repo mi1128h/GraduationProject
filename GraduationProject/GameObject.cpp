@@ -804,6 +804,7 @@ void CInteractiveCoverObject::Animate(float fTimeElapsed, CCamera* pCamrea)
 
 CCannonballObject::CCannonballObject()
 {
+
 }
 
 CCannonballObject::~CCannonballObject()

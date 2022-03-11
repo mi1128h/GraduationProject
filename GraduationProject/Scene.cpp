@@ -298,7 +298,7 @@ void CScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* p
 
 	DXGI_FORMAT pdxgiRtvFormats[3] = { DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM };
 
-	m_nShaders = 1;
+	m_nShaders = 2;
 	m_ppShaders = new CShader * [m_nShaders];
 
 	CCoverObjectsShader* pCoverObjectsShader = new CCoverObjectsShader();
@@ -306,6 +306,10 @@ void CScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* p
 	pCoverObjectsShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pTerrain);
 	m_ppShaders[0] = pCoverObjectsShader;
 
+	CCannonObjectsShader* pCannonObjectsShader = new CCannonObjectsShader();
+	pCannonObjectsShader->CreateShader(pd3dDevice, m_pd3dGraphicsRootSignature, 3, pdxgiRtvFormats, DXGI_FORMAT_D32_FLOAT);
+	pCannonObjectsShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pTerrain);
+	m_ppShaders[1] = pCannonObjectsShader;
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 }
