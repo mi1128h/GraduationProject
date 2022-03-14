@@ -627,10 +627,8 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComman
 
 	UINT ncbElementBytes = ((sizeof(CB_GAMEOBJECT_INFO) + 255) & ~255);
 
-	CreateCbvSrvUavDescriptorHeaps(pd3dDevice, m_nObjects, 1, 0);
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
-	CreateConstantBufferViews(pd3dDevice, m_nObjects, m_pd3dcbGameObjects, ncbElementBytes);
-	CreateShaderResourceViews(pd3dDevice, pTexture, 0, Signature::Graphics::texture);
+	CScene::CreateShaderResourceViews(pd3dDevice, pTexture, 0, Signature::Graphics::texture);
 
 #ifdef _WITH_BATCH_MATERIAL
 	m_pMaterial = new CMaterial();
@@ -672,7 +670,6 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComman
 				}
 				pRotatingObject->SetRotationAxis(XMFLOAT3(0.0f, 1.0f, 0.0f));
 				pRotatingObject->SetRotationSpeed(36.0f * (i % 10) + 36.0f);
-				pRotatingObject->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvUavDescriptorIncrementSize * i));
 				m_ppObjects[i++] = pRotatingObject;
 			}
 		}
@@ -945,7 +942,7 @@ void CPostProcessingShader::OnPostRenderTarget(ID3D12GraphicsCommandList* pd3dCo
 
 void CPostProcessingShader::UpdateTextureShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList)
 {
-	if (m_pd3dCbvSrvUavDescriptorHeap) pd3dCommandList->SetDescriptorHeaps(1, &m_pd3dCbvSrvUavDescriptorHeap);
+	//if (m_pd3dCbvSrvUavDescriptorHeap) pd3dCommandList->SetDescriptorHeaps(1, &m_pd3dCbvSrvUavDescriptorHeap);
 	if (m_pTexture) m_pTexture->UpdateComputeShaderVariables(pd3dCommandList);
 }
 
@@ -984,9 +981,9 @@ void CBlurringShader::CreateResourcesAndViews(ID3D12Device* pd3dDevice, UINT nRe
 	m_pTexture->CreateTexture(pd3dDevice, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT, 
 		DXGI_FORMAT_R8G8B8A8_UNORM, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_COMMON, NULL, RESOURCE_TEXTURE2D, nResources);
 
-	CreateCbvSrvUavDescriptorHeaps(pd3dDevice, 0, nShaderResources,1);
+	//CreateCbvSrvUavDescriptorHeaps(pd3dDevice, 0, nShaderResources,1);
 #ifdef _WITH_SCENE_ROOT_SIGNATURE
-	CreateShaderResourceViews(pd3dDevice, m_pTexture, 0,Signature::Graphics::g_input);
+	CScene::CreateShaderResourceViews(pd3dDevice, m_pTexture, 0,Signature::Graphics::g_input);
 #else
 	CreateShaderResourceViews(pd3dDevice, m_pTexture, 0, 0);
 #endif
@@ -1005,7 +1002,7 @@ void CBlurringShader::CreateResourcesAndViews(ID3D12Device* pd3dDevice, UINT nRe
 		m_pd3dRtvCPUDescriptorHandles[i] = d3dRtvCPUDescriptorHandle;
 		d3dRtvCPUDescriptorHandle.ptr += ::gnRtvDescriptorIncrementSize;
 	}
-	CreateUnorderedAccessView(pd3dDevice, m_pTexture, nResources);
+	CScene::CreateUnorderedAccessView(pd3dDevice, m_pTexture, nResources);
 
 	m_pTexture->SetComputeSrvRootParameterIndex(0, Signature::Compute::c_input, 0);
 	m_pTexture->SetComputeUavRootParameterIndex(0, Signature::Compute::c_output, nResources);
