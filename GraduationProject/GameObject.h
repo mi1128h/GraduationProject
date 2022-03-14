@@ -316,28 +316,23 @@ public:
 	virtual ~CHeightMapTerrain();
 
 private:
-	CHeightMapImage*			m_pHeightMapImage;
+	CHeightMapImage* m_pHeightMapImage;
 
-	int							m_nWidth; //Width of HeightMapImage
-	int							m_nLength; //Height of HeightMapImage
+	int							m_nWidth;
+	int							m_nLength;
 
-	XMFLOAT3					m_xmf3Scale; //Scaler for World Coordinates
+	XMFLOAT3					m_xmf3Scale;
 
 public:
-	float GetHeight(float x, float z);
-	XMFLOAT3 GetNormal(float x, float z) { return(m_pHeightMapImage->GetHeightMapNormal(int(x / m_xmf3Scale.x), int(z / m_xmf3Scale.z), m_xmf3Scale)); }
+	float GetHeight(float x, float z, bool bReverseQuad = false) { return(m_pHeightMapImage->GetHeight(x, z, bReverseQuad) * m_xmf3Scale.y); } //World
+	XMFLOAT3 GetNormal(float x, float z) { return(m_pHeightMapImage->GetHeightMapNormal(int(x / m_xmf3Scale.x), int(z / m_xmf3Scale.z))); }
 
-	int GetRawImageWidth() { return(m_pHeightMapImage->GetRawImageWidth()); }
-	int GetRawImageLength() { return(m_pHeightMapImage->GetRawImageLength()); }
+	int GetHeightMapWidth() { return(m_pHeightMapImage->GetHeightMapWidth()); }
+	int GetHeightMapLength() { return(m_pHeightMapImage->GetHeightMapLength()); }
 
 	XMFLOAT3 GetScale() { return(m_xmf3Scale); }
-#ifdef _WITH_VERTICES_AS_SCALING
-	float GetWidth() { return(float(m_nWidth)); }
-	float GetLength() { return(float(m_nLength)); }
-#else
-	int GetWidth() { return(m_nWidth * m_xmf3Scale.x); }
-	int GetLength() { return(m_nLength * m_xmf3Scale.z); }
-#endif
+	float GetWidth() { return(m_nWidth * m_xmf3Scale.x); }
+	float GetLength() { return(m_nLength * m_xmf3Scale.z); }
 };
 
 

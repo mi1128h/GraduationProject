@@ -99,7 +99,8 @@ namespace Signature {
 		light,
 		gfw,
 		texture,
-		terrain,
+		terrain_base,
+		terrain_detail,
 		skybox,
 		g_input,
 		g_output
@@ -115,7 +116,8 @@ namespace Descriptor {
 	enum Graphics {
 		object,
 		texture,
-		terrain,
+		terrain_base,
+		terrain_detail,
 		skybox,
 		g_input,
 		g_output
