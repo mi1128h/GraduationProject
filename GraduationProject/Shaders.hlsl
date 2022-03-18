@@ -367,9 +367,14 @@ VS_WIREFRAME_OUTPUT VSWireFrame(VS_WIREFRAME_INPUT input)
 	return(output);
 }
 
-float4 PSWireFrame(VS_WIREFRAME_OUTPUT input) : SV_TARGET
+PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSWireFrame(VS_WIREFRAME_OUTPUT input) : SV_TARGET
 {
-	return(float4(0.0f, 0.0f, 1.0f, 1.0f));
+	PS_MULTIPLE_RENDER_TARGETS_OUTPUT output;
+
+	output.f4Scene = output.f4Color = float4(1.0f, 0.0f, 0.0f, 1.0f);
+	output.fDepth = 1.0f - input.position.z;
+
+	return(output);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -417,7 +422,13 @@ VS_SKINNED_WIREFRAME_OUTPUT VSSkinnedAnimationWireFrame(VS_SKINNED_WIREFRAME_INP
 	return(output);
 }
 
-float4 PSSkinnedAnimationWireFrame(VS_SKINNED_WIREFRAME_OUTPUT input) : SV_TARGET
+PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSSkinnedAnimationWireFrame(VS_SKINNED_WIREFRAME_OUTPUT input) : SV_TARGET
 {
-	return(float4(1.0f, 0.0f, 0.0f, 1.0f));
+
+	PS_MULTIPLE_RENDER_TARGETS_OUTPUT output;
+
+	output.f4Scene = output.f4Color = float4(1.0f, 0.0f, 0.0f, 1.0f);
+	output.fDepth = 1.0f - input.position.z;
+
+	return(output);
 }
