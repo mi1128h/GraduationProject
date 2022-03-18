@@ -125,6 +125,16 @@ ID3D12RootSignature* CScene::CreateGraphicsRootSignature(ID3D12Device* pd3dDevic
 	pd3dRootParameters[Signature::Graphics::gfw].Descriptor.RegisterSpace = 0;
 	pd3dRootParameters[Signature::Graphics::gfw].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
+	pd3dRootParameters[Signature::Graphics::bone_offsets].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
+	pd3dRootParameters[Signature::Graphics::bone_offsets].Descriptor.ShaderRegister = 7; //Skinned Bone Offsets
+	pd3dRootParameters[Signature::Graphics::bone_offsets].Descriptor.RegisterSpace = 0;
+	pd3dRootParameters[Signature::Graphics::bone_offsets].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
+
+	pd3dRootParameters[Signature::Graphics::bone_trans].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
+	pd3dRootParameters[Signature::Graphics::bone_trans].Descriptor.ShaderRegister = 8; //Skinned Bone Transforms
+	pd3dRootParameters[Signature::Graphics::bone_trans].Descriptor.RegisterSpace = 0;
+	pd3dRootParameters[Signature::Graphics::bone_trans].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
+
 	pd3dRootParameters[Signature::Graphics::texture].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
 	pd3dRootParameters[Signature::Graphics::texture].DescriptorTable.NumDescriptorRanges = 1;
 	pd3dRootParameters[Signature::Graphics::texture].DescriptorTable.pDescriptorRanges = &pd3dDescriptorRanges[Descriptor::Graphics::texture];

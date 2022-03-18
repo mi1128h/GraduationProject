@@ -98,6 +98,8 @@ namespace Signature {
 		meterial,
 		light,
 		gfw,
+		bone_offsets,
+		bone_trans,
 		texture,
 		terrain_base,
 		terrain_detail,
