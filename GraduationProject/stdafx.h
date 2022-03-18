@@ -116,7 +116,6 @@ namespace Signature {
 
 namespace Descriptor {
 	enum Graphics {
-		object,
 		texture,
 		terrain_base,
 		terrain_detail,
