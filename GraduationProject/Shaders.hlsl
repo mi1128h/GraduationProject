@@ -161,7 +161,7 @@ struct VS_SKYBOX_CUBEMAP_OUTPUT
 	float4	position : SV_POSITION;
 };
 
-TextureCube gtxtSkyBox : register(t3);
+TextureCube gtxtSkyCubeTexture : register(t3);
 
 VS_SKYBOX_CUBEMAP_OUTPUT VSSkyBox(VS_SKYBOX_CUBEMAP_INPUT input)
 {
