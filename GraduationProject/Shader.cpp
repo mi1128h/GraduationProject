@@ -940,9 +940,9 @@ void CPostProcessingShader::OnPostRenderTarget(ID3D12GraphicsCommandList* pd3dCo
 {
 }
 
-void CPostProcessingShader::UpdateTextureShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList)
+void CPostProcessingShader::UpdateTextureShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList, ID3D12DescriptorHeap* pd3dCbvSrvUavDescriptorHeap)
 {
-	//if (m_pd3dCbvSrvUavDescriptorHeap) pd3dCommandList->SetDescriptorHeaps(1, &m_pd3dCbvSrvUavDescriptorHeap);
+	if (pd3dCbvSrvUavDescriptorHeap) pd3dCommandList->SetDescriptorHeaps(1, &pd3dCbvSrvUavDescriptorHeap);
 	if (m_pTexture) m_pTexture->UpdateComputeShaderVariables(pd3dCommandList);
 }
 

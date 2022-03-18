@@ -656,7 +656,7 @@ void CGameFramework::FrameAdvance()
 	// 블러링
 	for (int i = 0; i < m_nComputeShaders; i++)
 	{
-		m_pPostProcessingShader->UpdateTextureShaderVariables(m_pd3dCommandList);
+		m_pPostProcessingShader->UpdateTextureShaderVariables(m_pd3dCommandList,m_pScene->m_pd3dCbvSrvUavDescriptorHeap);
 		if(m_pScene->m_pPlayer->IsPlayerFast() || m_pcbMappedFrameworkInfo->m_nBlurMode & DEBUG_BLURRING)
 			m_ppComputeShaders[i]->Dispatch(m_pd3dCommandList);
 	}

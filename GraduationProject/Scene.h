@@ -126,10 +126,10 @@ protected:
 	ID3D12Resource* m_pd3dcbMaterials = NULL;
 	MATERIAL* m_pcbMappedMaterials = NULL;
 
-protected:
-
+public:
 	static ID3D12DescriptorHeap* m_pd3dCbvSrvUavDescriptorHeap;
 
+protected:
 	static D3D12_CPU_DESCRIPTOR_HANDLE	m_d3dCbvCPUDescriptorStartHandle;
 	static D3D12_GPU_DESCRIPTOR_HANDLE	m_d3dCbvGPUDescriptorStartHandle;
 	static D3D12_CPU_DESCRIPTOR_HANDLE	m_d3dSrvCPUDescriptorStartHandle;
