@@ -219,6 +219,7 @@ public:
 	void SetWireFrameShader();
 	void SetSkinnedAnimationWireFrameShader();
 	void SetMaterial(int nMaterial, CMaterial* pMaterial);
+	void SetScale(XMFLOAT3& xmf3Scale) { m_xmf3Scale = xmf3Scale; }
 
 	void SetChild(CGameObject* pChild, bool bReferenceUpdate = false);
 
@@ -345,4 +346,12 @@ public:
 	virtual ~CSkyBox();
 
 	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera = NULL);
+};
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+class CAngrybotObject : public CGameObject
+{
+public:
+	CAngrybotObject(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, int nAnimationTracks);
+	virtual ~CAngrybotObject();
 };

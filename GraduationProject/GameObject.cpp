@@ -1037,6 +1037,22 @@ void CSkyBox::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamer
 
 	CGameObject::Render(pd3dCommandList, pCamera);
 }
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+CAngrybotObject::CAngrybotObject(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, int nAnimationTracks)
+{
+	CLoadedModelInfo* pAngrybotModel = pModel;
+	if (!pAngrybotModel) pAngrybotModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/Angrybot.bin", NULL);
 
+	SetChild(pAngrybotModel->m_pModelRootObject, true);
+	m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, nAnimationTracks, pAngrybotModel);
 
+	strcpy_s(m_pstrFrameName, "Angrybot");
 
+	Rotate(-90.0f, 0.0f, 0.0f);
+	SetScale(0.2f, 0.2f, 0.2f);
+}
+
+CAngrybotObject::~CAngrybotObject()
+{
+}
