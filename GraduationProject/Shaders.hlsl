@@ -219,13 +219,11 @@ VS_TERRAIN_OUTPUT VSTerrain(VS_TERRAIN_INPUT input)
 PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSTerrain(VS_TERRAIN_OUTPUT input) : SV_TARGET
 {
 	float4 cBaseTexColor = gtxtTerrainBaseTexture.Sample(gSamplerState, input.uv0);
-	float4 cDetailTexColor = gtxtTerrainDetailTexture.Sample(gSamplerState, input.uv1);
-	//	float4 cColor = saturate((cBaseTexColor * 0.5f) + (cDetailTexColor * 0.5f));
-		float4 cColor = input.color * saturate((cBaseTexColor * 0.5f) + (cDetailTexColor * 0.5f));
+	float4 cDetailTexColor = gtxtTerrainDetailTexture.Sample(gSamplerState, input.uv1*2.0f);
+	//float4 cColor = saturate((cBaseTexColor * 0.6f) + (cDetailTexColor * 0.4f));
+	float4 cColor = input.color * saturate((cBaseTexColor * 0.5f) + (cDetailTexColor * 0.5f));
 
-		PS_MULTIPLE_RENDER_TARGETS_OUTPUT output;
-		//float grayscale = (cColor.r + cColor.g + cColor.b) / 3.0f;
-		//output.f4Scene = output.f4Color = float4(grayscale,grayscale,grayscale,1.0f);
+	PS_MULTIPLE_RENDER_TARGETS_OUTPUT output;
 
 	output.f4Scene = output.f4Color = cColor;
 	output.fDepth = 1.0f - input.position.z;
@@ -371,7 +369,7 @@ PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSWireFrame(VS_WIREFRAME_OUTPUT input) : SV_TA
 {
 	PS_MULTIPLE_RENDER_TARGETS_OUTPUT output;
 
-	output.f4Scene = output.f4Color = float4(1.0f, 0.0f, 0.0f, 1.0f);
+	output.f4Scene = output.f4Color = float4(0.0f, 0.0f, 1.0f, 1.0f);
 	output.fDepth = 1.0f - input.position.z;
 
 	return(output);
