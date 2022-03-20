@@ -276,26 +276,35 @@ CTerrainPlayer::CTerrainPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLi
 {
 	m_pCamera = ChangeCamera(THIRD_PERSON_CAMERA, 0.0f);
 
+	CLoadedModelInfo* pAngrybotModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/Angrybot.bin", NULL);
+	SetChild(pAngrybotModel->m_pModelRootObject, true);
+
+	m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, 2, pAngrybotModel);
+	m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);
+	m_pSkinnedAnimationController->SetTrackStartEndTime(0, 0.0f, 2.5f);
+	m_pSkinnedAnimationController->SetTrackAnimationSet(1, 0);
+	m_pSkinnedAnimationController->SetTrackStartEndTime(1, 2.5f, 4.5f);
+
+#ifdef _WITH_SOUND_CALLBACK
+	m_pSkinnedAnimationController->SetCallbackKeys(0, 1);
+	m_pSkinnedAnimationController->SetCallbackKey(0, 0, 0.001f, _T("Sound/Footstep01.wav"));
+
+	CAnimationCallbackHandler* pAnimationCallbackHandler = new CSoundCallbackHandler();
+	m_pSkinnedAnimationController->SetAnimationCallbackHandler(0, pAnimationCallbackHandler);
+#endif
+
+	SetPlayerUpdatedContext(pContext);
+	SetCameraUpdatedContext(pContext);
+
+	if (pAngrybotModel) delete pAngrybotModel;
+
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
-	UINT ncbElementBytes = ((sizeof(CB_PLAYER_INFO) + 255) & ~255); //256의 배수
-
-	CPlayerShader* pShader = new CPlayerShader();
-
-	DXGI_FORMAT pdxgiRtvFormats[3] = { DXGI_FORMAT_R8G8B8A8_UNORM,DXGI_FORMAT_R8G8B8A8_UNORM,DXGI_FORMAT_R8G8B8A8_UNORM };
-	pShader->CreateShader(pd3dDevice, pd3dGraphicsRootSignature, 3, pdxgiRtvFormats, DXGI_FORMAT_D32_FLOAT);
-	pShader->CreateShaderVariables(pd3dDevice, pd3dCommandList);
-	pShader->CreateCbvSrvUavDescriptorHeaps(pd3dDevice, 1, 0,0);
-	pShader->CreateConstantBufferViews(pd3dDevice, 1, m_pd3dcbPlayer, ncbElementBytes);
-
-	SetCbvGPUDescriptorHandle(pShader->GetGPUCbvDescriptorStartHandle());
-
-	SetShader(pShader);
-
 	CHeightMapTerrain* pTerrain = (CHeightMapTerrain*)pContext;
-	SetPosition(XMFLOAT3(pTerrain->GetWidth() * 0.5f, 1000.0f, pTerrain->GetLength() * 0.5f));
-	SetPlayerUpdatedContext(pTerrain);
-	SetCameraUpdatedContext(pTerrain);
+	
+	SetPosition(XMFLOAT3(310.0f, pTerrain->GetHeight(310.0f, 595.0f), 595.0f));
+
+	SetScale(XMFLOAT3(0.2f, 0.2f, 0.2f));
 }
 
 CTerrainPlayer::~CTerrainPlayer()
