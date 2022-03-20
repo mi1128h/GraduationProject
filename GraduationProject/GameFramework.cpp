@@ -431,6 +431,8 @@ void CGameFramework::OnProcessingMouseMessage
 void CGameFramework::OnProcessingKeyboardMessage
 (HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
 {
+	if (m_pScene) m_pScene->OnProcessingKeyboardMessage(hWnd, nMessageID, wParam, lParam);
+
 	switch (nMessageID)
 	{
 	case WM_KEYUP:
