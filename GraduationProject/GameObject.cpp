@@ -393,9 +393,9 @@ void CGameObject::SetChild(CGameObject* pChild, bool bReferenceUpdate)
 
 void CGameObject::SetPosition(float x, float y, float z)
 {
-	m_xmf4x4World._41 = x;
-	m_xmf4x4World._42 = y;
-	m_xmf4x4World._43 = z;
+	m_xmf4x4ToParent._41 = x;
+	m_xmf4x4ToParent._42 = y;
+	m_xmf4x4ToParent._43 = z;
 	
 	UpdateTransform(NULL);
 }
