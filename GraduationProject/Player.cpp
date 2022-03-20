@@ -346,8 +346,10 @@ CCamera* CTerrainPlayer::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
 		SetMaxVelocityY(400.0f);
 		m_pCamera = OnChangeCamera(THIRD_PERSON_CAMERA, nCurrentCameraMode);
 		m_pCamera->SetTimeLag(0.25f);
-		m_pCamera->SetOffset(XMFLOAT3(0.0f, 20.0f, -50.0f));
-		m_pCamera->GenerateProjectionMatrix(1.01f, 50000.0f, ASPECT_RATIO, 60.0f);
+		m_pCamera->SetOffset(XMFLOAT3(0.0f, 50.0f, -70.0f));
+		m_pCamera->GenerateProjectionMatrix(1.01f, 5000.0f, ASPECT_RATIO, 60.0f);
+		m_pCamera->SetViewport(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT, 0.0f, 1.0f);
+		m_pCamera->SetScissorRect(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT);
 	break; default:
 		break;
 	}
@@ -388,5 +390,32 @@ void CTerrainPlayer::OnCameraUpdateCallback(float fTimeElapsed)
 			CThirdPersonCamera* p3rdPersonCamera = (CThirdPersonCamera*)m_pCamera;
 			p3rdPersonCamera->SetLookAt(GetPosition());
 		}
+	}
+}
+
+void CTerrainPlayer::OnPrepareRender()
+{
+	CPlayer::OnPrepareRender();
+
+	m_xmf4x4ToParent = Matrix4x4::Multiply(XMMatrixScaling(m_xmf3Scale.x, m_xmf3Scale.y, m_xmf3Scale.z), m_xmf4x4ToParent);
+	m_xmf4x4ToParent = Matrix4x4::Multiply(XMMatrixRotationX(-90.0f), m_xmf4x4ToParent);
+}
+
+void CTerrainPlayer::Move(DWORD dwDirection, float fDistance, bool bUpdateVelocity)
+{
+	m_pSkinnedAnimationController->SetTrackEnable(0, (dwDirection) ? true : false);
+
+	CPlayer::Move(dwDirection, fDistance, bUpdateVelocity);
+}
+
+void CTerrainPlayer::Update(float fTimeElapsed)
+{
+	CPlayer::Update(fTimeElapsed);
+
+	if (m_pSkinnedAnimationController)
+	{
+		float fLength = sqrtf(m_xmf3Velocity.x * m_xmf3Velocity.x + m_xmf3Velocity.z * m_xmf3Velocity.z);
+		m_pSkinnedAnimationController->SetTrackEnable(0, ::IsZero(fLength));
+		m_pSkinnedAnimationController->SetTrackEnable(1, !::IsZero(fLength));
 	}
 }
