@@ -261,7 +261,7 @@ void CMaterial::UpdateShaderVariable(ID3D12GraphicsCommandList* pd3dCommandList)
 {
 	for (int i = 0; i < m_nTextures; i++)
 	{
-		if (m_ppTextures[i]) m_ppTextures[i]->UpdateShaderVariable(pd3dCommandList, 0);
+		if (m_ppTextures[i]) m_ppTextures[i]->UpdateShaderVariable(pd3dCommandList,0, 0);
 	}
 }
 
@@ -327,6 +327,7 @@ CGameObject::~CGameObject()
 		}
 	}
 	if (m_ppMaterials) delete[] m_ppMaterials;
+	if (m_pSkinnedAnimationController) delete m_pSkinnedAnimationController;
 }
 
 void CGameObject::AddRef()
@@ -577,12 +578,6 @@ void CGameObject::CreateShaderVariables(ID3D12Device* pd3dDevice,ID3D12GraphicsC
 
 void CGameObject::ReleaseShaderVariables()
 {
-	if (m_pd3dcbGameObject)
-	{
-		m_pd3dcbGameObject->Unmap(0, NULL);
-		m_pd3dcbGameObject->Release();
-	}
-
 	if (m_nMaterials > 0)
 	{
 		for (int i = 0; i < m_nMaterials; i++)

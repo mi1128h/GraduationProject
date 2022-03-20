@@ -208,6 +208,7 @@ public:
 	virtual void OnPostRenderTarget(ID3D12GraphicsCommandList* pd3dCommandList);
 
 	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera, void* pContext = NULL);
+	//virtual void UpdateTextureShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList);
 	virtual void UpdateTextureShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList, ID3D12DescriptorHeap* pd3dCbvSrvUavDescriptorHeap);
 
 protected:
