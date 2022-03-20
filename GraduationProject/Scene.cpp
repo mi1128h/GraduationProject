@@ -323,14 +323,16 @@ void CScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* p
 
 	DXGI_FORMAT pdxgiRtvFormats[3] = { DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM };
 
-	//m_nShaders = 1;
-	//m_ppShaders = new CShader * [m_nShaders];
+	m_nGameObjects = 1;
+	m_ppGameObjects = new CGameObject * [m_nGameObjects];
 
-	//CObjectsShader* pObjectsShader = new CObjectsShader();
-	//pObjectsShader->CreateShader(pd3dDevice, m_pd3dGraphicsRootSignature, 3, pdxgiRtvFormats, DXGI_FORMAT_D32_FLOAT);
-	//pObjectsShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pTerrain);
-	//m_ppShaders[0] = pObjectsShader;
-
+	CLoadedModelInfo* pAngrybotModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "../Assets/Model/Angrybot.bin", NULL);
+	m_ppGameObjects[0] = new CAngrybotObject(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pAngrybotModel, 1);
+	m_ppGameObjects[0]->m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);
+	m_ppGameObjects[0]->m_pSkinnedAnimationController->SetTrackPosition(0, 0.55f);
+	m_ppGameObjects[0]->m_pSkinnedAnimationController->SetTrackSpeed(0, 0.5f);
+	m_ppGameObjects[0]->SetPosition(380.0f, m_pTerrain->GetHeight(380.0f, 725.0f), 725.0f);
+	if (pAngrybotModel) delete pAngrybotModel;
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 }
@@ -611,6 +613,8 @@ void CScene::CreateUnorderedAccessView(ID3D12Device* pd3dDevice, CTexture* pText
 
 void CScene::AnimateObjects(float fTimeElapsed, CCamera* pCamrea)
 {
+	m_fElapsedTime = fTimeElapsed;
+
 	for (int i = 0; i < m_nShaders; i++) m_ppShaders[i]->AnimateObjects(fTimeElapsed, pCamrea);
 	if (m_pLights) {}
 }
@@ -643,6 +647,16 @@ void CScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera
 
 	if (m_pSkyBox) m_pSkyBox->Render(pd3dCommandList, pCamera);
 	if (m_pTerrain) m_pTerrain->Render(pd3dCommandList, pCamera);
+
+	for (int i = 0; i < m_nGameObjects; i++)
+	{
+		if (m_ppGameObjects[i])
+		{
+			m_ppGameObjects[i]->Animate(m_fElapsedTime);
+			if (!m_ppGameObjects[i]->m_pSkinnedAnimationController) m_ppGameObjects[i]->UpdateTransform(NULL);
+			m_ppGameObjects[i]->Render(pd3dCommandList, pCamera);
+		}
+	}
 
 	for (int i = 0; i < m_nShaders; i++)
 	{

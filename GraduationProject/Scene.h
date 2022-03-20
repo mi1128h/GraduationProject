@@ -99,6 +99,11 @@ public:
 	D3D12_GPU_DESCRIPTOR_HANDLE GetUavGPUDescriptorNextHandle() { return(m_d3dSrvGPUDescriptorNextHandle); }
 
 public:
+	float								m_fElapsedTime = 0.0f;
+
+	int									m_nGameObjects = 0;
+	CGameObject** m_ppGameObjects = NULL;
+
 	CPlayer* m_pPlayer = NULL;
 
 	CHeightMapTerrain* m_pTerrain = NULL;
