@@ -564,10 +564,7 @@ void CGameObject::Rotate(XMFLOAT4* pxmf4Quaternion)
 
 void CGameObject::CreateShaderVariables(ID3D12Device* pd3dDevice,ID3D12GraphicsCommandList* pd3dCommandList)
 {
-	UINT ncbElementBytes = ((sizeof(CB_GAMEOBJECT_INFO) + 255) & ~255); //256의 배수
-	m_pd3dcbGameObject = ::CreateBufferResource(pd3dDevice, pd3dCommandList, NULL, ncbElementBytes, D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
 
-	m_pd3dcbGameObject->Map(0, NULL, (void**)&m_pcbMappedGameObject);
 }
 
 void CGameObject::ReleaseShaderVariables()
@@ -589,16 +586,23 @@ void CGameObject::ReleaseShaderVariables()
 
 void CGameObject::UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList)
 {
-	XMFLOAT4X4 xmf4x4World;
-	XMStoreFloat4x4(&xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_xmf4x4World)));
-	pd3dCommandList->SetGraphicsRoot32BitConstants(Signature::Graphics::object, 16, &xmf4x4World, 0);
 
-	//if (m_pMaterial) pd3dCommandList->SetGraphicsRoot32BitConstants(Signature::Graphics::object, 1, &m_pMaterial->m_nReflection, 16);
+}
+
+void CGameObject::UpdateShaderVariable(ID3D12GraphicsCommandList* pd3dCommandList, XMFLOAT4X4* pxmf4x4World)
+{
+	XMFLOAT4X4 xmf4x4World;
+	XMStoreFloat4x4(&xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(pxmf4x4World)));
+	pd3dCommandList->SetGraphicsRoot32BitConstants(Signature::Graphics::object, 16, &xmf4x4World, 0);
 	/*
-	XMFLOAT4 xmf4Color = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
-	if (!strcmp(m_pstrFrameName, "L_shoulder")) xmf4Color = XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
-	pd3dCommandList->SetGraphicsRoot32BitConstants(1, 4, &xmf4Color, 16);
-*/
+		XMFLOAT4 xmf4Color = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
+		if (!strcmp(m_pstrFrameName, "L_shoulder")) xmf4Color = XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
+		pd3dCommandList->SetGraphicsRoot32BitConstants(1, 4, &xmf4Color, 16);
+	*/
+}
+
+void CGameObject::UpdateShaderVariable(ID3D12GraphicsCommandList* pd3dCommandList, CMaterial* pMaterial)
+{
 }
 
 void CGameObject::ReleaseUploadBuffers()
@@ -644,7 +648,6 @@ void CGameObject::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pC
 					if (m_ppMaterials[i]->m_pShader) m_ppMaterials[i]->m_pShader->Render(pd3dCommandList, pCamera);
 					m_ppMaterials[i]->UpdateShaderVariable(pd3dCommandList);
 				}
-				// 인자: int Subset 으로 변경필요
 				m_pMesh->Render(pd3dCommandList, i);
 			}
 		}
@@ -935,6 +938,7 @@ CLoadedModelInfo* CGameObject::LoadGeometryAndAnimationFromFile(ID3D12Device* pd
 	return(pLoadedModel);
 }
 
+
 /////////////////////////////////////////////////////////////////////////////////
 
 CRotatingObject::CRotatingObject(int nMeshes) : CGameObject(nMeshes)
@@ -1034,15 +1038,5 @@ void CSkyBox::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamer
 	CGameObject::Render(pd3dCommandList, pCamera);
 }
 
-// 해야할일1
-// 3. 터레인 메쉬 수정(HeightMapImage)
-// 5. Scene 루트파라미터 인덱스 수정
-// 6. 텍스쳐파일 확인
 
-// 해야할일2
-// CreateShader 인자 변경
-// 인자에 필요한 부분 새로 선언
-// MTR에 필요한 내용인지 확인필요
 
-// 해야할일3
-// 기존에 UpdateShaderVariables 내용들을 Scene::으로 수정
