@@ -631,7 +631,7 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComman
 	UINT ncbElementBytes = ((sizeof(CB_GAMEOBJECT_INFO) + 255) & ~255);
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
-	CScene::CreateShaderResourceViews(pd3dDevice, pTexture, 0, Signature::Graphics::texture);
+	CScene::CreateShaderResourceViews(pd3dDevice, pTexture, Signature::Graphics::texture,true);
 
 #ifdef _WITH_BATCH_MATERIAL
 	m_pMaterial = new CMaterial();
@@ -986,7 +986,7 @@ void CBlurringShader::CreateResourcesAndViews(ID3D12Device* pd3dDevice, UINT nRe
 
 	//CreateCbvSrvUavDescriptorHeaps(pd3dDevice, 0, nShaderResources,1);
 #ifdef _WITH_SCENE_ROOT_SIGNATURE
-	CScene::CreateShaderResourceViews(pd3dDevice, m_pTexture, 0,Signature::Graphics::g_input);
+	CScene::CreateShaderResourceViews(pd3dDevice, m_pTexture, Signature::Graphics::g_input,true);
 #else
 	CreateShaderResourceViews(pd3dDevice, m_pTexture, 0, 0);
 #endif
