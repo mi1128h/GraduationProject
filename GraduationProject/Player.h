@@ -113,11 +113,6 @@ public:
 	//플레이어의 카메라가 3인칭 카메라일 때 플레이어(메쉬)를 렌더링한다. 
 	virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera = NULL);
 	bool IsPlayerFast();
-public:
-	bool m_bRoom = false;
-	ID3D12Resource* m_pd3dcbPlayer = NULL;
-protected:
-	CB_PLAYER_INFO* m_pcbMappedPlayer = NULL;
 };
 
 class CTerrainPlayer : public CPlayer

@@ -32,30 +32,16 @@ void CPlayer::CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsComm
 {
 	if (m_pCamera) m_pCamera->CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
-	UINT ncbElementBytes = ((sizeof(CB_PLAYER_INFO) + 255) & ~255); //256의 배수
-	m_pd3dcbPlayer = ::CreateBufferResource(pd3dDevice, pd3dCommandList, NULL, ncbElementBytes, D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
-
-	m_pd3dcbPlayer->Map(0, NULL, (void**)&m_pcbMappedPlayer);
 }
 
 void CPlayer::ReleaseShaderVariables()
 {
 	if (m_pCamera) m_pCamera->ReleaseShaderVariables();
 
-	if (m_pd3dcbPlayer)
-	{
-		m_pd3dcbPlayer->Unmap(0, NULL);
-		m_pd3dcbPlayer->Release();
-	}
-	CGameObject::ReleaseShaderVariables();
 }
 
 void CPlayer::UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList)
 {
-	XMStoreFloat4x4(&m_pcbMappedPlayer->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_xmf4x4World)));
-
-	D3D12_GPU_VIRTUAL_ADDRESS d3dGpuVirtualAddress = m_pd3dcbPlayer->GetGPUVirtualAddress();
-	pd3dCommandList->SetGraphicsRootConstantBufferView(0, d3dGpuVirtualAddress);
 }
 
 /*플레이어의 위치를 변경하는 함수이다. 플레이어의 위치는 기본적으로 사용자가 플레이어를 이동하기 위한 키보드를
