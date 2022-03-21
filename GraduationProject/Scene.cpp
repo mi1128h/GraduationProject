@@ -308,7 +308,7 @@ void CScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* p
 
 	CCannonObjectsShader* pCannonObjectsShader = new CCannonObjectsShader();
 	pCannonObjectsShader->CreateShader(pd3dDevice, m_pd3dGraphicsRootSignature, 3, pdxgiRtvFormats, DXGI_FORMAT_D32_FLOAT);
-	pCannonObjectsShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pTerrain);
+	pCannonObjectsShader->BuildObjects(pd3dDevice, m_pd3dGraphicsRootSignature, pd3dCommandList, m_pTerrain);
 	m_ppShaders[1] = pCannonObjectsShader;
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);

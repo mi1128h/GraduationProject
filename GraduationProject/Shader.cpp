@@ -1064,7 +1064,7 @@ CCannonObjectsShader::~CCannonObjectsShader()
 {
 }
 
-void CCannonObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, void* pContext)
+void CCannonObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3dGraphicsRootSignature, ID3D12GraphicsCommandList* pd3dCommandList, void* pContext)
 {
 	CHeightMapTerrain* pTerrain = (CHeightMapTerrain*)pContext;
 
@@ -1095,6 +1095,8 @@ void CCannonObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12Graphics
 
 	m_ppObjects = new CGameObject * [m_nObjects];
 
+	CCannonballObject* pCannonballObject = new CCannonballObject(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature);
+
 	//
 	CCannonObject* pCannonObject = NULL;
 
@@ -1109,6 +1111,8 @@ void CCannonObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12Graphics
 	float fHeight = pTerrain->GetHeight(xPosition, zPosition);
 	pCannonObject->SetPosition(xPosition, fHeight + 10.0f, zPosition);
 
+	pCannonObject->SetCannonball(pCannonballObject);
+
 	pCannonObject->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvUavDescriptorIncrementSize * 0));
 	m_ppObjects[0] = pCannonObject;
 }
@@ -1117,7 +1121,8 @@ void CCannonObjectsShader::ActivateCannon()
 {
 	// Test
 	XMFLOAT3 origin = ((CCannonObject*)m_ppObjects[0])->GetPosition();
-	XMFLOAT3 velocity = Vector3::Add(((CCannonObject*)m_ppObjects[0])->GetLook(), XMFLOAT3(0.0f, 20.0f, 0.0f));
+	XMFLOAT3 xmf3XZ = Vector3::ScalarProduct(((CCannonObject*)m_ppObjects[0])->GetLook(), 5.0f);
+	XMFLOAT3 velocity = Vector3::Add(xmf3XZ, XMFLOAT3(0.0f, 5.0f, 0.0f));
 
 	((CCannonObject*)m_ppObjects[0])->FireCannonBall(origin, velocity);
 }

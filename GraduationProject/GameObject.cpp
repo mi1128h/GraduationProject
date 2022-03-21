@@ -802,9 +802,36 @@ void CInteractiveCoverObject::Animate(float fTimeElapsed, CCamera* pCamrea)
 
 //////////////////////////////////////////
 
-CCannonballObject::CCannonballObject()
+CCannonballObject::CCannonballObject(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature)
 {
+	CCubeMeshIlluminatedTextured* pCubeMesh = new CCubeMeshIlluminatedTextured(pd3dDevice, pd3dCommandList, 10.0f, 10.0f, 10.0f);
+	SetMesh(0, pCubeMesh);
 
+	CreateShaderVariables(pd3dDevice, pd3dCommandList);
+
+	CTexture* pTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
+
+	pTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/Rock01.dds", RESOURCE_TEXTURE2D, 0);
+
+	UINT ncbElementBytes = ((sizeof(CB_GAMEOBJECT_INFO) + 255) & ~255); //256의 배수
+
+	CIlluminatedShader* pShader = new CIlluminatedShader();
+
+	DXGI_FORMAT pdxgiRtvFormats[3] = { DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM };
+
+	pShader->CreateShader(pd3dDevice, pd3dGraphicsRootSignature, 3, pdxgiRtvFormats, DXGI_FORMAT_D32_FLOAT);
+	pShader->CreateShaderVariables(pd3dDevice, pd3dCommandList);
+	pShader->CreateCbvSrvUavDescriptorHeaps(pd3dDevice, 1, 1, 0);
+	pShader->CreateConstantBufferViews(pd3dDevice, 1, m_pd3dcbGameObject, ncbElementBytes);
+	pShader->CreateShaderResourceViews(pd3dDevice, pTexture, 0, Signature::Graphics::texture);
+	CMaterial* pSMaterial = new CMaterial();
+	pSMaterial->SetTexture(pTexture);
+
+	SetMaterial(pSMaterial);
+
+	SetCbvGPUDescriptorHandle(pShader->GetGPUCbvDescriptorStartHandle());
+
+	SetShader(pShader);
 }
 
 CCannonballObject::~CCannonballObject()
@@ -813,10 +840,15 @@ CCannonballObject::~CCannonballObject()
 
 void CCannonballObject::Animate(float fTimeElapsed, CCamera* pCamera)
 {
-	XMFLOAT3 xmf3Gravity = XMFLOAT3(0.0f, -10.0f, 0.0f);
-	m_xmf3Velocity = Vector3::Add(m_xmf3Velocity, Vector3::ScalarProduct(xmf3Gravity, fTimeElapsed * 1.5f, false));
+	if (m_bIsFired) {
+		XMFLOAT3 xmf3Gravity = XMFLOAT3(0.0f, -10.0f, 0.0f);
+		m_xmf3Velocity = Vector3::Add(m_xmf3Velocity, Vector3::ScalarProduct(xmf3Gravity, fTimeElapsed * 0.5f, false));
 
-	SetPosition(Vector3::Add(GetPosition(), m_xmf3Velocity));
+		SetPosition(Vector3::Add(GetPosition(), m_xmf3Velocity));
+	}
+
+	// 포탄이 바닥에 충돌, 없어지면
+	// SetFire(false);
 }
 
 bool CCannonballObject::IsReadyToFire()
@@ -840,15 +872,25 @@ CCannonObject::~CCannonObject()
 {
 }
 
+void CCannonObject::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
+{
+	CGameObject::Render(pd3dCommandList, pCamera);
+	if (m_pCannonball) {
+		m_pCannonball->Render(pd3dCommandList, pCamera);
+	}
+}
+
 void CCannonObject::Animate(float fTimeElapsed, CCamera* pCamera)
 {
-
+	if (m_pCannonball) {
+		m_pCannonball->Animate(fTimeElapsed, pCamera);
+	}
 }
 
 void CCannonObject::FireCannonBall(XMFLOAT3 Origin, XMFLOAT3 Velocity)
 {
-	if (m_Cannonball.IsReadyToFire()) {
-		m_Cannonball.SetValues(Origin, Velocity);
-		m_Cannonball.SetFire(true);
+	if (m_pCannonball->IsReadyToFire()) {
+		m_pCannonball->SetValues(Origin, Velocity);
+		m_pCannonball->SetFire(true);
 	}
 }

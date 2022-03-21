@@ -336,7 +336,7 @@ public:
 class CCannonballObject : public CGameObject
 {
 public:
-	CCannonballObject();
+	CCannonballObject(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature);
 	virtual ~CCannonballObject();
 
 private:
@@ -359,9 +359,11 @@ public:
 	virtual ~CCannonObject();
 
 private:
-	CCannonballObject m_Cannonball;
+	CCannonballObject* m_pCannonball;
 
 public:
+	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
 	virtual void Animate(float fTimeElapsed, CCamera* pCamera = NULL);
 	void FireCannonBall(XMFLOAT3 Origin, XMFLOAT3 Velocity);
+	void SetCannonball(CCannonballObject* pCannonball) { m_pCannonball = pCannonball; }
 };
