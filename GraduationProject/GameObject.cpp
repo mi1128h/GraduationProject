@@ -804,7 +804,7 @@ void CInteractiveCoverObject::Animate(float fTimeElapsed, CCamera* pCamrea)
 
 CCannonballObject::CCannonballObject(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature)
 {
-	CCubeMeshIlluminatedTextured* pCubeMesh = new CCubeMeshIlluminatedTextured(pd3dDevice, pd3dCommandList, 10.0f, 10.0f, 10.0f);
+	CCubeMeshIlluminatedTextured* pCubeMesh = new CCubeMeshIlluminatedTextured(pd3dDevice, pd3dCommandList, 5.0f, 5.0f, 5.0f);
 	SetMesh(0, pCubeMesh);
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
@@ -828,6 +828,7 @@ CCannonballObject::CCannonballObject(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	pSMaterial->SetTexture(pTexture);
 
 	SetMaterial(pSMaterial);
+	m_pMaterial->SetReflection(7);
 
 	SetCbvGPUDescriptorHandle(pShader->GetGPUCbvDescriptorStartHandle());
 
@@ -848,7 +849,14 @@ void CCannonballObject::Animate(float fTimeElapsed, CCamera* pCamera)
 	}
 
 	// 포탄이 바닥에 충돌, 없어지면
-	// SetFire(false);
+	CHeightMapTerrain* pTerrain = (CHeightMapTerrain*)m_pUpdatedContext;
+	XMFLOAT3 xmf3Scale = pTerrain->GetScale();
+	XMFLOAT3 xmf3Position = GetPosition();
+	float fHeight = pTerrain->GetHeight(xmf3Position.x, xmf3Position.z);
+	if (xmf3Position.y <= fHeight) {
+		SetFire(false);
+		SetActive(false);
+	}
 }
 
 bool CCannonballObject::IsReadyToFire()
@@ -892,5 +900,6 @@ void CCannonObject::FireCannonBall(XMFLOAT3 Origin, XMFLOAT3 Velocity)
 	if (m_pCannonball->IsReadyToFire()) {
 		m_pCannonball->SetValues(Origin, Velocity);
 		m_pCannonball->SetFire(true);
+		m_pCannonball->SetActive(true);
 	}
 }

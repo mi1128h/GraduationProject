@@ -342,12 +342,16 @@ public:
 private:
 	XMFLOAT3 m_xmf3Velocity;
 	bool m_bIsFired = false;
+	LPVOID m_pUpdatedContext;
 
 public:
 	virtual void Animate(float fTimeElapsed, CCamera* pCamrea = NULL);
-	bool IsReadyToFire();
+	void SetUpdatedContext(LPVOID pContext) { m_pUpdatedContext = pContext; }
+
 	void SetValues(XMFLOAT3 origin, XMFLOAT3 velocity);
 	void SetFire(bool fire) { m_bIsFired = fire; }
+
+	bool IsReadyToFire();
 };
 
 //

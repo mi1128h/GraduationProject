@@ -989,7 +989,7 @@ void CCoverObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsC
 	pCoverObject->SetMesh(0, pCubeMesh);
 #ifndef _WITH_BATCH_MATERIAL
 	pCoverObject->SetMaterial(pCubeMaterial);
-	pCoverObject->m_pMaterial->SetReflection(0);
+	pCoverObject->m_pMaterial->SetReflection(7);
 #endif
 	float xPosition = fTerrainWidth * 0.5f - 10.0f;
 	float zPosition = fTerrainLength * 0.5f;
@@ -1006,7 +1006,7 @@ void CCoverObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsC
 	pMovingCoverObject->SetMesh(0, pCubeMesh);
 #ifndef _WITH_BATCH_MATERIAL
 	pMovingCoverObject->SetMaterial(pCubeMaterial);
-	pMovingCoverObject->m_pMaterial->SetReflection(0);
+	pMovingCoverObject->m_pMaterial->SetReflection(7);
 #endif
 	xPosition = fTerrainWidth * 0.5f + 10.0f;
 	zPosition = fTerrainLength * 0.5f;
@@ -1026,7 +1026,7 @@ void CCoverObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsC
 	pInteractiveCoverObject->SetMesh(0, pCubeMesh);
 #ifndef _WITH_BATCH_MATERIAL
 	pInteractiveCoverObject->SetMaterial(pCubeMaterial);
-	pInteractiveCoverObject->m_pMaterial->SetReflection(0);
+	pInteractiveCoverObject->m_pMaterial->SetReflection(7);
 #endif
 	xPosition = fTerrainWidth * 0.5f + 20.0f;
 	zPosition = fTerrainLength * 0.5f;
@@ -1096,6 +1096,7 @@ void CCannonObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSign
 	m_ppObjects = new CGameObject * [m_nObjects];
 
 	CCannonballObject* pCannonballObject = new CCannonballObject(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature);
+	pCannonballObject->SetUpdatedContext(pTerrain);
 
 	//
 	CCannonObject* pCannonObject = NULL;
@@ -1104,7 +1105,7 @@ void CCannonObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSign
 	pCannonObject->SetMesh(0, pCubeMesh);
 #ifndef _WITH_BATCH_MATERIAL
 	pCannonObject->SetMaterial(pCubeMaterial);
-	pCannonObject->m_pMaterial->SetReflection(1);
+	pCannonObject->m_pMaterial->SetReflection(7);
 #endif
 	float xPosition = fTerrainWidth * 0.5f;
 	float zPosition = fTerrainLength * 0.5f - 10.0f;
