@@ -356,7 +356,9 @@ void CMaterial::UpdateShaderVariable(ID3D12GraphicsCommandList* pd3dCommandList)
 {
 	for (int i = 0; i < m_nTextures; i++)
 	{
-		if (m_ppTextures[i]) m_ppTextures[i]->UpdateShaderVariable(pd3dCommandList,0, 0);
+		if (m_ppTextures[i]) m_ppTextures[i]->UpdateGraphicsShaderVariables(pd3dCommandList);
+
+		//if (m_ppTextures[i]) m_ppTextures[i]->UpdateShaderVariable(pd3dCommandList,0, 0);
 	}
 }
 
@@ -1218,7 +1220,7 @@ void CInteractiveCoverObject::Animate(float fTimeElapsed, CCamera* pCamrea)
 
 //////////////////////////////////////////
 
-CCannonballObject::CCannonballObject(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature)
+CCannonballObject::CCannonballObject(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature) : CGameObject(1)
 {
 	CCubeMeshIlluminatedTextured* pCubeMesh = new CCubeMeshIlluminatedTextured(pd3dDevice, pd3dCommandList, 5.0f, 5.0f, 5.0f);
 	SetMesh(pCubeMesh);
@@ -1228,19 +1230,16 @@ CCannonballObject::CCannonballObject(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	CTexture* pTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
 	pTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/Rock01.dds", 0);
 
-	UINT ncbElementBytes = ((sizeof(CB_GAMEOBJECT_INFO) + 255) & ~255); //256의 배수
-
 	CIlluminatedShader* pShader = new CIlluminatedShader();
-
 	DXGI_FORMAT pdxgiRtvFormats[3] = { DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM };
 
 	pShader->CreateShader(pd3dDevice, pd3dGraphicsRootSignature, 3, pdxgiRtvFormats, DXGI_FORMAT_D32_FLOAT);
 	pShader->CreateShaderVariables(pd3dDevice, pd3dCommandList);
 	
 	CScene::CreateShaderResourceViews(pd3dDevice, pTexture, Signature::Graphics::texture,true);
+	
 	CMaterial* pSMaterial = new CMaterial(1);
 	pSMaterial->SetTexture(pTexture);
-
 	SetMaterial(0, pSMaterial);
 
 	SetShader(pShader);
@@ -1283,7 +1282,7 @@ void CCannonballObject::SetValues(XMFLOAT3 origin, XMFLOAT3 velocity)
 
 //
 
-CCannonObject::CCannonObject()
+CCannonObject::CCannonObject() : CGameObject(1)
 {
 }
 
