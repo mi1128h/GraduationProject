@@ -1226,8 +1226,7 @@ CCannonballObject::CCannonballObject(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
 	CTexture* pTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
-
-	pTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/Rock01.dds", RESOURCE_TEXTURE2D, 0);
+	pTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/Rock01.dds", 0);
 
 	UINT ncbElementBytes = ((sizeof(CB_GAMEOBJECT_INFO) + 255) & ~255); //256의 배수
 
@@ -1237,15 +1236,12 @@ CCannonballObject::CCannonballObject(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 
 	pShader->CreateShader(pd3dDevice, pd3dGraphicsRootSignature, 3, pdxgiRtvFormats, DXGI_FORMAT_D32_FLOAT);
 	pShader->CreateShaderVariables(pd3dDevice, pd3dCommandList);
-	pShader->CreateCbvSrvUavDescriptorHeaps(pd3dDevice, 1, 1, 0);
-	pShader->CreateConstantBufferViews(pd3dDevice, 1, m_pd3dcbGameObject, ncbElementBytes);
-	pShader->CreateShaderResourceViews(pd3dDevice, pTexture, 0, Signature::Graphics::texture);
+	
+	CScene::CreateShaderResourceViews(pd3dDevice, pTexture, Signature::Graphics::texture,true);
 	CMaterial* pSMaterial = new CMaterial(1);
 	pSMaterial->SetTexture(pTexture);
 
 	SetMaterial(0, pSMaterial);
-
-	SetCbvGPUDescriptorHandle(pShader->GetGPUCbvDescriptorStartHandle());
 
 	SetShader(pShader);
 }
