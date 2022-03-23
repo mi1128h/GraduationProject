@@ -268,14 +268,14 @@ CTerrainPlayer::CTerrainPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLi
 {
 	m_pCamera = ChangeCamera(THIRD_PERSON_CAMERA, 0.0f);
 
-	CLoadedModelInfo* pAngrybotModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/Angrybot.bin", NULL);
+	CLoadedModelInfo* pAngrybotModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/Dwarf Walk.bin", NULL);
 	SetChild(pAngrybotModel->m_pModelRootObject, true);
 
-	m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, 2, pAngrybotModel);
+	m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, 1, pAngrybotModel);
 	m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);
-	m_pSkinnedAnimationController->SetTrackStartEndTime(0, 0.0f, 2.5f);
+/*	m_pSkinnedAnimationController->SetTrackStartEndTime(0, 0.0f, 2.5f)*/;/*
 	m_pSkinnedAnimationController->SetTrackAnimationSet(1, 0);
-	m_pSkinnedAnimationController->SetTrackStartEndTime(1, 2.5f, 4.5f);
+	m_pSkinnedAnimationController->SetTrackStartEndTime(1, 2.5f, 4.5f);*/
 
 #ifdef _WITH_SOUND_CALLBACK
 	m_pSkinnedAnimationController->SetCallbackKeys(0, 1);
@@ -297,6 +297,7 @@ CTerrainPlayer::CTerrainPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLi
 	SetPosition(XMFLOAT3(310.0f, pTerrain->GetHeight(310.0f, 595.0f), 595.0f));
 
 	SetScale(XMFLOAT3(0.2f, 0.2f, 0.2f));
+	Rotate(0.0f, 0.0f, 90.0f);
 }
 
 CTerrainPlayer::~CTerrainPlayer()
