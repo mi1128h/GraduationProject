@@ -80,6 +80,16 @@ using Microsoft::WRL::ComPtr;
 
 #define OBJECT_NUM 15
 
+namespace Animation {
+	enum Type {
+		Once = 0,
+		Loop,
+		PingPong,
+	};
+
+	const double Callback_Epsilon = 0.015;
+}
+
 namespace Signature {
 	enum Graphics {
 		player,
@@ -88,8 +98,11 @@ namespace Signature {
 		meterial,
 		light,
 		gfw,
+		bone_offsets,
+		bone_trans,
 		texture,
-		terrain,
+		terrain_base,
+		terrain_detail,
 		skybox,
 		g_input,
 		g_output
@@ -103,9 +116,9 @@ namespace Signature {
 
 namespace Descriptor {
 	enum Graphics {
-		object,
 		texture,
-		terrain,
+		terrain_base,
+		terrain_detail,
 		skybox,
 		g_input,
 		g_output
@@ -121,6 +134,11 @@ namespace Descriptor {
 
 //#define _WITH_PRESENT_PARAMETERS
 //#define _WITH_SYNCH_SWAPCHAIN
+
+extern int ReadStringFromFile(FILE* pInFile, char* pstrToken);
+extern UINT ReadUnsignedIntegerFromFile(FILE* pInFile);
+extern int ReadIntegerFromFile(FILE* pInFile);
+extern float ReadFloatFromFile(FILE* pInFile);
 
 /// 디스크립터 힙의 시작주소를 가져와 힙 타입에 따라 인크리먼트 하기위해 필요
 extern UINT	gnCbvSrvUavDescriptorIncrementSize;
@@ -141,11 +159,11 @@ extern void ExecuteCommandList(ID3D12GraphicsCommandList* pd3dCommandList, ID3D1
 #define EPSILON 1.0e-10f
 
 inline bool IsZero(float fValue) { return((fabsf(fValue) < EPSILON)); }
+inline bool IsZero(float fValue, float fEpsilon) { return((fabsf(fValue) < fEpsilon)); }
 inline bool IsEqual(float fA, float fB) { return(::IsZero(fA - fB)); }
+inline bool IsEqual(float fA, float fB, float fEpsilon) { return(::IsZero(fA - fB, fEpsilon)); }
 inline float InverseSqrt(float fValue) { return 1.0f / sqrtf(fValue); }
-inline void Swap(float* pfS, float* pfT) { 
-	float fTemp = *pfS; *pfS = *pfT; *pfT = fTemp; 
-}
+inline void Swap(float* pfS, float* pfT) { float fTemp = *pfS; *pfS = *pfT; *pfT = fTemp; }
 
 
 // 3차원 벡터의 연산 
@@ -369,6 +387,20 @@ namespace Matrix4x4
 		XMStoreFloat4x4(&xmmtx4x4Result, XMMatrixLookAtLH(XMLoadFloat3(&xmf3EyePosition),
 			XMLoadFloat3(&xmf3LookAtPosition), XMLoadFloat3(&xmf3UpDirection)));
 		return(xmmtx4x4Result);
+	}
+
+	inline XMFLOAT4X4 PerspectiveFovRH(float FovAngleY, float AspectRatio, float NearZ, float FarZ)
+	{
+		XMFLOAT4X4 xmf4x4Result;
+		XMStoreFloat4x4(&xmf4x4Result, XMMatrixPerspectiveFovRH(FovAngleY, AspectRatio, NearZ, FarZ));
+		return(xmf4x4Result);
+	}
+
+	inline XMFLOAT4X4 LookAtRH(const XMFLOAT3& xmf3EyePosition, const XMFLOAT3& xmf3LookAtPosition, const XMFLOAT3& xmf3UpDirection)
+	{
+		XMFLOAT4X4 xmf4x4Result;
+		XMStoreFloat4x4(&xmf4x4Result, XMMatrixLookAtRH(XMLoadFloat3(&xmf3EyePosition), XMLoadFloat3(&xmf3LookAtPosition), XMLoadFloat3(&xmf3UpDirection)));
+		return(xmf4x4Result);
 	}
 }
 
