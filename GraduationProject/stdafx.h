@@ -105,7 +105,8 @@ namespace Signature {
 		terrain_detail,
 		skybox,
 		g_input,
-		g_output
+		g_output,
+		animation_diffuse
 	};
 
 	enum Compute {
@@ -121,7 +122,8 @@ namespace Descriptor {
 		terrain_detail,
 		skybox,
 		g_input,
-		g_output
+		g_output,
+		animation_diffuse
 	};
 
 	enum Compute {

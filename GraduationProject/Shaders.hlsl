@@ -379,6 +379,7 @@ PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSWireFrame(VS_WIREFRAME_OUTPUT input) : SV_TA
 //
 #define MAX_VERTEX_INFLUENCES			4
 #define SKINNED_ANIMATION_BONES			128
+Texture2D<float4> gtxtAnimationDiffuseTexture : register(t8);
 
 cbuffer cbBoneOffsets : register(b7)
 {
