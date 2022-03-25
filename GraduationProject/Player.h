@@ -10,6 +10,8 @@
 #include "Camera.h"
 #include "Animation.h"
 
+class CScene;
+
 struct CB_PLAYER_INFO
 {
 	XMFLOAT4X4					m_xmf4x4World;
