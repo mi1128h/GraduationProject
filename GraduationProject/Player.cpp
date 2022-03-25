@@ -271,6 +271,11 @@ CTerrainPlayer::CTerrainPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLi
 	CLoadedModelInfo* pAngrybotModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/Dwarf Walk.bin", NULL);
 	SetChild(pAngrybotModel->m_pModelRootObject, true);
 
+	CTexture* pAnimationTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
+	pAnimationTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Model/Texture/maria_diffuse.dds", 0);
+
+	m_pTexture = pAnimationTexture;
+
 	m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, 1, pAngrybotModel);
 	m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);
 /*	m_pSkinnedAnimationController->SetTrackStartEndTime(0, 0.0f, 2.5f)*/;/*

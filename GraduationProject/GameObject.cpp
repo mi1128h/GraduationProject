@@ -643,6 +643,8 @@ void CGameObject::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pC
 
 	if (m_pSkinnedAnimationController) m_pSkinnedAnimationController->UpdateShaderVariables(pd3dCommandList);
 
+	if (m_pTexture) m_pTexture->UpdateGraphicsShaderVariables(pd3dCommandList);
+
 	if (m_pMesh)
 	{
 		UpdateShaderVariable(pd3dCommandList, &m_xmf4x4World);

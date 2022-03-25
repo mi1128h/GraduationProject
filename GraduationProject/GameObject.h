@@ -153,6 +153,7 @@ public:
 	void SetReflection(UINT nReflection) { m_nReflection = nReflection; }
 	void SetMaterialType(UINT nType) { m_nType |= nType; }
 	void SetTexture(CTexture* pTexture, UINT nTexture = 0);
+	void SetTexture(int nTexture);
 	void SetShader(CShader* pShader);
 
 	void UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList);
@@ -210,6 +211,8 @@ public:
 
 
 	D3D12_GPU_DESCRIPTOR_HANDLE		m_d3dCbvGPUDescriptorHandle;
+
+	CTexture* m_pTexture;
 
 public:
 	void SetMesh(CMesh* pMesh);
