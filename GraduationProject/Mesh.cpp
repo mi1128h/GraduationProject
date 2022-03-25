@@ -114,6 +114,29 @@ void CMesh::LoadMeshFromFile(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 				m_d3dPositionBufferView.SizeInBytes = sizeof(XMFLOAT3) * m_nVertices;
 			}
 		}
+		else if (!strcmp(pstrToken, "<UVs>:"))
+		{
+			m_nVertices = ::ReadUnsignedIntegerFromFile(pInFile);
+			int num = ::ReadUnsignedIntegerFromFile(pInFile);
+
+			::ReadStringFromFile(pInFile, pstrToken);
+
+			if (m_nVertices > 0)
+			{
+				if (!strcmp(pstrToken, "<UV>:"))
+				{
+					int index = ::ReadIntegerFromFile(pInFile);
+					m_pxmf2TextureCoords = new XMFLOAT2[m_nVertices];
+					nReads = (UINT)::fread(m_pxmf2TextureCoords, sizeof(XMFLOAT2), m_nVertices, pInFile);
+
+					m_pd3dTextureCoordBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList, m_pxmf2TextureCoords, sizeof(XMFLOAT2) * m_nVertices, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, &m_pd3dTextureCoordUploadBuffer);
+
+					m_d3dTextureCoordBufferView.BufferLocation = m_pd3dTextureCoordBuffer->GetGPUVirtualAddress();
+					m_d3dTextureCoordBufferView.StrideInBytes = sizeof(XMFLOAT2);
+					m_d3dTextureCoordBufferView.SizeInBytes = sizeof(XMFLOAT2) * m_nVertices;
+				}
+			}
+		}
 		else if (!strcmp(pstrToken, "<Polygons>:"))
 		{
 			int nPolygons = ::ReadIntegerFromFile(pInFile);
@@ -1328,6 +1351,6 @@ void CSkinnedMesh::LoadSkinDeformationsFromFile(ID3D12Device* pd3dDevice, ID3D12
 
 void CSkinnedMesh::OnPreRender(ID3D12GraphicsCommandList* pd3dCommandList, void* pContext)
 {
-	D3D12_VERTEX_BUFFER_VIEW pVertexBufferViews[3] = { m_d3dPositionBufferView, m_d3dBoneIndexBufferView, m_d3dBoneWeightBufferView };
-	pd3dCommandList->IASetVertexBuffers(m_nSlot, 3, pVertexBufferViews);
+	D3D12_VERTEX_BUFFER_VIEW pVertexBufferViews[4] = { m_d3dPositionBufferView, m_d3dBoneIndexBufferView, m_d3dBoneWeightBufferView,m_d3dTextureCoordBufferView };
+	pd3dCommandList->IASetVertexBuffers(m_nSlot, 4, pVertexBufferViews);
 }

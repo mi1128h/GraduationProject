@@ -177,6 +177,12 @@ protected:
 	ID3D12Resource** m_ppd3dSubSetIndexUploadBuffers = NULL;
 	D3D12_INDEX_BUFFER_VIEW* m_pd3dSubSetIndexBufferViews = NULL;
 
+
+	XMFLOAT2* m_pxmf2TextureCoords = NULL;
+	ID3D12Resource* m_pd3dTextureCoordBuffer = NULL;
+	ID3D12Resource* m_pd3dTextureCoordUploadBuffer = NULL;
+	D3D12_VERTEX_BUFFER_VIEW		m_d3dTextureCoordBufferView;
+
 	UINT m_nStride = 0;
 
 public:
