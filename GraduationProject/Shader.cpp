@@ -937,14 +937,14 @@ void CCoverObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsC
 	m_nObjects = 3;
 
 	CTexture* pTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
-	pTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/stones.dds", RESOURCE_TEXTURE2D, 0);
+	pTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/stones.dds",0);
 
 	UINT ncbElementBytes = ((sizeof(CB_GAMEOBJECT_INFO) + 255) & ~255);
 
-	CreateCbvSrvUavDescriptorHeaps(pd3dDevice, m_nObjects, 1, 0);
+	//CreateCbvSrvUavDescriptorHeaps(pd3dDevice, m_nObjects, 1, 0);
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
-	CreateConstantBufferViews(pd3dDevice, m_nObjects, m_pd3dcbGameObjects, ncbElementBytes);
-	CreateShaderResourceViews(pd3dDevice, pTexture, 0, Signature::Graphics::texture);
+	//CreateConstantBufferViews(pd3dDevice, m_nObjects, m_pd3dcbGameObjects, ncbElementBytes);
+	CScene::CreateShaderResourceViews(pd3dDevice, pTexture, Signature::Graphics::texture,true);
 
 #ifdef _WITH_BATCH_MATERIAL
 	m_pMaterial = new CMaterial();
@@ -971,7 +971,7 @@ void CCoverObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsC
 	float fHeight = pTerrain->GetHeight(xPosition, zPosition);
 	pCoverObject->SetPosition(xPosition, fHeight + 10.0f, zPosition);
 
-	pCoverObject->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvUavDescriptorIncrementSize * 0));
+	//pCoverObject->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvUavDescriptorIncrementSize * 0));
 	m_ppObjects[0] = pCoverObject;
 
 	// 이동형
@@ -990,7 +990,7 @@ void CCoverObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsC
 	pMovingCoverObject->SetMovingDirection(XMFLOAT3(0.0f, 0.0f, 1.0f));
 	pMovingCoverObject->SetMovingSpeed(20.0f);
 
-	pMovingCoverObject->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvUavDescriptorIncrementSize * 1));
+	//pMovingCoverObject->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvUavDescriptorIncrementSize * 1));
 	m_ppObjects[1] = pMovingCoverObject;
 
 	// 상호작용형
@@ -1006,7 +1006,7 @@ void CCoverObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsC
 	fHeight = pTerrain->GetHeight(xPosition, zPosition);
 	pInteractiveCoverObject->SetPosition(xPosition, fHeight + 10.0f, zPosition);
 
-	pInteractiveCoverObject->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvUavDescriptorIncrementSize * 2));
+	//pInteractiveCoverObject->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvUavDescriptorIncrementSize * 2));
 	m_ppObjects[2] = pInteractiveCoverObject;
 }
 
@@ -1047,14 +1047,14 @@ void CCannonObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSign
 	m_nObjects = 1;
 
 	CTexture* pTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
-	pTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/Floor.dds", RESOURCE_TEXTURE2D, 0);
+	pTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/Floor.dds", 0);
 
 	UINT ncbElementBytes = ((sizeof(CB_GAMEOBJECT_INFO) + 255) & ~255);
 
-	CreateCbvSrvUavDescriptorHeaps(pd3dDevice, m_nObjects, 1, 0);
+	//CreateCbvSrvUavDescriptorHeaps(pd3dDevice, m_nObjects, 1, 0);
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
-	CreateConstantBufferViews(pd3dDevice, m_nObjects, m_pd3dcbGameObjects, ncbElementBytes);
-	CreateShaderResourceViews(pd3dDevice, pTexture, 0, Signature::Graphics::texture);
+	//CreateConstantBufferViews(pd3dDevice, m_nObjects, m_pd3dcbGameObjects, ncbElementBytes);
+	CScene::CreateShaderResourceViews(pd3dDevice, pTexture,Signature::Graphics::texture,true);
 
 #ifdef _WITH_BATCH_MATERIAL
 	m_pMaterial = new CMaterial();
@@ -1086,7 +1086,7 @@ void CCannonObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSign
 
 	pCannonObject->SetCannonball(pCannonballObject);
 
-	pCannonObject->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvUavDescriptorIncrementSize * 0));
+	//pCannonObject->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvUavDescriptorIncrementSize * 0));
 	m_ppObjects[0] = pCannonObject;
 }
 
