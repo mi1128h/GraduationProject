@@ -393,6 +393,7 @@ PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSWireFrame(VS_WIREFRAME_OUTPUT input) : SV_TA
 //
 #define MAX_VERTEX_INFLUENCES			4
 #define SKINNED_ANIMATION_BONES			128
+Texture2D<float4> gtxtAnimationDiffuseTexture : register(t8);
 
 cbuffer cbBoneOffsets : register(b7)
 {
@@ -404,21 +405,23 @@ cbuffer cbBoneTransforms : register(b8)
 	float4x4 gpmtxBoneTransforms[SKINNED_ANIMATION_BONES];
 };
 
-struct VS_SKINNED_WIREFRAME_INPUT
+struct VS_SKINNED_INPUT
 {
 	float3 position : POSITION;
 	int4 indices : BONEINDEX;
 	float4 weights : BONEWEIGHT;
+	float2 uv :TEXCOORD;
 };
 
-struct VS_SKINNED_WIREFRAME_OUTPUT
+struct VS_SKINNED_OUTPUT
 {
 	float4 position : SV_POSITION;
+	float2 uv : TEXCOORD;
 };
 
-VS_SKINNED_WIREFRAME_OUTPUT VSSkinnedAnimationWireFrame(VS_SKINNED_WIREFRAME_INPUT input)
+VS_SKINNED_OUTPUT VSSkinnedAnimation(VS_SKINNED_INPUT input)
 {
-	VS_SKINNED_WIREFRAME_OUTPUT output;
+	VS_SKINNED_OUTPUT output;
 
 	float3 positionW = float3(0.0f, 0.0f, 0.0f);
 	matrix mtxVertexToBoneWorld;
@@ -427,19 +430,20 @@ VS_SKINNED_WIREFRAME_OUTPUT VSSkinnedAnimationWireFrame(VS_SKINNED_WIREFRAME_INP
 		mtxVertexToBoneWorld = mul(gpmtxBoneOffsets[input.indices[i]], gpmtxBoneTransforms[input.indices[i]]);
 		positionW += input.weights[i] * mul(float4(input.position, 1.0f), mtxVertexToBoneWorld).xyz;
 	}
-
+	output.uv = input.uv;
 	output.position = mul(mul(float4(positionW, 1.0f), gmtxView), gmtxProjection);
 	//	output.position = mul(mul(mul(float4(input.position, 1.0f), gmtxGameObject), gmtxView), gmtxProjection);
 
 	return(output);
 }
 
-PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSSkinnedAnimationWireFrame(VS_SKINNED_WIREFRAME_OUTPUT input) : SV_TARGET
+PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSSkinnedAnimation(VS_SKINNED_OUTPUT input) : SV_TARGET
 {
+	float4 cColor = gtxtAnimationDiffuseTexture.Sample(gSamplerState, input.uv);
 
 	PS_MULTIPLE_RENDER_TARGETS_OUTPUT output;
 
-	output.f4Scene = output.f4Color = float4(1.0f, 0.0f, 0.0f, 1.0f);
+	output.f4Scene = output.f4Color = cColor;
 	output.fDepth = 1.0f - input.position.z;
 
 	return(output);

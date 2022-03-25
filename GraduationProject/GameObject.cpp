@@ -308,12 +308,7 @@ void CTexture::LoadBuffer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* p
 //
 CMaterial::CMaterial(int nTextures)
 {
-	m_nTextures = nTextures;
-
-	m_ppTextures = new CTexture * [m_nTextures];
-	m_ppstrTextureNames = new _TCHAR[m_nTextures][64];
-	for (int i = 0; i < m_nTextures; i++) m_ppTextures[i] = NULL;
-	for (int i = 0; i < m_nTextures; i++) m_ppstrTextureNames[i][0] = '\0';
+	SetTexture(nTextures);
 }
 
 
@@ -335,6 +330,16 @@ void CMaterial::SetTexture(CTexture* pTexture, UINT nTexture)
 	if (m_ppTextures[nTexture]) m_ppTextures[nTexture]->Release();
 	m_ppTextures[nTexture] = pTexture;
 	if (m_ppTextures[nTexture]) m_ppTextures[nTexture]->AddRef();
+}
+
+void CMaterial::SetTexture(int nTexture)
+{
+	m_nTextures = nTexture;
+
+	m_ppTextures = new CTexture * [m_nTextures];
+	m_ppstrTextureNames = new _TCHAR[m_nTextures][64];
+	for (int i = 0; i < m_nTextures; i++) m_ppTextures[i] = NULL;
+	for (int i = 0; i < m_nTextures; i++) m_ppstrTextureNames[i][0] = '\0';
 }
 
 void CMaterial::SetShader(CShader* pShader)
@@ -734,6 +739,8 @@ void CGameObject::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pC
 	if (!m_bActive) return;
 
 	if (m_pSkinnedAnimationController) m_pSkinnedAnimationController->UpdateShaderVariables(pd3dCommandList);
+
+	if (m_pTexture) m_pTexture->UpdateGraphicsShaderVariables(pd3dCommandList);
 
 	if (m_pMesh)
 	{
