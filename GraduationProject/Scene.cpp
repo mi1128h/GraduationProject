@@ -173,7 +173,7 @@ ID3D12RootSignature* CScene::CreateGraphicsRootSignature(ID3D12Device* pd3dDevic
 
 	pd3dRootParameters[Signature::Graphics::animation_diffuse].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
 	pd3dRootParameters[Signature::Graphics::animation_diffuse].DescriptorTable.NumDescriptorRanges = 1;
-	pd3dRootParameters[Signature::Graphics::animation_diffuse].DescriptorTable.pDescriptorRanges = &pd3dDescriptorRanges[Descriptor::Graphics::g_output];
+	pd3dRootParameters[Signature::Graphics::animation_diffuse].DescriptorTable.pDescriptorRanges = &pd3dDescriptorRanges[Descriptor::Graphics::animation_diffuse];
 	pd3dRootParameters[Signature::Graphics::animation_diffuse].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 
 	D3D12_STATIC_SAMPLER_DESC pd3dSamplerDescs[2];
