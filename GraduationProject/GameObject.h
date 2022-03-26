@@ -446,6 +446,7 @@ public:
 	virtual void Animate(float fTimeElapsed, CCamera* pCamera = NULL);
 	void FireCannonBall(XMFLOAT3 Origin, XMFLOAT3 Velocity);
 	void SetCannonball(CCannonballObject* pCannonball) { m_pCannonball = pCannonball; }
+	CCannonballObject* GetCannonball() { return m_pCannonball; }
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

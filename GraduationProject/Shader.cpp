@@ -1090,6 +1090,21 @@ void CCannonObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSign
 	m_ppObjects[0] = pCannonObject;
 }
 
+void CCannonObjectsShader::ReleaseObjects()
+{
+	if (m_ppObjects)
+	{
+		CCannonballObject* pCannonball = ((CCannonObject*)m_ppObjects[0])->GetCannonball();
+		if (pCannonball) delete pCannonball;
+
+		for (int j = 0; j < m_nObjects; j++)
+		{
+			if (m_ppObjects[j]) delete m_ppObjects[j];
+		}
+		delete[] m_ppObjects;
+	}
+}
+
 void CCannonObjectsShader::ActivateCannon()
 {
 	// Test
