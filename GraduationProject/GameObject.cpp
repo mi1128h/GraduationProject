@@ -1229,8 +1229,8 @@ void CInteractiveCoverObject::Animate(float fTimeElapsed, CCamera* pCamrea)
 
 CCannonballObject::CCannonballObject(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature) : CGameObject(1)
 {
-	CCubeMeshIlluminatedTextured* pCubeMesh = new CCubeMeshIlluminatedTextured(pd3dDevice, pd3dCommandList, 5.0f, 5.0f, 5.0f);
-	SetMesh(pCubeMesh);
+	CLoadedModelInfo* pCannonballModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/cannon balls.bin", NULL);
+	SetChild(pCannonballModel->m_pModelRootObject, true);
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
@@ -1250,6 +1250,8 @@ CCannonballObject::CCannonballObject(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	SetMaterial(0, pSMaterial);
 
 	SetShader(pShader);
+
+	if (pCannonballModel) delete pCannonballModel;
 }
 
 CCannonballObject::~CCannonballObject()

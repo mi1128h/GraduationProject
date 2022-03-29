@@ -1064,7 +1064,7 @@ void CCannonObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSign
 	pCubeMaterial->SetTexture(pTexture);
 #endif
 
-	CCubeMeshIlluminatedTextured* pCubeMesh = new CCubeMeshIlluminatedTextured(pd3dDevice, pd3dCommandList, 10.0f, 10.0f, 10.0f);
+	CLoadedModelInfo* pCannonModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/cannon.bin", NULL);
 
 	m_ppObjects = new CGameObject * [m_nObjects];
 
@@ -1075,7 +1075,7 @@ void CCannonObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSign
 	CCannonObject* pCannonObject = NULL;
 
 	pCannonObject = new CCannonObject;
-	pCannonObject->SetMesh(pCubeMesh);
+	pCannonObject->SetChild(pCannonModel->m_pModelRootObject, true);
 #ifndef _WITH_BATCH_MATERIAL
 	pCannonObject->SetMaterial(0, pCubeMaterial);
 #endif
@@ -1088,6 +1088,8 @@ void CCannonObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSign
 
 	//pCannonObject->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvUavDescriptorIncrementSize * 0));
 	m_ppObjects[0] = pCannonObject;
+
+	if (pCannonModel) delete pCannonModel;
 }
 
 void CCannonObjectsShader::ReleaseObjects()
