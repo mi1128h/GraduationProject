@@ -365,7 +365,6 @@ struct VS_WIREFRAME_INPUT
 {
 	float3 position : POSITION;
 	float2 uv : TEXCOORD;
-
 };
 
 struct VS_WIREFRAME_OUTPUT
@@ -379,6 +378,7 @@ VS_WIREFRAME_OUTPUT VSModelTextured(VS_WIREFRAME_INPUT input)
 	VS_WIREFRAME_OUTPUT output;
 
 	output.position = mul(mul(mul(float4(input.position, 1.0f), gmtxGameObject), gmtxView), gmtxProjection);
+	output.uv = input.uv;
 
 	return(output);
 }
