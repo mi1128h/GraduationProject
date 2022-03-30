@@ -1082,7 +1082,7 @@ void CCannonObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSign
 	float xPosition = fTerrainWidth * 0.5f;
 	float zPosition = fTerrainLength * 0.5f - 10.0f;
 	float fHeight = pTerrain->GetHeight(xPosition, zPosition);
-	pCannonObject->SetPosition(xPosition, fHeight + 10.0f, zPosition);
+	pCannonObject->SetPosition(xPosition, fHeight + 80.0f, zPosition);
 
 	pCannonObject->SetCannonball(pCannonballObject);
 
