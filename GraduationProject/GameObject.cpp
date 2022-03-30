@@ -391,8 +391,7 @@ void CMaterial::PrepareShaders(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLi
 {
 	DXGI_FORMAT pdxgiRtvFormats[3] = { DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM };
 
-	m_pWireFrameShader = new CTexturedShader();
-	//m_pWireFrameShader = new CWireFrameShader();
+	m_pWireFrameShader = new CWireFrameShader();
 	m_pWireFrameShader->CreateShader(pd3dDevice, pd3dGraphicsRootSignature, 3, pdxgiRtvFormats, DXGI_FORMAT_D32_FLOAT);
 	m_pWireFrameShader->CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
