@@ -360,6 +360,7 @@ float4 PSPostProcessing(VS_TEXTURED_OUTPUT input) : SV_Target
 // Animation
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+Texture2D<float4> gtxtModelDiffuseTexture : register(t9);
 struct VS_WIREFRAME_INPUT
 {
 	float3 position : POSITION;
