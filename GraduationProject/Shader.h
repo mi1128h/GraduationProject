@@ -149,8 +149,6 @@ public:
 
 	BoundingBox CalculateBoundingBox();
 
-	ID3D12Resource* m_pd3dcbGameObjects = NULL;
-	CB_GAMEOBJECT_INFO* m_pcbMappedGameObjects = NULL;
 protected:
 	CGameObject** m_ppObjects = NULL;
 	int m_nObjects = 0;
