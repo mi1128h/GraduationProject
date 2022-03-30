@@ -623,7 +623,7 @@ D3D12_INPUT_LAYOUT_DESC CTexturedShader::CreateInputLayout()
 	D3D12_INPUT_ELEMENT_DESC* pd3dInputElementDescs = new D3D12_INPUT_ELEMENT_DESC[nInputElementDescs];
 
 	pd3dInputElementDescs[0] = { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
-	pd3dInputElementDescs[1] = { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
+	pd3dInputElementDescs[1] = { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 1, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
 
 	D3D12_INPUT_LAYOUT_DESC d3dInputLayoutDesc;
 	d3dInputLayoutDesc.pInputElementDescs = pd3dInputElementDescs;
@@ -1076,6 +1076,12 @@ void CCannonObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSign
 
 	pCannonObject = new CCannonObject;
 	pCannonObject->SetChild(pCannonModel->m_pModelRootObject, true);
+
+	CTexture* pModelTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
+	pModelTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Model/Texture/cannon_diffuse.dds", 0);
+	CScene::CreateShaderResourceViews(pd3dDevice, pModelTexture, Signature::Graphics::texture, true);
+	//CScene::CreateShaderResourceViews(pd3dDevice, pModelTexture, Signature::Graphics::model_diffuse, true);
+	pCannonObject->m_pTexture = pModelTexture;
 #ifndef _WITH_BATCH_MATERIAL
 	pCannonObject->SetMaterial(0, pCubeMaterial);
 #endif
