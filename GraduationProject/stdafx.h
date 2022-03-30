@@ -106,7 +106,8 @@ namespace Signature {
 		skybox,
 		g_input,
 		g_output,
-		animation_diffuse
+		animation_diffuse,
+		model_diffuse
 	};
 
 	enum Compute {
@@ -123,7 +124,8 @@ namespace Descriptor {
 		skybox,
 		g_input,
 		g_output,
-		animation_diffuse
+		animation_diffuse,
+		model_diffuse
 	};
 
 	enum Compute {

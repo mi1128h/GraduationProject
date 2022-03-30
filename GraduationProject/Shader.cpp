@@ -911,7 +911,7 @@ void CCannonObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSign
 	pCubeMaterial->SetTexture(pTexture);
 #endif
 
-	CCubeMeshIlluminatedTextured* pCubeMesh = new CCubeMeshIlluminatedTextured(pd3dDevice, pd3dCommandList, 10.0f, 10.0f, 10.0f);
+	CLoadedModelInfo* pCannonModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/cannon.bin", NULL);
 
 	m_ppObjects = new CGameObject * [m_nObjects];
 
@@ -922,9 +922,15 @@ void CCannonObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSign
 	CCannonObject* pCannonObject = NULL;
 
 	pCannonObject = new CCannonObject;
-	pCannonObject->SetMesh(pCubeMesh);
+	pCannonObject->SetChild(pCannonModel->m_pModelRootObject, true);
+
+	CTexture* pModelTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
+	pModelTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Model/Texture/cannon_diffuse.dds", 0);
+	CScene::CreateShaderResourceViews(pd3dDevice, pModelTexture, Signature::Graphics::model_diffuse, true);
+	pCannonObject->m_pTexture = pModelTexture;
+	//pCannonObject->SetModelTexture(pModelTexture);
+
 #ifndef _WITH_BATCH_MATERIAL
-	pCannonObject->SetMaterial(0, pCubeMaterial);
 #endif
 	float xPosition = fTerrainWidth * 0.5f;
 	float zPosition = fTerrainLength * 0.5f - 10.0f;
@@ -934,6 +940,8 @@ void CCannonObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSign
 	pCannonObject->SetCannonball(pCannonballObject);
 
 	m_ppObjects[0] = pCannonObject;
+
+	if (pCannonModel) delete pCannonModel;
 }
 
 void CCannonObjectsShader::ReleaseObjects()
@@ -1449,7 +1457,7 @@ D3D12_RASTERIZER_DESC CWireFrameShader::CreateRasterizerState()
 {
 	D3D12_RASTERIZER_DESC d3dRasterizerDesc;
 	::ZeroMemory(&d3dRasterizerDesc, sizeof(D3D12_RASTERIZER_DESC));
-	d3dRasterizerDesc.FillMode = D3D12_FILL_MODE_WIREFRAME;
+	d3dRasterizerDesc.FillMode = D3D12_FILL_MODE_SOLID;
 	d3dRasterizerDesc.CullMode = D3D12_CULL_MODE_BACK;
 #ifdef _WITH_LEFT_HAND_COORDINATES
 	d3dRasterizerDesc.FrontCounterClockwise = FALSE;
@@ -1470,10 +1478,11 @@ D3D12_RASTERIZER_DESC CWireFrameShader::CreateRasterizerState()
 
 D3D12_INPUT_LAYOUT_DESC CWireFrameShader::CreateInputLayout()
 {
-	UINT nInputElementDescs = 1;
+	UINT nInputElementDescs = 2;
 	D3D12_INPUT_ELEMENT_DESC* pd3dInputElementDescs = new D3D12_INPUT_ELEMENT_DESC[nInputElementDescs];
 
 	pd3dInputElementDescs[0] = { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
+	pd3dInputElementDescs[1] = { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 1, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
 
 	D3D12_INPUT_LAYOUT_DESC d3dInputLayoutDesc;
 	d3dInputLayoutDesc.pInputElementDescs = pd3dInputElementDescs;
@@ -1484,12 +1493,12 @@ D3D12_INPUT_LAYOUT_DESC CWireFrameShader::CreateInputLayout()
 
 D3D12_SHADER_BYTECODE CWireFrameShader::CreateVertexShader(ID3DBlob** ppd3dShaderBlob)
 {
-	return(CShader::CompileShaderFromFile(L"Shaders.hlsl", "VSWireFrame", "vs_5_1", &m_pd3dVertexShaderBlob));
+	return(CShader::CompileShaderFromFile(L"Shaders.hlsl", "VSModelTextured", "vs_5_1", &m_pd3dVertexShaderBlob));
 }
 
 D3D12_SHADER_BYTECODE CWireFrameShader::CreatePixelShader(ID3DBlob** ppd3dShaderBlob)
 {
-	return(CShader::CompileShaderFromFile(L"Shaders.hlsl", "PSWireFrame", "ps_5_1", &m_pd3dPixelShaderBlob));
+	return(CShader::CompileShaderFromFile(L"Shaders.hlsl", "PSModelTextured", "ps_5_1", &m_pd3dPixelShaderBlob));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
