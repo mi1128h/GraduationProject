@@ -435,6 +435,17 @@ void CGameFramework::OnProcessingKeyboardMessage
 
 	switch (nMessageID)
 	{
+	case WM_KEYDOWN:
+		switch(wParam)
+		{
+		case VK_LEFT:
+			((CCannonObjectsShader*)m_pScene->m_ppShaders[1])->RotateCannon(XMFLOAT3(0,1,0), -10.0f);
+			break;
+		case VK_RIGHT:
+			((CCannonObjectsShader*)m_pScene->m_ppShaders[1])->RotateCannon(XMFLOAT3(0, 1, 0), 10.0f);
+			break;
+		}
+		break;
 	case WM_KEYUP:
 		switch (wParam)
 		{

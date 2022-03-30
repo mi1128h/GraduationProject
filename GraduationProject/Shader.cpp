@@ -1117,6 +1117,12 @@ void CCannonObjectsShader::ActivateCannon()
 	((CCannonObject*)m_ppObjects[0])->FireCannonBall(origin, velocity);
 }
 
+void CCannonObjectsShader::RotateCannon(XMFLOAT3 xmf3RotateAxis, float fAngle)
+{
+	// Test
+	((CCannonObject*)m_ppObjects[0])->Rotate(&xmf3RotateAxis, fAngle);
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 CSkyBoxShader::CSkyBoxShader()
