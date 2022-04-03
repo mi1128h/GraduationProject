@@ -403,10 +403,10 @@ void CTerrainPlayer::Update(float fTimeElapsed)
 {
 	CPlayer::Update(fTimeElapsed);
 
-	if (m_pSkinnedAnimationController)
-	{
-		float fLength = sqrtf(m_xmf3Velocity.x * m_xmf3Velocity.x + m_xmf3Velocity.z * m_xmf3Velocity.z);
-		m_pSkinnedAnimationController->SetTrackEnable(0, ::IsZero(fLength));
-		m_pSkinnedAnimationController->SetTrackEnable(1, !::IsZero(fLength));
-	}
+	//if (m_pSkinnedAnimationController)
+	//{
+	//	float fLength = sqrtf(m_xmf3Velocity.x * m_xmf3Velocity.x + m_xmf3Velocity.z * m_xmf3Velocity.z);
+	//	m_pSkinnedAnimationController->SetTrackEnable(0, ::IsZero(fLength));
+	//	m_pSkinnedAnimationController->SetTrackEnable(1, !::IsZero(fLength));
+	//}
 }
