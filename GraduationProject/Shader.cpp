@@ -1116,8 +1116,7 @@ void CCannonObjectsShader::ActivateCannon()
 
 	CGameObject* pBarrel = ((CCannonObject*)m_ppObjects[0])->m_pChild->FindFrame("Cube_001");
 	XMFLOAT3 origin = pBarrel->GetPosition();
-	XMFLOAT3 xmf3XZ = Vector3::ScalarProduct(pBarrel->GetLook(), 2.0f);
-	XMFLOAT3 velocity = Vector3::Add(xmf3XZ, pBarrel->GetUp());
+	XMFLOAT3 velocity = Vector3::ScalarProduct(pBarrel->GetUp(), 3.0f);
 
 	((CCannonObject*)m_ppObjects[0])->FireCannonBall(origin, velocity);
 }
