@@ -16,14 +16,12 @@ public:
 	virtual void Dispatch(ID3D12GraphicsCommandList* pd3dCommandList, UINT cxThreadGroups, UINT cyThreadGroups, UINT czThreadGroups);
 	virtual void BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList);
 
-	CTexture* m_pTexture = NULL;
 protected:
-	UINT							m_cxThreadGroups = 0;
-	UINT							m_cyThreadGroups = 0;
-	UINT							m_czThreadGroups = 0;
-
+	UINT		m_cxThreadGroups = 0;
+	UINT		m_cyThreadGroups = 0;
+	UINT		m_czThreadGroups = 0;
+	CTexture*	m_pTexture = nullptr;
 };
-
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
