@@ -50,11 +50,6 @@ void CComputeShader::CreateShader(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 	m_czThreadGroups = czThreadGroups;
 }
 
-void CComputeShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
-{
-
-}
-
 void CComputeShader::Dispatch(ID3D12GraphicsCommandList* pd3dCommandList)
 {
 	OnPrepare(pd3dCommandList);

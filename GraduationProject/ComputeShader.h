@@ -14,7 +14,6 @@ public:
 
 	virtual void Dispatch(ID3D12GraphicsCommandList* pd3dCommandList);
 	virtual void Dispatch(ID3D12GraphicsCommandList* pd3dCommandList, UINT cxThreadGroups, UINT cyThreadGroups, UINT czThreadGroups);
-	virtual void BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList);
 
 protected:
 	UINT		m_cxThreadGroups = 0;
