@@ -30,36 +30,21 @@ protected:
 class CVertComputeShader : public CComputeShader
 {
 public:
-	CVertComputeShader();
-	virtual ~CVertComputeShader();
+	CVertComputeShader() {};
+	virtual ~CVertComputeShader() {};
 
 public:
 	virtual D3D12_SHADER_BYTECODE CreateComputeShader(ID3DBlob** ppd3dShaderBlob);
-
-	virtual void CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList);
-	virtual void UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList);
-	virtual void ReleaseShaderVariables();
-
-	virtual void ReleaseUploadBuffers();
-
 	virtual void Dispatch(ID3D12GraphicsCommandList* pd3dCommandList, UINT cxThreadGroups, UINT cyThreadGroups, UINT czThreadGroups);
-	virtual void BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList);
 };
 
 class CHorzComputeShader : public CComputeShader
 {
 public:
-	CHorzComputeShader();
-	virtual ~CHorzComputeShader();
+	CHorzComputeShader() {};
+	virtual ~CHorzComputeShader() {};
 
 public:
 	virtual D3D12_SHADER_BYTECODE CreateComputeShader(ID3DBlob** ppd3dShaderBlob);
-
-	virtual void CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList);
-	virtual void UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList);
-	virtual void ReleaseShaderVariables();
-
-	virtual void ReleaseUploadBuffers();
-
 	virtual void Dispatch(ID3D12GraphicsCommandList* pd3dCommandList, UINT cxThreadGroups, UINT cyThreadGroups, UINT czThreadGroups);
 };

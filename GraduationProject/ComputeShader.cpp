@@ -71,37 +71,9 @@ void CComputeShader::Dispatch(ID3D12GraphicsCommandList* pd3dCommandList, UINT c
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-CVertComputeShader::CVertComputeShader()
-{
-}
-
-CVertComputeShader::~CVertComputeShader()
-{
-}
-
 D3D12_SHADER_BYTECODE CVertComputeShader::CreateComputeShader(ID3DBlob** ppd3dShaderBlob)
 {
 	return(CShader::CompileShaderFromFile(L"Shaders.hlsl", "VertBlurCS", "cs_5_1", ppd3dShaderBlob));
-}
-
-void CVertComputeShader::CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
-{
-}
-
-void CVertComputeShader::UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList)
-{
-}
-
-void CVertComputeShader::ReleaseShaderVariables()
-{
-}
-
-void CVertComputeShader::ReleaseUploadBuffers()
-{
-}
-
-void CVertComputeShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
-{
 }
 
 void CVertComputeShader::Dispatch(ID3D12GraphicsCommandList* pd3dCommandList, UINT cxThreadGroups, UINT cyThreadGroups, UINT czThreadGroups)
@@ -110,33 +82,9 @@ void CVertComputeShader::Dispatch(ID3D12GraphicsCommandList* pd3dCommandList, UI
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-CHorzComputeShader::CHorzComputeShader()
-{
-}
-
-CHorzComputeShader::~CHorzComputeShader()
-{
-}
-
 D3D12_SHADER_BYTECODE CHorzComputeShader::CreateComputeShader(ID3DBlob** ppd3dShaderBlob)
 {
 	return(CShader::CompileShaderFromFile(L"Shaders.hlsl", "HorzBlurCS", "cs_5_1", ppd3dShaderBlob));
-}
-
-void CHorzComputeShader::CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
-{
-}
-
-void CHorzComputeShader::UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList)
-{
-}
-
-void CHorzComputeShader::ReleaseShaderVariables()
-{
-}
-
-void CHorzComputeShader::ReleaseUploadBuffers()
-{
 }
 
 void CHorzComputeShader::Dispatch(ID3D12GraphicsCommandList* pd3dCommandList, UINT cxThreadGroups, UINT cyThreadGroups, UINT czThreadGroups)
