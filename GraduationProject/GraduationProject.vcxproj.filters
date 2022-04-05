@@ -16,6 +16,9 @@
     <Filter Include="소스 파일\Shader">
       <UniqueIdentifier>{af373d19-fc4f-4155-8102-9b6a20abec2c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="헤더 파일\Shader">
+      <UniqueIdentifier>{77a847bb-16cb-40ec-a7c5-106d5db82706}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Resource.h">
@@ -45,9 +48,6 @@
     <ClInclude Include="Scene.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Shader.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="stdafx.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -60,8 +60,11 @@
     <ClInclude Include="Animation.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>헤더 파일\Shader</Filter>
+    </ClInclude>
     <ClInclude Include="ComputeShader.h">
-      <Filter>헤더 파일</Filter>
+      <Filter>헤더 파일\Shader</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
