@@ -1120,7 +1120,7 @@ void CCannonObjectsShader::ActivateCannon()
 void CCannonObjectsShader::RotateCannon(XMFLOAT3 xmf3RotateAxis, float fAngle)
 {
 	// Test
-	((CCannonObject*)m_ppObjects[0])->Rotate(&xmf3RotateAxis, fAngle);
+	((CCannonObject*)m_ppObjects[0])->RotateCannon(&xmf3RotateAxis, fAngle);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -1320,6 +1320,12 @@ void CCannonObject::Animate(float fTimeElapsed, CCamera* pCamera)
 	}
 }
 
+void CCannonObject::RotateCannon(XMFLOAT3* pxmf3Axis, float fAngle)
+{
+	CGameObject* pBarrel = m_pChild->FindFrame("Cube_001");	// 포신
+	pBarrel->Rotate(pxmf3Axis, fAngle);
+}
+
 void CCannonObject::FireCannonBall(XMFLOAT3 Origin, XMFLOAT3 Velocity)
 {
 	if (m_pCannonball->IsReadyToFire()) {

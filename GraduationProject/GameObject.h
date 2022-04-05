@@ -444,6 +444,9 @@ private:
 public:
 	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
 	virtual void Animate(float fTimeElapsed, CCamera* pCamera = NULL);
+
+	void RotateCannon(XMFLOAT3* pxmf3Axis, float fAngle);
+
 	void FireCannonBall(XMFLOAT3 Origin, XMFLOAT3 Velocity);
 	void SetCannonball(CCannonballObject* pCannonball) { m_pCannonball = pCannonball; }
 	CCannonballObject* GetCannonball() { return m_pCannonball; }
