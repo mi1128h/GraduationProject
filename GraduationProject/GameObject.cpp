@@ -1316,3 +1316,13 @@ void CCannonObject::FireCannonBall(XMFLOAT3 Origin, XMFLOAT3 Velocity)
 		m_pCannonball->SetActive(true);
 	}
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+CMonsterObject::CMonsterObject()
+{
+}
+
+CMonsterObject::~CMonsterObject()
+{
+}
