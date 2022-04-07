@@ -99,6 +99,9 @@
     <ClInclude Include="Resource.h">
       <Filter>헤더 파일\InitHeader</Filter>
     </ClInclude>
+    <ClInclude Include="Vertex.h">
+      <Filter>헤더 파일\Mesh</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GraduationProject.cpp">
