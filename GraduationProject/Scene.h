@@ -97,6 +97,7 @@ public:
 	D3D12_GPU_DESCRIPTOR_HANDLE GetGPUSrvDescriptorNextHandle() { return(m_d3dSrvGPUDescriptorNextHandle); }
 	D3D12_CPU_DESCRIPTOR_HANDLE GetUavCPUDescriptorNextHandle() { return(m_d3dSrvCPUDescriptorNextHandle); }
 	D3D12_GPU_DESCRIPTOR_HANDLE GetUavGPUDescriptorNextHandle() { return(m_d3dSrvGPUDescriptorNextHandle); }
+	void PickObjectPointedByCursor(int xClient, int yClient, CCamera* pCamera);
 
 public:
 	float								m_fElapsedTime = 0.0f;

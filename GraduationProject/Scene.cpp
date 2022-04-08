@@ -704,3 +704,25 @@ void CScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera
 	}
 }
 
+void CScene::PickObjectPointedByCursor(int xClient, int yClient, CCamera* pCamera)
+{
+	XMFLOAT3 xmf3PickPosition;
+	xmf3PickPosition.x = (((2.0f * xClient) / pCamera->GetViewport().Width) - 1) / pCamera->GetProjectionMatrix()._11;
+	xmf3PickPosition.y = -(((2.0f * yClient) / pCamera->GetViewport().Height) - 1) / pCamera->GetProjectionMatrix()._22;
+	xmf3PickPosition.z = 1.0f;
+
+	XMVECTOR xmvPickPosition = XMLoadFloat3(&xmf3PickPosition);
+	XMMATRIX xmmtxView = XMLoadFloat4x4(&pCamera->GetViewMatrix());
+
+	int nIntersected = 0;
+	float fNearestHitDistance = FLT_MAX;
+	CGameObject* pNearestObject = NULL;
+	XMFLOAT3* pickingPosition = nullptr;
+	float fHitDistance = FLT_MAX;
+	pickingPosition = m_pTerrain->PickObjectByRayIntersection(xmvPickPosition, xmmtxView, &fHitDistance);
+
+	if (pickingPosition != nullptr && (fHitDistance < fNearestHitDistance))
+	{
+		m_pPlayer->SetPosition(*pickingPosition);
+	}
+}
