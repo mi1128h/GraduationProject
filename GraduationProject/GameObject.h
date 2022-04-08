@@ -450,8 +450,15 @@ public:
 	virtual ~CMonsterObject();
 
 private:
-	CGameObject* m_pTargetObject;
+	CGameObject* m_pTargetObject = NULL;
+	float m_DetectionRange;
+	float m_fHp;
+	float m_fDamage;
 
 public:
 	void FindTarget();
+	void SetDetectionRange(float range) { m_DetectionRange = range; }
+	void SetHp(float hp) { m_fHp = hp; }
+	void SetDamage(float damage) { m_fDamage = damage; }
+
 };

@@ -1326,3 +1326,11 @@ CMonsterObject::CMonsterObject()
 CMonsterObject::~CMonsterObject()
 {
 }
+
+void CMonsterObject::FindTarget()
+{
+	// 현재 위치 중심 m_DetectionRange 거리만큼 탐색
+	// 플레이어가 있다면 m_pTargetObject = 플레이어
+	// idea: 어그로 아이템 추가
+	//		-> 플레이어가 어그로 아이템 사용 시 어그로 아이템을 Target으로 지정
+}
