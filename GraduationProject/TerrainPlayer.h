@@ -14,10 +14,11 @@ class CTerrainPlayer : public CPlayer
 {
 public:
 	CTerrainPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, void* pContext = NULL, int nMeshes = 1);
-	void InitPlayerMatrics(void* pContext);
 	virtual ~CTerrainPlayer();
 
 	void SetResource(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList);
+	void SetAnimationTracks(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, CLoadedModelInfo* pAngrybotModel);
+	void InitPlayerMatrics(void* pContext);
 
 	virtual void OnPrepareRender();
 	virtual CCamera* ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed);

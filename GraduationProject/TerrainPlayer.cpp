@@ -11,6 +11,7 @@ CTerrainPlayer::CTerrainPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLi
 	CLoadedModelInfo* pAngrybotModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/Maria.bin", NULL);
 	SetChild(pAngrybotModel->m_pModelRootObject, true);
 
+	SetAnimationTracks(pd3dDevice, pd3dCommandList, pAngrybotModel);
 	SetResource(pd3dDevice, pd3dCommandList);
 	SetPlayerUpdatedContext(pContext);
 	SetCameraUpdatedContext(pContext);
@@ -35,6 +36,18 @@ void CTerrainPlayer::SetResource(ID3D12Device* pd3dDevice, ID3D12GraphicsCommand
 	pAnimationTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Model/Texture/maria_diffuse.dds", 0);
 	CScene::CreateShaderResourceViews(pd3dDevice, pAnimationTexture, Signature::Graphics::animation_diffuse, true);
 	m_pTexture = pAnimationTexture;
+}
+
+void CTerrainPlayer::SetAnimationTracks(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, CLoadedModelInfo* pModel)
+{
+	m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, m_nTracks, pModel);
+
+	for (int i = 0; i < m_nTracks; ++i)
+	{
+		m_pSkinnedAnimationController->SetTrackAnimationSet(i, i);
+		bool bEnable = (i == 0) ? true : false;
+		m_pSkinnedAnimationController->SetTrackEnable(i, bEnable);
+	}
 }
 
 CTerrainPlayer::~CTerrainPlayer()
