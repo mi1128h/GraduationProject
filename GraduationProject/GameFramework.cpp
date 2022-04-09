@@ -447,9 +447,6 @@ void CGameFramework::OnProcessingKeyboardMessage
 		case VK_CONTROL:
 			//m_pScene->FireBullet();
 			break;
-		/*‘F1’ 키를 누르면 1인칭 카메라, 
-		‘F2’ 키를 누르면 스페이스-쉽 카메라로 변경한다, 
-		‘F3’ 키를 누르면 3인칭 카메라로 변경한다.*/ 
 		case VK_F1:
 		case VK_F2:
 		case VK_F3:
