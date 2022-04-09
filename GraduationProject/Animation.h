@@ -83,6 +83,8 @@ public:
 
 	CAnimationCallbackHandler* m_pAnimationCallbackHandler = NULL;
 
+	bool m_bLoopEnd = false;
+
 public:
 	float SetPosition(float fElapsedTime, float fStartTime, float fEndTime);
 
@@ -95,6 +97,7 @@ public:
 
 	void* GetCallbackData();
 	void HandleCallback();
+	bool IsOnceLoopEnd();
 };
 
 class CAnimationSets
