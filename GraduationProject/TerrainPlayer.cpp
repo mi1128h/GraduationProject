@@ -19,6 +19,8 @@ CTerrainPlayer::CTerrainPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLi
 
 	InitPlayerMatrics(pContext);
 
+	m_pSkinnedAnimationController->SetAnimationSetsType(track_name::slash, Animation::Type::Once);
+
 	if (pAngrybotModel) delete pAngrybotModel;
 }
 
@@ -45,7 +47,7 @@ void CTerrainPlayer::SetAnimationTracks(ID3D12Device* pd3dDevice, ID3D12Graphics
 	for (int i = 0; i < m_nTracks; ++i)
 	{
 		m_pSkinnedAnimationController->SetTrackAnimationSet(i, i);
-		bool bEnable = (i == 0) ? true : false;
+		bool bEnable = (i == track_name::slash) ? true : false;
 		m_pSkinnedAnimationController->SetTrackEnable(i, bEnable);
 	}
 }

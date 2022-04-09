@@ -88,6 +88,7 @@ public:
 
 	void Animate(float fTrackPosition, float fTrackWeight, float fStartTime, float fEndTime);
 
+	void SetType(int nType) { m_nType = nType; }
 	void SetCallbackKeys(int nCallbackKeys);
 	void SetCallbackKey(int nKeyIndex, float fTime, void* pData);
 	void SetAnimationCallbackHandler(CAnimationCallbackHandler* pCallbackHandler);
@@ -191,6 +192,7 @@ public:
 	void UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList);
 
 	void SetAnimationSets(CAnimationSets* pAnimationSets);
+	void SetAnimationSetsType(int nAnimationSet, int nType);
 
 	void SetTrackAnimationSet(int nAnimationTrack, int nAnimationSet);
 	void SetTrackEnable(int nAnimationTrack, bool bEnable);

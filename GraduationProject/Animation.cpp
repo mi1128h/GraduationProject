@@ -259,6 +259,14 @@ void CAnimationController::SetAnimationSets(CAnimationSets* pAnimationSets)
 	if (m_pAnimationSets) m_pAnimationSets->AddRef();
 }
 
+void CAnimationController::SetAnimationSetsType(int nAnimationSet, int nType)
+{
+	if (m_pAnimationSets == nullptr) return;
+
+	m_pAnimationSets->m_ppAnimationSets[nAnimationSet]->SetType(nType);
+}
+
+
 void CAnimationController::SetCallbackKeys(int nAnimationSet, int nCallbackKeys)
 {
 	if (m_pAnimationSets) m_pAnimationSets->SetCallbackKeys(nAnimationSet, nCallbackKeys);
