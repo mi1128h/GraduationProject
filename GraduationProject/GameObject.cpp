@@ -1039,28 +1039,6 @@ CLoadedModelInfo* CGameObject::LoadGeometryAndAnimationFromFile(ID3D12Device* pd
 	return(pLoadedModel);
 }
 
-void CGameObject::GenerateRayForPicking(XMVECTOR& xmvPickPosition, XMMATRIX& xmmtxView, XMVECTOR& xmvPickRayOrigin, XMVECTOR& xmvPickRayDirection)
-{
-	XMMATRIX xmmtxToModel = XMMatrixInverse(NULL, XMLoadFloat4x4(&m_xmf4x4World) * xmmtxView);
-
-	XMFLOAT3 xmf3CameraOrigin(0.0f, 0.0f, 0.0f);
-	xmvPickRayOrigin = XMVector3TransformCoord(XMLoadFloat3(&xmf3CameraOrigin), xmmtxToModel);
-	xmvPickRayDirection = XMVector3TransformCoord(xmvPickPosition, xmmtxToModel);
-	xmvPickRayDirection = XMVector3Normalize(xmvPickRayDirection - xmvPickRayOrigin);
-}
-
-XMFLOAT3* CGameObject::PickObjectByRayIntersection(XMVECTOR& xmvPickPosition, XMMATRIX& xmmtxView, float* pfHitDistance)
-{
-	int nIntersected = 0;
-	XMFLOAT3* position = NULL;
-	if (m_pMesh)
-	{
-		XMVECTOR xmvPickRayOrigin, xmvPickRayDirection;
-		GenerateRayForPicking(xmvPickPosition, xmmtxView, xmvPickRayOrigin, xmvPickRayDirection);
-		position= m_pMesh->CheckRayIntersection(xmvPickRayOrigin, xmvPickRayDirection, pfHitDistance);
-	}
-	return(position);
-}
 
 /////////////////////////////////////////////////////////////////////////////////
 

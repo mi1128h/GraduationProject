@@ -202,13 +202,6 @@ void CMesh::LoadMeshFromFile(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 	}
 }
 
-BOOL CMesh::RayIntersectionByTriangle(XMVECTOR& xmRayOrigin, XMVECTOR& xmRayDirection, XMVECTOR v0, XMVECTOR v1, XMVECTOR v2, float* pfNearHitDistance)
-{
-	float fHitDistance;
-	BOOL bIntersected = TriangleTests::Intersects(xmRayOrigin, xmRayDirection, v0, v1, v2, fHitDistance);
-	if (bIntersected && (fHitDistance < *pfNearHitDistance)) *pfNearHitDistance = fHitDistance;
-	return(bIntersected);
-}
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -643,38 +636,6 @@ CHeightMapGridMesh::~CHeightMapGridMesh()
 	if (m_pxmf2TextureCoords0) delete[] m_pxmf2TextureCoords0;
 	if (m_pxmf2TextureCoords1) delete[] m_pxmf2TextureCoords1;
 }
-
-XMFLOAT3* CHeightMapGridMesh::CheckRayIntersection(XMVECTOR& xmvPickRayOrigin, XMVECTOR& xmvPickRayDirection, float* pfNearHitDistance)
-{
-	int nIntersections = 0;
-	//bool bIntersected = m_xmOOBB.Intersects(xmvPickRayOrigin, xmvPickRayDirection, *pfNearHitDistance);
-	//if (bIntersected)
-	{
-		for (int i = 0; i < m_pnSubSetIndices[0]; ++i)
-		{
-			if (i + 1 > m_pnSubSetIndices[0]) break;
-			if (i + 2 > m_pnSubSetIndices[0]) break;
-
-			int index = m_ppnSubSetIndices[0][i];
-			if (index < 0 || index > m_nVertices) continue;
-			XMVECTOR v0 = XMLoadFloat3(&m_pxmf3Positions[index]);
-
-			index = m_ppnSubSetIndices[0][i+1];
-			if (index < 0 || index > m_nVertices) continue;
-			XMVECTOR v1 = XMLoadFloat3(&m_pxmf3Positions[index]);
-
-			index = m_ppnSubSetIndices[0][i+2];
-			if (index < 0 || index > m_nVertices) continue;
-			XMVECTOR v2 = XMLoadFloat3(&m_pxmf3Positions[index]);
-
-			BOOL bIntersected = RayIntersectionByTriangle(xmvPickRayOrigin, xmvPickRayDirection, v0, v1, v2, pfNearHitDistance);
-			if (bIntersected) return &m_pxmf3Positions[index];
-		}
-	}
-
-	return nullptr;
-}
-
 
 void CHeightMapGridMesh::ReleaseUploadBuffers()
 {

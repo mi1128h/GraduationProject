@@ -412,8 +412,6 @@ void CGameFramework::OnProcessingMouseMessage
 	switch (nMessageID)
 	{
 	case WM_LBUTTONDOWN:
-		m_pScene->PickObjectPointedByCursor(LOWORD(lParam), HIWORD(lParam), m_pPlayer->GetCamera());
-		break;
 	case WM_RBUTTONDOWN:
 		// 마우스 캡쳐를 하고 현재 마우스 위치를 가져온다.
 		::SetCapture(hWnd);
