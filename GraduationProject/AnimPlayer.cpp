@@ -143,16 +143,31 @@ bool CAnimPlayer::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM
 			switch (wParam)
 			{
 				case 'Q':
-					SwitchAnimationState(track_name::slash);
+					SwitchAnimationState(track_name::attack_slash);
 					break;
 	
 				case 'W':
-				case 'S':
-				case 'A':
-				case 'D':
 					SwitchAnimationState(track_name::run);
 					break;
 
+				case 'S':
+					SwitchAnimationState(track_name::run_back);
+					break;
+
+				case 'A':
+					SwitchAnimationState(track_name::run_left);
+					break;
+
+				case 'D':
+					SwitchAnimationState(track_name::run_right);
+					break;
+
+				case '1':
+					SwitchAnimationState(track_name::attack_down);
+					break;
+				case '2':
+					SwitchAnimationState(track_name::attack_spin);
+					break;
 				default:
 					break;
 			}
@@ -165,7 +180,7 @@ bool CAnimPlayer::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM
 				case 'S':
 				case 'A':
 				case 'D':
-					SwitchAnimationState(track_name::idle);
+					//SwitchAnimationState(track_name::idle);
 					break;
 			}
 			break;
