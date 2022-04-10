@@ -144,12 +144,32 @@ bool CTerrainPlayer::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 		case WM_KEYDOWN:
 			switch (wParam)
 			{
+				case 'Q':
+					SwitchAnimationState(track_name::slash);
+					break;
+	
+				case 'W':
+				case 'S':
+				case 'A':
+				case 'D':
+					SwitchAnimationState(track_name::run);
+					break;
 
 				default:
 					break;
 			}
 			break;
 
+		case WM_KEYUP:
+			switch (wParam)
+			{
+				case 'W':
+				case 'S':
+				case 'A':
+				case 'D':
+					SwitchAnimationState(track_name::idle);
+					break;
+			}
 
 			break;
 		default:
@@ -158,4 +178,9 @@ bool CTerrainPlayer::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 	return(false);
 }
 
+void CTerrainPlayer::SwitchAnimationState(int nType)
 {
+	m_pSkinnedAnimationController->SetTrackEnable(m_nCurrentTracks, false);
+	m_nCurrentTracks = nType;
+	m_pSkinnedAnimationController->SetTrackEnable(m_nCurrentTracks, true);
+}

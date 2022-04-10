@@ -28,6 +28,7 @@ public:
 
 	virtual bool OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam);
 
+	void SwitchAnimationState(int nType);
 
 private:
 	int m_nTracks = track_name::length;
