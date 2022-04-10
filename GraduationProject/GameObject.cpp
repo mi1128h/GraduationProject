@@ -652,8 +652,7 @@ void CGameObject::Rotate(float fPitch, float fYaw, float fRoll)
 
 void CGameObject::Rotate(XMFLOAT3* pxmf3Axis, float fAngle)
 {
-	XMMATRIX mtxRotate = XMMatrixRotationAxis(XMLoadFloat3(pxmf3Axis),
-		XMConvertToRadians(fAngle));
+	XMMATRIX mtxRotate = XMMatrixRotationAxis(XMLoadFloat3(pxmf3Axis), XMConvertToRadians(fAngle));
 	m_xmf4x4ToParent = Matrix4x4::Multiply(mtxRotate, m_xmf4x4ToParent);
 	
 	UpdateTransform(NULL);
@@ -1295,10 +1294,17 @@ CCannonObject::~CCannonObject()
 
 void CCannonObject::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
 {
+	XMFLOAT4X4 xmf4x4TempWolrd;
+	xmf4x4TempWolrd = m_xmf4x4ToParent = m_xmf4x4World;
+	m_xmf4x4ToParent = Matrix4x4::Multiply(XMMatrixRotationY(110.0f), m_xmf4x4ToParent);
+	UpdateTransform(NULL);
+
 	CGameObject::Render(pd3dCommandList, pCamera);
 	if (m_pCannonball) {
 		m_pCannonball->Render(pd3dCommandList, pCamera);
 	}
+
+	m_xmf4x4World = m_xmf4x4ToParent = xmf4x4TempWolrd;
 }
 
 void CCannonObject::Animate(float fTimeElapsed, CCamera* pCamera)
@@ -1306,6 +1312,12 @@ void CCannonObject::Animate(float fTimeElapsed, CCamera* pCamera)
 	if (m_pCannonball) {
 		m_pCannonball->Animate(fTimeElapsed, pCamera);
 	}
+}
+
+void CCannonObject::RotateCannon(XMFLOAT3* pxmf3Axis, float fAngle)
+{
+	CGameObject* pBarrel = m_pChild->FindFrame("Cube_001");	// 포신
+	pBarrel->Rotate(pxmf3Axis, fAngle);
 }
 
 void CCannonObject::FireCannonBall(XMFLOAT3 Origin, XMFLOAT3 Velocity)

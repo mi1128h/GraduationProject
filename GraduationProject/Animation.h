@@ -83,17 +83,21 @@ public:
 
 	CAnimationCallbackHandler* m_pAnimationCallbackHandler = NULL;
 
+	bool m_bLoopEnd = false;
+
 public:
 	float SetPosition(float fElapsedTime, float fStartTime, float fEndTime);
 
 	void Animate(float fTrackPosition, float fTrackWeight, float fStartTime, float fEndTime);
 
+	void SetType(int nType) { m_nType = nType; }
 	void SetCallbackKeys(int nCallbackKeys);
 	void SetCallbackKey(int nKeyIndex, float fTime, void* pData);
 	void SetAnimationCallbackHandler(CAnimationCallbackHandler* pCallbackHandler);
 
 	void* GetCallbackData();
 	void HandleCallback();
+	bool IsOnceLoopEnd();
 };
 
 class CAnimationSets
@@ -191,6 +195,7 @@ public:
 	void UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList);
 
 	void SetAnimationSets(CAnimationSets* pAnimationSets);
+	void SetAnimationSetsType(int nAnimationSet, int nType);
 
 	void SetTrackAnimationSet(int nAnimationTrack, int nAnimationSet);
 	void SetTrackEnable(int nAnimationTrack, bool bEnable);
