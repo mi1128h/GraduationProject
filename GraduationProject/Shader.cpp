@@ -937,7 +937,7 @@ void CCannonObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSign
 	float xPosition = fTerrainWidth * 0.5f;
 	float zPosition = fTerrainLength * 0.5f - 10.0f;
 	float fHeight = pTerrain->GetHeight(xPosition, zPosition);
-	pCannonObject->SetPosition(xPosition, fHeight + 10.0f, zPosition);
+	pCannonObject->SetPosition(xPosition, fHeight + 80.0f, zPosition);
 
 	pCannonObject->SetCannonball(pCannonballObject);
 
@@ -964,11 +964,21 @@ void CCannonObjectsShader::ReleaseObjects()
 void CCannonObjectsShader::ActivateCannon()
 {
 	// Test
-	XMFLOAT3 origin = ((CCannonObject*)m_ppObjects[0])->GetPosition();
-	XMFLOAT3 xmf3XZ = Vector3::ScalarProduct(((CCannonObject*)m_ppObjects[0])->GetLook(), 5.0f);
-	XMFLOAT3 velocity = Vector3::Add(xmf3XZ, XMFLOAT3(0.0f, 5.0f, 0.0f));
+	//XMFLOAT3 origin = ((CCannonObject*)m_ppObjects[0])->GetPosition();
+	//XMFLOAT3 xmf3XZ = Vector3::ScalarProduct(((CCannonObject*)m_ppObjects[0])->GetLook(), 5.0f);
+	//XMFLOAT3 velocity = Vector3::Add(xmf3XZ, XMFLOAT3(0.0f, 5.0f, 0.0f));
+
+	CGameObject* pBarrel = ((CCannonObject*)m_ppObjects[0])->m_pChild->FindFrame("Cube_001");
+	XMFLOAT3 origin = pBarrel->GetPosition();
+	XMFLOAT3 velocity = Vector3::ScalarProduct(pBarrel->GetUp(), 3.0f);
 
 	((CCannonObject*)m_ppObjects[0])->FireCannonBall(origin, velocity);
+}
+
+void CCannonObjectsShader::RotateCannon(XMFLOAT3 xmf3RotateAxis, float fAngle)
+{
+	// Test
+	((CCannonObject*)m_ppObjects[0])->RotateCannon(&xmf3RotateAxis, fAngle);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
