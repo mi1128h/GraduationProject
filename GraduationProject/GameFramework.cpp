@@ -435,6 +435,23 @@ void CGameFramework::OnProcessingKeyboardMessage
 
 	switch (nMessageID)
 	{
+	case WM_KEYDOWN:
+		switch(wParam)
+		{
+		case VK_LEFT:
+			((CCannonObjectsShader*)m_pScene->m_ppShaders[1])->RotateCannon(XMFLOAT3(0, 0, 1), -10.0f);
+			break;
+		case VK_RIGHT:
+			((CCannonObjectsShader*)m_pScene->m_ppShaders[1])->RotateCannon(XMFLOAT3(0, 0, 1), 10.0f);
+			break;
+		case VK_UP:
+			((CCannonObjectsShader*)m_pScene->m_ppShaders[1])->RotateCannon(XMFLOAT3(1, 0, 0), 10.0f);
+			break;
+		case VK_DOWN:
+			((CCannonObjectsShader*)m_pScene->m_ppShaders[1])->RotateCannon(XMFLOAT3(1, 0, 0), -10.0f);
+			break;
+		}
+		break;
 	case WM_KEYUP:
 		switch (wParam)
 		{
@@ -530,10 +547,17 @@ void CGameFramework::ProcessInput()
 	if (!bProcessedByScene)
 	{
 		DWORD dwDirection = 0;
-		if (pKeysBuffer[VK_UP] & 0xF0) dwDirection |= DIR_FORWARD;
-		if (pKeysBuffer[VK_DOWN] & 0xF0) dwDirection |= DIR_BACKWARD;
-		if (pKeysBuffer[VK_LEFT] & 0xF0) dwDirection |= DIR_LEFT;
-		if (pKeysBuffer[VK_RIGHT] & 0xF0) dwDirection |= DIR_RIGHT;
+		//if (pKeysBuffer[VK_UP] & 0xF0) dwDirection |= DIR_FORWARD;
+		//if (pKeysBuffer[VK_DOWN] & 0xF0) dwDirection |= DIR_BACKWARD;
+		//if (pKeysBuffer[VK_LEFT] & 0xF0) dwDirection |= DIR_LEFT;
+		//if (pKeysBuffer[VK_RIGHT] & 0xF0) dwDirection |= DIR_RIGHT;
+		//if (pKeysBuffer[VK_PRIOR] & 0xF0) dwDirection |= DIR_UP;
+		//if (pKeysBuffer[VK_NEXT] & 0xF0) dwDirection |= DIR_DOWN;
+		
+		if (pKeysBuffer['W'] & 0xF0) dwDirection |= DIR_FORWARD;
+		if (pKeysBuffer['S'] & 0xF0) dwDirection |= DIR_BACKWARD;
+		if (pKeysBuffer['A'] & 0xF0) dwDirection |= DIR_LEFT;
+		if (pKeysBuffer['D'] & 0xF0) dwDirection |= DIR_RIGHT;
 		if (pKeysBuffer[VK_PRIOR] & 0xF0) dwDirection |= DIR_UP;
 		if (pKeysBuffer[VK_NEXT] & 0xF0) dwDirection |= DIR_DOWN;
 
@@ -557,7 +581,7 @@ void CGameFramework::ProcessInput()
 				else
 					m_pPlayer->Rotate(cyDelta, cxDelta, 0.0f);
 			}
-			if (dwDirection) m_pPlayer->Move(dwDirection, 12.25f, true);
+			if (dwDirection) m_pPlayer->Move(dwDirection, 5.0f, true);
 		}
 	}
 	m_pPlayer->Update(m_GameTimer.GetTimeElapsed());
