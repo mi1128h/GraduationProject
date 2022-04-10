@@ -138,10 +138,27 @@ void CTerrainPlayer::OnPrepareRender()
 }
 
 void CTerrainPlayer::Move(DWORD dwDirection, float fDistance, bool bUpdateVelocity)
+bool CTerrainPlayer::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
 {
 	m_pSkinnedAnimationController->SetTrackEnable(0, (dwDirection) ? true : false);
+	switch (nMessageID)
+	{
+		case WM_KEYDOWN:
+			switch (wParam)
+			{
+
+				default:
+					break;
+			}
+			break;
 
 	CPlayer::Move(dwDirection, fDistance, bUpdateVelocity);
+
+			break;
+		default:
+			break;
+	}
+	return(false);
 }
 
 void CTerrainPlayer::Update(float fTimeElapsed)

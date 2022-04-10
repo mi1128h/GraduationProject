@@ -262,4 +262,9 @@ void CPlayer::SetVectors()
 	m_xmf3Look.z = m_xmf4x4ToParent._33;
 }
 
-////////////////////////////////////////////////////////////////////////////////////
+bool CPlayer::OnProcessingKeyboardMessage(
+	HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
+{
+	return(false);
+}
+
