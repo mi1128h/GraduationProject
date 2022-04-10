@@ -134,13 +134,10 @@ void CTerrainPlayer::OnPrepareRender()
 	CPlayer::OnPrepareRender();
 
 	m_xmf4x4ToParent = Matrix4x4::Multiply(XMMatrixScaling(m_xmf3Scale.x, m_xmf3Scale.y, m_xmf3Scale.z), m_xmf4x4ToParent);
-	m_xmf4x4ToParent = Matrix4x4::Multiply(XMMatrixRotationX(0.0f), m_xmf4x4ToParent);
 }
 
-void CTerrainPlayer::Move(DWORD dwDirection, float fDistance, bool bUpdateVelocity)
 bool CTerrainPlayer::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
 {
-	m_pSkinnedAnimationController->SetTrackEnable(0, (dwDirection) ? true : false);
 	switch (nMessageID)
 	{
 		case WM_KEYDOWN:
@@ -152,7 +149,6 @@ bool CTerrainPlayer::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 			}
 			break;
 
-	CPlayer::Move(dwDirection, fDistance, bUpdateVelocity);
 
 			break;
 		default:
@@ -161,14 +157,4 @@ bool CTerrainPlayer::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 	return(false);
 }
 
-void CTerrainPlayer::Update(float fTimeElapsed)
 {
-	CPlayer::Update(fTimeElapsed);
-
-	if (m_pSkinnedAnimationController)
-	{
-		float fLength = sqrtf(m_xmf3Velocity.x * m_xmf3Velocity.x + m_xmf3Velocity.z * m_xmf3Velocity.z);
-		m_pSkinnedAnimationController->SetTrackEnable(0, ::IsZero(fLength));
-		m_pSkinnedAnimationController->SetTrackEnable(1, !::IsZero(fLength));
-	}
-}
