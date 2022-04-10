@@ -1480,3 +1480,51 @@ void CSkinnedAnimationObjectsWireFrameShader::Render(ID3D12GraphicsCommandList* 
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+CMonsterObjectsShader::CMonsterObjectsShader()
+{
+}
+
+CMonsterObjectsShader::~CMonsterObjectsShader()
+{
+
+}
+
+void CMonsterObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3dGraphicsRootSignature, ID3D12GraphicsCommandList* pd3dCommandList, void* pContext)
+{
+	CHeightMapTerrain* pTerrain = (CHeightMapTerrain*)pContext;
+
+	float fTerrainWidth = pTerrain->GetWidth();
+	float fTerrainLength = pTerrain->GetLength();
+
+	m_nObjects = 1;
+	
+	CLoadedModelInfo* pClownModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/WhiteClown.bin", NULL);
+	
+	CTexture* pModelTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
+	pModelTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Model/Texture/whiteclown_diffuse.dds", 0);
+	CScene::CreateShaderResourceViews(pd3dDevice, pModelTexture, Signature::Graphics::model_diffuse, true);
+
+	m_ppObjects = new CGameObject * [m_nObjects];
+
+
+	//
+	CMonsterObject* pMonsterObject = NULL;
+
+	pMonsterObject = new CMonsterObject;
+	pMonsterObject->SetUpdatedContext(pTerrain);
+	pMonsterObject->SetChild(pClownModel->m_pModelRootObject, true);
+	pMonsterObject->m_pTexture = pModelTexture;
+
+
+#ifndef _WITH_BATCH_MATERIAL
+#endif
+	float xPosition = fTerrainWidth * 0.5f;
+	float zPosition = fTerrainLength * 0.5f - 10.0f;
+	float fHeight = pTerrain->GetHeight(xPosition, zPosition);
+	pMonsterObject->SetPosition(xPosition, fHeight + 80.0f, zPosition);
+
+	m_ppObjects[0] = pMonsterObject;
+
+	if (pClownModel) delete pClownModel;
+}
