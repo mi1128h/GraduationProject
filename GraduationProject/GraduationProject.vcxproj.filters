@@ -102,7 +102,9 @@
     <ClInclude Include="Vertex.h">
       <Filter>헤더 파일\Mesh</Filter>
     </ClInclude>
-    <ClInclude Include="TerrainPlayer.h">
+    <ClInclude Include="AnimPlayer.h">
+      <Filter>헤더 파일\Player</Filter>
+    </ClInclude>
       <Filter>헤더 파일\Player</Filter>
     </ClInclude>
   </ItemGroup>
@@ -146,7 +148,9 @@
     <ClCompile Include="Camera.cpp">
       <Filter>소스 파일\Camera</Filter>
     </ClCompile>
-    <ClCompile Include="TerrainPlayer.cpp">
+    <ClCompile Include="AnimPlayer.cpp">
+      <Filter>소스 파일\Player</Filter>
+    </ClCompile>
       <Filter>소스 파일\Player</Filter>
     </ClCompile>
   </ItemGroup>
