@@ -31,4 +31,5 @@ public:
 
 private:
 	int m_nTracks = track_name::length;
+	int m_nCurrentTracks = track_name::idle;
 };
