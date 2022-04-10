@@ -370,6 +370,7 @@ void CAnimationController::AdvanceTime(float fTimeElapsed, CGameObject* pRootGam
 				{
 					SetTrackEnable(i, false);
 					SetTrackEnable(0, true);
+					pAnimationSet->m_bLoopEnd = false;
 				}
 			}
 		}
