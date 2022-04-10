@@ -4,9 +4,17 @@
 enum track_name
 {
 	idle,
-	run,
-	slash,
 	impact,
+	run,
+	run_back,
+	run_right,
+	run_left,
+	attack_down,
+	attack_slash,
+	attack_spin,
+	handling,
+	lifting,
+	interaction,
 	length
 };
 
