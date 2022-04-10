@@ -123,6 +123,17 @@ void CAnimPlayer::OnPrepareRender()
 	CPlayer::OnPrepareRender();
 
 	m_xmf4x4ToParent = Matrix4x4::Multiply(XMMatrixScaling(m_xmf3Scale.x, m_xmf3Scale.y, m_xmf3Scale.z), m_xmf4x4ToParent);
+	m_xmf4x4ToParent = Matrix4x4::Multiply(XMMatrixRotationX(0.0f), m_xmf4x4ToParent);
+}
+
+void CAnimPlayer::Update(float fTimeElapsed)
+{
+	CPlayer::Update(fTimeElapsed);
+}
+
+void CAnimPlayer::Move(DWORD dwDirection, float fDistance, bool bUpdateVelocity)
+{
+	CPlayer::Move(dwDirection, fDistance, bUpdateVelocity);
 }
 
 bool CAnimPlayer::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
@@ -158,7 +169,6 @@ bool CAnimPlayer::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM
 					SwitchAnimationState(track_name::idle);
 					break;
 			}
-
 			break;
 		default:
 			break;
