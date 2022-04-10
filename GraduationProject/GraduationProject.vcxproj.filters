@@ -105,8 +105,6 @@
     <ClInclude Include="AnimPlayer.h">
       <Filter>헤더 파일\Player</Filter>
     </ClInclude>
-      <Filter>헤더 파일\Player</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GraduationProject.cpp">
@@ -149,8 +147,6 @@
       <Filter>소스 파일\Camera</Filter>
     </ClCompile>
     <ClCompile Include="AnimPlayer.cpp">
-      <Filter>소스 파일\Player</Filter>
-    </ClCompile>
       <Filter>소스 파일\Player</Filter>
     </ClCompile>
   </ItemGroup>
