@@ -2,7 +2,7 @@
 #include "Timer.h"
 #include "Scene.h"
 #include "Camera.h"
-#include "TerrainPlayer.h"
+#include "AnimPlayer.h"
 #include "Shader.h"
 #include "ComputeShader.h"
 

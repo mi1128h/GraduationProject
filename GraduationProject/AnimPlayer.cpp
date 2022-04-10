@@ -1,8 +1,8 @@
 #include "stdafx.h"
-#include "TerrainPlayer.h"
+#include "AnimPlayer.h"
 #include "Scene.h"
 
-CTerrainPlayer::CTerrainPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
+CAnimPlayer::CAnimPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 	* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, void* pContext, int
 	nMeshes) : CPlayer(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, pContext, nMeshes)
 {
@@ -25,7 +25,7 @@ CTerrainPlayer::CTerrainPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLi
 	if (pAngrybotModel) delete pAngrybotModel;
 }
 
-void CTerrainPlayer::InitPlayerMatrics(void* pContext)
+void CAnimPlayer::InitPlayerMatrics(void* pContext)
 {
 	CHeightMapTerrain* pTerrain = (CHeightMapTerrain*)pContext;
 	SetPosition(XMFLOAT3(310.0f, pTerrain->GetHeight(310.0f, 595.0f), 595.0f));
@@ -33,7 +33,7 @@ void CTerrainPlayer::InitPlayerMatrics(void* pContext)
 	Rotate(0.0f, 0.0f, 90.0f);
 }
 
-void CTerrainPlayer::SetResource(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
+void CAnimPlayer::SetResource(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
 {
 	CTexture* pAnimationTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
 	pAnimationTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Model/Texture/maria_diffuse.dds", 0);
@@ -41,23 +41,11 @@ void CTerrainPlayer::SetResource(ID3D12Device* pd3dDevice, ID3D12GraphicsCommand
 	m_pTexture = pAnimationTexture;
 }
 
-void CTerrainPlayer::SetAnimationTracks(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, CLoadedModelInfo* pModel)
-{
-	m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, m_nTracks, pModel);
-
-	for (int i = 0; i < m_nTracks; ++i)
-	{
-		m_pSkinnedAnimationController->SetTrackAnimationSet(i, i);
-		bool bEnable = (i == m_nCurrentTracks) ? true : false;
-		m_pSkinnedAnimationController->SetTrackEnable(i, bEnable);
-	}
-}
-
-CTerrainPlayer::~CTerrainPlayer()
+CAnimPlayer::~CAnimPlayer()
 {
 }
 
-CCamera* CTerrainPlayer::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
+CCamera* CAnimPlayer::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
 {
 	DWORD nCurrentCameraMode = (m_pCamera) ? m_pCamera->GetMode() : 0x00;
 	if (nCurrentCameraMode == nNewCameraMode) return(m_pCamera);
@@ -96,7 +84,7 @@ CCamera* CTerrainPlayer::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
 	return(m_pCamera);
 }
 
-void CTerrainPlayer::OnPlayerUpdateCallback(float fTimeElapsed)
+void CAnimPlayer::OnPlayerUpdateCallback(float fTimeElapsed)
 {
 	CHeightMapTerrain* pTerrain = (CHeightMapTerrain*)m_pPlayerUpdatedContext;
 	XMFLOAT3 xmf3Scale = pTerrain->GetScale();
@@ -112,7 +100,7 @@ void CTerrainPlayer::OnPlayerUpdateCallback(float fTimeElapsed)
 	}
 }
 
-void CTerrainPlayer::OnCameraUpdateCallback(float fTimeElapsed)
+void CAnimPlayer::OnCameraUpdateCallback(float fTimeElapsed)
 {
 	CHeightMapTerrain* pTerrain = (CHeightMapTerrain*)m_pCameraUpdatedContext;
 	XMFLOAT3 xmf3Scale = pTerrain->GetScale();
@@ -130,14 +118,14 @@ void CTerrainPlayer::OnCameraUpdateCallback(float fTimeElapsed)
 	}
 }
 
-void CTerrainPlayer::OnPrepareRender()
+void CAnimPlayer::OnPrepareRender()
 {
 	CPlayer::OnPrepareRender();
 
 	m_xmf4x4ToParent = Matrix4x4::Multiply(XMMatrixScaling(m_xmf3Scale.x, m_xmf3Scale.y, m_xmf3Scale.z), m_xmf4x4ToParent);
 }
 
-bool CTerrainPlayer::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
+bool CAnimPlayer::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
 {
 	switch (nMessageID)
 	{
@@ -178,7 +166,19 @@ bool CTerrainPlayer::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 	return(false);
 }
 
-void CTerrainPlayer::SwitchAnimationState(int nType)
+void CAnimPlayer::SetAnimationTracks(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, CLoadedModelInfo* pModel)
+{
+	m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, m_nTracks, pModel);
+
+	for (int i = 0; i < m_nTracks; ++i)
+	{
+		m_pSkinnedAnimationController->SetTrackAnimationSet(i, i);
+		bool bEnable = (i == m_nCurrentTracks) ? true : false;
+		m_pSkinnedAnimationController->SetTrackEnable(i, bEnable);
+	}
+}
+
+void CAnimPlayer::SwitchAnimationState(int nType)
 {
 	m_pSkinnedAnimationController->SetTrackEnable(m_nCurrentTracks, false);
 	m_nCurrentTracks = nType;
