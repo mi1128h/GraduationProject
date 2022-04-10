@@ -19,8 +19,7 @@ CAnimPlayer::CAnimPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 
 	InitPlayerMatrics(pContext);
 
-	m_pSkinnedAnimationController->SetAnimationSetsType(track_name::slash, Animation::Type::Once);
-	m_pSkinnedAnimationController->SetAnimationSetsType(track_name::impact, Animation::Type::Once);
+	SetAnimationTypes();
 
 	if (pAngrybotModel) delete pAngrybotModel;
 }
@@ -174,6 +173,17 @@ bool CAnimPlayer::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM
 			break;
 	}
 	return(false);
+}
+
+void CAnimPlayer::SetAnimationTypes()
+{
+	bool bAnimType[track_name::length] = { true, false, true, true, true, true, false, false,false,true,false};
+
+	for (int i = 0; i < track_name::length; ++i)
+	{
+		int nType = (bAnimType[i] == true) ? Animation::Type::Loop : Animation::Type::Once;
+		m_pSkinnedAnimationController->SetAnimationSetsType(i, nType);
+	}
 }
 
 void CAnimPlayer::SetAnimationTracks(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, CLoadedModelInfo* pModel)
