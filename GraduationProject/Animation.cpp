@@ -377,6 +377,32 @@ void CAnimationController::AdvanceTime(float fTimeElapsed, CGameObject* pRootGam
 	}
 }
 
+void CAnimationController::SetAnimationTypes(bool* types)
+{
+	for (int i = 0; i < m_nAnimationTracks; ++i)
+	{
+		int nType = (types[i] == true) ? Animation::Type::Loop : Animation::Type::Once;
+		SetAnimationSetsType(i, nType);
+	}
+}
+
+void CAnimationController::SetAnimationTracks()
+{
+	for (int i = 0; i < m_nAnimationTracks; ++i)
+	{
+		SetTrackAnimationSet(i, i);
+		bool bEnable = (i == m_nCurrentTracks) ? true : false;
+		SetTrackEnable(i, bEnable);
+	}
+}
+
+void CAnimationController::SwitchAnimationState(int nType)
+{
+	SetTrackEnable(m_nCurrentTracks, false);
+	m_nCurrentTracks = nType;
+	SetTrackEnable(m_nCurrentTracks, true);
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 CLoadedModelInfo::~CLoadedModelInfo()
