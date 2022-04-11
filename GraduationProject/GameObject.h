@@ -480,4 +480,5 @@ public:
 	void SetHp(float hp) { m_fHp = hp; }
 	void SetDamage(float damage) { m_fDamage = damage; }
 
+	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
 };

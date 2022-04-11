@@ -1346,3 +1346,15 @@ void CMonsterObject::FindTarget()
 	// idea: 어그로 아이템 추가
 	//		-> 플레이어가 어그로 아이템 사용 시 어그로 아이템을 Target으로 지정
 }
+
+void CMonsterObject::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
+{
+	XMFLOAT4X4 xmf4x4TempWolrd;
+	xmf4x4TempWolrd = m_xmf4x4ToParent = m_xmf4x4World;
+	m_xmf4x4ToParent = Matrix4x4::Multiply(XMMatrixScaling(m_xmf3Scale.x, m_xmf3Scale.y, m_xmf3Scale.z), m_xmf4x4ToParent);
+	UpdateTransform(NULL);
+
+	CGameObject::Render(pd3dCommandList, pCamera);
+	
+	m_xmf4x4World = m_xmf4x4ToParent = xmf4x4TempWolrd;
+}
