@@ -191,7 +191,13 @@ public:
 	ID3D12Resource** m_ppd3dcbSkinningBoneTransforms = NULL; //[SkinnedMeshes]
 	XMFLOAT4X4** m_ppcbxmf4x4MappedSkinningBoneTransforms = NULL;
 
+private:
+	//int m_nTracks = track_name::length;
+	int m_nCurrentTracks = 0;
+
 public:
+	void SetCurrentTrackNum(int index) { m_nCurrentTracks = index; }
+
 	void UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList);
 
 	void SetAnimationSets(CAnimationSets* pAnimationSets);
@@ -209,4 +215,8 @@ public:
 	void SetAnimationCallbackHandler(int nAnimationSet, CAnimationCallbackHandler* pCallbackHandler);
 
 	void AdvanceTime(float fElapsedTime, CGameObject* pRootGameObject);
+
+	void SetAnimationTypes(bool* types);
+	void SetAnimationTracks();
+	void SwitchAnimationState(int nType);
 };

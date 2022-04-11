@@ -11,7 +11,7 @@ CAnimPlayer::CAnimPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 	CLoadedModelInfo* pAngrybotModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/Maria.bin", NULL);
 	SetChild(pAngrybotModel->m_pModelRootObject, true);
 
-	SetAnimationTracks(pd3dDevice, pd3dCommandList, pAngrybotModel);
+	SetAnimationController(pd3dDevice, pd3dCommandList, pAngrybotModel);
 	SetResource(pd3dDevice, pd3dCommandList);
 	SetPlayerUpdatedContext(pContext);
 	SetCameraUpdatedContext(pContext);
@@ -143,30 +143,30 @@ bool CAnimPlayer::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM
 			switch (wParam)
 			{
 				case 'Q':
-					SwitchAnimationState(track_name::attack_slash);
+					m_pSkinnedAnimationController->SwitchAnimationState(track_name::attack_slash);
 					break;
 	
 				case 'W':
-					SwitchAnimationState(track_name::run);
+					m_pSkinnedAnimationController->SwitchAnimationState(track_name::run);
 					break;
 
 				case 'S':
-					SwitchAnimationState(track_name::run_back);
+					m_pSkinnedAnimationController->SwitchAnimationState(track_name::run_back);
 					break;
 
 				case 'A':
-					SwitchAnimationState(track_name::run_left);
+					m_pSkinnedAnimationController->SwitchAnimationState(track_name::run_left);
 					break;
 
 				case 'D':
-					SwitchAnimationState(track_name::run_right);
+					m_pSkinnedAnimationController->SwitchAnimationState(track_name::run_right);
 					break;
 
 				case '1':
-					SwitchAnimationState(track_name::attack_down);
+					m_pSkinnedAnimationController->SwitchAnimationState(track_name::attack_down);
 					break;
 				case '2':
-					SwitchAnimationState(track_name::attack_spin);
+					m_pSkinnedAnimationController->SwitchAnimationState(track_name::attack_spin);
 					break;
 				default:
 					break;
@@ -193,29 +193,12 @@ bool CAnimPlayer::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM
 void CAnimPlayer::SetAnimationTypes()
 {
 	bool bAnimType[track_name::length] = { true, false, true, true, true, true, false, false,false,true,false};
-
-	for (int i = 0; i < track_name::length; ++i)
-	{
-		int nType = (bAnimType[i] == true) ? Animation::Type::Loop : Animation::Type::Once;
-		m_pSkinnedAnimationController->SetAnimationSetsType(i, nType);
-	}
+	m_pSkinnedAnimationController->SetAnimationTypes(bAnimType);
 }
 
-void CAnimPlayer::SetAnimationTracks(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, CLoadedModelInfo* pModel)
+void CAnimPlayer::SetAnimationController(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, CLoadedModelInfo* pModel)
 {
-	m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, m_nTracks, pModel);
-
-	for (int i = 0; i < m_nTracks; ++i)
-	{
-		m_pSkinnedAnimationController->SetTrackAnimationSet(i, i);
-		bool bEnable = (i == m_nCurrentTracks) ? true : false;
-		m_pSkinnedAnimationController->SetTrackEnable(i, bEnable);
-	}
-}
-
-void CAnimPlayer::SwitchAnimationState(int nType)
-{
-	m_pSkinnedAnimationController->SetTrackEnable(m_nCurrentTracks, false);
-	m_nCurrentTracks = nType;
-	m_pSkinnedAnimationController->SetTrackEnable(m_nCurrentTracks, true);
+	m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, track_name::length, pModel);
+	m_pSkinnedAnimationController->SetCurrentTrackNum(track_name::idle);
+	m_pSkinnedAnimationController->SetAnimationTracks();
 }
