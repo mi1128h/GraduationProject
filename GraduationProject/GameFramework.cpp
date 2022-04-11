@@ -434,6 +434,10 @@ void CGameFramework::OnProcessingKeyboardMessage
 	if (m_pScene) m_pScene->OnProcessingKeyboardMessage(hWnd, nMessageID, wParam, lParam);
 	if (m_pPlayer) m_pPlayer->OnProcessingKeyboardMessage(hWnd, nMessageID, wParam, lParam);
 
+	// test
+	CSkinnedAnimationObjectsWireFrameShader* testShader = (CSkinnedAnimationObjectsWireFrameShader*)m_pScene->m_ppShaders[2];
+	((CMonsterObject*)(testShader->m_ppObjects[0]))->OnProcessingKeyboardMessage(hWnd, nMessageID, wParam, lParam);
+
 	switch (nMessageID)
 	{
 	case WM_KEYDOWN:

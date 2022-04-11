@@ -1358,3 +1358,38 @@ void CMonsterObject::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera*
 	
 	m_xmf4x4World = m_xmf4x4ToParent = xmf4x4TempWolrd;
 }
+
+bool CMonsterObject::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
+{
+	switch (nMessageID)
+	{
+	case WM_KEYDOWN:
+		switch (wParam)
+		{
+		case '0':
+			m_pSkinnedAnimationController->SwitchAnimationState(track_name::attack);
+			break;
+
+		case '9':
+			m_pSkinnedAnimationController->SwitchAnimationState(track_name::death);
+			break;
+
+		case '8':
+			m_pSkinnedAnimationController->SwitchAnimationState(track_name::dying);
+			break;
+
+		case '7':
+			m_pSkinnedAnimationController->SwitchAnimationState(track_name::idle);
+			break;
+
+		case '6':
+			m_pSkinnedAnimationController->SwitchAnimationState(track_name::walk);
+			break;
+
+		default:
+			break;
+		}
+		break;
+	}
+	return(false);
+}

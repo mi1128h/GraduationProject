@@ -481,4 +481,6 @@ public:
 	void SetDamage(float damage) { m_fDamage = damage; }
 
 	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
+
+	virtual bool OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam);
 };
