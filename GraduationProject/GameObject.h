@@ -449,6 +449,17 @@ public:
 class CMonsterObject : public CGameObject
 {
 public:
+	enum track_name
+	{
+		attack,
+		death,
+		dying,
+		idle,
+		walk,
+		length
+	};
+
+
 	CMonsterObject();
 	virtual ~CMonsterObject();
 
@@ -457,6 +468,7 @@ private:
 
 	CGameObject* m_pTargetObject = NULL;
 	float m_DetectionRange;
+
 	float m_fHp;
 	float m_fDamage;
 

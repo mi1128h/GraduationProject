@@ -1503,7 +1503,7 @@ void CMonsterObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSig
 	
 	CTexture* pModelTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
 	pModelTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Model/Texture/whiteclown_diffuse.dds", 0);
-	CScene::CreateShaderResourceViews(pd3dDevice, pModelTexture, Signature::Graphics::model_diffuse, true);
+	CScene::CreateShaderResourceViews(pd3dDevice, pModelTexture, Signature::Graphics::animation_diffuse, true);
 
 	m_ppObjects = new CGameObject * [m_nObjects];
 
@@ -1520,9 +1520,13 @@ void CMonsterObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSig
 #ifndef _WITH_BATCH_MATERIAL
 #endif
 	float xPosition = fTerrainWidth * 0.5f;
-	float zPosition = fTerrainLength * 0.5f - 10.0f;
+	float zPosition = fTerrainLength * 0.5f;
 	float fHeight = pTerrain->GetHeight(xPosition, zPosition);
 	pMonsterObject->SetPosition(xPosition, fHeight + 80.0f, zPosition);
+
+	pMonsterObject->m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, CMonsterObject::track_name::length, pClownModel);
+	pMonsterObject->m_pSkinnedAnimationController->SetCurrentTrackNum(CMonsterObject::track_name::idle);
+	pMonsterObject->m_pSkinnedAnimationController->SetAnimationTracks();
 
 	m_ppObjects[0] = pMonsterObject;
 
