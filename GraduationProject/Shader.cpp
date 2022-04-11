@@ -1455,7 +1455,7 @@ void CSkinnedAnimationObjectsWireFrameShader::ReleaseObjects()
 	}
 }
 
-void CSkinnedAnimationObjectsWireFrameShader::AnimateObjects(float fTimeElapsed)
+void CSkinnedAnimationObjectsWireFrameShader::AnimateObjects(float fTimeElapsed, CCamera* pCamera)
 {
 	m_fElapsedTime = fTimeElapsed;
 }
@@ -1516,17 +1516,15 @@ void CMonsterObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSig
 	pMonsterObject->SetChild(pClownModel->m_pModelRootObject, true);
 	pMonsterObject->m_pTexture = pModelTexture;
 
-
-#ifndef _WITH_BATCH_MATERIAL
-#endif
-	float xPosition = fTerrainWidth * 0.5f;
-	float zPosition = fTerrainLength * 0.5f;
-	float fHeight = pTerrain->GetHeight(xPosition, zPosition);
-	pMonsterObject->SetPosition(xPosition, fHeight + 80.0f, zPosition);
+	pMonsterObject->SetPosition(XMFLOAT3(310.0f, pTerrain->GetHeight(310.0f, 595.0f), 595.0f));
+	pMonsterObject->SetScale(XMFLOAT3(0.2f, 0.2f, 0.2f));
 
 	pMonsterObject->m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, CMonsterObject::track_name::length, pClownModel);
 	pMonsterObject->m_pSkinnedAnimationController->SetCurrentTrackNum(CMonsterObject::track_name::idle);
 	pMonsterObject->m_pSkinnedAnimationController->SetAnimationTracks();
+
+	bool bAnimType[CMonsterObject::track_name::length] = { false, false, false, true, true };
+	pMonsterObject->m_pSkinnedAnimationController->SetAnimationTypes(bAnimType);
 
 	m_ppObjects[0] = pMonsterObject;
 
