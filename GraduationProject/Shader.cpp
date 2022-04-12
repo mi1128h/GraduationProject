@@ -1521,7 +1521,14 @@ void CMonsterObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSig
 
 	pMonsterObject->m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, CMonsterObject::track_name::length, pClownModel);
 	pMonsterObject->m_pSkinnedAnimationController->SetCurrentTrackNum(CMonsterObject::track_name::idle);
-	pMonsterObject->m_pSkinnedAnimationController->SetAnimationTracks();
+	
+	//pMonsterObject->m_pSkinnedAnimationController->SetAnimationTracks();
+	for (int i = 0; i < pMonsterObject->m_pSkinnedAnimationController->m_nAnimationTracks; ++i)
+	{
+		pMonsterObject->m_pSkinnedAnimationController->SetTrackAnimationSet(i, i * 2 + 1);
+		bool bEnable = (i == CMonsterObject::track_name::idle) ? true : false;
+		pMonsterObject->m_pSkinnedAnimationController->SetTrackEnable(i, bEnable);
+	}
 
 	bool bAnimType[CMonsterObject::track_name::length] = { false, false, false, true, true };
 	pMonsterObject->m_pSkinnedAnimationController->SetAnimationTypes(bAnimType);
