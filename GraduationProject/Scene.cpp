@@ -54,7 +54,7 @@ ID3D12RootSignature* CScene::CreateGraphicsRootSignature(ID3D12Device* pd3dDevic
 
 	ID3D12RootSignature* pd3dGraphicsRootSignature = NULL;
 
-	D3D12_DESCRIPTOR_RANGE pd3dDescriptorRanges[8];
+	D3D12_DESCRIPTOR_RANGE pd3dDescriptorRanges[Descriptor::Graphics::length];
 
 	pd3dDescriptorRanges[Descriptor::Graphics::texture].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
 	pd3dDescriptorRanges[Descriptor::Graphics::texture].NumDescriptors = 1;
@@ -100,11 +100,17 @@ ID3D12RootSignature* CScene::CreateGraphicsRootSignature(ID3D12Device* pd3dDevic
 
 	pd3dDescriptorRanges[Descriptor::Graphics::model_diffuse].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
 	pd3dDescriptorRanges[Descriptor::Graphics::model_diffuse].NumDescriptors = 1;
-	pd3dDescriptorRanges[Descriptor::Graphics::model_diffuse].BaseShaderRegister = 9; //t7: model_diffuse
+	pd3dDescriptorRanges[Descriptor::Graphics::model_diffuse].BaseShaderRegister = 9; //t9: model_diffuse
 	pd3dDescriptorRanges[Descriptor::Graphics::model_diffuse].RegisterSpace = 0;
 	pd3dDescriptorRanges[Descriptor::Graphics::model_diffuse].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 
-	D3D12_ROOT_PARAMETER pd3dRootParameters[16];
+	pd3dDescriptorRanges[Descriptor::Graphics::model_normal].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+	pd3dDescriptorRanges[Descriptor::Graphics::model_normal].NumDescriptors = 1;
+	pd3dDescriptorRanges[Descriptor::Graphics::model_normal].BaseShaderRegister = 10; //t10: model_normal
+	pd3dDescriptorRanges[Descriptor::Graphics::model_normal].RegisterSpace = 0;
+	pd3dDescriptorRanges[Descriptor::Graphics::model_normal].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+
+	D3D12_ROOT_PARAMETER pd3dRootParameters[Signature::Graphics::length];
 
 	pd3dRootParameters[Signature::Graphics::player].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
 	pd3dRootParameters[Signature::Graphics::player].Descriptor.ShaderRegister = 0; //Player
@@ -186,6 +192,11 @@ ID3D12RootSignature* CScene::CreateGraphicsRootSignature(ID3D12Device* pd3dDevic
 	pd3dRootParameters[Signature::Graphics::model_diffuse].DescriptorTable.NumDescriptorRanges = 1;
 	pd3dRootParameters[Signature::Graphics::model_diffuse].DescriptorTable.pDescriptorRanges = &pd3dDescriptorRanges[Descriptor::Graphics::model_diffuse];
 	pd3dRootParameters[Signature::Graphics::model_diffuse].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+
+	pd3dRootParameters[Signature::Graphics::model_normal].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+	pd3dRootParameters[Signature::Graphics::model_normal].DescriptorTable.NumDescriptorRanges = 1;
+	pd3dRootParameters[Signature::Graphics::model_normal].DescriptorTable.pDescriptorRanges = &pd3dDescriptorRanges[Descriptor::Graphics::model_normal];
+	pd3dRootParameters[Signature::Graphics::model_normal].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 
 	D3D12_STATIC_SAMPLER_DESC pd3dSamplerDescs[2];
 
