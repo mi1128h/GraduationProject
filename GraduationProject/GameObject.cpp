@@ -1302,6 +1302,7 @@ void CCannonObject::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* 
 {
 	XMFLOAT4X4 xmf4x4TempWolrd;
 	xmf4x4TempWolrd = m_xmf4x4ToParent = m_xmf4x4World;
+
 	m_xmf4x4ToParent = Matrix4x4::Multiply(XMMatrixRotationY(110.0f), m_xmf4x4ToParent);
 	UpdateTransform(NULL);
 
@@ -1316,7 +1317,7 @@ void CCannonObject::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* 
 void CCannonObject::Animate(float fTimeElapsed, CCamera* pCamera)
 {
 	if (m_pCannonball) {
-		m_pCannonball->Animate(fTimeElapsed, pCamera);
+		//m_pCannonball->Animate(fTimeElapsed, pCamera);
 	}
 }
 
