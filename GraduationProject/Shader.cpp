@@ -930,7 +930,7 @@ void CCannonObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSign
 	pCannonObject->m_pTexture = pModelTexture;
 	//pCannonObject->SetModelTexture(pModelTexture);
 	CGameObject* pCannonL = pCannonObject->FindFrame("Cube_001");
-	if (pCannonL) pCannonL->m_xmf4x4ToParent = Matrix4x4::Multiply(XMMatrixRotationX(-60.0f), pCannonL->m_xmf4x4ToParent);
+	//if (pCannonL) pCannonL->m_xmf4x4ToParent = Matrix4x4::Multiply(XMMatrixRotationX(60.0f), pCannonL->m_xmf4x4ToParent);
 
 #ifndef _WITH_BATCH_MATERIAL
 #endif
