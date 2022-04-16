@@ -825,6 +825,7 @@ CGameObject* CGameObject::LoadFrameHierarchyFromFile(ID3D12Device* pd3dDevice, I
 		{
 			CModelMesh* pMesh = new CModelMesh(pd3dDevice, pd3dCommandList);
 			pMesh->LoadMeshFromFile(pd3dDevice, pd3dCommandList, pInFile);
+			pMesh->MakeBoundingBox(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, pGameObject->m_xmf4x4World);
 			pGameObject->SetMesh(pMesh);
 
 			/**/pGameObject->SetWireFrameShader();
@@ -839,6 +840,7 @@ CGameObject* CGameObject::LoadFrameHierarchyFromFile(ID3D12Device* pd3dDevice, I
 
 			::ReadStringFromFile(pInFile, pstrToken); //<Mesh>:
 			if (!strcmp(pstrToken, "<Mesh>:")) pSkinnedMesh->LoadMeshFromFile(pd3dDevice, pd3dCommandList, pInFile);
+			pSkinnedMesh->MakeBoundingBox(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, pGameObject->m_xmf4x4World);
 
 			pGameObject->SetMesh(pSkinnedMesh);
 

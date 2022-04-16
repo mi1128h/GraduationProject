@@ -1,6 +1,7 @@
 ﻿#include "stdafx.h"
 #include "Mesh.h"
 #include "GameObject.h"
+#include "Collision.h"
 
 CMesh::CMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
 {
@@ -69,6 +70,8 @@ void CMesh::Render(ID3D12GraphicsCommandList* pd3dCommandList, int nSubSet)
 	{
 		pd3dCommandList->DrawInstanced(m_nVertices, 1, m_nOffset, 0);
 	}
+
+	if(m_Collider) m_Collider->Render(pd3dCommandList,nullptr);
 }
 
 void CMesh::OnPostRender(ID3D12GraphicsCommandList* pd3dCommandList, void* pContext)
@@ -78,6 +81,12 @@ void CMesh::OnPostRender(ID3D12GraphicsCommandList* pd3dCommandList, void* pCont
 void CMesh::CalculateBoundingBox(XMFLOAT3* pxmf3Points, UINT nStride)
 {
 	BoundingBox::CreateFromPoints(m_xmBoundingBox, m_nVertices, pxmf3Points, nStride);
+}
+
+void CMesh::MakeBoundingBox(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, XMFLOAT4X4 m_xmf4x4World)
+{
+	m_Collider = new CCollision(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature
+		,m_xmf3AABBMin, m_xmf3AABBMax, m_xmf3AABBCenter, m_xmf4x4World);
 }
 
 

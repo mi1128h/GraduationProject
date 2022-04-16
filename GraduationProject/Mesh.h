@@ -2,6 +2,7 @@
 #include "Vertex.h"
 
 class CGameObject;
+class CCollision;
 
 ////////////////////////////////////////////////////////////////////////
 class CMesh
@@ -57,7 +58,8 @@ protected:
 	UINT m_nStride = 0;
 
 public:
-	BoundingBox						m_xmBoundingBox;
+	CCollision* m_Collider;
+	BoundingBox m_xmBoundingBox;
 
 public:
 	UINT GetType() { return(m_nType); }
@@ -73,6 +75,8 @@ public:
 	virtual void OnPostRender(ID3D12GraphicsCommandList* pd3dCommandList, void* pContext);
 
 	void CalculateBoundingBox(XMFLOAT3* pxmf3Points, UINT nStride);
+	void MakeBoundingBox(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, 
+		XMFLOAT4X4 m_xmf4x4World);
 
 	void LoadMeshFromFile(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, FILE* pInFile);
 };
