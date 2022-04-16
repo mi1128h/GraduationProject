@@ -1,8 +1,9 @@
 #pragma once
 #include "Shader.h"
 
-class CCollisionShader : CShader
+class CCollisionShader : public CShader
 {
+public:
 	CCollisionShader();
 	virtual ~CCollisionShader();
 
