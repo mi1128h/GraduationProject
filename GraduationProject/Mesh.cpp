@@ -70,8 +70,6 @@ void CMesh::Render(ID3D12GraphicsCommandList* pd3dCommandList, int nSubSet)
 	{
 		pd3dCommandList->DrawInstanced(m_nVertices, 1, m_nOffset, 0);
 	}
-
-	if(m_Collider) m_Collider->Render(pd3dCommandList,nullptr);
 }
 
 void CMesh::OnPostRender(ID3D12GraphicsCommandList* pd3dCommandList, void* pContext)
@@ -83,12 +81,11 @@ void CMesh::CalculateBoundingBox(XMFLOAT3* pxmf3Points, UINT nStride)
 	BoundingBox::CreateFromPoints(m_xmBoundingBox, m_nVertices, pxmf3Points, nStride);
 }
 
-void CMesh::MakeBoundingBox(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, XMFLOAT4X4 m_xmf4x4World)
+void CMesh::SetBoundingBoxValues(DirectX::XMFLOAT3& max, DirectX::XMFLOAT3& min)
 {
-	m_Collider = new CCollision(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature
-		,m_xmf3AABBMin, m_xmf3AABBMax, m_xmf3AABBCenter, m_xmf4x4World);
+	XMStoreFloat3(&m_xmBoundingBox.Center, XMLoadFloat3(&m_xmf3AABBCenter));
+	XMStoreFloat3(&m_xmBoundingBox.Extents, XMVectorScale(XMLoadFloat3(&Vector3::Subtract(max, min)), 0.5f));
 }
-
 
 void CMesh::LoadMeshFromFile(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, FILE* pInFile)
 {

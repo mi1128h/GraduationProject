@@ -2,6 +2,7 @@
 #include "GameObject.h"
 #include "Shader.h"
 #include "Scene.h"
+#include "Collision.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -753,6 +754,9 @@ void CGameObject::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pC
 		}
 	}
 
+	if (m_pCollider) m_pCollider->m_xmf4x4World = m_xmf4x4World;
+	if (m_pCollider) m_pCollider->Render(pd3dCommandList, pCamera);
+
 	if (m_pSibling) m_pSibling->Render(pd3dCommandList, pCamera);
 	if (m_pChild) m_pChild->Render(pd3dCommandList, pCamera);
 }
@@ -798,6 +802,10 @@ int ReadStringFromFile(FILE* pInFile, char* pstrToken)
 
 	return(nStrLength);
 }
+void CGameObject::MakeCollider(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature)
+{
+	m_pCollider = new CCollision(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, m_xmBoundingBox);
+}
 
 CGameObject* CGameObject::LoadFrameHierarchyFromFile(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CGameObject* pParent, FILE* pInFile, CShader* pShader, int* pnSkinnedMeshes)
 {
@@ -825,7 +833,10 @@ CGameObject* CGameObject::LoadFrameHierarchyFromFile(ID3D12Device* pd3dDevice, I
 		{
 			CModelMesh* pMesh = new CModelMesh(pd3dDevice, pd3dCommandList);
 			pMesh->LoadMeshFromFile(pd3dDevice, pd3dCommandList, pInFile);
-			pMesh->MakeBoundingBox(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, pGameObject->m_xmf4x4World);
+
+			pGameObject->m_xmBoundingBox = pMesh->m_xmBoundingBox;
+			pGameObject->MakeCollider(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature);
+
 			pGameObject->SetMesh(pMesh);
 
 			/**/pGameObject->SetWireFrameShader();
@@ -840,7 +851,8 @@ CGameObject* CGameObject::LoadFrameHierarchyFromFile(ID3D12Device* pd3dDevice, I
 
 			::ReadStringFromFile(pInFile, pstrToken); //<Mesh>:
 			if (!strcmp(pstrToken, "<Mesh>:")) pSkinnedMesh->LoadMeshFromFile(pd3dDevice, pd3dCommandList, pInFile);
-			pSkinnedMesh->MakeBoundingBox(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, pGameObject->m_xmf4x4World);
+			pGameObject->m_xmBoundingBox = pSkinnedMesh->m_xmBoundingBox;
+			pGameObject->MakeCollider(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature);
 
 			pGameObject->SetMesh(pSkinnedMesh);
 

@@ -11,6 +11,7 @@
 #define RESOURCE_STRUCTURED_BUFFER	0x06
 
 class CShader;
+class CCollision;
 
 class CTexture
 {
@@ -138,6 +139,7 @@ public:
 	CTexture** m_ppTextures = NULL; //0:Albedo, 1:Specular, 2:Metallic, 3:Normal, 4:Emission, 5:DetailAlbedo, 6:DetailNormal
 	_TCHAR(*m_ppstrTextureNames)[64] = NULL;
 
+
 public:
 	static CShader* m_pWireFrameShader;
 	static CShader* m_pSkinnedAnimationWireFrameShader;
@@ -205,6 +207,7 @@ public:
 	BoundingBox						m_xmBoundingBox;
 
 	CTexture* m_pTexture;
+	CCollision* m_pCollider;
 
 public:
 	void SetMesh(CMesh* pMesh);
@@ -276,6 +279,8 @@ public:
 	static CLoadedModelInfo* LoadGeometryAndAnimationFromFile(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, char* pstrFileName, CShader* pShader);
 
 	static void PrintFrameInfo(CGameObject* pGameObject, CGameObject* pParent);
+	void MakeCollider(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature);
+
 };
 
 class CRotatingObject : public CGameObject
