@@ -25,8 +25,7 @@ protected:
 	UINT							m_nType = 0x00;
 
 	XMFLOAT3						m_xmf3AABBCenter = XMFLOAT3(0.0f, 0.0f, 0.0f);
-	XMFLOAT3						m_xmf3AABBMin = XMFLOAT3(0.0f, 0.0f, 0.0f);
-	XMFLOAT3						m_xmf3AABBMax = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	XMFLOAT3						m_xmf3AABBExtents = XMFLOAT3(0.0f, 0.0f, 0.0f);
 
 	D3D12_PRIMITIVE_TOPOLOGY		m_d3dPrimitiveTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 	UINT m_nSlot = 0;
@@ -58,7 +57,6 @@ protected:
 	UINT m_nStride = 0;
 
 public:
-	CCollision* m_Collider;
 	BoundingBox m_xmBoundingBox;
 
 public:
@@ -75,10 +73,9 @@ public:
 	virtual void OnPostRender(ID3D12GraphicsCommandList* pd3dCommandList, void* pContext);
 
 	void CalculateBoundingBox(XMFLOAT3* pxmf3Points, UINT nStride);
-	void MakeBoundingBox(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, 
-		XMFLOAT4X4 m_xmf4x4World);
 
 	void LoadMeshFromFile(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, FILE* pInFile);
+	void SetBoundingBoxValues(DirectX::XMFLOAT3& max, DirectX::XMFLOAT3& min);
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
