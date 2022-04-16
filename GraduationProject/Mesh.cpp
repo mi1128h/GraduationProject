@@ -95,15 +95,9 @@ void CMesh::LoadMeshFromFile(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 
 		if (!strcmp(pstrToken, "<Bounds>:"))
 		{
-			XMFLOAT3 min, max;
-			nReads = (UINT)::fread(&min, sizeof(XMFLOAT3), 1, pInFile);
-			nReads = (UINT)::fread(&max, sizeof(XMFLOAT3), 1, pInFile);
+			nReads = (UINT)::fread(&m_xmf3AABBMin, sizeof(XMFLOAT3), 1, pInFile);
+			nReads = (UINT)::fread(&m_xmf3AABBMax, sizeof(XMFLOAT3), 1, pInFile);
 			nReads = (UINT)::fread(&m_xmf3AABBCenter, sizeof(XMFLOAT3), 1, pInFile);
-
-			XMStoreFloat3(&m_xmBoundingBox.Center, XMLoadFloat3(&m_xmf3AABBCenter));
-			XMStoreFloat3(&m_xmBoundingBox.Extents, XMVectorScale(XMLoadFloat3(&Vector3::Subtract(max, min)), 0.5f));
-
-			//nReads = (UINT)::fread(&m_xmf3AABBExtents, sizeof(XMFLOAT3), 1, pInFile);
 		}
 		else if (!strcmp(pstrToken, "<ControlPoints>:"))
 		{
@@ -1303,8 +1297,9 @@ void CSkinnedMesh::LoadSkinDeformationsFromFile(ID3D12Device* pd3dDevice, ID3D12
 		}
 		else if (!strcmp(pstrToken, "<Bounds>:"))
 		{
+			nReads = (UINT)::fread(&m_xmf3AABBMin, sizeof(XMFLOAT3), 1, pInFile);
+			nReads = (UINT)::fread(&m_xmf3AABBMax, sizeof(XMFLOAT3), 1, pInFile);
 			nReads = (UINT)::fread(&m_xmf3AABBCenter, sizeof(XMFLOAT3), 1, pInFile);
-			nReads = (UINT)::fread(&m_xmf3AABBExtents, sizeof(XMFLOAT3), 1, pInFile);
 		}
 		else if (!strcmp(pstrToken, "<BoneNames>:"))
 		{
