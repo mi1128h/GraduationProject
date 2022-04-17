@@ -1293,6 +1293,11 @@ void CSkinnedMesh::PrepareSkinning(CGameObject* pModelRootObject)
 	}
 }
 
+void CSkinnedMesh::UpdateBoundingTransform(CCollision* pCollision)
+{
+	pCollision->m_xmf4x4World = pCollision->m_xmf4x4ToParent = m_ppSkinningBoneFrameCaches[0]->m_xmf4x4World;
+}
+
 void CSkinnedMesh::LoadSkinDeformationsFromFile(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, FILE* pInFile)
 {
 	char pstrToken[64] = { '\0' };
