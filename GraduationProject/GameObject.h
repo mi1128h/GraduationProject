@@ -280,7 +280,7 @@ public:
 
 	static void PrintFrameInfo(CGameObject* pGameObject, CGameObject* pParent);
 	void MakeCollider(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature);
-
+	void SetIsRotate(bool bVal);
 };
 
 class CRotatingObject : public CGameObject

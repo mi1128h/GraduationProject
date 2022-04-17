@@ -807,6 +807,14 @@ void CGameObject::MakeCollider(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLi
 	m_pCollider = new CCollision(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, m_xmBoundingBox);
 }
 
+void CGameObject::SetIsRotate(bool bVal)
+{ 
+	if (m_pCollider) m_pCollider->SetIsRotate(bVal); 
+
+	if (m_pSibling) m_pSibling->SetIsRotate(bVal);
+	if (m_pChild) m_pChild->SetIsRotate(bVal);
+}
+
 CGameObject* CGameObject::LoadFrameHierarchyFromFile(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CGameObject* pParent, FILE* pInFile, CShader* pShader, int* pnSkinnedMeshes)
 {
 	char pstrToken[64] = { '\0' };

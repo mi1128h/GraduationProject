@@ -90,6 +90,7 @@ void CMesh::SetBoundingBoxValues(DirectX::XMFLOAT3& max, DirectX::XMFLOAT3& min)
 void CMesh::UpdateBoundingTransform(CCollision * pCollision, XMFLOAT4X4& xmf4x4World)
 {
 	pCollision->m_xmf4x4World = pCollision->m_xmf4x4ToParent = xmf4x4World;
+	if (pCollision->IsRotate()) pCollision->Rotate(-90.0f, 0.0f, 0.0f);
 }
 
 void CMesh::LoadMeshFromFile(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, FILE* pInFile)
@@ -1301,6 +1302,7 @@ void CSkinnedMesh::PrepareSkinning(CGameObject* pModelRootObject)
 void CSkinnedMesh::UpdateBoundingTransform(CCollision* pCollision, XMFLOAT4X4& xmf4x4World)
 {
 	pCollision->m_xmf4x4World = pCollision->m_xmf4x4ToParent = m_ppSkinningBoneFrameCaches[0]->m_xmf4x4World;
+	if (pCollision->IsRotate()) pCollision->Rotate(-90.0f, 0.0f, 0.0f);
 }
 
 void CSkinnedMesh::LoadSkinDeformationsFromFile(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, FILE* pInFile)
