@@ -7,13 +7,15 @@
 CCollision::CCollision(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature,
 	BoundingBox BB) : CGameObject(1)
 {
-	XMStoreFloat3(&m_xmBoundingBox.Center, XMLoadFloat3(&BB.Center));
+	XMFLOAT3 center = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	XMStoreFloat3(&m_xmBoundingBox.Center, XMLoadFloat3(&center));
+	//XMStoreFloat3(&m_xmBoundingBox.Center, XMLoadFloat3(&BB.Center));
 	XMStoreFloat3(&m_xmBoundingBox.Extents, XMLoadFloat3(&BB.Extents));
 
 	XMFLOAT3 xmf3Depth;
 	XMStoreFloat3(&xmf3Depth, XMVectorScale(XMLoadFloat3(&BB.Extents), 2.0f));
 
-	CCubeMeshTextured* DebugBox = new CCubeMeshTextured(pd3dDevice, pd3dCommandList, xmf3Depth.x, xmf3Depth.y, xmf3Depth.z);
+	CCubeMeshDiffused* DebugBox = new CCubeMeshDiffused(pd3dDevice, pd3dCommandList, xmf3Depth.x, xmf3Depth.y, xmf3Depth.z);
 	SetMesh(DebugBox);
 	
 	CCollisionShader* pShader = new CCollisionShader();
