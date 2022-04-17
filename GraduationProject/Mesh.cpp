@@ -87,6 +87,11 @@ void CMesh::SetBoundingBoxValues(DirectX::XMFLOAT3& max, DirectX::XMFLOAT3& min)
 	XMStoreFloat3(&m_xmBoundingBox.Extents, XMVectorScale(XMLoadFloat3(&Vector3::Subtract(max, min)), 0.5f));
 }
 
+void CMesh::UpdateBoundingTransform(CCollision * pCollision, XMFLOAT4X4& xmf4x4World)
+{
+	pCollision->m_xmf4x4World = pCollision->m_xmf4x4ToParent = xmf4x4World;
+}
+
 void CMesh::LoadMeshFromFile(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, FILE* pInFile)
 {
 	char pstrToken[64] = { '\0' };
@@ -1293,7 +1298,7 @@ void CSkinnedMesh::PrepareSkinning(CGameObject* pModelRootObject)
 	}
 }
 
-void CSkinnedMesh::UpdateBoundingTransform(CCollision* pCollision)
+void CSkinnedMesh::UpdateBoundingTransform(CCollision* pCollision, XMFLOAT4X4& xmf4x4World)
 {
 	pCollision->m_xmf4x4World = pCollision->m_xmf4x4ToParent = m_ppSkinningBoneFrameCaches[0]->m_xmf4x4World;
 }

@@ -76,7 +76,7 @@ public:
 
 	void LoadMeshFromFile(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, FILE* pInFile);
 	void SetBoundingBoxValues(DirectX::XMFLOAT3& max, DirectX::XMFLOAT3& min);
-	virtual void UpdateBoundingTransform(CCollision* pCollision) {};
+	virtual void UpdateBoundingTransform(CCollision* pCollision, XMFLOAT4X4& xmf4x4World);
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -323,5 +323,5 @@ public:
 	virtual void ReleaseUploadBuffers();
 
 	virtual void OnPreRender(ID3D12GraphicsCommandList* pd3dCommandList, void* pContext);
-	virtual void UpdateBoundingTransform(CCollision* pCollision);
+	virtual void UpdateBoundingTransform(CCollision* pCollision, XMFLOAT4X4& xmf4x4World);
 };

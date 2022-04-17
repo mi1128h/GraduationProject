@@ -752,11 +752,9 @@ void CGameObject::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pC
 				m_pMesh->Render(pd3dCommandList, i);
 			}
 		}
-		if (m_pCollider) m_pMesh->UpdateBoundingTransform(m_pCollider);
+		if (m_pCollider) m_pMesh->UpdateBoundingTransform(m_pCollider, m_xmf4x4World);
 	}
 
-	//if (m_pCollider) m_pCollider->m_xmf4x4World = m_pCollider->m_xmf4x4ToParent = m_xmf4x4World;
-	//if (m_pCollider) m_pCollider->Rotate(-90.0f, 0.0f, 0.0f);
 	if (m_pCollider) m_pCollider->Render(pd3dCommandList, pCamera);
 
 	if (m_pSibling) m_pSibling->Render(pd3dCommandList, pCamera);
