@@ -752,21 +752,27 @@ void CGameObject::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pC
 				m_pMesh->Render(pd3dCommandList, i);
 			}
 		}
-		if (m_pCollider) m_pMesh->UpdateBoundingTransform(m_pCollider, m_xmf4x4World);
-	}
 
-	if (m_pCollider) m_pCollider->Render(pd3dCommandList, pCamera);
+		if (m_pCollider)
+		{
+			RenderCollision(pd3dCommandList, pCamera);
+		}
+	}
 
 	if (m_pSibling) m_pSibling->Render(pd3dCommandList, pCamera);
 	if (m_pChild) m_pChild->Render(pd3dCommandList, pCamera);
 }
 
+void CGameObject::RenderCollision(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
+{
+	m_pMesh->UpdateBoundingTransform(m_pCollider, m_xmf4x4World);
+	m_pCollider->CalculateBoundingBox();
+	m_xmBoundingBox = m_pCollider->GetBoundingBox();
+	m_pCollider->Render(pd3dCommandList, pCamera);
+}
+
 void CGameObject::CalculateBoundingBox()
 {
-	// 자식 & 형제노드들로부터 순차적으로 바운딩 박스를 Merge 하도록 변경필요
-	//m_xmBoundingBox = m_ppMeshes[0]->m_xmBoundingBox;
-	//for (int i = 1; i < m_nMeshes; i++)BoundingBox::CreateMerged(m_xmBoundingBox, m_xmBoundingBox, m_ppMeshes[i]->m_xmBoundingBox);
-
 	m_xmBoundingBox.Transform(m_xmBoundingBox, XMLoadFloat4x4(&m_xmf4x4World));
 }
 
@@ -1350,3 +1356,16 @@ void CCannonObject::FireCannonBall(XMFLOAT3 Origin, XMFLOAT3 Velocity)
 		m_pCannonball->SetActive(true);
 	}
 }
+
+// --- 이번주 내로 끝내야할거 ----
+// 바운딩박스 업데이트
+// 충돌검사
+//		오브젝트 - 플레이어
+//		몬스터 - 플레이어
+//			: 공격을 휘두를 경우에만 Attack 충돌검사
+//			: 특정 시간에만 충돌검사
+//		씬 - 플레이어
+//			: 화면 밖에 벗어나지 못하도록
+//		플레이어 상호작용
+//		플레이어 컨트롤
+//		플레이어 이동

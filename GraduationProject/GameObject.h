@@ -204,10 +204,11 @@ public:
 	int	m_nMaterials = 0;
 	CMaterial** m_ppMaterials = NULL;
 
-	BoundingBox						m_xmBoundingBox;
-
 	CTexture* m_pTexture;
 	CCollision* m_pCollider;
+
+private:
+	BoundingBox	m_xmBoundingBox;
 
 public:
 	void SetMesh(CMesh* pMesh);
@@ -281,6 +282,7 @@ public:
 	static void PrintFrameInfo(CGameObject* pGameObject, CGameObject* pParent);
 	void MakeCollider(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature);
 	void SetIsRotate(bool bVal);
+	BoundingBox GetBoundingBox() { return m_xmBoundingBox; }
 };
 
 class CRotatingObject : public CGameObject
