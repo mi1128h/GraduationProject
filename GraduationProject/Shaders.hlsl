@@ -360,32 +360,37 @@ float4 PSPostProcessing(VS_TEXTURED_OUTPUT input) : SV_Target
 // Animation
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+Texture2D<float4> gtxtModelDiffuseTexture : register(t9);
 struct VS_WIREFRAME_INPUT
 {
 	float3 position : POSITION;
+	float2 uv : TEXCOORD;
 };
 
 struct VS_WIREFRAME_OUTPUT
 {
 	float4 position : SV_POSITION;
+	float2 uv : TEXCOORD;
 };
 
-VS_WIREFRAME_OUTPUT VSWireFrame(VS_WIREFRAME_INPUT input)
+VS_WIREFRAME_OUTPUT VSModelTextured(VS_WIREFRAME_INPUT input)
 {
 	VS_WIREFRAME_OUTPUT output;
 
 	output.position = mul(mul(mul(float4(input.position, 1.0f), gmtxGameObject), gmtxView), gmtxProjection);
+	output.uv = input.uv;
 
 	return(output);
 }
 
-PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSWireFrame(VS_WIREFRAME_OUTPUT input) : SV_TARGET
+PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSModelTextured(VS_WIREFRAME_OUTPUT input) : SV_TARGET
 {
+	float4 cColor = gtxtModelDiffuseTexture.Sample(gSamplerState, input.uv);
+
 	PS_MULTIPLE_RENDER_TARGETS_OUTPUT output;
 
-	output.f4Scene = output.f4Color = float4(0.0f, 0.0f, 1.0f, 1.0f);
+	output.f4Scene = output.f4Color = cColor;
 	output.fDepth = 1.0f - input.position.z;
-
 	return(output);
 }
 

@@ -4,6 +4,7 @@
 #include "Camera.h"
 #include "Player.h"
 #include "Shader.h"
+#include "ComputeShader.h"
 
 struct CB_FRAMEWORK_INFO
 {
