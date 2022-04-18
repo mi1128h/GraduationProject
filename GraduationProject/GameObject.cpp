@@ -1295,10 +1295,10 @@ CCannonObject::~CCannonObject()
 
 void CCannonObject::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
 {
-	XMFLOAT4X4 xmf4x4TempWolrd;
-	xmf4x4TempWolrd = m_xmf4x4ToParent = m_xmf4x4World;
+	//XMFLOAT4X4 xmf4x4TempWolrd;
+	//xmf4x4TempWolrd = m_xmf4x4ToParent = m_xmf4x4World;
 
-	m_xmf4x4ToParent = Matrix4x4::Multiply(XMMatrixRotationY(110.0f), m_xmf4x4ToParent);
+	//m_xmf4x4ToParent = Matrix4x4::Multiply(XMMatrixRotationY(110.0f), m_xmf4x4ToParent);
 	UpdateTransform(NULL);
 
 	CGameObject::Render(pd3dCommandList, pCamera);
@@ -1306,13 +1306,13 @@ void CCannonObject::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* 
 		m_pCannonball->Render(pd3dCommandList, pCamera);
 	}
 
-	m_xmf4x4World = m_xmf4x4ToParent = xmf4x4TempWolrd;
+	//m_xmf4x4World = m_xmf4x4ToParent = xmf4x4TempWolrd;
 }
 
 void CCannonObject::Animate(float fTimeElapsed, CCamera* pCamera)
 {
 	if (m_pCannonball) {
-		//m_pCannonball->Animate(fTimeElapsed, pCamera);
+		m_pCannonball->Animate(fTimeElapsed, pCamera);
 	}
 }
 
