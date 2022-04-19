@@ -1,0 +1,9 @@
+total: 59
+crystal: 11
+Barricade: 20
+cannon: 4
+house: 18
+Fence: 2
+Well: 1
+Vegetables: 2
+floor_segment: 1
