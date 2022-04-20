@@ -386,13 +386,16 @@ void CAnimationController::SetAnimationTypes(bool* types)
 	}
 }
 
-void CAnimationController::SetAnimationTracks()
+void CAnimationController::SetAnimationTracks(bool* isSetNumberOne)
 {
+	int index = 0;
 	for (int i = 0; i < m_nAnimationTracks; ++i)
 	{
-		SetTrackAnimationSet(i, i);
+		index += (isSetNumberOne[i]) ? 0 : 1;
+		SetTrackAnimationSet(i, index);
 		bool bEnable = (i == m_nCurrentTracks) ? true : false;
 		SetTrackEnable(i, bEnable);
+		++index;
 	}
 }
 

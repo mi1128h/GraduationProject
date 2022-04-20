@@ -8,7 +8,7 @@ CAnimPlayer::CAnimPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 {
 	m_pCamera = ChangeCamera(THIRD_PERSON_CAMERA, 0.0f);
 
-	CLoadedModelInfo* pAngrybotModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/Maria.bin", NULL);
+	CLoadedModelInfo* pAngrybotModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/Knight.bin", NULL);
 	SetChild(pAngrybotModel->m_pModelRootObject, true);
 
 	SetAnimationController(pd3dDevice, pd3dCommandList, pAngrybotModel);
@@ -35,7 +35,7 @@ void CAnimPlayer::InitPlayerMatrics(void* pContext)
 void CAnimPlayer::SetResource(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
 {
 	CTexture* pAnimationTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
-	pAnimationTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Model/Texture/maria_diffuse.dds", 0);
+	pAnimationTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Model/Texture/knight_diffuse.dds", 0);
 	CScene::CreateShaderResourceViews(pd3dDevice, pAnimationTexture, Signature::Graphics::animation_diffuse, true);
 	m_pTexture = pAnimationTexture;
 }
@@ -143,7 +143,7 @@ bool CAnimPlayer::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM
 			switch (wParam)
 			{
 				case 'Q':
-					m_pSkinnedAnimationController->SwitchAnimationState(track_name::attack_slash);
+					m_pSkinnedAnimationController->SwitchAnimationState(track_name::attack);
 					break;
 	
 				case 'W':
@@ -151,22 +151,22 @@ bool CAnimPlayer::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM
 					break;
 
 				case 'S':
-					m_pSkinnedAnimationController->SwitchAnimationState(track_name::run_back);
+					m_pSkinnedAnimationController->SwitchAnimationState(track_name::walk_back);
 					break;
 
 				case 'A':
-					m_pSkinnedAnimationController->SwitchAnimationState(track_name::run_left);
+					m_pSkinnedAnimationController->SwitchAnimationState(track_name::walk_left);
 					break;
 
 				case 'D':
-					m_pSkinnedAnimationController->SwitchAnimationState(track_name::run_right);
+					m_pSkinnedAnimationController->SwitchAnimationState(track_name::walk_right);
 					break;
 
 				case '1':
-					m_pSkinnedAnimationController->SwitchAnimationState(track_name::attack_down);
+					m_pSkinnedAnimationController->SwitchAnimationState(track_name::attack_combo);
 					break;
 				case '2':
-					m_pSkinnedAnimationController->SwitchAnimationState(track_name::attack_spin);
+					m_pSkinnedAnimationController->SwitchAnimationState(track_name::attack_magic);
 					break;
 				default:
 					break;
@@ -192,13 +192,15 @@ bool CAnimPlayer::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM
 
 void CAnimPlayer::SetAnimationTypes()
 {
-	bool bAnimType[track_name::length] = { true, false, true, true, true, true, false, false,false,true,false};
+	bool bAnimType[track_name::length] = { true, false, true, true, true, true,true, false, false,false,false,false,false,false,false,true,false};
 	m_pSkinnedAnimationController->SetAnimationTypes(bAnimType);
 }
 
 void CAnimPlayer::SetAnimationController(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, CLoadedModelInfo* pModel)
 {
+	bool bAnimType[track_name::length] = {false,true,false,false,false,false,false,true,false,false,false,false,true,true,true,false,false};
+
 	m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, track_name::length, pModel);
 	m_pSkinnedAnimationController->SetCurrentTrackNum(track_name::idle);
-	m_pSkinnedAnimationController->SetAnimationTracks();
+	m_pSkinnedAnimationController->SetAnimationTracks(bAnimType);
 }
