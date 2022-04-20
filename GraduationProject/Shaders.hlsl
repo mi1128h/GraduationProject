@@ -148,7 +148,6 @@ PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSLighting(VS_LIGHTING_OUTPUT input) : SV_TARG
 
 	return(output);
 }
-
 PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSLighting_Transparent(VS_LIGHTING_OUTPUT input) : SV_TARGET
 {
 	float4 cColor = gtxtTexture.Sample(gSamplerState, input.uv);
@@ -362,8 +361,6 @@ float4 PSPostProcessing(VS_TEXTURED_OUTPUT input) : SV_Target
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 Texture2D<float4> gtxtModelDiffuseTexture : register(t9);
-Texture2D<float4> gtxtModelNormalTexture : register(t10);
-
 struct VS_WIREFRAME_INPUT
 {
 	float3 position : POSITION;
@@ -424,7 +421,6 @@ struct VS_SKINNED_INPUT
 struct VS_SKINNED_OUTPUT
 {
 	float4 position : SV_POSITION;
-	float3 positionW : POSITION;
 	float2 uv : TEXCOORD;
 };
 
@@ -441,7 +437,6 @@ VS_SKINNED_OUTPUT VSSkinnedAnimation(VS_SKINNED_INPUT input)
 	}
 	output.uv = input.uv;
 	output.position = mul(mul(float4(positionW, 1.0f), gmtxView), gmtxProjection);
-	output.positionW = positionW;
 	//	output.position = mul(mul(mul(float4(input.position, 1.0f), gmtxGameObject), gmtxView), gmtxProjection);
 
 	return(output);
@@ -450,17 +445,11 @@ VS_SKINNED_OUTPUT VSSkinnedAnimation(VS_SKINNED_INPUT input)
 PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSSkinnedAnimation(VS_SKINNED_OUTPUT input) : SV_TARGET
 {
 	float4 cColor = gtxtAnimationDiffuseTexture.Sample(gSamplerState, input.uv);
-	float4 vNormal = gtxtModelNormalTexture.Sample(gSamplerState, input.uv);
-	float3 normal = float3(vNormal.x, vNormal.y, vNormal.z);
-	normal = normal * 2.0f - 1.0f;
-	float4 uvs[MAX_LIGHTS];
-	float4 cIllumination = Lighting(input.positionW, normal, false, uvs);
 
 	PS_MULTIPLE_RENDER_TARGETS_OUTPUT output;
 
-	output.f4Scene = output.f4Color = cColor* cIllumination;
+	output.f4Scene = output.f4Color = cColor;
 	output.fDepth = 1.0f - input.position.z;
-
 
 	return(output);
 }

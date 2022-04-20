@@ -927,11 +927,8 @@ void CCannonObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSign
 	CTexture* pModelTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
 	pModelTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Model/Texture/cannon_diffuse.dds", 0);
 	CScene::CreateShaderResourceViews(pd3dDevice, pModelTexture, Signature::Graphics::model_diffuse, true);
-
-	CMaterial* pModelMaterial = new CMaterial(1);
-	pModelMaterial->SetTexture(pModelTexture, 0);
-	pCannonObject->m_pModelMaterial = pModelMaterial;
-
+	pCannonObject->m_pTexture = pModelTexture;
+	//pCannonObject->SetModelTexture(pModelTexture);
 	CGameObject* pCannonL = pCannonObject->FindFrame("Cube_001");
 	if (pCannonL) pCannonL->m_xmf4x4ToParent = Matrix4x4::Multiply(XMMatrixRotationX(-60.0f), pCannonL->m_xmf4x4ToParent);
 
