@@ -217,6 +217,6 @@ public:
 	void AdvanceTime(float fElapsedTime, CGameObject* pRootGameObject);
 
 	void SetAnimationTypes(bool* types);
-	void SetAnimationTracks();
+	void SetAnimationTracks(bool* isSetNumberOne);
 	void SwitchAnimationState(int nType);
 };

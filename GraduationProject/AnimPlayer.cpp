@@ -8,7 +8,7 @@ CAnimPlayer::CAnimPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 {
 	m_pCamera = ChangeCamera(THIRD_PERSON_CAMERA, 0.0f);
 
-	CLoadedModelInfo* pAngrybotModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/Maria.bin", NULL);
+	CLoadedModelInfo* pAngrybotModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/Knight.bin", NULL);
 	SetChild(pAngrybotModel->m_pModelRootObject, true);
 
 	SetAnimationController(pd3dDevice, pd3dCommandList, pAngrybotModel);
@@ -35,7 +35,7 @@ void CAnimPlayer::InitPlayerMatrics(void* pContext)
 void CAnimPlayer::SetResource(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
 {
 	CTexture* pAnimationTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
-	pAnimationTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Model/Texture/maria_diffuse.dds", 0);
+	pAnimationTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Model/Texture/knight_diffuse.dds", 0);
 	CScene::CreateShaderResourceViews(pd3dDevice, pAnimationTexture, Signature::Graphics::animation_diffuse, true);
 	m_pTexture = pAnimationTexture;
 }
@@ -192,13 +192,15 @@ bool CAnimPlayer::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM
 
 void CAnimPlayer::SetAnimationTypes()
 {
-	bool bAnimType[track_name::length] = { true, false, true, true, true, true, false, false,false,true,false};
+	bool bAnimType[track_name::length] = { true, false, true, true, true, true,true, false, false,false,false,false,false,false,false,true,false};
 	m_pSkinnedAnimationController->SetAnimationTypes(bAnimType);
 }
 
 void CAnimPlayer::SetAnimationController(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, CLoadedModelInfo* pModel)
 {
+	bool bAnimType[track_name::length] = { false,false,true,false,false,false,false,false,true,false,false,false,false,true,true,true,false };
+
 	m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, track_name::length, pModel);
 	m_pSkinnedAnimationController->SetCurrentTrackNum(track_name::idle);
-	m_pSkinnedAnimationController->SetAnimationTracks();
+	m_pSkinnedAnimationController->SetAnimationTracks(bAnimType);
 }
