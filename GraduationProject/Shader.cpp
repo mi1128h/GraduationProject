@@ -596,73 +596,94 @@ void CObjectsShader::ReleaseShaderVariables()
 	CIlluminatedShader::ReleaseShaderVariables();
 }
 
-void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
-	* pd3dCommandList, void* pContext)
+void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3dGraphicsRootSignature, ID3D12GraphicsCommandList* pd3dCommandList, void* pContext)
 {
 
 	CHeightMapTerrain* pTerrain = (CHeightMapTerrain*)pContext;
 
-	float fxPitch = 12.0f * 3.5f;
-	float fyPitch = 12.0f * 3.5f;
-	float fzPitch = 12.0f * 3.5f;
-
 	float fTerrainWidth = pTerrain->GetWidth();
 	float fTerrainLength = pTerrain->GetLength();
 
-	int xObjects = int(fTerrainWidth / fxPitch);
-	int yObjects = 2;
-	int zObjects = int(fTerrainLength / fzPitch);
-	m_nObjects = (xObjects * yObjects * zObjects);
+	ifstream metaInfo("../Assets/Image/Terrain/ObjectsMetaInfo.txt");
+	ifstream objectsInfo("../Assets/Image/Terrain/ObjectsInfo.txt");
 
-	CTexture* pTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
-	pTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/stones.dds", 0);
-	
-	CreateShaderVariables(pd3dDevice, pd3dCommandList);
-	CScene::CreateShaderResourceViews(pd3dDevice, pTexture, Signature::Graphics::texture,true);
-
-#ifdef _WITH_BATCH_MATERIAL
-	m_pMaterial = new CMaterial();
-	m_pMaterial->SetTexture(pTexture);
-#else
-	CMaterial* pCubeMaterial = new CMaterial(1);
-	pCubeMaterial->SetTexture(pTexture);
-#endif
-
-	CCubeMeshIlluminatedTextured* pCubeMesh = new CCubeMeshIlluminatedTextured(pd3dDevice, pd3dCommandList, 12.0f, 12.0f, 12.0f);
+	string s;
+	int n;
+	while (metaInfo >> s >> n) {
+		if (s.compare("cannon:") == 0) {
+			m_nObjects = n;
+		}
+	}
 
 	m_ppObjects = new CGameObject * [m_nObjects];
+	int i = 0;
 
-	XMFLOAT3 xmf3RotateAxis, xmf3SurfaceNormal;
-	CRotatingObject* pRotatingObject = NULL;
-	for (int i = 0, x = 0; x < xObjects; x++)
-	{
-		for (int z = 0; z < zObjects; z++)
-		{
-			for (int y = 0; y < yObjects; y++)
-			{
-				pRotatingObject = new CRotatingObject(1);
-				pRotatingObject->SetMesh(pCubeMesh);
-#ifndef _WITH_BATCH_MATERIAL
-				pRotatingObject->SetMaterial(1,pCubeMaterial);
-				pRotatingObject->m_ppMaterials[0]->SetReflection(i % MAX_MATERIALS);
-#endif
-				float xPosition = x * fxPitch;
-				float zPosition = z * fzPitch;
-				float fHeight = pTerrain->GetHeight(xPosition, zPosition);
-				pRotatingObject->SetPosition(xPosition, fHeight + (y * 3.0f * fyPitch) + 6.0f, zPosition);
-				if (y == 0)
-				{
-					xmf3SurfaceNormal = pTerrain->GetNormal(xPosition, zPosition);
-					xmf3RotateAxis = Vector3::CrossProduct(XMFLOAT3(0.0f, 1.0f, 0.0f), xmf3SurfaceNormal);
-					if (Vector3::IsZero(xmf3RotateAxis)) xmf3RotateAxis = XMFLOAT3(0.0f, 1.0f, 0.0f);
-					float fAngle = acos(Vector3::DotProduct(XMFLOAT3(0.0f, 1.0f, 0.0f), xmf3SurfaceNormal));
-					pRotatingObject->Rotate(&xmf3RotateAxis, XMConvertToDegrees(fAngle));
-				}
-				pRotatingObject->SetRotationAxis(XMFLOAT3(0.0f, 1.0f, 0.0f));
-				pRotatingObject->SetRotationSpeed(36.0f * (i % 10) + 36.0f);
-				m_ppObjects[i++] = pRotatingObject;
-			}
+	// cannon
+	CLoadedModelInfo* pCannonModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/cannon.bin", NULL);
+	CTexture* pModelTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
+	pModelTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Model/Texture/cannon_diffuse.dds", 0);
+	CScene::CreateShaderResourceViews(pd3dDevice, pModelTexture, Signature::Graphics::model_diffuse, true);
+	
+	// cannonball
+	CCannonballObject* pCannonballObject = new CCannonballObject(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature);
+	pCannonballObject->SetUpdatedContext(pTerrain);
+
+	// 
+	CCannonObject* pCannonObject = NULL;
+
+	pCannonObject = new CCannonObject;
+	pCannonObject->SetChild(pCannonModel->m_pModelRootObject, true);
+
+	pCannonObject->m_pTexture = pModelTexture;
+
+	string line;
+	smatch match;
+	regex reName(R"(name: (\w+))");
+	regex rePosition(R"(position: \(([+-]?\d*[.]?\d*), ([+-]?\d*[.]?\d*), ([+-]?\d*[.]?\d*)\))");
+	regex reRotation(R"(rotation: \(([+-]?\d*[.]?\d*), ([+-]?\d*[.]?\d*), ([+-]?\d*[.]?\d*), ([+-]?\d*[.]?\d*)\))");
+	regex reScale(R"(scale: \(([+-]?\d*[.]?\d*), ([+-]?\d*[.]?\d*), ([+-]?\d*[.]?\d*)\))");
+	while (getline(objectsInfo, line)) {
+		regex_match(line, match, reName);
+		string name = match[1].str();
+
+		getline(objectsInfo, line);
+		regex_match(line, match, rePosition);
+		float px = stof(match[1].str());
+		float py = stof(match[2].str());
+		float pz = stof(match[3].str());
+
+		getline(objectsInfo, line);
+		regex_match(line, match, reRotation);
+		float rx = stof(match[1].str());
+		float ry = stof(match[2].str());
+		float rz = stof(match[3].str());
+		float rw = stof(match[4].str());
+
+		getline(objectsInfo, line);
+		regex_match(line, match, reScale);
+		float sx = stof(match[1].str());
+		float sy = stof(match[2].str());
+		float sz = stof(match[3].str());
+
+		if (name.compare("cannon") == 0) {
+
+			CCannonObject* pCannonObject = NULL;
+
+			pCannonObject = new CCannonObject;
+			pCannonObject->SetChild(pCannonModel->m_pModelRootObject, true);
+
+			pCannonObject->m_pTexture = pModelTexture;
+
+			pCannonObject->SetCannonball(pCannonballObject);
+
+			pCannonObject->SetPosition(px, py, pz);
+			XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
+			pCannonObject->Rotate(&xmf4Rotation);
+			pCannonObject->SetScale(sx, sy, sz);
+
+			m_ppObjects[i++] = pCannonObject;
 		}
+
 	}
 }
 
