@@ -603,6 +603,8 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 
 	float fTerrainWidth = pTerrain->GetWidth();
 	float fTerrainLength = pTerrain->GetLength();
+	XMFLOAT3 xmf3TerrainScale = pTerrain->GetScale();
+
 
 	ifstream metaInfo("../Assets/Image/Terrain/ObjectsMetaInfo.txt");
 	ifstream objectsInfo("../Assets/Image/Terrain/ObjectsInfo.txt");
@@ -676,10 +678,12 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 
 			pCannonObject->SetCannonball(pCannonballObject);
 
-			pCannonObject->SetPosition(px, py, pz);
+			pCannonObject->SetPosition((px + 50.0f) * xmf3TerrainScale.x, py * xmf3TerrainScale.y + 80.0f * sy, (pz + 50.0f) * xmf3TerrainScale.z);
+			pCannonObject->SetScale(sx, sy, sz);
 			XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
 			pCannonObject->Rotate(&xmf4Rotation);
-			pCannonObject->SetScale(sx, sy, sz);
+			pCannonObject->Rotate(90.0f, 0.0f, 0.0f);
+			pCannonObject->Rotate(0.0f, 180.0f, 0.0f);
 
 			m_ppObjects[i++] = pCannonObject;
 		}
