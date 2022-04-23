@@ -205,7 +205,7 @@ public:
 	CMaterial** m_ppMaterials = NULL;
 
 	CTexture* m_pTexture;
-	CCollision* m_pCollider;
+	CCollision* collisions = nullptr;
 
 private:
 	BoundingBox	m_xmBoundingBox;
@@ -263,7 +263,7 @@ public:
 	CGameObject* GetParent() { return(m_pParent); }
 	void UpdateTransform(XMFLOAT4X4* pxmf4x4Parent = NULL);
 
-	CGameObject* FindFrame(char* pstrFrameName);
+	CGameObject* FindFrame(const char* pstrFrameName);
 	void SetActive(char* pstrFrameName, bool bActive);
 	UINT GetMeshType(int n) { return((m_pMesh) ? m_pMesh->GetType() : 0x00); }
 
@@ -284,6 +284,7 @@ public:
 	static void PrintFrameInfo(CGameObject* pGameObject, CGameObject* pParent);
 	void MakeCollider(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature);
 	void SetIsRotate(bool bVal);
+	void LoadFromCollision(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, string filename);
 	BoundingBox GetBoundingBox() { return m_xmBoundingBox; }
 };
 
