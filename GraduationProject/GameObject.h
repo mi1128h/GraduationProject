@@ -205,7 +205,7 @@ public:
 	CMaterial** m_ppMaterials = NULL;
 
 	CTexture* m_pTexture;
-	CCollision* collisions = nullptr;
+	CCollision* m_pCollision = nullptr;
 
 private:
 	BoundingBox	m_xmBoundingBox;

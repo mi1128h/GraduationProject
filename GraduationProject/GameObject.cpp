@@ -754,7 +754,7 @@ void CGameObject::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pC
 		}
 	}
 
-	if (collisions != nullptr)
+	if (m_pCollision != nullptr)
 	{
 		RenderCollision(pd3dCommandList, pCamera);
 	}
@@ -765,11 +765,11 @@ void CGameObject::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pC
 
 void CGameObject::RenderCollision(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
 {
-	collisions->UpdateBoundings(m_xmf4x4World);
+	m_pCollision->UpdateBoundings(m_xmf4x4World);
 	//m_pMesh->UpdateBoundingTransform(collisions, m_xmf4x4World);
 	//collisions->CalculateBoundingBox();
 	//m_xmBoundingBox = collisions->GetBoundingBox();
-	collisions->Render(pd3dCommandList, pCamera);
+	m_pCollision->Render(pd3dCommandList, pCamera);
 }
 
 void CGameObject::CalculateBoundingBox()
@@ -812,13 +812,12 @@ int ReadStringFromFile(FILE* pInFile, char* pstrToken)
 
 void CGameObject::MakeCollider(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature)
 {
-
-	//m_pCollider = new CCollision(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, m_xmBoundingBox);
+	m_pCollision = new CBBCollision(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, m_xmBoundingBox);
 }
 
 void CGameObject::SetIsRotate(bool bVal)
 { 
-	//if (!collisions.empty()) collisions[0]->SetIsRotate(bVal);
+	if (m_pCollision) m_pCollision->SetIsRotate(bVal);
 
 	if (m_pSibling) m_pSibling->SetIsRotate(bVal);
 	if (m_pChild) m_pChild->SetIsRotate(bVal);
@@ -834,8 +833,8 @@ void CGameObject::LoadFromCollision(ID3D12Device* pd3dDevice, ID3D12GraphicsComm
 		if (s.compare("<Sphere>:") == 0) 
 		{
 			CGameObject* pBoneObject = FindFrame(frame.c_str());
-			collisions = new CSphereCollision(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, radius);
-			collisions->SetFrameObject(pBoneObject);
+			m_pCollision = new CSphereCollision(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, radius);
+			m_pCollision->SetFrameObject(pBoneObject);
 		}
 	}
 }
