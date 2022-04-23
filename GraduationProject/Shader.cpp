@@ -615,7 +615,7 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 		if (s.compare("cannon:") == 0) {
 			m_nObjects += n;
 		}
-		if (s.compare("Barricade:") == 0) {
+		if (s.compare("Barricade_01:") == 0) {
 			m_nObjects += n;
 		}
 	}
@@ -691,7 +691,7 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 
 			m_ppObjects[i++] = pObject;
 		}
-		else if (name.compare("Barricade") == 0) {
+		else if (name.compare("Barricade_01") == 0) {
 			CMovingCoverObject* pObject = NULL;
 
 			pObject = new CMovingCoverObject;
