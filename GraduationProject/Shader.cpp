@@ -714,8 +714,11 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 
 			pObject->SetCannonball(pCannonballObject);
 
-			float terrainY = pTerrain->GetHeight((px + 50.0f) * xmf3TerrainScale.x, (pz + 50.0f) * xmf3TerrainScale.z);
-			XMFLOAT3 position = XMFLOAT3((px + 50.0f) * xmf3TerrainScale.x, terrainY + 80.0f * sy, (pz + 50.0f) * xmf3TerrainScale.z);
+			float transX = px * (xmf3TerrainScale.x + 40.0f);
+			float transZ = pz * (xmf3TerrainScale.z + 40.0f);
+			float terrainY = pTerrain->GetHeight(transX, transZ);
+
+			XMFLOAT3 position = XMFLOAT3(transX, terrainY + 80.0f * sy, transZ);
 			pObject->SetPosition(position);
 			pObject->SetScale(sx, sy, sz);
 			XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
@@ -733,8 +736,11 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 
 			pObject->m_pTexture = pCoverTexture;
 			
-			float terrainY = pTerrain->GetHeight((px + 50.0f) * xmf3TerrainScale.x, (pz + 50.0f) * xmf3TerrainScale.z);
-			XMFLOAT3 position = XMFLOAT3((px + 50.0f) * xmf3TerrainScale.x, terrainY + 20.0f * sy, (pz + 50.0f) * xmf3TerrainScale.z);
+			float transX = px * (xmf3TerrainScale.x + 40.0f);
+			float transZ = pz * (xmf3TerrainScale.z + 40.0f);
+			float terrainY = pTerrain->GetHeight(transX, transZ);
+
+			XMFLOAT3 position = XMFLOAT3(transX, terrainY + 20.0f * sy, transZ);
 			pObject->SetPosition(position);
 			pObject->SetScale(sx, sy, sz);
 			XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
@@ -754,8 +760,11 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 
 			pObject->m_pTexture = pHouse1Texture;
 
-			float terrainY = pTerrain->GetHeight((px) * (xmf3TerrainScale.x + houseOffsetX), (pz) * (xmf3TerrainScale.z + houseOffsetZ) + 38000.0f);
-			XMFLOAT3 position = XMFLOAT3((px) * (xmf3TerrainScale.x + houseOffsetX), terrainY + 60.0f * sy, (pz) * (xmf3TerrainScale.z + houseOffsetZ) + 38000.0f);
+			float transX = px * (xmf3TerrainScale.x + houseOffsetX);
+			float transZ = pz * (xmf3TerrainScale.z + houseOffsetZ) + 38000.0f;
+			float terrainY = pTerrain->GetHeight(transX, transZ);
+
+			XMFLOAT3 position = XMFLOAT3(transX, terrainY + 60.0f * sy, transZ);
 			pObject->SetPosition(position);
 			pObject->SetScale(sx, sy, sz);
 			XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
@@ -772,8 +781,11 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 
 			pObject->m_pTexture = pHouse2Texture;
 
-			float terrainY = pTerrain->GetHeight((px) * (xmf3TerrainScale.x + houseOffsetX), (pz) * (xmf3TerrainScale.z + houseOffsetZ) + 38000.0f);
-			XMFLOAT3 position = XMFLOAT3((px) * (xmf3TerrainScale.x + houseOffsetX), terrainY + 66.0f * sy, (pz) * (xmf3TerrainScale.z + houseOffsetZ) + 38000.0f);
+			float transX = px * (xmf3TerrainScale.x + houseOffsetX);
+			float transZ = pz * (xmf3TerrainScale.z + houseOffsetZ) + 38000.0f;
+			float terrainY = pTerrain->GetHeight(transX, transZ);
+
+			XMFLOAT3 position = XMFLOAT3(transX, terrainY + 66.0f * sy, transZ);
 			pObject->SetPosition(position);
 			pObject->SetScale(sx, sy, sz);
 			XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
@@ -790,8 +802,11 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 
 			pObject->m_pTexture = pHouse3Texture;
 
-			float terrainY = pTerrain->GetHeight((px) * (xmf3TerrainScale.x + houseOffsetX), (pz ) * (xmf3TerrainScale.z + houseOffsetZ) + 38000.0f);
-			XMFLOAT3 position = XMFLOAT3((px) * (xmf3TerrainScale.x + houseOffsetX), terrainY + 90.0f * sy, (pz ) * (xmf3TerrainScale.z + houseOffsetZ) + 38000.0f);
+			float transX = px * (xmf3TerrainScale.x + houseOffsetX);
+			float transZ = pz * (xmf3TerrainScale.z + houseOffsetZ) + 38000.0f;
+			float terrainY = pTerrain->GetHeight(transX, transZ);
+
+			XMFLOAT3 position = XMFLOAT3(transX, terrainY + 90.0f * sy, transZ);
 			pObject->SetPosition(position);
 			pObject->SetScale(sx, sy, sz);
 			XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
@@ -808,8 +823,11 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 
 			pObject->m_pTexture = pHouse4Texture;
 
-			float terrainY = pTerrain->GetHeight((px) * (xmf3TerrainScale.x + houseOffsetX), (pz ) * (xmf3TerrainScale.z + houseOffsetZ) + 38000.0f);
-			XMFLOAT3 position = XMFLOAT3((px) * (xmf3TerrainScale.x + houseOffsetX), terrainY + 60.0f * sy, (pz ) * (xmf3TerrainScale.z + houseOffsetZ) + 38000.0f);
+			float transX = px * (xmf3TerrainScale.x + houseOffsetX);
+			float transZ = pz * (xmf3TerrainScale.z + houseOffsetZ) + 38000.0f;
+			float terrainY = pTerrain->GetHeight(transX, transZ);
+
+			XMFLOAT3 position = XMFLOAT3(transX, terrainY + 60.0f * sy, transZ);
 			pObject->SetPosition(position);
 			pObject->SetScale(sx, sy, sz);
 			XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
