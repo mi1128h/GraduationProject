@@ -866,6 +866,9 @@ void CGameObject::LoadFromCollision(ID3D12Device* pd3dDevice, ID3D12GraphicsComm
 			CGameObject* pBoneObject = FindFrame(frame.c_str());
 			CCollision* cols = new CSphereCollision(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, radius);
 			cols->SetFrameObject(pBoneObject);
+
+			cols->ToggleDebug();
+
 			collisions.emplace_back(cols);
 		}
 		if (s.compare("<Box>:") == 0)

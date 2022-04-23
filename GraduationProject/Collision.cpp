@@ -8,6 +8,10 @@ CCollision::CCollision() : CGameObject(1)
 {
 
 }
+CCollision::~CCollision()
+{
+
+}
 
 void CCollision::SetCollisionMaterial(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3dGraphicsRootSignature, ID3D12GraphicsCommandList* pd3dCommandList)
 {
@@ -36,11 +40,10 @@ void CCollision::UpdateBoundings(XMFLOAT4X4 xmf4x4World)
 	if (m_bRotate) Rotate(-90.0f, 0.0f, 0.0f);
 }
 
-CCollision::~CCollision()
+void CCollision::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
 {
-
+	if (m_bDebug) CGameObject::Render(pd3dCommandList, pCamera);
 }
-
 
 ////////////////////////////////
 

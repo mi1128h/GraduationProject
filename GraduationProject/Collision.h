@@ -28,8 +28,11 @@ public:
 	virtual void CalculateBoundingSphere() {};
 	void SetBoundingState(int index) { state = static_cast<BOUNDING_STATE>(index);}
 	BOUNDING_STATE GetBoundingState() { return state; }
+	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
+	void ToggleDebug() { m_bDebug = !m_bDebug; }
 
 protected:
+	bool m_bDebug = true;
 	bool m_bRotate = false;
 	CGameObject* FrameObject = nullptr;
 	BOUNDING_STATE state = BOUNDING_STATE::HIERACY;
@@ -62,7 +65,6 @@ public:
 	virtual void CalculateBoundingSphere();
 	virtual void SetCollisionMaterial(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3dGraphicsRootSignature, ID3D12GraphicsCommandList* pd3dCommandList);
 	void SetBoundingSphere(DirectX::XMFLOAT3& center, float fradius);
-
 private:
 	BoundingSphere m_xmBoundingSphere;
 };
