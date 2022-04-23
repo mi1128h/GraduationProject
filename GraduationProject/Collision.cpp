@@ -66,7 +66,7 @@ CSphereCollision::CSphereCollision(ID3D12Device* pd3dDevice, ID3D12GraphicsComma
 	CSphereMeshIlluminated* DebugSphere = new CSphereMeshIlluminated(pd3dDevice, pd3dCommandList, fradius);
 	SetMesh(DebugSphere);
 
-	CCollision::SetCollisionMaterial(pd3dDevice, pd3dGraphicsRootSignature, pd3dCommandList);
+	SetCollisionMaterial(pd3dDevice, pd3dGraphicsRootSignature, pd3dCommandList);
 }
 
 void CSphereCollision::SetBoundingSphere(DirectX::XMFLOAT3& center, float fradius)
@@ -78,3 +78,16 @@ void CSphereCollision::SetBoundingSphere(DirectX::XMFLOAT3& center, float fradiu
 CSphereCollision::~CSphereCollision()
 {
 }
+
+void CSphereCollision::SetCollisionMaterial(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3dGraphicsRootSignature, ID3D12GraphicsCommandList* pd3dCommandList)
+{
+	CSphereCollisionShader* pShader = new CSphereCollisionShader();
+	DXGI_FORMAT pdxgiRtvFormats[3] = { DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM };
+	pShader->CreateShader(pd3dDevice, pd3dGraphicsRootSignature, 3, pdxgiRtvFormats, DXGI_FORMAT_D32_FLOAT);
+	pShader->CreateShaderVariables(pd3dDevice, pd3dCommandList);
+
+	CMaterial* pMaterial = new CMaterial(1);
+	pMaterial->SetShader(pShader);
+	SetMaterial(0, pMaterial);
+}
+
