@@ -8,13 +8,28 @@
 class CCollision : public CGameObject
 {
 public:
-	CCollision(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature,BoundingBox BB);
+	CCollision();
 	~CCollision();
 
 	bool IsRotate() { return m_bRotate; }
 	void SetIsRotate(bool bVal) { m_bRotate = bVal; }
+	void SetCollisionMaterial(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3dGraphicsRootSignature, ID3D12GraphicsCommandList* pd3dCommandList);
+
+private:
+	bool m_bRotate = false;
+};
+
+////////////////////////////////
+
+class CBBCollision : public CCollision
+{
+public:
+	CBBCollision(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, BoundingBox BB);
+	~CBBCollision();
+
+	void SetBBMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList);
+	void SetBB(DirectX::BoundingBox& BB);
 
 private:
 	BoundingBox m_xmBoundingBox;
-	bool m_bRotate = false;
 };
