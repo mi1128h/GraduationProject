@@ -766,17 +766,9 @@ void CGameObject::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pC
 void CGameObject::RenderCollision(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
 {
 	m_pCollision->UpdateBoundings(m_xmf4x4World);
-	//m_pMesh->UpdateBoundingTransform(collisions, m_xmf4x4World);
-	//collisions->CalculateBoundingBox();
 	//m_xmBoundingBox = collisions->GetBoundingBox();
 	m_pCollision->Render(pd3dCommandList, pCamera);
 }
-
-void CGameObject::CalculateBoundingBox()
-{
-	m_xmBoundingBox.Transform(m_xmBoundingBox, XMLoadFloat4x4(&m_xmf4x4World));
-}
-
 
 UINT ReadUnsignedIntegerFromFile(FILE* pInFile)
 {

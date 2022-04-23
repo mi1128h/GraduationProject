@@ -41,6 +41,7 @@ CCollision::~CCollision()
 
 }
 
+
 ////////////////////////////////
 
 CBBCollision::CBBCollision(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, BoundingBox BB)
@@ -48,6 +49,10 @@ CBBCollision::CBBCollision(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* 
 	SetBB(BB);
 	SetBBMesh(pd3dDevice, pd3dCommandList);
 	CCollision::SetCollisionMaterial(pd3dDevice, pd3dGraphicsRootSignature, pd3dCommandList);
+}
+
+CBBCollision::~CBBCollision()
+{
 }
 
 void CBBCollision::SetBBMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
@@ -66,11 +71,16 @@ void CBBCollision::SetBB(DirectX::BoundingBox& BB)
 	XMStoreFloat3(&m_xmBoundingBox.Extents, XMLoadFloat3(&BB.Extents));
 }
 
-CBBCollision::~CBBCollision()
+void CBBCollision::UpdateBoundings(XMFLOAT4X4 xmf4x4World)
 {
-
+	CCollision::UpdateBoundings(xmf4x4World);
+	CalculateBoundingBox();
 }
 
+void CBBCollision::CalculateBoundingBox()
+{
+	m_xmBoundingBox.Transform(m_xmBoundingBox, XMLoadFloat4x4(&m_xmf4x4World));
+}
 ////////////////////////////////
 
 CSphereCollision::CSphereCollision(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, float fradius)
@@ -106,3 +116,13 @@ void CSphereCollision::SetCollisionMaterial(ID3D12Device* pd3dDevice, ID3D12Root
 	SetMaterial(0, pMaterial);
 }
 
+void CSphereCollision::UpdateBoundings(XMFLOAT4X4 xmf4x4World)
+{
+	CCollision::UpdateBoundings(xmf4x4World);
+	CalculateBoundingSphere();
+}
+
+void CSphereCollision::CalculateBoundingSphere()
+{
+	m_xmBoundingSphere.Transform(m_xmBoundingSphere, XMLoadFloat4x4(&m_xmf4x4World));
+}

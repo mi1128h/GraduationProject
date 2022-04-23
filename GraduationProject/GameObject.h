@@ -258,7 +258,6 @@ public:
 	void Rotate(XMFLOAT4* pxmf4Quaternion);
 
 	void SetActive(bool bActive) { m_bActive = bActive; }
-	void CalculateBoundingBox();
 
 	CGameObject* GetParent() { return(m_pParent); }
 	void UpdateTransform(XMFLOAT4X4* pxmf4x4Parent = NULL);
