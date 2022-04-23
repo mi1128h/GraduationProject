@@ -846,15 +846,31 @@ void CGameObject::LoadFromCollision(ID3D12Device* pd3dDevice, ID3D12GraphicsComm
 {
 	ifstream boundingInfo(filename);
 	string s, frame;
-	int radius;
-	while (boundingInfo >> s >> frame >> radius)
+	XMFLOAT3 center, extends;
+	float radius;
+	while (boundingInfo >> s >> frame)
 	{
 		if (s.compare("<Sphere>:") == 0) 
 		{
+			boundingInfo >> radius;
 			CGameObject* pBoneObject = FindFrame(frame.c_str());
 			m_pCollision = new CSphereCollision(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, radius);
 			m_pCollision->SetFrameObject(pBoneObject);
 		}
+		if (s.compare("<Box>:") == 0)
+		{
+			boundingInfo >> center.x >> center.y >> center.z;
+			boundingInfo >> extends.x >> extends.y >> extends.z;
+			CGameObject* pBoneObject = FindFrame(frame.c_str());
+			BoundingBox BB;
+			XMStoreFloat3(&BB.Center, XMLoadFloat3(&center));
+			XMStoreFloat3(&BB.Extents, XMLoadFloat3(&extends));
+
+			m_pCollision = new CBBCollision(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, BB);
+			m_pCollision->SetFrameObject(pBoneObject);
+			m_pCollision->SetBoundingState(BOUNDING_STATE::BODY);
+		}
+		// setstate -> BoundingBox::Body
 	}
 }
 
