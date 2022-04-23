@@ -618,6 +618,9 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 		if (s.compare("Barricade_01:") == 0) {
 			m_nObjects += n;
 		}
+		if (s.compare("house_1:") == 0) {
+			m_nObjects += n;
+		}
 	}
 
 	m_ppObjects = new CGameObject * [m_nObjects];
@@ -639,6 +642,11 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 	pCoverTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Model/Texture/Wooden_Barricades_AlbedoTransparency.dds", 0);
 	CScene::CreateShaderResourceViews(pd3dDevice, pCoverTexture, Signature::Graphics::model_diffuse, true);
 
+	// house_1
+	CLoadedModelInfo* pHouseModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/house_1.bin", NULL);
+	CTexture* pHouseTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
+	pHouseTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Model/Texture/house_1_Diffuse.dds", 0);
+	CScene::CreateShaderResourceViews(pd3dDevice, pHouseTexture, Signature::Graphics::model_diffuse, true);
 
 	// 
 	string line;
@@ -692,9 +700,9 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 			m_ppObjects[i++] = pObject;
 		}
 		else if (name.compare("Barricade_01") == 0) {
-			CMovingCoverObject* pObject = NULL;
+			CCoverObject* pObject = NULL;
 
-			pObject = new CMovingCoverObject;
+			pObject = new CCoverObject;
 			pObject->SetChild(pCoverModel->m_pModelRootObject, true);
 
 			pObject->m_pTexture = pCoverTexture;
@@ -706,9 +714,27 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 			XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
 			pObject->Rotate(&xmf4Rotation);
 
-			pObject->SetPoints(pObject->GetPosition());
-			pObject->SetMovingDirection(XMFLOAT3(0.0f, 0.0f, 1.0f));
-			pObject->SetMovingSpeed(200.0f);
+			//pObject->SetPoints(pObject->GetPosition());
+			//pObject->SetMovingDirection(XMFLOAT3(0.0f, 0.0f, 1.0f));
+			//pObject->SetMovingSpeed(200.0f);
+
+			m_ppObjects[i++] = pObject;
+		}
+		else if (name.compare("house_1") == 0) {
+			CGameObject* pObject = NULL;
+
+			pObject = new CGameObject;
+			pObject->SetChild(pHouseModel->m_pModelRootObject, true);
+
+			pObject->m_pTexture = pHouseTexture;
+
+			float terrainY = pTerrain->GetHeight((px + 50.0f) * xmf3TerrainScale.x, (pz + 50.0f) * xmf3TerrainScale.z);
+			XMFLOAT3 position = XMFLOAT3((px + 50.0f) * xmf3TerrainScale.x, terrainY + 20.0f * sy, (pz + 50.0f) * xmf3TerrainScale.z);
+			pObject->SetPosition(position);
+			pObject->SetScale(sx, sy, sz);
+			XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
+			pObject->Rotate(&xmf4Rotation);
+			pObject->Rotate(90.0f, 0.0f, 0.0f);
 
 			m_ppObjects[i++] = pObject;
 		}
@@ -752,6 +778,7 @@ void CObjectsShader::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera*
 	{
 		if (m_ppObjects[j])
 		{
+			m_ppObjects[j]->UpdateTransform(NULL);
 			m_ppObjects[j]->Render(pd3dCommandList, pCamera);
 		}
 	}
