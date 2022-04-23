@@ -33,3 +33,14 @@ public:
 private:
 	BoundingBox m_xmBoundingBox;
 };
+
+/////////////////////////////////
+class CSphereCollision : public CCollision
+{
+public:
+	CSphereCollision(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, float fradius);
+	~CSphereCollision();
+
+private:
+	BoundingSphere m_xmBoundingSphere;
+};

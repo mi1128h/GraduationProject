@@ -55,3 +55,26 @@ CBBCollision::~CBBCollision()
 {
 
 }
+
+////////////////////////////////
+
+CSphereCollision::CSphereCollision(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, float fradius)
+{
+	XMFLOAT3 center = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	SetBoundingSphere(center, fradius);
+	
+	CSphereMeshIlluminated* DebugSphere = new CSphereMeshIlluminated(pd3dDevice, pd3dCommandList, fradius);
+	SetMesh(DebugSphere);
+
+	CCollision::SetCollisionMaterial(pd3dDevice, pd3dGraphicsRootSignature, pd3dCommandList);
+}
+
+void CSphereCollision::SetBoundingSphere(DirectX::XMFLOAT3& center, float fradius)
+{
+	XMStoreFloat3(&m_xmBoundingSphere.Center, XMLoadFloat3(&center));
+	m_xmBoundingSphere.Radius = fradius;
+}
+
+CSphereCollision::~CSphereCollision()
+{
+}
