@@ -43,7 +43,8 @@ protected:
 class CBBCollision : public CCollision
 {
 public:
-	CBBCollision(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, BoundingBox BB);
+	CBBCollision(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature,
+		BoundingBox BB, BOUNDING_STATE index = BOUNDING_STATE::HIERACY);
 	~CBBCollision();
 
 	void SetBBMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList);

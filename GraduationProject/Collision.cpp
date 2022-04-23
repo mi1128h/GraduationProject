@@ -47,8 +47,10 @@ void CCollision::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCa
 
 ////////////////////////////////
 
-CBBCollision::CBBCollision(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, BoundingBox BB)
+CBBCollision::CBBCollision(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature,
+	BoundingBox BB, BOUNDING_STATE index)
 {
+	state = index;
 	SetBB(BB);
 	SetBBMesh(pd3dDevice, pd3dCommandList);
 	CCollision::SetCollisionMaterial(pd3dDevice, pd3dGraphicsRootSignature, pd3dCommandList);
@@ -68,9 +70,17 @@ void CBBCollision::SetBBMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 
 void CBBCollision::SetBB(DirectX::BoundingBox& BB)
 {
-	XMFLOAT3 center = XMFLOAT3(0.0f, 0.0f, 0.0f);
-	XMStoreFloat3(&m_xmBoundingBox.Center, XMLoadFloat3(&center));
-	//XMStoreFloat3(&m_xmBoundingBox.Center, XMLoadFloat3(&BB.Center));
+	if (state == BOUNDING_STATE::HIERACY)
+	{
+		XMFLOAT3 center = XMFLOAT3(0.0f, 0.0f, 0.0f);
+		XMStoreFloat3(&m_xmBoundingBox.Center, XMLoadFloat3(&center));
+	}
+	else
+	{
+		XMStoreFloat3(&m_xmBoundingBox.Center, XMLoadFloat3(&BB.Center));
+	}
+	SetPosition(m_xmBoundingBox.Center);
+	UpdateTransform(nullptr);
 	XMStoreFloat3(&m_xmBoundingBox.Extents, XMLoadFloat3(&BB.Extents));
 }
 

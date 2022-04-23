@@ -880,9 +880,9 @@ void CGameObject::LoadFromCollision(ID3D12Device* pd3dDevice, ID3D12GraphicsComm
 			XMStoreFloat3(&BB.Center, XMLoadFloat3(&center));
 			XMStoreFloat3(&BB.Extents, XMLoadFloat3(&extends));
 
-			CCollision* cols = new CBBCollision(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, BB);
+			CCollision* cols = new CBBCollision(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, 
+				BB, BOUNDING_STATE::BODY);
 			cols->SetFrameObject(pBoneObject);
-			cols->SetBoundingState(BOUNDING_STATE::BODY);
 			collisions.emplace_back(cols);
 		}
 	}
