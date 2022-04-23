@@ -621,6 +621,15 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 		if (s.compare("house_1:") == 0) {
 			m_nObjects += n;
 		}
+		if (s.compare("house_2:") == 0) {
+			m_nObjects += n;
+		}
+		if (s.compare("house_3:") == 0) {
+			m_nObjects += n;
+		}
+		if (s.compare("house_4:") == 0) {
+			m_nObjects += n;
+		}
 	}
 
 	m_ppObjects = new CGameObject * [m_nObjects];
@@ -643,10 +652,27 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 	CScene::CreateShaderResourceViews(pd3dDevice, pCoverTexture, Signature::Graphics::model_diffuse, true);
 
 	// house_1
-	CLoadedModelInfo* pHouseModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/house_1.bin", NULL);
-	CTexture* pHouseTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
-	pHouseTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Model/Texture/house_1_Diffuse.dds", 0);
-	CScene::CreateShaderResourceViews(pd3dDevice, pHouseTexture, Signature::Graphics::model_diffuse, true);
+	CLoadedModelInfo* pHouse1Model = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/house_1.bin", NULL);
+	CTexture* pHouse1Texture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
+	pHouse1Texture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Model/Texture/house_1_Diffuse.dds", 0);
+	CScene::CreateShaderResourceViews(pd3dDevice, pHouse1Texture, Signature::Graphics::model_diffuse, true);
+	// house_2
+	CLoadedModelInfo* pHouse2Model = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/house_2.bin", NULL);
+	CTexture* pHouse2Texture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
+	pHouse2Texture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Model/Texture/house_2_Diffuse.dds", 0);
+	CScene::CreateShaderResourceViews(pd3dDevice, pHouse2Texture, Signature::Graphics::model_diffuse, true);
+	// house_3
+	CLoadedModelInfo* pHouse3Model = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/house_3.bin", NULL);
+	CTexture* pHouse3Texture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
+	pHouse3Texture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Model/Texture/house_3_Diffuse.dds", 0);
+	CScene::CreateShaderResourceViews(pd3dDevice, pHouse3Texture, Signature::Graphics::model_diffuse, true);
+	// house_4
+	CLoadedModelInfo* pHouse4Model = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/house_4.bin", NULL);
+	CTexture* pHouse4Texture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
+	pHouse4Texture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Model/Texture/house_4_Diffuse.dds", 0);
+	CScene::CreateShaderResourceViews(pd3dDevice, pHouse4Texture, Signature::Graphics::model_diffuse, true);
+	float houseOffsetX = 50.0f;
+	float houseOffsetZ = 20.0f;
 
 	// 
 	string line;
@@ -724,12 +750,12 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 			CGameObject* pObject = NULL;
 
 			pObject = new CGameObject;
-			pObject->SetChild(pHouseModel->m_pModelRootObject, true);
+			pObject->SetChild(pHouse1Model->m_pModelRootObject, true);
 
-			pObject->m_pTexture = pHouseTexture;
+			pObject->m_pTexture = pHouse1Texture;
 
-			float terrainY = pTerrain->GetHeight((px + 50.0f) * xmf3TerrainScale.x, (pz + 50.0f) * xmf3TerrainScale.z);
-			XMFLOAT3 position = XMFLOAT3((px + 50.0f) * xmf3TerrainScale.x, terrainY + 20.0f * sy, (pz + 50.0f) * xmf3TerrainScale.z);
+			float terrainY = pTerrain->GetHeight((px) * (xmf3TerrainScale.x + houseOffsetX), (pz) * (xmf3TerrainScale.z + houseOffsetZ) + 38000.0f);
+			XMFLOAT3 position = XMFLOAT3((px) * (xmf3TerrainScale.x + houseOffsetX), terrainY + 60.0f * sy, (pz) * (xmf3TerrainScale.z + houseOffsetZ) + 38000.0f);
 			pObject->SetPosition(position);
 			pObject->SetScale(sx, sy, sz);
 			XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
@@ -738,7 +764,60 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 
 			m_ppObjects[i++] = pObject;
 		}
+		else if (name.compare("house_2") == 0) {
+			CGameObject* pObject = NULL;
 
+			pObject = new CGameObject;
+			pObject->SetChild(pHouse2Model->m_pModelRootObject, true);
+
+			pObject->m_pTexture = pHouse2Texture;
+
+			float terrainY = pTerrain->GetHeight((px) * (xmf3TerrainScale.x + houseOffsetX), (pz) * (xmf3TerrainScale.z + houseOffsetZ) + 38000.0f);
+			XMFLOAT3 position = XMFLOAT3((px) * (xmf3TerrainScale.x + houseOffsetX), terrainY + 66.0f * sy, (pz) * (xmf3TerrainScale.z + houseOffsetZ) + 38000.0f);
+			pObject->SetPosition(position);
+			pObject->SetScale(sx, sy, sz);
+			XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
+			pObject->Rotate(&xmf4Rotation);
+			pObject->Rotate(90.0f, 0.0f, 0.0f);
+
+			m_ppObjects[i++] = pObject;
+		}
+		else if (name.compare("house_3") == 0) {
+			CGameObject* pObject = NULL;
+
+			pObject = new CGameObject;
+			pObject->SetChild(pHouse3Model->m_pModelRootObject, true);
+
+			pObject->m_pTexture = pHouse3Texture;
+
+			float terrainY = pTerrain->GetHeight((px) * (xmf3TerrainScale.x + houseOffsetX), (pz ) * (xmf3TerrainScale.z + houseOffsetZ) + 38000.0f);
+			XMFLOAT3 position = XMFLOAT3((px) * (xmf3TerrainScale.x + houseOffsetX), terrainY + 90.0f * sy, (pz ) * (xmf3TerrainScale.z + houseOffsetZ) + 38000.0f);
+			pObject->SetPosition(position);
+			pObject->SetScale(sx, sy, sz);
+			XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
+			pObject->Rotate(&xmf4Rotation);
+			pObject->Rotate(90.0f, 0.0f, 0.0f);
+
+			m_ppObjects[i++] = pObject;
+		}
+		else if (name.compare("house_4") == 0) {
+			CGameObject* pObject = NULL;
+
+			pObject = new CGameObject;
+			pObject->SetChild(pHouse4Model->m_pModelRootObject, true);
+
+			pObject->m_pTexture = pHouse4Texture;
+
+			float terrainY = pTerrain->GetHeight((px) * (xmf3TerrainScale.x + houseOffsetX), (pz ) * (xmf3TerrainScale.z + houseOffsetZ) + 38000.0f);
+			XMFLOAT3 position = XMFLOAT3((px) * (xmf3TerrainScale.x + houseOffsetX), terrainY + 60.0f * sy, (pz ) * (xmf3TerrainScale.z + houseOffsetZ) + 38000.0f);
+			pObject->SetPosition(position);
+			pObject->SetScale(sx, sy, sz);
+			XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
+			pObject->Rotate(&xmf4Rotation);
+			pObject->Rotate(90.0f, 0.0f, 0.0f);
+
+			m_ppObjects[i++] = pObject;
+		}
 	}
 }
 

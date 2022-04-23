@@ -28,7 +28,7 @@ CAnimPlayer::CAnimPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 void CAnimPlayer::InitPlayerMatrics(void* pContext)
 {
 	CHeightMapTerrain* pTerrain = (CHeightMapTerrain*)pContext;
-	SetPosition(XMFLOAT3(310.0f * 10, pTerrain->GetHeight(310.0f * 10, 595.0f * 10), 595.0f * 10));
+	SetPosition(XMFLOAT3(310.0f * 10, pTerrain->GetHeight(310.0f * 10, 595.0f * 10 + 33000.0f), 595.0f * 10 + 33000.0f));
 	SetScale(XMFLOAT3(1, 1, 1));
 	Rotate(0.0f, 0.0f, 90.0f);
 }
