@@ -5,6 +5,14 @@
 #include "Camera.h"
 #include "Animation.h"
 
+enum BOUNDING_STATE
+{
+	SPHERE,
+	BODY,
+	HIERACY,
+	length
+};
+
 class CCollision : public CGameObject
 {
 public:
@@ -18,10 +26,13 @@ public:
 	virtual void UpdateBoundings(XMFLOAT4X4 pxmf4x4World);
 	virtual void CalculateBoundingBox() {};
 	virtual void CalculateBoundingSphere() {};
+	void SetBoundingState(int index) { state = static_cast<BOUNDING_STATE>(index);}
+	BOUNDING_STATE GetBoundingState() { return state; }
 
 protected:
 	bool m_bRotate = false;
 	CGameObject* FrameObject = nullptr;
+	BOUNDING_STATE state = BOUNDING_STATE::HIERACY;
 };
 
 ////////////////////////////////
@@ -34,6 +45,7 @@ public:
 
 	void SetBBMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList);
 	void SetBB(DirectX::BoundingBox& BB);
+	virtual void UpdateBoundings(XMFLOAT4X4 pxmf4x4World);
 	virtual void CalculateBoundingBox();
 private:
 	BoundingBox m_xmBoundingBox;

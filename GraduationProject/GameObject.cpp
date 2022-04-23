@@ -802,17 +802,44 @@ int ReadStringFromFile(FILE* pInFile, char* pstrToken)
 	return(nStrLength);
 }
 
+void CGameObject::SetIsRotate(bool bVal)
+{
+	if (m_pCollision) m_pCollision->SetIsRotate(bVal);
+
+	if (m_pSibling) m_pSibling->SetIsRotate(bVal);
+	if (m_pChild) m_pChild->SetIsRotate(bVal);
+}
+
 void CGameObject::MakeCollider(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature)
 {
 	m_pCollision = new CBBCollision(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, m_xmBoundingBox);
 }
 
-void CGameObject::SetIsRotate(bool bVal)
-{ 
-	if (m_pCollision) m_pCollision->SetIsRotate(bVal);
+void CGameObject::UpdateCollision()
+{
+	BOUNDING_STATE cur_state = m_pCollision->GetBoundingState();
 
-	if (m_pSibling) m_pSibling->SetIsRotate(bVal);
-	if (m_pChild) m_pChild->SetIsRotate(bVal);
+	switch (cur_state)
+	{
+		case BOUNDING_STATE::BODY:
+			m_xmBoundingBox = m_pCollision->GetBoundingBox();
+			break;
+		case BOUNDING_STATE::SPHERE:
+			m_xmBoundingSphere = m_pCollision->GetBoundingSphere();
+			break;
+		case BOUNDING_STATE::HIERACY:
+			UpdateBoundingHierachy();
+			break;
+	}
+}
+
+void CGameObject::UpdateBoundingHierachy()
+{
+	if (m_pCollision)
+		m_xmBoundingSphere = m_pCollision->GetBoundingSphere();
+
+	if (m_pSibling) m_pSibling->UpdateBoundingHierachy();
+	if (m_pChild) m_pChild->UpdateBoundingHierachy();
 }
 
 void CGameObject::LoadFromCollision(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, string filename)
