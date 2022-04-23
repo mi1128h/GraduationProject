@@ -1275,8 +1275,8 @@ CMovingCoverObject::~CMovingCoverObject()
 
 void CMovingCoverObject::SetPoints(XMFLOAT3 xmf3Center)
 {
-	m_xmf3Point1 = XMFLOAT3(xmf3Center.x, xmf3Center.y, xmf3Center.z - 20.0f);
-	m_xmf3Point2 = XMFLOAT3(xmf3Center.x, xmf3Center.y, xmf3Center.z + 20.0f);
+	m_xmf3Point1 = XMFLOAT3(xmf3Center.x, xmf3Center.y, xmf3Center.z - 200.0f);
+	m_xmf3Point2 = XMFLOAT3(xmf3Center.x, xmf3Center.y, xmf3Center.z + 200.0f);
 }
 
 void CMovingCoverObject::Animate(float fTimeElapsed, CCamera* pCamrea)

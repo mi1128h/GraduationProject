@@ -613,7 +613,10 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 	int n;
 	while (metaInfo >> s >> n) {
 		if (s.compare("cannon:") == 0) {
-			m_nObjects = n;
+			m_nObjects += n;
+		}
+		if (s.compare("Barricade:") == 0) {
+			m_nObjects += n;
 		}
 	}
 
@@ -622,22 +625,22 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 
 	// cannon
 	CLoadedModelInfo* pCannonModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/cannon.bin", NULL);
-	CTexture* pModelTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
-	pModelTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Model/Texture/cannon_diffuse.dds", 0);
-	CScene::CreateShaderResourceViews(pd3dDevice, pModelTexture, Signature::Graphics::model_diffuse, true);
+	CTexture* pCannonTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
+	pCannonTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Model/Texture/cannon_diffuse.dds", 0);
+	CScene::CreateShaderResourceViews(pd3dDevice, pCannonTexture, Signature::Graphics::model_diffuse, true);
 	
 	// cannonball
 	CCannonballObject* pCannonballObject = new CCannonballObject(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature);
 	pCannonballObject->SetUpdatedContext(pTerrain);
 
+	// barricade
+	CLoadedModelInfo* pCoverModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/Barricade_01.bin", NULL);
+	CTexture* pCoverTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
+	pCoverTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Model/Texture/Wooden_Barricades_AlbedoTransparency.dds", 0);
+	CScene::CreateShaderResourceViews(pd3dDevice, pCoverTexture, Signature::Graphics::model_diffuse, true);
+
+
 	// 
-	CCannonObject* pCannonObject = NULL;
-
-	pCannonObject = new CCannonObject;
-	pCannonObject->SetChild(pCannonModel->m_pModelRootObject, true);
-
-	pCannonObject->m_pTexture = pModelTexture;
-
 	string line;
 	smatch match;
 	regex reName(R"(name: (\w+))");
@@ -668,24 +671,46 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 		float sz = stof(match[3].str());
 
 		if (name.compare("cannon") == 0) {
+			CCannonObject* pObject = NULL;
 
-			CCannonObject* pCannonObject = NULL;
+			pObject = new CCannonObject;
+			pObject->SetChild(pCannonModel->m_pModelRootObject, true);
 
-			pCannonObject = new CCannonObject;
-			pCannonObject->SetChild(pCannonModel->m_pModelRootObject, true);
+			pObject->m_pTexture = pCannonTexture;
 
-			pCannonObject->m_pTexture = pModelTexture;
+			pObject->SetCannonball(pCannonballObject);
 
-			pCannonObject->SetCannonball(pCannonballObject);
-
-			pCannonObject->SetPosition((px + 50.0f) * xmf3TerrainScale.x, py * xmf3TerrainScale.y + 80.0f * sy, (pz + 50.0f) * xmf3TerrainScale.z);
-			pCannonObject->SetScale(sx, sy, sz);
+			float terrainY = pTerrain->GetHeight((px + 50.0f) * xmf3TerrainScale.x, (pz + 50.0f) * xmf3TerrainScale.z);
+			XMFLOAT3 position = XMFLOAT3((px + 50.0f) * xmf3TerrainScale.x, terrainY + 80.0f * sy, (pz + 50.0f) * xmf3TerrainScale.z);
+			pObject->SetPosition(position);
+			pObject->SetScale(sx, sy, sz);
 			XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
-			pCannonObject->Rotate(&xmf4Rotation);
-			pCannonObject->Rotate(90.0f, 0.0f, 0.0f);
-			pCannonObject->Rotate(0.0f, 180.0f, 0.0f);
+			pObject->Rotate(&xmf4Rotation);
+			pObject->Rotate(90.0f, 0.0f, 0.0f);
+			pObject->Rotate(0.0f, 180.0f, 0.0f);
 
-			m_ppObjects[i++] = pCannonObject;
+			m_ppObjects[i++] = pObject;
+		}
+		else if (name.compare("Barricade") == 0) {
+			CMovingCoverObject* pObject = NULL;
+
+			pObject = new CMovingCoverObject;
+			pObject->SetChild(pCoverModel->m_pModelRootObject, true);
+
+			pObject->m_pTexture = pCoverTexture;
+			
+			float terrainY = pTerrain->GetHeight((px + 50.0f) * xmf3TerrainScale.x, (pz + 50.0f) * xmf3TerrainScale.z);
+			XMFLOAT3 position = XMFLOAT3((px + 50.0f) * xmf3TerrainScale.x, terrainY + 20.0f * sy, (pz + 50.0f) * xmf3TerrainScale.z);
+			pObject->SetPosition(position);
+			pObject->SetScale(sx, sy, sz);
+			XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
+			pObject->Rotate(&xmf4Rotation);
+
+			pObject->SetPoints(pObject->GetPosition());
+			pObject->SetMovingDirection(XMFLOAT3(0.0f, 0.0f, 1.0f));
+			pObject->SetMovingSpeed(200.0f);
+
+			m_ppObjects[i++] = pObject;
 		}
 
 	}
