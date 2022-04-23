@@ -21,6 +21,10 @@ void CCollision::SetCollisionMaterial(ID3D12Device* pd3dDevice, ID3D12RootSignat
 	SetMaterial(0, pMaterial);
 }
 
+void CCollision::UpdateBoundings(XMFLOAT4X4 xmf4x4World)
+{
+}
+
 CCollision::~CCollision()
 {
 
@@ -49,6 +53,10 @@ void CBBCollision::SetBB(DirectX::BoundingBox& BB)
 	XMStoreFloat3(&m_xmBoundingBox.Center, XMLoadFloat3(&center));
 	//XMStoreFloat3(&m_xmBoundingBox.Center, XMLoadFloat3(&BB.Center));
 	XMStoreFloat3(&m_xmBoundingBox.Extents, XMLoadFloat3(&BB.Extents));
+}
+
+void CBBCollision::UpdateBoundings(XMFLOAT4X4 xmf4x4World)
+{
 }
 
 CBBCollision::~CBBCollision()
@@ -91,3 +99,17 @@ void CSphereCollision::SetCollisionMaterial(ID3D12Device* pd3dDevice, ID3D12Root
 	SetMaterial(0, pMaterial);
 }
 
+void CSphereCollision::UpdateBoundings(XMFLOAT4X4 xmf4x4World)
+{
+	if (FrameObject)
+	{
+		UpdateTransform(&FrameObject->m_xmf4x4World);
+	}
+	else
+	{
+		m_xmf4x4ToParent = xmf4x4World;
+		UpdateTransform(nullptr);
+	}
+
+	if (m_bRotate) Rotate(-90.0f, 0.0f, 0.0f);
+}

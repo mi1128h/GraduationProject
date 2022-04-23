@@ -14,9 +14,12 @@ public:
 	bool IsRotate() { return m_bRotate; }
 	void SetIsRotate(bool bVal) { m_bRotate = bVal; }
 	virtual void SetCollisionMaterial(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3dGraphicsRootSignature, ID3D12GraphicsCommandList* pd3dCommandList);
+	void SetFrameObject(CGameObject* pObject) { if (FrameObject == nullptr) FrameObject = pObject; }
+	virtual void UpdateBoundings(XMFLOAT4X4 pxmf4x4World);
 
-private:
+protected:
 	bool m_bRotate = false;
+	CGameObject* FrameObject = nullptr;
 };
 
 ////////////////////////////////
@@ -29,7 +32,7 @@ public:
 
 	void SetBBMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList);
 	void SetBB(DirectX::BoundingBox& BB);
-
+	virtual void UpdateBoundings(XMFLOAT4X4 pxmf4x4World);
 private:
 	BoundingBox m_xmBoundingBox;
 };
@@ -40,7 +43,9 @@ class CSphereCollision : public CCollision
 public:
 	CSphereCollision(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, float fradius);
 	~CSphereCollision();
+	void UpdateBoundings(XMFLOAT4X4 pxmf4x4World);
 	virtual void SetCollisionMaterial(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3dGraphicsRootSignature, ID3D12GraphicsCommandList* pd3dCommandList);
+	void SetBoundingSphere(DirectX::XMFLOAT3& center, float fradius);
 
 private:
 	BoundingSphere m_xmBoundingSphere;
