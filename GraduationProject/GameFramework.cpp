@@ -478,23 +478,29 @@ void CGameFramework::OnProcessingKeyboardMessage
 		case VK_F9:
 			ChangeSwapChainState();
 			break;
+		case 'W':
+		case 'A':
+		case 'S':
+		case 'D':
+			m_pPlayer->SetVelocity(XMFLOAT3(0,0,0));
+			break;
 		case 'R':
 			m_pcbMappedFrameworkInfo->m_nRenderMode = 0x00;
 			m_pcbMappedFrameworkInfo->m_nBlurMode = 0x00;
 			break;
-		case 'D':
-			::gbTerrainTessellationWireframe = !::gbTerrainTessellationWireframe;
-			m_pcbMappedFrameworkInfo->m_nRenderMode |= DEBUG_TESSELLATION;
-			break;
+		//case 'D':
+		//	::gbTerrainTessellationWireframe = !::gbTerrainTessellationWireframe;
+		//	m_pcbMappedFrameworkInfo->m_nRenderMode |= DEBUG_TESSELLATION;
+		//	break;
 		case 'B':
 			m_pcbMappedFrameworkInfo->m_nBlurMode = DEBUG_BLURRING;
 			break;
 		case 'Q':
 			m_fSpeedVal += 10.0f;
 			break;
-		case 'W':
-			m_fSpeedVal -= 10.0f;
-			break;
+		//case 'W':
+		//	m_fSpeedVal -= 10.0f;
+		//	break;
 		case 'F':
 			((CCannonObjectsShader*)m_pScene->m_ppShaders[1])->ActivateCannon();
 			break;
@@ -579,7 +585,7 @@ void CGameFramework::ProcessInput()
 				else
 					m_pPlayer->Rotate(cyDelta, cxDelta, 0.0f);
 			}
-			if (dwDirection) m_pPlayer->Move(dwDirection, 5.0f, true);
+			if (dwDirection) m_pPlayer->Move(dwDirection, 500.0f, true);
 		}
 	}
 	m_pPlayer->Update(m_GameTimer.GetTimeElapsed());
