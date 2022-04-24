@@ -712,7 +712,7 @@ void CScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera
 	}
 }
 
-bool CScene::CheckPlayerByObjectBB()
+bool CScene::CheckPlayerByObjectBB(XMFLOAT3 xmf3Shift)
 {
 	CGameObject** m_ppObjects =	((CObjectsShader*)m_ppShaders[ShaderData::objects])->GetObjects();
 	int m_nObjects = ((CObjectsShader*)m_ppShaders[ShaderData::objects])->GetObjectsNum();
@@ -724,8 +724,25 @@ bool CScene::CheckPlayerByObjectBB()
 		if (!m_ppObjects[i]->GetHaveBound()) continue;
 
 		BoundingBox BB = m_ppObjects[i]->GetBoundingBox();
-		if (BB.Intersects(playerBB)) return false;
+		if (CheckAABB(playerBB,BB,xmf3Shift)) return false;
 	}
 
 	return true;
+}
+
+bool CScene::CheckAABB(BoundingBox A, BoundingBox B, XMFLOAT3 xmf3Shift)
+{
+	XMFLOAT3 min1 = Vector3::Add(Vector3::Subtract(A.Center, A.Extents),xmf3Shift);
+	XMFLOAT3 max1 = Vector3::Add(Vector3::Add(A.Center, A.Extents), xmf3Shift);
+
+	XMFLOAT3 min2 = Vector3::Subtract(B.Center, B.Extents);
+	XMFLOAT3 max2 = Vector3::Add(B.Center, B.Extents);
+
+	BoundingBox aabb1;
+	BoundingBox::CreateFromPoints(aabb1,XMLoadFloat3(&min1),XMLoadFloat3(&max1));
+	BoundingBox aabb2;
+	BoundingBox::CreateFromPoints(aabb2, XMLoadFloat3(&min2), XMLoadFloat3(&max2));
+
+	if (aabb1.Contains(aabb2)) return true;
+	return false;
 }
