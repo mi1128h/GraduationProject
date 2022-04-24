@@ -38,6 +38,12 @@ struct MATERIALS
 	MATERIAL				m_pReflections[MAX_MATERIALS];
 };
 
+enum ShaderData
+{
+	objects,
+	monster,
+};
+
 class CScene
 {
 public:
@@ -56,6 +62,8 @@ public:
 	bool ProcessInput(UCHAR* pKeysBuffer);
 	void AnimateObjects(float fTimeElapsed,CCamera* AnimateObjects = NULL);
 	void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
+
+	bool CheckPlayerByObjectBB();
 
 	void ReleaseUploadBuffers();
 

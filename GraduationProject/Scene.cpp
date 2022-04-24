@@ -712,3 +712,19 @@ void CScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera
 	}
 }
 
+bool CScene::CheckPlayerByObjectBB()
+{
+	CGameObject** m_ppObjects =	((CObjectsShader*)m_ppShaders[ShaderData::objects])->GetObjects();
+	int m_nObjects = ((CObjectsShader*)m_ppShaders[ShaderData::objects])->GetObjectsNum();
+
+	BoundingBox playerBB = m_pPlayer->GetBoundingBox();
+	for (int i = 0; i < m_nObjects; i++)
+	{
+		m_ppObjects[i]->UpdateCollision();
+
+		BoundingBox BB = m_ppObjects[i]->GetBoundingBox();
+		if (BB.Intersects(playerBB)) return false;
+	}
+
+	return true;
+}
