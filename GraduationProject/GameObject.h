@@ -267,6 +267,7 @@ public:
 	CGameObject* FindFrame(const char* pstrFrameName);
 	void SetActive(char* pstrFrameName, bool bActive);
 	UINT GetMeshType(int n) { return((m_pMesh) ? m_pMesh->GetType() : 0x00); }
+	bool GetHaveBound() { return m_bHaveBound; }
 
 public:
 	CAnimationController* m_pSkinnedAnimationController = NULL;

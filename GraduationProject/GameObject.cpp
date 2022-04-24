@@ -872,6 +872,7 @@ void CGameObject::LoadFromCollision(ID3D12Device* pd3dDevice, ID3D12GraphicsComm
 			cols->ToggleDebug();
 
 			collisions.emplace_back(cols);
+			m_bHaveBound = true;
 		}
 		if (s.compare("<Box>:") == 0)
 		{
@@ -886,6 +887,7 @@ void CGameObject::LoadFromCollision(ID3D12Device* pd3dDevice, ID3D12GraphicsComm
 				BB, BOUNDING_STATE::BODY);
 			cols->SetFrameObject(pBoneObject);
 			collisions.emplace_back(cols);
+			m_bHaveBound = true;
 		}
 	}
 }

@@ -721,6 +721,7 @@ bool CScene::CheckPlayerByObjectBB()
 	for (int i = 0; i < m_nObjects; i++)
 	{
 		m_ppObjects[i]->UpdateCollision();
+		if (!m_ppObjects[i]->GetHaveBound()) continue;
 
 		BoundingBox BB = m_ppObjects[i]->GetBoundingBox();
 		if (BB.Intersects(playerBB)) return false;
