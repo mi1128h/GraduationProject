@@ -834,22 +834,13 @@ void CGameObject::UpdateCollision()
 			m_xmBoundingSphere = col->GetBoundingSphere();
 			break;
 		case BOUNDING_STATE::HIERACY:
-			UpdateBoundingHierachy();
+			m_xmBoundingBox = col->GetBoundingBox();
 			break;
 		}
 	}
-}
 
-void CGameObject::UpdateBoundingHierachy()
-{
-	for (CCollision* col : collisions)
-	{
-		if (col->GetBoundingState() == BOUNDING_STATE::HIERACY)
-			m_xmBoundingBox = col->GetBoundingBox();
-	}
-
-	if (m_pSibling) m_pSibling->UpdateBoundingHierachy();
-	if (m_pChild) m_pChild->UpdateBoundingHierachy();
+	if (m_pChild) m_pChild->UpdateCollision();
+	if (m_pSibling) m_pSibling->UpdateCollision();
 }
 
 void CGameObject::LoadFromCollision(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, string filename)

@@ -288,7 +288,6 @@ public:
 	BoundingBox GetBoundingBox() { return m_xmBoundingBox; }
 	BoundingSphere GetBoundingSphere() { return m_xmBoundingSphere; }
 	void UpdateCollision();
-	void UpdateBoundingHierachy();
 };
 
 class CRotatingObject : public CGameObject
