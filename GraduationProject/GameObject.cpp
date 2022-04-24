@@ -822,9 +822,6 @@ void CGameObject::MakeCollider(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLi
 
 void CGameObject::UpdateCollision()
 {
-	if (m_pChild) m_pChild->UpdateCollision();
-	if (m_pSibling) m_pSibling->UpdateCollision();
-
 	for (CCollision* col : collisions)
 	{
 		BOUNDING_STATE cur_state = col->GetBoundingState();
@@ -836,26 +833,11 @@ void CGameObject::UpdateCollision()
 		case BOUNDING_STATE::SPHERE:
 			m_xmBoundingSphere = col->GetBoundingSphere();
 			break;
-		case BOUNDING_STATE::HIERACY:
-			m_xmBoundingBox = col->GetBoundingBox();
-			break;
 		}
 		m_bHaveBound = true;
 
 	}
 
-	CalculateBoundingBox();
-}
-
-void CGameObject::CalculateBoundingBox()
-{
-	if (m_pChild) m_pChild->CalculateBoundingBox();
-	if (m_pSibling) m_pSibling->CalculateBoundingBox();
-
-	if (!m_bHaveBound) return;
-
-	if (m_pChild) BoundingBox::CreateMerged(m_xmBoundingBox, m_xmBoundingBox, m_pChild->GetBoundingBox());
-	if (m_pSibling) BoundingBox::CreateMerged(m_xmBoundingBox, m_xmBoundingBox, m_pSibling->GetBoundingBox());
 }
 
 void CGameObject::SetBoundingScales(float x, float y, float z)

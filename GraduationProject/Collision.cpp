@@ -31,12 +31,6 @@ void CCollision::UpdateBoundings(XMFLOAT4X4 xmf4x4World)
 	{
 		UpdateTransform(&FrameObject->m_xmf4x4World);
 	}
-	else
-	{
-		m_xmf4x4ToParent = xmf4x4World;
-		if (isScale) SetScale(m_xmf3Scale.x, m_xmf3Scale.y, m_xmf3Scale.z);
-		UpdateTransform(nullptr);
-	}
 
 	if (m_bRotate) Rotate(-90.0f, 0.0f, 0.0f);
 }

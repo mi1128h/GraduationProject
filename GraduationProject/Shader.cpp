@@ -568,7 +568,11 @@ CObjectsShader::~CObjectsShader()
 
 void CObjectsShader::CalculateBoundingBox()
 {
-	for (int i = 0; i < m_nObjects; i++) m_ppObjects[i]->CalculateBoundingBox();
+	for (int i = 0; i < m_nObjects; i++) {
+		//m_ppObjects[i]->UpdateCollisionTransform(m_ppObjects[i]->m_xmf4x4World);
+		//m_ppObjects[i]->UpdateCollision();
+		//m_ppObjects[i]->CalculateBoundingBox();
+	}
 }
 
 void CObjectsShader::CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
