@@ -731,6 +731,7 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 			pObject->Rotate(&xmf4Rotation);
 			pObject->Rotate(90.0f, 0.0f, 0.0f);
 			pObject->Rotate(0.0f, 180.0f, 0.0f);
+			pObject->SetIsRotate(true);
 
 			m_ppObjects[i++] = pObject;
 		}
