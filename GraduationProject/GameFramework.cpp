@@ -601,14 +601,9 @@ void CGameFramework::AnimateObjects()
 
 void CGameFramework::WaitForGpuComplete()
 {
-	// 원래 후치로 되어있었는데 전치로 변경함
-	// CPU 펜스의 값을 증가한다.
 	UINT64 nFenceValue = ++m_nFenceValues[m_nSwapChainBufferIndex];
-	// GPU가 펜스의 값을 설정하는 명령을 명령 큐에 추가한다. 	
 	HRESULT hResult = m_pd3dCommandQueue->Signal(m_pd3dFence, nFenceValue);
 
-	/*펜스의 현재 값이 설정한 값보다 작으면
-	펜스의 현재 값이 설정한 값이 될 때까지 기다린다.*/
 	if (m_pd3dFence->GetCompletedValue() < nFenceValue)
 	{
 		hResult = m_pd3dFence->SetEventOnCompletion(nFenceValue, m_hFenceEvent);
@@ -704,10 +699,6 @@ void CGameFramework::FrameAdvance()
 	m_pdxgiSwapChain->Present(0, 0);
 #endif
 #endif
-
-	/*현재의 프레임 레이트를 문자열로 가져와서 주 윈도우의 타이틀로 출력한다. m_pszBuffer 문자열이
-	"LapProject ("으로 초기화되었으므로 (m_pszFrameRate+12)에서부터 프레임 레이트를 문자열로 출력
-	하여 “ FPS)” 문자열과 합친다.*/
 
 	MoveToNextFrame();
 
