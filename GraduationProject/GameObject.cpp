@@ -822,20 +822,22 @@ void CGameObject::MakeCollider(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLi
 
 void CGameObject::UpdateCollision()
 {
-	for (CCollision* col : collisions)
+	for (int i = 0; i < collisions.size(); ++i)
 	{
-		BOUNDING_STATE cur_state = col->GetBoundingState();
+		BOUNDING_STATE cur_state = collisions[i]->GetBoundingState();
+		BoundingBox BB;
 		switch (cur_state)
 		{
 		case BOUNDING_STATE::BODY:
-			m_xmBoundingBox = col->GetBoundingBox();
+			BB = collisions[i]->GetBoundingBox();
+			BB.Transform(m_xmBoundingBox, XMLoadFloat4x4(&collisions[i]->m_xmf4x4World));
 			break;
 		case BOUNDING_STATE::SPHERE:
-			m_xmBoundingSphere = col->GetBoundingSphere();
+			//collisions[i]->CalculateBoundingSphere();
+			//m_xmBoundingSphere = collisions[i]->GetBoundingSphere();
 			break;
 		}
 		m_bHaveBound = true;
-
 	}
 
 }

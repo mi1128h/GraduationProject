@@ -90,13 +90,8 @@ void CBBCollision::SetBB(DirectX::BoundingBox& BB)
 void CBBCollision::UpdateBoundings(XMFLOAT4X4 xmf4x4World)
 {
 	CCollision::UpdateBoundings(xmf4x4World);
-	CalculateBoundingBox();
 }
 
-void CBBCollision::CalculateBoundingBox()
-{
-	m_xmCollBoundingBox.Transform(m_xmCollBoundingBox, XMLoadFloat4x4(&m_xmf4x4World));
-}
 ////////////////////////////////
 
 CSphereCollision::CSphereCollision(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, float fradius)
@@ -136,10 +131,4 @@ void CSphereCollision::SetCollisionMaterial(ID3D12Device* pd3dDevice, ID3D12Root
 void CSphereCollision::UpdateBoundings(XMFLOAT4X4 xmf4x4World)
 {
 	CCollision::UpdateBoundings(xmf4x4World);
-	CalculateBoundingSphere();
-}
-
-void CSphereCollision::CalculateBoundingSphere()
-{
-	m_xmCollBoundingSphere.Transform(m_xmCollBoundingSphere, XMLoadFloat4x4(&m_xmf4x4World));
 }
