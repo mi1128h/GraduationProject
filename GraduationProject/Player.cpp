@@ -146,19 +146,8 @@ void CPlayer::Rotate(float x, float y, float z)
 
 void CPlayer::Update(float fTimeElapsed)
 {
-	m_xmf3Velocity = Vector3::Add(m_xmf3Velocity, m_xmf3Gravity);
-	float fLength = sqrtf(m_xmf3Velocity.x * m_xmf3Velocity.x + m_xmf3Velocity.z * m_xmf3Velocity.z);
-	float fMaxVelocityXZ = m_fMaxVelocityXZ;
-	if (fLength > m_fMaxVelocityXZ)
-	{
-		m_xmf3Velocity.x *= (fMaxVelocityXZ / fLength);
-		m_xmf3Velocity.z *= (fMaxVelocityXZ / fLength);
-	}
-	float fMaxVelocityY = m_fMaxVelocityY;
-	fLength = sqrtf(m_xmf3Velocity.y * m_xmf3Velocity.y);
-	if (fLength > m_fMaxVelocityY) m_xmf3Velocity.y *= (fMaxVelocityY / fLength);
-
-	XMFLOAT3 xmf3Velocity = Vector3::ScalarProduct(m_xmf3Velocity, fTimeElapsed, false);
+	float fLength = SetUpdateVelocity(m_xmf3Velocity);
+	XMFLOAT3 xmf3Velocity = CalculateVelocity(fLength, fTimeElapsed, m_xmf3Velocity);
 	Move(xmf3Velocity, false);
 
 	if (m_pPlayerUpdatedContext) OnPlayerUpdateCallback(fTimeElapsed);
@@ -173,6 +162,29 @@ void CPlayer::Update(float fTimeElapsed)
 	float fDeceleration = (m_fFriction * fTimeElapsed);
 	if (fDeceleration > fLength) fDeceleration = fLength;
 	m_xmf3Velocity = Vector3::Add(m_xmf3Velocity, Vector3::ScalarProduct(m_xmf3Velocity,-fDeceleration, true));
+}
+
+float CPlayer::SetUpdateVelocity(XMFLOAT3& velocity)
+{
+	velocity = Vector3::Add(velocity, m_xmf3Gravity);
+	float fLength = sqrtf(velocity.x * velocity.x + velocity.z * velocity.z);
+	return fLength;
+}
+
+XMFLOAT3 CPlayer::CalculateVelocity(float fLength, float fTimeElapsed, XMFLOAT3& velocity)
+{
+	float fMaxVelocityXZ = m_fMaxVelocityXZ;
+	if (fLength > m_fMaxVelocityXZ)
+	{
+		velocity.x *= (fMaxVelocityXZ / fLength);
+		velocity.z *= (fMaxVelocityXZ / fLength);
+	}
+	float fMaxVelocityY = m_fMaxVelocityY;
+	fLength = sqrtf(velocity.y * velocity.y);
+	if (fLength > m_fMaxVelocityY) velocity.y *= (fMaxVelocityY / fLength);
+
+	XMFLOAT3 xmf3Velocity = Vector3::ScalarProduct(velocity, fTimeElapsed, false);
+	return (xmf3Velocity);
 }
 
 CCamera* CPlayer::OnChangeCamera(DWORD nNewCameraMode, DWORD nCurrentCameraMode)
