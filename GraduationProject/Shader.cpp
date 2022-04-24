@@ -645,9 +645,7 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 
 	// barricade
 	CLoadedModelInfo* pCover1Model = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/Barricade_01.bin", NULL);
-	pCover1Model->m_pModelRootObject->LoadFromCollision(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/Bounding/Barricade_01.txt");
 	CLoadedModelInfo* pCover2Model = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/Barricade_02.bin", NULL);
-	pCover2Model->m_pModelRootObject->LoadFromCollision(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/Bounding/Barricade_02.txt");
 	CTexture* pCoverTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
 	pCoverTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Model/Texture/Wooden_Barricades_AlbedoTransparency.dds", 0);
 	CScene::CreateShaderResourceViews(pd3dDevice, pCoverTexture, Signature::Graphics::model_diffuse, true);
@@ -749,6 +747,7 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 			pObject->SetScale(sx, sy, sz);
 			XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
 			pObject->Rotate(&xmf4Rotation);
+			pObject->LoadFromCollision(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/Bounding/Barricade_01.txt");
 
 			//pObject->SetPoints(pObject->GetPosition());
 			//pObject->SetMovingDirection(XMFLOAT3(0.0f, 0.0f, 1.0f));
@@ -773,6 +772,7 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 			pObject->SetScale(sx, sy, sz);
 			XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
 			pObject->Rotate(&xmf4Rotation);
+			pObject->LoadFromCollision(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/Bounding/Barricade_02.txt");
 
 			//pObject->SetPoints(pObject->GetPosition());
 			//pObject->SetMovingDirection(XMFLOAT3(0.0f, 0.0f, 1.0f));

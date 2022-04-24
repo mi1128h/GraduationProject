@@ -935,8 +935,8 @@ CGameObject* CGameObject::LoadFrameHierarchyFromFile(ID3D12Device* pd3dDevice, I
 			CModelMesh* pMesh = new CModelMesh(pd3dDevice, pd3dCommandList);
 			pMesh->LoadMeshFromFile(pd3dDevice, pd3dCommandList, pInFile);
 
-			pGameObject->m_xmBoundingBox = pMesh->m_xmBoundingBox;
-			pGameObject->MakeCollider(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature);
+			//pGameObject->m_xmBoundingBox = pMesh->m_xmBoundingBox;
+			//pGameObject->MakeCollider(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature);
 
 			pGameObject->SetMesh(pMesh);
 
