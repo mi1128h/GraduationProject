@@ -210,6 +210,7 @@ public:
 private:
 	BoundingBox	m_xmBoundingBox;
 	BoundingSphere m_xmBoundingSphere;
+	bool m_bHaveBound = false;
 
 public:
 	void SetMesh(CMesh* pMesh);
