@@ -72,7 +72,7 @@ CBBCollision::~CBBCollision()
 void CBBCollision::SetBBMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
 {
 	XMFLOAT3 xmf3Depth;
-	XMStoreFloat3(&xmf3Depth, XMVectorScale(XMLoadFloat3(&m_xmBoundingBox.Extents), 2.0f));
+	XMStoreFloat3(&xmf3Depth, XMVectorScale(XMLoadFloat3(&m_xmCollBoundingBox.Extents), 2.0f));
 	CCubeMeshDiffused* DebugBox = new CCubeMeshDiffused(pd3dDevice, pd3dCommandList, xmf3Depth.x, xmf3Depth.y, xmf3Depth.z);
 	SetMesh(DebugBox);
 }
@@ -82,15 +82,15 @@ void CBBCollision::SetBB(DirectX::BoundingBox& BB)
 	if (state == BOUNDING_STATE::HIERACY)
 	{
 		XMFLOAT3 center = XMFLOAT3(0.0f, 0.0f, 0.0f);
-		XMStoreFloat3(&m_xmBoundingBox.Center, XMLoadFloat3(&center));
+		XMStoreFloat3(&m_xmCollBoundingBox.Center, XMLoadFloat3(&center));
 	}
 	else
 	{
-		XMStoreFloat3(&m_xmBoundingBox.Center, XMLoadFloat3(&BB.Center));
+		XMStoreFloat3(&m_xmCollBoundingBox.Center, XMLoadFloat3(&BB.Center));
 	}
-	SetPosition(m_xmBoundingBox.Center);
+	SetPosition(m_xmCollBoundingBox.Center);
 	UpdateTransform(nullptr);
-	XMStoreFloat3(&m_xmBoundingBox.Extents, XMLoadFloat3(&BB.Extents));
+	XMStoreFloat3(&m_xmCollBoundingBox.Extents, XMLoadFloat3(&BB.Extents));
 }
 
 void CBBCollision::UpdateBoundings(XMFLOAT4X4 xmf4x4World)
@@ -101,7 +101,7 @@ void CBBCollision::UpdateBoundings(XMFLOAT4X4 xmf4x4World)
 
 void CBBCollision::CalculateBoundingBox()
 {
-	m_xmBoundingBox.Transform(m_xmBoundingBox, XMLoadFloat4x4(&m_xmf4x4World));
+	m_xmCollBoundingBox.Transform(m_xmCollBoundingBox, XMLoadFloat4x4(&m_xmf4x4World));
 }
 ////////////////////////////////
 
@@ -119,8 +119,8 @@ CSphereCollision::CSphereCollision(ID3D12Device* pd3dDevice, ID3D12GraphicsComma
 
 void CSphereCollision::SetBoundingSphere(DirectX::XMFLOAT3& center, float fradius)
 {
-	XMStoreFloat3(&m_xmBoundingSphere.Center, XMLoadFloat3(&center));
-	m_xmBoundingSphere.Radius = fradius;
+	XMStoreFloat3(&m_xmCollBoundingSphere.Center, XMLoadFloat3(&center));
+	m_xmCollBoundingSphere.Radius = fradius;
 }
 
 CSphereCollision::~CSphereCollision()
@@ -147,5 +147,5 @@ void CSphereCollision::UpdateBoundings(XMFLOAT4X4 xmf4x4World)
 
 void CSphereCollision::CalculateBoundingSphere()
 {
-	m_xmBoundingSphere.Transform(m_xmBoundingSphere, XMLoadFloat4x4(&m_xmf4x4World));
+	m_xmCollBoundingSphere.Transform(m_xmCollBoundingSphere, XMLoadFloat4x4(&m_xmf4x4World));
 }

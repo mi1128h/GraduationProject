@@ -53,9 +53,10 @@ public:
 	void SetBBMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList);
 	void SetBB(DirectX::BoundingBox& BB);
 	virtual void UpdateBoundings(XMFLOAT4X4 pxmf4x4World);
-	virtual void CalculateBoundingBox();
+	virtual void CalculateBoundingBox();	
+	virtual BoundingBox GetBoundingBox() { return m_xmCollBoundingBox; }
 private:
-	BoundingBox m_xmBoundingBox;
+	BoundingBox m_xmCollBoundingBox;
 };
 
 /////////////////////////////////
@@ -69,6 +70,7 @@ public:
 	virtual void CalculateBoundingSphere();
 	virtual void SetCollisionMaterial(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3dGraphicsRootSignature, ID3D12GraphicsCommandList* pd3dCommandList);
 	void SetBoundingSphere(DirectX::XMFLOAT3& center, float fradius);
+	virtual BoundingSphere GetBoundingSphere() { return m_xmCollBoundingSphere; }
 private:
-	BoundingSphere m_xmBoundingSphere;
+	BoundingSphere m_xmCollBoundingSphere;
 };
