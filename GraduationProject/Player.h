@@ -86,7 +86,7 @@ public:
 	void SetCamera(CCamera* pCamera) { m_pCamera = pCamera; }
 
 	//플레이어를 이동하는 함수이다. 
-	void Move(ULONG nDirection, float fDistance, bool bVelocity = false);
+	XMFLOAT3 SetMoveShift(ULONG nDirection, float fDistance);
 	void Move(const XMFLOAT3& xmf3Shift, bool bVelocity = false);
 	void Move(float fxOffset = 0.0f, float fyOffset = 0.0f, float fzOffset = 0.0f);
 	//플레이어를 회전하는 함수이다.

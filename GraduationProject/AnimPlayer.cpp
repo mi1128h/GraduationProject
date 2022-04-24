@@ -133,7 +133,7 @@ void CAnimPlayer::Update(float fTimeElapsed)
 
 void CAnimPlayer::Move(DWORD dwDirection, float fDistance, bool bUpdateVelocity)
 {
-	CPlayer::Move(dwDirection, fDistance, bUpdateVelocity);
+	CPlayer::SetMoveShift(dwDirection, fDistance);
 }
 
 bool CAnimPlayer::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
