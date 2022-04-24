@@ -147,7 +147,7 @@ public:
 	virtual CGameObject** GetObjects() { return(m_ppObjects); }
 	virtual int GetObjectsNum() { return(m_nObjects); }
 
-	BoundingBox CalculateBoundingBox();
+	void CalculateBoundingBox();
 
 protected:
 	CGameObject** m_ppObjects = NULL;
