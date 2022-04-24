@@ -289,6 +289,7 @@ public:
 	BoundingSphere GetBoundingSphere() { return m_xmBoundingSphere; }
 	void UpdateCollision();
 	void CalculateBoundingBox();
+	void SetBoundingScales(float x, float y, float z);
 };
 
 class CRotatingObject : public CGameObject

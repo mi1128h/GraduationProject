@@ -852,6 +852,20 @@ void CGameObject::CalculateBoundingBox()
 	if (m_pSibling) BoundingBox::CreateMerged(m_xmBoundingBox, m_xmBoundingBox, m_pSibling->GetBoundingBox());
 }
 
+void CGameObject::SetBoundingScales(float x, float y, float z)
+{
+	for (CCollision* col : collisions)
+	{
+		BOUNDING_STATE cur_state = col->GetBoundingState();
+		if (cur_state == BOUNDING_STATE::SPHERE) continue;
+
+		col->SetBBScale(x, y, z);
+
+	}
+	if (m_pSibling) m_pSibling->SetBoundingScales(x,y,z);
+	if (m_pChild) m_pChild->SetBoundingScales(x,y,z);
+}
+
 void CGameObject::LoadFromCollision(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, string filename)
 {
 	ifstream boundingInfo(filename);

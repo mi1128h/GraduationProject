@@ -34,6 +34,7 @@ void CCollision::UpdateBoundings(XMFLOAT4X4 xmf4x4World)
 	else
 	{
 		m_xmf4x4ToParent = xmf4x4World;
+		if (isScale) SetScale(m_xmf3Scale.x, m_xmf3Scale.y, m_xmf3Scale.z);
 		UpdateTransform(nullptr);
 	}
 
@@ -43,6 +44,14 @@ void CCollision::UpdateBoundings(XMFLOAT4X4 xmf4x4World)
 void CCollision::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
 {
 	if (m_bDebug) CGameObject::Render(pd3dCommandList, pCamera);
+}
+
+void CCollision::SetBBScale(float x, float y, float z)
+{
+	isScale = true;
+	m_xmf3Scale.x = x;
+	m_xmf3Scale.y = y;
+	m_xmf3Scale.z = z;
 }
 
 ////////////////////////////////

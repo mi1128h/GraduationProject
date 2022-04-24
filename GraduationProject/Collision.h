@@ -30,12 +30,15 @@ public:
 	BOUNDING_STATE GetBoundingState() { return state; }
 	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
 	void ToggleDebug() { m_bDebug = !m_bDebug; }
+	void SetBBScale(float x, float y, float z);
 
 protected:
 	bool m_bDebug = true;
 	bool m_bRotate = false;
+	bool isScale = false;
 	CGameObject* FrameObject = nullptr;
 	BOUNDING_STATE state = BOUNDING_STATE::HIERACY;
+	XMFLOAT3 m_xmf3Scale;
 };
 
 ////////////////////////////////

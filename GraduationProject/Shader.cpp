@@ -803,6 +803,8 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 			XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
 			pObject->Rotate(&xmf4Rotation);
 			pObject->Rotate(90.0f, 0.0f, 0.0f);
+			pObject->SetIsRotate(true);
+			pObject->SetBoundingScales(0.7, 1.0, 0.7);
 
 			m_ppObjects[i++] = pObject;
 		}
@@ -824,6 +826,8 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 			XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
 			pObject->Rotate(&xmf4Rotation);
 			pObject->Rotate(90.0f, 0.0f, 0.0f);
+			pObject->SetIsRotate(true);
+			pObject->SetBoundingScales(0.6, 1.0, 0.9);
 
 			m_ppObjects[i++] = pObject;
 		}
@@ -845,6 +849,8 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 			XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
 			pObject->Rotate(&xmf4Rotation);
 			pObject->Rotate(90.0f, 0.0f, 0.0f);
+			pObject->SetIsRotate(true);
+			pObject->SetBoundingScales(0.6, 1.0, 0.6);
 
 			m_ppObjects[i++] = pObject;
 		}
@@ -866,6 +872,8 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 			XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
 			pObject->Rotate(&xmf4Rotation);
 			pObject->Rotate(90.0f, 0.0f, 0.0f);
+			pObject->SetIsRotate(true);
+			pObject->SetBoundingScales(0.65, 1.0, 0.65);
 
 			m_ppObjects[i++] = pObject;
 		}
