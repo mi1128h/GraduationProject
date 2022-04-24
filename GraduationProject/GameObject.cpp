@@ -843,6 +843,15 @@ void CGameObject::UpdateCollision()
 	if (m_pSibling) m_pSibling->UpdateCollision();
 }
 
+void CGameObject::CalculateBoundingBox()
+{
+	if (m_pChild) m_pChild->CalculateBoundingBox();
+	if (m_pSibling) m_pSibling->CalculateBoundingBox();
+
+	if (m_pChild) BoundingBox::CreateMerged(m_xmBoundingBox, m_xmBoundingBox, m_pChild->GetBoundingBox());
+	if (m_pSibling) BoundingBox::CreateMerged(m_xmBoundingBox, m_xmBoundingBox, m_pSibling->GetBoundingBox());
+}
+
 void CGameObject::LoadFromCollision(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, string filename)
 {
 	ifstream boundingInfo(filename);
