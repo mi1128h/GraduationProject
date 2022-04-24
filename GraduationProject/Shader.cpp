@@ -618,6 +618,9 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 		if (s.compare("Barricade_01:") == 0) {
 			m_nObjects += n;
 		}
+		if (s.compare("Barricade_02:") == 0) {
+			m_nObjects += n;
+		}
 		if (s.compare("house_1:") == 0) {
 			m_nObjects += n;
 		}
@@ -646,7 +649,8 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 	pCannonballObject->SetUpdatedContext(pTerrain);
 
 	// barricade
-	CLoadedModelInfo* pCoverModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/Barricade_01.bin", NULL);
+	CLoadedModelInfo* pCover1Model = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/Barricade_01.bin", NULL);
+	CLoadedModelInfo* pCover2Model = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/Barricade_02.bin", NULL);
 	CTexture* pCoverTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
 	pCoverTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Model/Texture/Wooden_Barricades_AlbedoTransparency.dds", 0);
 	CScene::CreateShaderResourceViews(pd3dDevice, pCoverTexture, Signature::Graphics::model_diffuse, true);
@@ -716,8 +720,8 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 
 			pObject->SetCannonball(pCannonballObject);
 
-			float transX = px * (xmf3TerrainScale.x + 40.0f);
-			float transZ = pz * (xmf3TerrainScale.z + 40.0f) + 20000.0f;
+			float transX = px * (xmf3TerrainScale.x + 30.0f);
+			float transZ = pz * (xmf3TerrainScale.z + 30.0f) + 20000.0f;
 			float terrainY = pTerrain->GetHeight(transX, transZ);
 
 			XMFLOAT3 position = XMFLOAT3(transX, terrainY + 80.0f * sy, transZ);
@@ -734,12 +738,36 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 			CCoverObject* pObject = NULL;
 
 			pObject = new CCoverObject;
-			pObject->SetChild(pCoverModel->m_pModelRootObject, true);
+			pObject->SetChild(pCover1Model->m_pModelRootObject, true);
 
 			pObject->m_pTexture = pCoverTexture;
 			
-			float transX = px * (xmf3TerrainScale.x + 40.0f);
-			float transZ = pz * (xmf3TerrainScale.z + 40.0f) + 20000.0f;
+			float transX = px * (xmf3TerrainScale.x + 30.0f);
+			float transZ = pz * (xmf3TerrainScale.z + 30.0f) + 20000.0f;
+			float terrainY = pTerrain->GetHeight(transX, transZ);
+
+			XMFLOAT3 position = XMFLOAT3(transX, terrainY + 20.0f * sy, transZ);
+			pObject->SetPosition(position);
+			pObject->SetScale(sx, sy, sz);
+			XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
+			pObject->Rotate(&xmf4Rotation);
+
+			//pObject->SetPoints(pObject->GetPosition());
+			//pObject->SetMovingDirection(XMFLOAT3(0.0f, 0.0f, 1.0f));
+			//pObject->SetMovingSpeed(200.0f);
+
+			m_ppObjects[i++] = pObject;
+		}
+		else if (name.compare("Barricade_02") == 0) {
+			CCoverObject* pObject = NULL;
+
+			pObject = new CCoverObject;
+			pObject->SetChild(pCover2Model->m_pModelRootObject, true);
+
+			pObject->m_pTexture = pCoverTexture;
+			
+			float transX = px * (xmf3TerrainScale.x + 30.0f);
+			float transZ = pz * (xmf3TerrainScale.z + 30.0f) + 20000.0f;
 			float terrainY = pTerrain->GetHeight(transX, transZ);
 
 			XMFLOAT3 position = XMFLOAT3(transX, terrainY + 20.0f * sy, transZ);
