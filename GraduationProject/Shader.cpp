@@ -607,11 +607,14 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 
 
 	ifstream metaInfo("../Assets/Image/Terrain/ObjectsMetaInfo.txt");
-	ifstream objectsInfo("../Assets/Image/Terrain/ObjectsInfo.txt");
+	ifstream objectsInfo("../Assets/Image/Terrain/ObjectsInfo_.txt");
 
 	string s;
 	int n;
 	while (metaInfo >> s >> n) {
+		if (s.compare("crystal:") == 0) {
+			m_nObjects += n;
+		}
 		if (s.compare("cannon:") == 0) {
 			m_nObjects += n;
 		}
@@ -633,10 +636,19 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 		if (s.compare("house_4:") == 0) {
 			m_nObjects += n;
 		}
+		if (s.compare("floor_segment:") == 0) {
+			m_nObjects += n;
+		}
 	}
 
 	m_ppObjects = new CGameObject * [m_nObjects];
 	int i = 0;
+
+	// crystal
+	CLoadedModelInfo* pCrystalModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/crystal_17_2.bin", NULL);
+	CTexture* pCrystalTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
+	pCrystalTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Model/Texture/crystal_17_2.dds", 0);
+	CScene::CreateShaderResourceViews(pd3dDevice, pCrystalTexture, Signature::Graphics::model_diffuse, true);
 
 	// cannon
 	CLoadedModelInfo* pCannonModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/cannon.bin", NULL);
@@ -679,6 +691,12 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 	float houseOffsetX_ = 1500.0f;
 	float houseOffsetZ = 20.0f;
 	float houseOffsetZ_ = 18000.0f;
+
+	// floor_segment
+	CLoadedModelInfo* pFloorModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/floor_segment.bin", NULL);
+	CTexture* pFloorTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
+	pFloorTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Model/Texture/floor_segment_updated.dds", 0);
+	CScene::CreateShaderResourceViews(pd3dDevice, pFloorTexture, Signature::Graphics::model_diffuse, true);
 
 	// 
 	string line;
@@ -780,6 +798,48 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 			//pObject->SetPoints(pObject->GetPosition());
 			//pObject->SetMovingDirection(XMFLOAT3(0.0f, 0.0f, 1.0f));
 			//pObject->SetMovingSpeed(200.0f);
+
+			m_ppObjects[i++] = pObject;
+		}
+		else if (name.compare("crystal") == 0) {
+			CGameObject* pObject = NULL;
+
+			pObject = new CGameObject;
+			pObject->SetChild(pCrystalModel->m_pModelRootObject, true);
+
+			pObject->m_pTexture = pCrystalTexture;
+
+			float transX = px * xmf3TerrainScale.x * 257.0f / 150.0f;
+			float transZ = pz * xmf3TerrainScale.z * 257.0f / 150.0f;
+			float terrainY = pTerrain->GetHeight(transX, transZ);
+
+			XMFLOAT3 position = XMFLOAT3(transX, terrainY + 1.0f * sy, transZ);
+			pObject->SetPosition(position);
+			pObject->SetScale(1,1,1);
+			XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
+			pObject->Rotate(&xmf4Rotation);
+			//pObject->Rotate(90.0f, 0.0f, 0.0f);
+
+			m_ppObjects[i++] = pObject;
+		}
+		else if (name.compare("floor_segment") == 0) {
+			CGameObject* pObject = NULL;
+
+			pObject = new CGameObject;
+			pObject->SetChild(pFloorModel->m_pModelRootObject, true);
+
+			pObject->m_pTexture = pFloorTexture;
+
+			float transX = px * xmf3TerrainScale.x * 257.0f / 150.0f;
+			float transZ = pz * xmf3TerrainScale.z * 257.0f / 150.0f;
+			float terrainY = pTerrain->GetHeight(transX, transZ);
+
+			XMFLOAT3 position = XMFLOAT3(transX, terrainY + 1.0f * sy, transZ);
+			pObject->SetPosition(position);
+			pObject->SetScale(30,30,30);
+			XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
+			pObject->Rotate(&xmf4Rotation);
+			//pObject->Rotate(90.0f, 0.0f, 0.0f);
 
 			m_ppObjects[i++] = pObject;
 		}
