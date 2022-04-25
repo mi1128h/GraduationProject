@@ -66,6 +66,7 @@ public:
 
 	bool CheckPlayerByObjectBB(XMFLOAT3 xmf3Shift);
 	bool CheckAABB(BoundingBox A, BoundingBox B, XMFLOAT3 xmf3Shift);
+	bool CheckPlayerInScene(XMFLOAT3 XMF3Shift);
 
 	void ReleaseUploadBuffers();
 

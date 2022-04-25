@@ -776,3 +776,14 @@ bool CScene::CheckAABB(BoundingBox A, BoundingBox B, XMFLOAT3 xmf3Shift)
 	if (aabb1.Contains(aabb2)) return true;
 	return false;
 }
+
+bool CScene::CheckPlayerInScene(XMFLOAT3 xmf3Shift)
+{
+	BoundingBox playerBB = m_pPlayer->GetBoundingBox();
+	for (CCollision* col : collisions)
+	{
+		if (CheckAABB(playerBB, col->GetBoundingBox(), xmf3Shift)) return true;
+	}
+
+	return false;
+}
