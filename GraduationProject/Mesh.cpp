@@ -208,34 +208,6 @@ void CMesh::LoadMeshFromFile(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 						}
 					}
 				}
-				else if (!strcmp(pstrToken, "<UVs>:"))
-				{
-					m_nVertices = ::ReadUnsignedIntegerFromFile(pInFile);
-					int num = ::ReadUnsignedIntegerFromFile(pInFile);
-
-					if (m_nVertices > 0)
-					{
-						for (int i = 0; i < num; ++i) {
-
-							::ReadStringFromFile(pInFile, pstrToken);
-
-							if (!strcmp(pstrToken, "<UV>:"))
-							{
-								int index = ::ReadIntegerFromFile(pInFile);
-								XMFLOAT2* pxmf2TextureCoords = new XMFLOAT2[m_nVertices];
-								nReads = (UINT)::fread(pxmf2TextureCoords, sizeof(XMFLOAT2), m_nVertices, pInFile);
-
-								if (i) continue;
-
-								m_pd3dTextureCoordBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList, pxmf2TextureCoords, sizeof(XMFLOAT2) * m_nVertices, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, &m_pd3dTextureCoordUploadBuffer);
-
-								m_d3dTextureCoordBufferView.BufferLocation = m_pd3dTextureCoordBuffer->GetGPUVirtualAddress();
-								m_d3dTextureCoordBufferView.StrideInBytes = sizeof(XMFLOAT2);
-								m_d3dTextureCoordBufferView.SizeInBytes = sizeof(XMFLOAT2) * m_nVertices;
-							}
-						}
-					}
-				}
 				else if (!strcmp(pstrToken, "</Polygons>"))
 				{
 					break;
