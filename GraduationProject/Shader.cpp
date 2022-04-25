@@ -720,8 +720,8 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 
 			pObject->SetCannonball(pCannonballObject);
 
-			float transX = px * (xmf3TerrainScale.x + 30.0f);
-			float transZ = pz * (xmf3TerrainScale.z + 30.0f) + 20000.0f;
+			float transX = px * xmf3TerrainScale.x * 257.0f / 150.0f;
+			float transZ = pz * xmf3TerrainScale.z * 257.0f / 150.0f;
 			float terrainY = pTerrain->GetHeight(transX, transZ);
 
 			XMFLOAT3 position = XMFLOAT3(transX, terrainY + 80.0f * sy, transZ);
@@ -743,8 +743,8 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 
 			pObject->m_pTexture = pCoverTexture;
 			
-			float transX = px * (xmf3TerrainScale.x + 30.0f);
-			float transZ = pz * (xmf3TerrainScale.z + 30.0f) + 20000.0f;
+			float transX = px * xmf3TerrainScale.x * 257.0f / 150.0f;
+			float transZ = pz * xmf3TerrainScale.z * 257.0f / 150.0f;
 			float terrainY = pTerrain->GetHeight(transX, transZ);
 
 			XMFLOAT3 position = XMFLOAT3(transX, terrainY + 20.0f * sy, transZ);
@@ -767,8 +767,8 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 
 			pObject->m_pTexture = pCoverTexture;
 			
-			float transX = px * (xmf3TerrainScale.x + 30.0f);
-			float transZ = pz * (xmf3TerrainScale.z + 30.0f) + 20000.0f;
+			float transX = px * xmf3TerrainScale.x * 257.0f / 150.0f;
+			float transZ = pz * xmf3TerrainScale.z * 257.0f / 150.0f;
 			float terrainY = pTerrain->GetHeight(transX, transZ);
 
 			XMFLOAT3 position = XMFLOAT3(transX, terrainY + 20.0f * sy, transZ);
@@ -791,8 +791,8 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 
 			pObject->m_pTexture = pHouse1Texture;
 
-			float transX = px * (xmf3TerrainScale.x + houseOffsetX) + houseOffsetX_;;
-			float transZ = pz * (xmf3TerrainScale.z + houseOffsetZ) + houseOffsetZ_;
+			float transX = px * xmf3TerrainScale.x * 257.0f / 150.0f;
+			float transZ = pz * xmf3TerrainScale.z * 257.0f / 150.0f;
 			float terrainY = pTerrain->GetHeight(transX, transZ);
 
 			XMFLOAT3 position = XMFLOAT3(transX, terrainY + 60.0f * sy, transZ);
@@ -812,8 +812,8 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 
 			pObject->m_pTexture = pHouse2Texture;
 
-			float transX = px * (xmf3TerrainScale.x + houseOffsetX) + houseOffsetX_;
-			float transZ = pz * (xmf3TerrainScale.z + houseOffsetZ) + houseOffsetZ_;
+			float transX = px * xmf3TerrainScale.x * 257.0f / 150.0f;
+			float transZ = pz * xmf3TerrainScale.z * 257.0f / 150.0f;
 			float terrainY = pTerrain->GetHeight(transX, transZ);
 
 			XMFLOAT3 position = XMFLOAT3(transX, terrainY + 66.0f * sy, transZ);
@@ -833,8 +833,8 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 
 			pObject->m_pTexture = pHouse3Texture;
 
-			float transX = px * (xmf3TerrainScale.x + houseOffsetX) + houseOffsetX_;;
-			float transZ = pz * (xmf3TerrainScale.z + houseOffsetZ) + houseOffsetZ_;
+			float transX = px * xmf3TerrainScale.x * 257.0f / 150.0f;
+			float transZ = pz * xmf3TerrainScale.z * 257.0f / 150.0f;
 			float terrainY = pTerrain->GetHeight(transX, transZ);
 
 			XMFLOAT3 position = XMFLOAT3(transX, terrainY + 90.0f * sy, transZ);
@@ -854,8 +854,8 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 
 			pObject->m_pTexture = pHouse4Texture;
 
-			float transX = px * (xmf3TerrainScale.x + houseOffsetX) + houseOffsetX_;;
-			float transZ = pz * (xmf3TerrainScale.z + houseOffsetZ) + houseOffsetZ_;
+			float transX = px * xmf3TerrainScale.x * 257.0f / 150.0f;
+			float transZ = pz * xmf3TerrainScale.z * 257.0f / 150.0f;
 			float terrainY = pTerrain->GetHeight(transX, transZ);
 
 			XMFLOAT3 position = XMFLOAT3(transX, terrainY + 60.0f * sy, transZ);
