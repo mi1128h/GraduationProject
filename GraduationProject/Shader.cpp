@@ -607,7 +607,7 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 
 
 	ifstream metaInfo("../Assets/Image/Terrain/ObjectsMetaInfo.txt");
-	ifstream objectsInfo("../Assets/Image/Terrain/ObjectsInfo_.txt");
+	ifstream objectsInfo("../Assets/Image/Terrain/ObjectsInfo.txt");
 
 	string s;
 	int n;
@@ -1194,9 +1194,6 @@ void CCannonObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSign
 	CScene::CreateShaderResourceViews(pd3dDevice, pModelTexture, Signature::Graphics::model_diffuse, true);
 	pCannonObject->m_pTexture = pModelTexture;
 	//pCannonObject->SetModelTexture(pModelTexture);
-	CGameObject* pCannonL = pCannonObject->FindFrame("Cube_001");
-	if (pCannonL) pCannonL->m_xmf4x4ToParent = Matrix4x4::Multiply(XMMatrixRotationX(120.0f), pCannonL->m_xmf4x4ToParent);
-	pCannonObject->SetIsRotate(true);
 
 #ifndef _WITH_BATCH_MATERIAL
 #endif
@@ -1721,7 +1718,7 @@ void CSkinnedAnimationObjectsWireFrameShader::ReleaseObjects()
 	}
 }
 
-void CSkinnedAnimationObjectsWireFrameShader::AnimateObjects(float fTimeElapsed)
+void CSkinnedAnimationObjectsWireFrameShader::AnimateObjects(float fTimeElapsed, CCamera* pCamera)
 {
 	m_fElapsedTime = fTimeElapsed;
 }
@@ -1746,3 +1743,60 @@ void CSkinnedAnimationObjectsWireFrameShader::Render(ID3D12GraphicsCommandList* 
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+CMonsterObjectsShader::CMonsterObjectsShader()
+{
+}
+
+CMonsterObjectsShader::~CMonsterObjectsShader()
+{
+
+}
+
+void CMonsterObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3dGraphicsRootSignature, ID3D12GraphicsCommandList* pd3dCommandList, void* pContext)
+{
+	CHeightMapTerrain* pTerrain = (CHeightMapTerrain*)pContext;
+
+	float fTerrainWidth = pTerrain->GetWidth();
+	float fTerrainLength = pTerrain->GetLength();
+
+	m_nObjects = 1;
+	
+	CLoadedModelInfo* pClownModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/WhiteClown.bin", NULL);
+	
+	CTexture* pModelTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
+	pModelTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Model/Texture/whiteclown_diffuse.dds", 0);
+	CScene::CreateShaderResourceViews(pd3dDevice, pModelTexture, Signature::Graphics::animation_diffuse, true);
+
+	m_ppObjects = new CGameObject * [m_nObjects];
+
+
+	//
+	CMonsterObject* pMonsterObject = NULL;
+
+	pMonsterObject = new CMonsterObject;
+	pMonsterObject->SetUpdatedContext(pTerrain);
+	pMonsterObject->SetChild(pClownModel->m_pModelRootObject, true);
+	pMonsterObject->m_pTexture = pModelTexture;
+
+	pMonsterObject->SetPosition(XMFLOAT3(310.0f, pTerrain->GetHeight(310.0f, 595.0f), 595.0f));
+	pMonsterObject->SetScale(XMFLOAT3(0.2f, 0.2f, 0.2f));
+
+	pMonsterObject->m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, CMonsterObject::track_name::length, pClownModel);
+	pMonsterObject->m_pSkinnedAnimationController->SetCurrentTrackNum(CMonsterObject::track_name::idle);
+	
+	//pMonsterObject->m_pSkinnedAnimationController->SetAnimationTracks();
+	for (int i = 0; i < pMonsterObject->m_pSkinnedAnimationController->m_nAnimationTracks; ++i)
+	{
+		pMonsterObject->m_pSkinnedAnimationController->SetTrackAnimationSet(i, i * 2 + 1);
+		bool bEnable = (i == CMonsterObject::track_name::idle) ? true : false;
+		pMonsterObject->m_pSkinnedAnimationController->SetTrackEnable(i, bEnable);
+	}
+
+	bool bAnimType[CMonsterObject::track_name::length] = { false, false, false, true, true };
+	pMonsterObject->m_pSkinnedAnimationController->SetAnimationTypes(bAnimType);
+
+	m_ppObjects[0] = pMonsterObject;
+
+	if (pClownModel) delete pClownModel;
+}

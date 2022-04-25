@@ -456,3 +456,44 @@ public:
 	CAngrybotObject(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, int nAnimationTracks);
 	virtual ~CAngrybotObject();
 };
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+class CMonsterObject : public CGameObject
+{
+public:
+	enum track_name
+	{
+		attack,
+		death,
+		dying,
+		idle,
+		walk,
+		length
+	};
+
+
+	CMonsterObject();
+	virtual ~CMonsterObject();
+
+private:
+	LPVOID m_pUpdatedContext;
+
+	CGameObject* m_pTargetObject = NULL;
+	float m_DetectionRange;
+
+	float m_fHp;
+	float m_fDamage;
+
+public:
+	void SetUpdatedContext(LPVOID pContext) { m_pUpdatedContext = pContext; }
+
+	void FindTarget();
+	void SetDetectionRange(float range) { m_DetectionRange = range; }
+	void SetHp(float hp) { m_fHp = hp; }
+	void SetDamage(float damage) { m_fDamage = damage; }
+
+	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
+
+	virtual bool OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam);
+};

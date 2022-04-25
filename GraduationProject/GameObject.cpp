@@ -1421,15 +1421,67 @@ void CCannonObject::FireCannonBall(XMFLOAT3 Origin, XMFLOAT3 Velocity)
 	}
 }
 
-// --- 이번주 내로 끝내야할거 ----
-// 바운딩박스 업데이트
-// 충돌검사
-//		오브젝트 - 플레이어
-//		몬스터 - 플레이어
-//			: 공격을 휘두를 경우에만 Attack 충돌검사
-//			: 특정 시간에만 충돌검사
-//		씬 - 플레이어
-//			: 화면 밖에 벗어나지 못하도록
-//		플레이어 상호작용
-//		플레이어 컨트롤
-//		플레이어 이동
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+CMonsterObject::CMonsterObject()
+{
+}
+
+CMonsterObject::~CMonsterObject()
+{
+}
+
+void CMonsterObject::FindTarget()
+{
+	// 현재 위치 중심 m_DetectionRange 거리만큼 탐색
+	// 플레이어가 있다면 m_pTargetObject = 플레이어
+	// idea: 어그로 아이템 추가
+	//		-> 플레이어가 어그로 아이템 사용 시 어그로 아이템을 Target으로 지정
+}
+
+void CMonsterObject::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
+{
+	XMFLOAT4X4 xmf4x4TempWolrd;
+	xmf4x4TempWolrd = m_xmf4x4ToParent = m_xmf4x4World;
+	m_xmf4x4ToParent = Matrix4x4::Multiply(XMMatrixScaling(m_xmf3Scale.x, m_xmf3Scale.y, m_xmf3Scale.z), m_xmf4x4ToParent);
+	UpdateTransform(NULL);
+
+	CGameObject::Render(pd3dCommandList, pCamera);
+	
+	m_xmf4x4World = m_xmf4x4ToParent = xmf4x4TempWolrd;
+}
+
+bool CMonsterObject::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
+{
+	switch (nMessageID)
+	{
+	case WM_KEYDOWN:
+		switch (wParam)
+		{
+		case '6':
+			m_pSkinnedAnimationController->SwitchAnimationState(track_name::attack);
+			break;
+
+		case '7':
+			m_pSkinnedAnimationController->SwitchAnimationState(track_name::death);
+			break;
+
+		case '8':
+			m_pSkinnedAnimationController->SwitchAnimationState(track_name::dying);
+			break;
+
+		case '9':
+			m_pSkinnedAnimationController->SwitchAnimationState(track_name::idle);
+			break;
+
+		case '0':
+			m_pSkinnedAnimationController->SwitchAnimationState(track_name::walk);
+			break;
+
+		default:
+			break;
+		}
+		break;
+	}
+	return(false);
+}
