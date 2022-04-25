@@ -435,7 +435,8 @@ VS_WIREFRAME_OUTPUT VSModelTextured(VS_WIREFRAME_INPUT input)
 
 PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSModelTextured(VS_WIREFRAME_OUTPUT input) : SV_TARGET
 {
-	float4 cColor = gtxtModelDiffuseTexture.Sample(gSamplerState, input.uv);
+	float2 uv = (1.0f - input.uv.x,input.uv.y);
+	float4 cColor = gtxtModelDiffuseTexture.Sample(gSamplerState, uv);
 
 	PS_MULTIPLE_RENDER_TARGETS_OUTPUT output;
 
