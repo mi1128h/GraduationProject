@@ -1,6 +1,7 @@
 ﻿#include "stdafx.h"
 #include "Scene.h"
 #include "Player.h"
+#include "Collision.h"
 
 ID3D12DescriptorHeap* CScene::m_pd3dCbvSrvUavDescriptorHeap = NULL;
 
@@ -369,6 +370,11 @@ void CScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* p
 	pObjectsShader->BuildObjects(pd3dDevice, m_pd3dGraphicsRootSignature, pd3dCommandList, m_pTerrain);
 	m_ppShaders[0] = pObjectsShader;
 
+
+	//////
+	
+	BuildCollisions(pd3dDevice, pd3dCommandList);
+
 	////////
 
 	m_nGameObjects = 1;
@@ -383,6 +389,27 @@ void CScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* p
 	if (pAngrybotModel) delete pAngrybotModel;
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
+}
+
+void CScene::BuildCollisions(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
+{
+	ifstream boundingInfo("../Assets/Model/Bounding/scene.txt");
+	string s;
+	XMFLOAT3 center, extends;
+	while (boundingInfo >> s)
+	{
+		if (s.compare("<Box>:") == 0)
+		{
+			boundingInfo >> center.x >> center.y >> center.z;
+			boundingInfo >> extends.x >> extends.y >> extends.z;
+			BoundingBox BB;
+			XMStoreFloat3(&BB.Center, XMLoadFloat3(&center));
+			XMStoreFloat3(&BB.Extents, XMLoadFloat3(&extends));
+
+			CCollision* cols = new CBBCollision(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, BB,BOUNDING_STATE::BODY);
+			collisions.emplace_back(cols);
+		}
+	}
 }
 
 void CScene::ReleaseObjects()
@@ -710,6 +737,9 @@ void CScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera
 	{
 		m_ppShaders[i]->Render(pd3dCommandList, pCamera);
 	}
+
+	for (CCollision* col : collisions)
+		col->Render(pd3dCommandList, pCamera);
 }
 
 bool CScene::CheckPlayerByObjectBB(XMFLOAT3 xmf3Shift)

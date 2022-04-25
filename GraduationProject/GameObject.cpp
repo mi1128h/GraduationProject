@@ -1427,10 +1427,9 @@ void CCannonObject::FireCannonBall(XMFLOAT3 Origin, XMFLOAT3 Velocity)
 	}
 }
 
+
+
 // --- 이번주 내로 끝내야할거 ----
-// 바운딩박스 업데이트
-// 충돌검사
-//		오브젝트 - 플레이어
 //		몬스터 - 플레이어
 //			: 공격을 휘두를 경우에만 Attack 충돌검사
 //			: 특정 시간에만 충돌검사
