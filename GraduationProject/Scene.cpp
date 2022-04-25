@@ -760,7 +760,7 @@ bool CScene::CheckPlayerByObjectBB(XMFLOAT3 xmf3Shift)
 	return true;
 }
 
-bool CScene::CheckAABB(BoundingBox A, BoundingBox B, XMFLOAT3 xmf3Shift)
+bool CScene::CheckAABB(BoundingBox A, BoundingBox B, XMFLOAT3 xmf3Shift, bool intersect)
 {
 	XMFLOAT3 min1 = Vector3::Add(Vector3::Subtract(A.Center, A.Extents),xmf3Shift);
 	XMFLOAT3 max1 = Vector3::Add(Vector3::Add(A.Center, A.Extents), xmf3Shift);
@@ -773,7 +773,14 @@ bool CScene::CheckAABB(BoundingBox A, BoundingBox B, XMFLOAT3 xmf3Shift)
 	BoundingBox aabb2;
 	BoundingBox::CreateFromPoints(aabb2, XMLoadFloat3(&min2), XMLoadFloat3(&max2));
 
-	if (aabb1.Contains(aabb2)) return true;
+	if (intersect)
+	{
+		if (aabb1.Intersects(aabb2)) return true;
+	}
+	else 
+	{
+		if (aabb1.Contains(aabb2)) return true;
+	}
 	return false;
 }
 
@@ -782,7 +789,7 @@ bool CScene::CheckPlayerInScene(XMFLOAT3 xmf3Shift)
 	BoundingBox playerBB = m_pPlayer->GetBoundingBox();
 	for (CCollision* col : collisions)
 	{
-		if (CheckAABB(playerBB, col->GetBoundingBox(), xmf3Shift)) return true;
+		if (CheckAABB(playerBB, col->GetBoundingBox(),xmf3Shift, true)) return true;
 	}
 
 	return false;

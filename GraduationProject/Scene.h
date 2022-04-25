@@ -65,7 +65,7 @@ public:
 	void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
 
 	bool CheckPlayerByObjectBB(XMFLOAT3 xmf3Shift);
-	bool CheckAABB(BoundingBox A, BoundingBox B, XMFLOAT3 xmf3Shift);
+	bool CheckAABB(BoundingBox A, BoundingBox B, XMFLOAT3 xmf3Shift, bool intersect = false);
 	bool CheckPlayerInScene(XMFLOAT3 XMF3Shift);
 
 	void ReleaseUploadBuffers();
