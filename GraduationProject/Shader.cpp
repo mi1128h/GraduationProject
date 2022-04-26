@@ -752,6 +752,7 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 			pObject->SetIsRotate(true);
 
 			m_ppObjects[i++] = pObject;
+			m_vCannonObjects.push_back(pObject);
 		}
 		else if (name.compare("Barricade_01") == 0) {
 			CCoverObject* pObject = NULL;
