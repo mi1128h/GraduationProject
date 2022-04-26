@@ -278,7 +278,8 @@ void CAnimationController::SetAnimationSetsType(int nAnimationSet, int nType)
 {
 	if (m_pAnimationSets == nullptr) return;
 
-	m_pAnimationSets->m_ppAnimationSets[nAnimationSet]->SetType(nType);
+	int index = m_pAnimationTracks[nAnimationSet].GetAnimationSet();
+	m_pAnimationSets->m_ppAnimationSets[index]->SetType(nType);
 }
 
 

@@ -143,6 +143,7 @@ public:
 
 public:
 	void SetAnimationSet(int nAnimationSet) { m_nAnimationSet = nAnimationSet; }
+	int GetAnimationSet() { return m_nAnimationSet; }
 
 	void SetEnable(bool bEnable) { m_bEnable = bEnable; }
 	void SetSpeed(float fSpeed) { m_fSpeed = fSpeed; }

@@ -186,7 +186,7 @@ bool CAnimPlayer::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM
 				case 'S':
 				case 'A':
 				case 'D':
-					//SwitchAnimationState(track_name::idle);
+					m_pSkinnedAnimationController->SwitchAnimationState(track_name::idle);
 					break;
 			}
 			break;
@@ -198,7 +198,7 @@ bool CAnimPlayer::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM
 
 void CAnimPlayer::SetAnimationTypes()
 {
-	bool bAnimType[track_name::length] = { true, false, true, true, true, true,true, false, false,false,false,false,false,false,false,true,false};
+	bool bAnimType[track_name::length] = { true, false, true, true, true, true,true,false, false,false,false,false,false,false,false,true,false};
 	m_pSkinnedAnimationController->SetAnimationTypes(bAnimType);
 }
 
