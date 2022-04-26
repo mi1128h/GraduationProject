@@ -7,6 +7,34 @@
 CCollisionManager::CCollisionManager(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature,
 	CGameObject* pGameObject, string& filename)
 {
+	ifstream boundingInfo(filename);
+	string s, frame;
+	XMFLOAT3 center, extends;
+	float radius;
+	while (boundingInfo >> s >> frame)
+	{
+		if (s.compare("<Sphere>:") == 0)
+		{
+			boundingInfo >> radius;
+			CGameObject* pBoneObject = pGameObject->FindFrame(frame.c_str());
+			CCollision* cols = new CSphereCollision(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, radius);
+			cols->SetFrameObject(pBoneObject);
+			collisions[BOUNDING_INFO::SPHERE] = cols;
+		}
+		if (s.compare("<Box>:") == 0)
+		{
+			boundingInfo >> center.x >> center.y >> center.z;
+			boundingInfo >> extends.x >> extends.y >> extends.z;
+			CGameObject* pBoneObject = pGameObject->FindFrame(frame.c_str());
+			BoundingBox BB;
+			XMStoreFloat3(&BB.Center, XMLoadFloat3(&center));
+			XMStoreFloat3(&BB.Extents, XMLoadFloat3(&extends));
+
+			CCollision* cols = new CBBCollision(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, BB);
+			cols->SetFrameObject(pBoneObject);
+			collisions[BOUNDING_INFO::BOX] = cols;
+		}
+	}
 }
 
 CCollisionManager::~CCollisionManager()

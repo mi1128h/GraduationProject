@@ -886,44 +886,6 @@ void CGameObject::SetBoundingScales(float x, float y, float z)
 	if (m_pChild) m_pChild->SetBoundingScales(x,y,z);
 }
 
-void CGameObject::LoadFromCollision(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, string filename)
-{
-	ifstream boundingInfo(filename);
-	string s, frame;
-	XMFLOAT3 center, extends;
-	float radius;
-	while (boundingInfo >> s >> frame)
-	{
-		if (s.compare("<Sphere>:") == 0) 
-		{
-			boundingInfo >> radius;
-			CGameObject* pBoneObject = FindFrame(frame.c_str());
-			CCollision* cols = new CSphereCollision(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, radius);
-			cols->SetFrameObject(pBoneObject);
-
-			cols->ToggleDebug();
-
-			collisions.emplace_back(cols);
-			m_bHaveBound = true;
-		}
-		if (s.compare("<Box>:") == 0)
-		{
-			boundingInfo >> center.x >> center.y >> center.z;
-			boundingInfo >> extends.x >> extends.y >> extends.z;
-			CGameObject* pBoneObject = FindFrame(frame.c_str());
-			BoundingBox BB;
-			XMStoreFloat3(&BB.Center, XMLoadFloat3(&center));
-			XMStoreFloat3(&BB.Extents, XMLoadFloat3(&extends));
-
-			CCollision* cols = new CBBCollision(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, 
-				BB, BOUNDING_STATE::BODY);
-			cols->SetFrameObject(pBoneObject);
-			collisions.emplace_back(cols);
-			m_bHaveBound = true;
-		}
-	}
-}
-
 CGameObject* CGameObject::LoadFrameHierarchyFromFile(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CGameObject* pParent, FILE* pInFile, CShader* pShader, int* pnSkinnedMeshes)
 {
 	char pstrToken[64] = { '\0' };

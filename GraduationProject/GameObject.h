@@ -224,6 +224,7 @@ public:
 
 	void SetChild(CGameObject* pChild, bool bReferenceUpdate = false);
 	void SetTag(char* tagName);
+	string GetTag() { return string(m_pstrTag); }
 
 	virtual void BuildMaterials(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList) { }
 
@@ -288,7 +289,6 @@ public:
 	static void PrintFrameInfo(CGameObject* pGameObject, CGameObject* pParent);
 	void MakeCollider(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature);
 	void SetIsRotate(bool bVal);
-	void LoadFromCollision(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, string filename);
 	virtual BoundingBox GetBoundingBox() { return m_xmBoundingBox; }
 	virtual BoundingSphere GetBoundingSphere() { return m_xmBoundingSphere; }
 	bool IsBoundingBox(int i);
