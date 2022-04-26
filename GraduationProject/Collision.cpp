@@ -31,7 +31,7 @@ void CCollisionManager::LoadFromFileBoundInfo(ID3D12Device* pd3dDevice, ID3D12Gr
 			CGameObject* pBoneObject = pGameObject->FindFrame(frame.c_str());
 			CCollision* cols = new CSphereCollision(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, radius);
 			cols->SetFrameObject(pBoneObject);
-			collisions[BOUNDING_INFO::SPHERE] = cols;
+			collisions[static_cast<int>(BOUNDING_INFO::SPHERE)] = cols;
 		}
 		if (s.compare("<Box>:") == 0)
 		{
@@ -44,15 +44,25 @@ void CCollisionManager::LoadFromFileBoundInfo(ID3D12Device* pd3dDevice, ID3D12Gr
 
 			CCollision* cols = new CBBCollision(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, BB);
 			cols->SetFrameObject(pBoneObject);
-			collisions[BOUNDING_INFO::BOX] = cols;
+			collisions[static_cast<int>(BOUNDING_INFO::BOX)] = cols;
 		}
 	}
+}
+
+void CCollisionManager::UpdateCollisions()
+{
+	for (CCollision* col : collisions)
+		col->UpdateBound(m_xmBoundingBox, m_xmBoundingSphere);
 }
 
 void CCollisionManager::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
 {
 	for (CCollision* col : collisions)
 	{
+		if (!col->GetDebug()) continue;
+
+		col->UpdateBoundTransform();
+		col->UpdateBound(m_xmBoundingBox, m_xmBoundingSphere);
 		col->Render(pd3dCommandList, pCamera);
 	}
 }
@@ -79,14 +89,12 @@ void CCollision::SetCollisionMaterial(ID3D12Device* pd3dDevice, ID3D12RootSignat
 	SetMaterial(0, pMaterial);
 }
 
-void CCollision::UpdateBoundings(XMFLOAT4X4 xmf4x4World)
+void CCollision::UpdateBoundTransform()
 {
 	if (FrameObject)
 	{
 		UpdateTransform(&FrameObject->m_xmf4x4World);
 	}
-
-	if (m_bRotate) Rotate(-90.0f, 0.0f, 0.0f);
 }
 
 void CCollision::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
@@ -99,6 +107,10 @@ void CCollision::SetBBScale(float x, float y, float z)
 	m_xmf3Scale.x = x;
 	m_xmf3Scale.y = y;
 	m_xmf3Scale.z = z;
+}
+
+void CCollision::UpdateBound(BoundingBox& BB, BoundingSphere& BS)
+{
 }
 
 ////////////////////////////////
@@ -132,9 +144,14 @@ void CBBCollision::SetBB(DirectX::BoundingBox& BB)
 	XMStoreFloat3(&m_xmCollBoundingBox.Extents, XMLoadFloat3(&BB.Extents));
 }
 
-void CBBCollision::UpdateBoundings(XMFLOAT4X4 xmf4x4World)
+void CBBCollision::UpdateBoundTransform()
 {
-	CCollision::UpdateBoundings(xmf4x4World);
+	CCollision::UpdateBoundTransform();
+}
+
+void CBBCollision::UpdateBound(BoundingBox& BB, BoundingSphere& BS)
+{
+	m_xmCollBoundingBox.Transform(BB, XMLoadFloat4x4(&m_xmf4x4World));
 }
 
 ////////////////////////////////
@@ -157,6 +174,11 @@ void CSphereCollision::SetBoundingSphere(DirectX::XMFLOAT3& center, float fradiu
 	m_xmCollBoundingSphere.Radius = fradius;
 }
 
+void CSphereCollision::UpdateBound(BoundingBox& BB, BoundingSphere& BS)
+{
+	m_xmCollBoundingSphere.Transform(BS, XMLoadFloat4x4(&m_xmf4x4World));
+}
+
 CSphereCollision::~CSphereCollision()
 {
 }
@@ -173,8 +195,8 @@ void CSphereCollision::SetCollisionMaterial(ID3D12Device* pd3dDevice, ID3D12Root
 	SetMaterial(0, pMaterial);
 }
 
-void CSphereCollision::UpdateBoundings(XMFLOAT4X4 xmf4x4World)
+void CSphereCollision::UpdateBoundTransform()
 {
-	CCollision::UpdateBoundings(xmf4x4World);
+	CCollision::UpdateBoundTransform();
 }
 

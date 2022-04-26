@@ -772,7 +772,7 @@ void CGameObject::RenderCollision(ID3D12GraphicsCommandList* pd3dCommandList, CC
 {
 	for (CCollision* col : collisions)
 	{
-		col->UpdateBoundings(m_xmf4x4World);
+		col->UpdateBoundTransform();
 		col->Render(pd3dCommandList, pCamera);
 	}
 	UpdateCollision();
