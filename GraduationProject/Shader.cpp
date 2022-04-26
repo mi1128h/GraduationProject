@@ -815,7 +815,7 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 
 			XMFLOAT3 position = XMFLOAT3(transX, terrainY + 1.0f * sy, transZ);
 			pObject->SetPosition(position);
-			pObject->SetScale(1,1,1);
+			pObject->SetScale(1, 1, 1);
 			XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
 			pObject->Rotate(&xmf4Rotation);
 			//pObject->Rotate(90.0f, 0.0f, 0.0f);
@@ -836,7 +836,7 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 
 			XMFLOAT3 position = XMFLOAT3(transX, terrainY + 1.0f * sy, transZ);
 			pObject->SetPosition(position);
-			pObject->SetScale(30,30,30);
+			pObject->SetScale(100, 100, 100);
 			XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
 			pObject->Rotate(&xmf4Rotation);
 			//pObject->Rotate(90.0f, 0.0f, 0.0f);
