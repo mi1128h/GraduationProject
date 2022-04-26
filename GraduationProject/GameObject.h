@@ -185,6 +185,7 @@ public:
 
 public:
 	char m_pstrFrameName[64];
+	char m_pstrTag[64];
 
 	bool m_bActive = true;
 
@@ -222,6 +223,7 @@ public:
 	void SetScale(XMFLOAT3& xmf3Scale) { m_xmf3Scale = xmf3Scale; }
 
 	void SetChild(CGameObject* pChild, bool bReferenceUpdate = false);
+	void SetTag(char* tagName);
 
 	virtual void BuildMaterials(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList) { }
 

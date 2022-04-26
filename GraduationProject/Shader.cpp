@@ -731,7 +731,7 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 			pObject->Rotate(90.0f, 0.0f, 0.0f);
 			pObject->Rotate(0.0f, 180.0f, 0.0f);
 			pObject->SetIsRotate(true);
-			pObject->LoadFromCollision(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/Bounding/cannon.txt");
+			pObject->SetTag("cannon");
 
 			m_ppObjects[i++] = pObject;
 		}
@@ -752,7 +752,7 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 			pObject->SetScale(sx, sy, sz);
 			XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
 			pObject->Rotate(&xmf4Rotation);
-			pObject->LoadFromCollision(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/Bounding/Barricade_01.txt");
+			pObject->SetTag("Barricade_01");
 
 			//pObject->SetPoints(pObject->GetPosition());
 			//pObject->SetMovingDirection(XMFLOAT3(0.0f, 0.0f, 1.0f));
@@ -777,7 +777,7 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 			pObject->SetScale(sx, sy, sz);
 			XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
 			pObject->Rotate(&xmf4Rotation);
-			pObject->LoadFromCollision(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/Bounding/Barricade_02.txt");
+			pObject->SetTag("Barricade_02");
 
 			//pObject->SetPoints(pObject->GetPosition());
 			//pObject->SetMovingDirection(XMFLOAT3(0.0f, 0.0f, 1.0f));
@@ -805,7 +805,7 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 			pObject->Rotate(90.0f, 0.0f, 0.0f);
 			pObject->SetIsRotate(true);
 			pObject->SetBoundingScales(0.7, 1.0, 0.7);
-			pObject->LoadFromCollision(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/Bounding/house01.txt");
+			pObject->SetTag("house_1");
 
 			m_ppObjects[i++] = pObject;
 		}
@@ -829,7 +829,7 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 			pObject->Rotate(90.0f, 0.0f, 0.0f);
 			pObject->SetIsRotate(true);
 			pObject->SetBoundingScales(0.6, 1.0, 0.9);
-			pObject->LoadFromCollision(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/Bounding/house02.txt");
+			pObject->SetTag("house_2");
 
 			m_ppObjects[i++] = pObject;
 		}
@@ -853,7 +853,7 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 			pObject->Rotate(90.0f, 0.0f, 0.0f);
 			pObject->SetIsRotate(true);
 			pObject->SetBoundingScales(0.6, 1.0, 0.6);
-			pObject->LoadFromCollision(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/Bounding/house03.txt");
+			pObject->SetTag("house_3");
 
 			m_ppObjects[i++] = pObject;
 		}
@@ -877,7 +877,7 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 			pObject->Rotate(90.0f, 0.0f, 0.0f);
 			pObject->SetIsRotate(true);
 			pObject->SetBoundingScales(0.65, 1.0, 0.65);
-			pObject->LoadFromCollision(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/Bounding/house04.txt");
+			pObject->SetTag("house_4");
 
 			m_ppObjects[i++] = pObject;
 		}

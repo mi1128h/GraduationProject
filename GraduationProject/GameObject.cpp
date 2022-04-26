@@ -488,6 +488,11 @@ void CGameObject::SetChild(CGameObject* pChild, bool bReferenceUpdate)
 	}
 }
 
+void CGameObject::SetTag(char* tagName)
+{
+	strcpy_s(m_pstrTag, tagName);
+}
+
 void CGameObject::SetPosition(float x, float y, float z)
 {
 	m_xmf4x4ToParent._41 = x;
