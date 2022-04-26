@@ -1327,30 +1327,3 @@ void CCannonObject::FireCannonBall(XMFLOAT3 Origin, XMFLOAT3 Velocity)
 		m_pCannonball->SetActive(true);
 	}
 }
-
-
-// --- 이번주 내로 끝내야할거 ----
-//		몬스터 - 플레이어
-//			: 공격을 휘두를 경우에만 Attack 충돌검사
-//			: 특정 시간에만 충돌검사
-//			 - sword index를 보유함
-//			 - 검이랑, 몬스터 BB 충돌검사 해야함
-//			 - if (IsBoundingBox()) BB = GetBoundingBoxPerIndex(sword_index);
-//			 - player -> UpdateCollision Override, if sword_index -> continue;
-// 
-//		CollisionManager
-//			m_xmBoundingSphere, m_xmBoundingBox 보유
-//			여기서 충돌 업데이트 전부 처리
-//			CGameObject has CCollision -> Scene에서 별개로 CCollision 가지고있다
-//			state는 Manager에서 관리한다
-//			
-//			 - 가능하면, 충돌검사를 GameObject로 빼내기
-//			 - PlayerBB를 인자로 받아서, 한번이라도 검사 성공하면 return true 하기
-//		플레이어 상호작용
-//			- 대포 handle 부분에 sphere collider 추가
-//			- 키 입력시, 충돌검사
-//			- contains -> Cube_12가 바라보는 방향으로 플레이어 회전
-//			- 플레이어 STATE 변경
-//			- 다시 키 입력시 , 해당 STATE 라면 원래대로 돌아오기
-//		플레이어 컨트롤
-//		플레이어 이동
