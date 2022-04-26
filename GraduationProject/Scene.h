@@ -2,6 +2,7 @@
 #include "Timer.h"
 #include "Shader.h"
 #include "Collision.h"
+#include "CollisionManager.h"
 
 struct LIGHT
 {

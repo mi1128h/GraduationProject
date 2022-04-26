@@ -730,7 +730,6 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 			pObject->Rotate(&xmf4Rotation);
 			pObject->Rotate(90.0f, 0.0f, 0.0f);
 			pObject->Rotate(0.0f, 180.0f, 0.0f);
-			pObject->SetIsRotate(true);
 			pObject->SetTag("cannon");
 
 			m_ppObjects[i++] = pObject;
@@ -803,7 +802,6 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 			XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
 			pObject->Rotate(&xmf4Rotation);
 			pObject->Rotate(90.0f, 0.0f, 0.0f);
-			pObject->SetIsRotate(true);
 			pObject->SetTag("house_1");
 
 			m_ppObjects[i++] = pObject;
@@ -826,7 +824,6 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 			XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
 			pObject->Rotate(&xmf4Rotation);
 			pObject->Rotate(90.0f, 0.0f, 0.0f);
-			pObject->SetIsRotate(true);
 			pObject->SetTag("house_2");
 
 			m_ppObjects[i++] = pObject;
@@ -849,7 +846,6 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 			XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
 			pObject->Rotate(&xmf4Rotation);
 			pObject->Rotate(90.0f, 0.0f, 0.0f);
-			pObject->SetIsRotate(true);
 			pObject->SetTag("house_3");
 
 			m_ppObjects[i++] = pObject;
@@ -872,7 +868,6 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 			XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
 			pObject->Rotate(&xmf4Rotation);
 			pObject->Rotate(90.0f, 0.0f, 0.0f);
-			pObject->SetIsRotate(true);
 			pObject->SetTag("house_4");
 
 			m_ppObjects[i++] = pObject;
@@ -1146,7 +1141,6 @@ void CCannonObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSign
 	//pCannonObject->SetModelTexture(pModelTexture);
 	CGameObject* pCannonL = pCannonObject->FindFrame("Cube_001");
 	if (pCannonL) pCannonL->m_xmf4x4ToParent = Matrix4x4::Multiply(XMMatrixRotationX(120.0f), pCannonL->m_xmf4x4ToParent);
-	pCannonObject->SetIsRotate(true);
 
 #ifndef _WITH_BATCH_MATERIAL
 #endif

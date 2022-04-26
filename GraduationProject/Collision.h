@@ -3,44 +3,6 @@
 #include "Mesh.h"
 #include "CollisionShader.h"
 #include "Camera.h"
-#include "Animation.h"
-
-enum BOUNDING_INFO
-{
-	SPHERE,
-	BOX,
-	LENGTH
-};
-
-class CCollisionManager
-{
-public:
-	CCollisionManager() {};
-	CCollisionManager(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, 
-		CGameObject* pGameObject, string& filename);
-	~CCollisionManager();
-
-	void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
-	virtual void LoadFromFileBoundInfo(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CGameObject* pGameObject, string& filename);
-	void UpdateCollisions();
-
-protected:
-	BoundingBox m_xmBoundingBox;
-	BoundingSphere m_xmBoundingSphere;
-	array<CCollision*, static_cast<int>(BOUNDING_INFO::LENGTH)> collisions;
-};
-
-class CPlayerCollisionManager : CCollisionManager
-{
-public:
-	CPlayerCollisionManager(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature,
-		CGameObject* pGameObject, string& filename);
-	~CPlayerCollisionManager();
-
-	virtual void LoadFromFileBoundInfo(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CGameObject* pGameObject, string& filename);
-private:
-	
-};
 
 ///////////////////////////////////////////////////////
 
@@ -60,6 +22,8 @@ public:
 	void SetBBScale(float x, float y, float z);
 	virtual void UpdateBound(BoundingBox& BB, BoundingSphere& BS);
 	bool GetDebug() {return m_bDebug; }
+	virtual BoundingBox GetBoundingBox() { return BoundingBox(); }
+	virtual BoundingSphere GetBoundingSphere() { return BoundingSphere(); }
 
 protected:
 	bool m_bDebug = false;

@@ -2,6 +2,7 @@
 #include "Scene.h"
 #include "Player.h"
 #include "Collision.h"
+#include "CollisionManager.h"
 
 ID3D12DescriptorHeap* CScene::m_pd3dCbvSrvUavDescriptorHeap = NULL;
 
@@ -472,7 +473,6 @@ void CScene::BuildGameObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 			pObject->Rotate(&xmf4Rotation);
 			pObject->Rotate(90.0f, 0.0f, 0.0f);
 			pObject->Rotate(0.0f, 180.0f, 0.0f);
-			pObject->SetIsRotate(true);
 			pObject->SetTag("cannon");
 
 			m_ppGameObjects[i++] = pObject;
@@ -545,7 +545,6 @@ void CScene::BuildGameObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 			XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
 			pObject->Rotate(&xmf4Rotation);
 			pObject->Rotate(90.0f, 0.0f, 0.0f);
-			pObject->SetIsRotate(true);
 			pObject->SetTag("house_1");
 
 			m_ppGameObjects[i++] = pObject;
@@ -568,7 +567,6 @@ void CScene::BuildGameObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 			XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
 			pObject->Rotate(&xmf4Rotation);
 			pObject->Rotate(90.0f, 0.0f, 0.0f);
-			pObject->SetIsRotate(true);
 			pObject->SetTag("house_2");
 
 			m_ppGameObjects[i++] = pObject;
@@ -591,7 +589,6 @@ void CScene::BuildGameObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 			XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
 			pObject->Rotate(&xmf4Rotation);
 			pObject->Rotate(90.0f, 0.0f, 0.0f);
-			pObject->SetIsRotate(true);
 			pObject->SetTag("house_3");
 
 			m_ppGameObjects[i++] = pObject;
@@ -614,7 +611,6 @@ void CScene::BuildGameObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 			XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
 			pObject->Rotate(&xmf4Rotation);
 			pObject->Rotate(90.0f, 0.0f, 0.0f);
-			pObject->SetIsRotate(true);
 			pObject->SetTag("house_4");
 
 			m_ppGameObjects[i++] = pObject;
