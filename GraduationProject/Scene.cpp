@@ -349,47 +349,295 @@ void CScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* p
 
 	DXGI_FORMAT pdxgiRtvFormats[3] = { DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM };
 
-	//m_nShaders = 2;
-	//m_ppShaders = new CShader * [m_nShaders];
-
-	//CCoverObjectsShader* pCoverObjectsShader = new CCoverObjectsShader();
-	//pCoverObjectsShader->CreateShader(pd3dDevice, m_pd3dGraphicsRootSignature, 3, pdxgiRtvFormats, DXGI_FORMAT_D32_FLOAT);
-	//pCoverObjectsShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pTerrain);
-	//m_ppShaders[0] = pCoverObjectsShader;
-
-	//CCannonObjectsShader* pCannonObjectsShader = new CCannonObjectsShader();
-	//pCannonObjectsShader->CreateShader(pd3dDevice, m_pd3dGraphicsRootSignature, 3, pdxgiRtvFormats, DXGI_FORMAT_D32_FLOAT);
-	//pCannonObjectsShader->BuildObjects(pd3dDevice, m_pd3dGraphicsRootSignature, pd3dCommandList, m_pTerrain);
-	//m_ppShaders[1] = pCannonObjectsShader;
-
-	m_nShaders = 1;
-	m_ppShaders = new CShader * [m_nShaders];
-
-	CObjectsShader* pObjectsShader = new CObjectsShader();
-	pObjectsShader->CreateShader(pd3dDevice, m_pd3dGraphicsRootSignature, 3, pdxgiRtvFormats, DXGI_FORMAT_D32_FLOAT);
-	pObjectsShader->BuildObjects(pd3dDevice, m_pd3dGraphicsRootSignature, pd3dCommandList, m_pTerrain);
-	m_ppShaders[0] = pObjectsShader;
-
-
 	//////
 	
 	BuildCollisions(pd3dDevice, pd3dCommandList);
+	BuildGameObjects(pd3dDevice, pd3dCommandList);
 	SetObjectCollision(pd3dDevice, pd3dCommandList);
-
 	////////
 
-	m_nGameObjects = 1;
-	m_ppGameObjects = new CGameObject * [m_nGameObjects];
-
-	CLoadedModelInfo* pAngrybotModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "../Assets/Model/Angrybot.bin", NULL);
-	m_ppGameObjects[0] = new CAngrybotObject(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pAngrybotModel, 1);
-	m_ppGameObjects[0]->m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);
-	m_ppGameObjects[0]->m_pSkinnedAnimationController->SetTrackPosition(0, 0.55f);
-	m_ppGameObjects[0]->m_pSkinnedAnimationController->SetTrackSpeed(0, 0.5f);
-	m_ppGameObjects[0]->SetPosition(380.0f, m_pTerrain->GetHeight(380.0f, 725.0f), 725.0f);
-	if (pAngrybotModel) delete pAngrybotModel;
-
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
+}
+
+void CScene::BuildGameObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
+{
+	float fTerrainWidth = m_pTerrain->GetWidth();
+	float fTerrainLength = m_pTerrain->GetLength();
+	XMFLOAT3 xmf3TerrainScale = m_pTerrain->GetScale();
+
+	ifstream metaInfo("../Assets/Image/Terrain/ObjectsMetaInfo.txt");
+	ifstream objectsInfo("../Assets/Image/Terrain/ObjectsInfo.txt");
+
+	string s;
+	int n;
+	while (metaInfo >> s >> n) {
+		if (s.compare("cannon:") == 0) {
+			m_nGameObjects += n;
+		}
+		if (s.compare("Barricade_01:") == 0) {
+			m_nGameObjects += n;
+		}
+		if (s.compare("Barricade_02:") == 0) {
+			m_nGameObjects += n;
+		}
+		if (s.compare("house_1:") == 0) {
+			m_nGameObjects += n;
+		}
+		if (s.compare("house_2:") == 0) {
+			m_nGameObjects += n;
+		}
+		if (s.compare("house_3:") == 0) {
+			m_nGameObjects += n;
+		}
+		if (s.compare("house_4:") == 0) {
+			m_nGameObjects += n;
+		}
+	}
+
+	m_ppGameObjects = new CGameObject * [m_nGameObjects];
+	int i = 0;
+
+	// cannon
+	CLoadedModelInfo* pCannonModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "../Assets/Model/cannon.bin", NULL);
+	CTexture* pCannonTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
+	pCannonTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Model/Texture/cannon_diffuse.dds", 0);
+	CScene::CreateShaderResourceViews(pd3dDevice, pCannonTexture, Signature::Graphics::model_diffuse, true);
+
+	// cannonball
+	CCannonballObject* pCannonballObject = new CCannonballObject(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+	pCannonballObject->SetUpdatedContext(m_pTerrain);
+
+	// barricade
+	CLoadedModelInfo* pCover1Model = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "../Assets/Model/Barricade_01.bin", NULL);
+	CLoadedModelInfo* pCover2Model = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "../Assets/Model/Barricade_02.bin", NULL);
+	CTexture* pCoverTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
+	pCoverTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Model/Texture/Wooden_Barricades_AlbedoTransparency.dds", 0);
+	CScene::CreateShaderResourceViews(pd3dDevice, pCoverTexture, Signature::Graphics::model_diffuse, true);
+
+	// house_1
+	CLoadedModelInfo* pHouse1Model = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "../Assets/Model/house_1.bin", NULL);
+	CTexture* pHouse1Texture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
+	pHouse1Texture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Model/Texture/house_1_Diffuse.dds", 0);
+	CScene::CreateShaderResourceViews(pd3dDevice, pHouse1Texture, Signature::Graphics::model_diffuse, true);
+	// house_2
+	CLoadedModelInfo* pHouse2Model = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "../Assets/Model/house_2.bin", NULL);
+	CTexture* pHouse2Texture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
+	pHouse2Texture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Model/Texture/house_2_Diffuse.dds", 0);
+	CScene::CreateShaderResourceViews(pd3dDevice, pHouse2Texture, Signature::Graphics::model_diffuse, true);
+	// house_3
+	CLoadedModelInfo* pHouse3Model = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "../Assets/Model/house_3.bin", NULL);
+	CTexture* pHouse3Texture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
+	pHouse3Texture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Model/Texture/house_3_Diffuse.dds", 0);
+	CScene::CreateShaderResourceViews(pd3dDevice, pHouse3Texture, Signature::Graphics::model_diffuse, true);
+	// house_4
+	CLoadedModelInfo* pHouse4Model = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "../Assets/Model/house_4.bin", NULL);
+	CTexture* pHouse4Texture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
+	pHouse4Texture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Model/Texture/house_4_Diffuse.dds", 0);
+	CScene::CreateShaderResourceViews(pd3dDevice, pHouse4Texture, Signature::Graphics::model_diffuse, true);
+	float houseOffsetX = 30.0f;
+	float houseOffsetX_ = 1500.0f;
+	float houseOffsetZ = 20.0f;
+	float houseOffsetZ_ = 18000.0f;
+
+	// 
+	string line;
+	smatch match;
+	regex reName(R"(name: (\w+))");
+	regex rePosition(R"(position: \(([+-]?\d*[.]?\d*), ([+-]?\d*[.]?\d*), ([+-]?\d*[.]?\d*)\))");
+	regex reRotation(R"(rotation: \(([+-]?\d*[.]?\d*), ([+-]?\d*[.]?\d*), ([+-]?\d*[.]?\d*), ([+-]?\d*[.]?\d*)\))");
+	regex reScale(R"(scale: \(([+-]?\d*[.]?\d*), ([+-]?\d*[.]?\d*), ([+-]?\d*[.]?\d*)\))");
+	while (getline(objectsInfo, line)) {
+		regex_match(line, match, reName);
+		string name = match[1].str();
+
+		getline(objectsInfo, line);
+		regex_match(line, match, rePosition);
+		float px = stof(match[1].str());
+		float py = stof(match[2].str());
+		float pz = stof(match[3].str());
+
+		getline(objectsInfo, line);
+		regex_match(line, match, reRotation);
+		float rx = stof(match[1].str());
+		float ry = stof(match[2].str());
+		float rz = stof(match[3].str());
+		float rw = stof(match[4].str());
+
+		getline(objectsInfo, line);
+		regex_match(line, match, reScale);
+		float sx = stof(match[1].str());
+		float sy = stof(match[2].str());
+		float sz = stof(match[3].str());
+
+		if (name.compare("cannon") == 0) {
+			CCannonObject* pObject = NULL;
+
+			pObject = new CCannonObject;
+			pObject->SetChild(pCannonModel->m_pModelRootObject, true);
+
+			pObject->m_pTexture = pCannonTexture;
+
+			pObject->SetCannonball(pCannonballObject);
+
+			float transX = px * (xmf3TerrainScale.x + 30.0f);
+			float transZ = pz * (xmf3TerrainScale.z + 30.0f) + 20000.0f;
+			float terrainY = m_pTerrain->GetHeight(transX, transZ);
+
+			XMFLOAT3 position = XMFLOAT3(transX, terrainY + 80.0f * sy, transZ);
+			pObject->SetPosition(position);
+			pObject->SetScale(sx, sy, sz);
+			XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
+			pObject->Rotate(&xmf4Rotation);
+			pObject->Rotate(90.0f, 0.0f, 0.0f);
+			pObject->Rotate(0.0f, 180.0f, 0.0f);
+			pObject->SetIsRotate(true);
+			pObject->SetTag("cannon");
+
+			m_ppGameObjects[i++] = pObject;
+		}
+		else if (name.compare("Barricade_01") == 0) {
+			CCoverObject* pObject = NULL;
+
+			pObject = new CCoverObject;
+			pObject->SetChild(pCover1Model->m_pModelRootObject, true);
+
+			pObject->m_pTexture = pCoverTexture;
+
+			float transX = px * (xmf3TerrainScale.x + 30.0f);
+			float transZ = pz * (xmf3TerrainScale.z + 30.0f) + 20000.0f;
+			float terrainY = m_pTerrain->GetHeight(transX, transZ);
+
+			XMFLOAT3 position = XMFLOAT3(transX, terrainY + 20.0f * sy, transZ);
+			pObject->SetPosition(position);
+			pObject->SetScale(sx, sy, sz);
+			XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
+			pObject->Rotate(&xmf4Rotation);
+			pObject->SetTag("Barricade_01");
+
+			//pObject->SetPoints(pObject->GetPosition());
+			//pObject->SetMovingDirection(XMFLOAT3(0.0f, 0.0f, 1.0f));
+			//pObject->SetMovingSpeed(200.0f);
+
+			m_ppGameObjects[i++] = pObject;
+		}
+		else if (name.compare("Barricade_02") == 0) {
+			CCoverObject* pObject = NULL;
+
+			pObject = new CCoverObject;
+			pObject->SetChild(pCover2Model->m_pModelRootObject, true);
+
+			pObject->m_pTexture = pCoverTexture;
+
+			float transX = px * (xmf3TerrainScale.x + 30.0f);
+			float transZ = pz * (xmf3TerrainScale.z + 30.0f) + 20000.0f;
+			float terrainY = m_pTerrain->GetHeight(transX, transZ);
+
+			XMFLOAT3 position = XMFLOAT3(transX, terrainY + 20.0f * sy, transZ);
+			pObject->SetPosition(position);
+			pObject->SetScale(sx, sy, sz);
+			XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
+			pObject->Rotate(&xmf4Rotation);
+			pObject->SetTag("Barricade_02");
+
+			//pObject->SetPoints(pObject->GetPosition());
+			//pObject->SetMovingDirection(XMFLOAT3(0.0f, 0.0f, 1.0f));
+			//pObject->SetMovingSpeed(200.0f);
+
+			m_ppGameObjects[i++] = pObject;
+		}
+		else if (name.compare("house_1") == 0) {
+			CGameObject* pObject = NULL;
+
+			pObject = new CGameObject;
+			pObject->SetChild(pHouse1Model->m_pModelRootObject, true);
+
+			pObject->m_pTexture = pHouse1Texture;
+
+			float transX = px * (xmf3TerrainScale.x + houseOffsetX) + houseOffsetX_;;
+			float transZ = pz * (xmf3TerrainScale.z + houseOffsetZ) + houseOffsetZ_;
+			float terrainY = m_pTerrain->GetHeight(transX, transZ);
+
+			XMFLOAT3 position = XMFLOAT3(transX, terrainY + 60.0f * sy, transZ);
+			pObject->SetPosition(position);
+			pObject->SetScale(sx, sy, sz);
+			XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
+			pObject->Rotate(&xmf4Rotation);
+			pObject->Rotate(90.0f, 0.0f, 0.0f);
+			pObject->SetIsRotate(true);
+			pObject->SetTag("house_1");
+
+			m_ppGameObjects[i++] = pObject;
+		}
+		else if (name.compare("house_2") == 0) {
+			CGameObject* pObject = NULL;
+
+			pObject = new CGameObject;
+			pObject->SetChild(pHouse2Model->m_pModelRootObject, true);
+
+			pObject->m_pTexture = pHouse2Texture;
+
+			float transX = px * (xmf3TerrainScale.x + houseOffsetX) + houseOffsetX_;
+			float transZ = pz * (xmf3TerrainScale.z + houseOffsetZ) + houseOffsetZ_;
+			float terrainY = m_pTerrain->GetHeight(transX, transZ);
+
+			XMFLOAT3 position = XMFLOAT3(transX, terrainY + 66.0f * sy, transZ);
+			pObject->SetPosition(position);
+			pObject->SetScale(sx, sy, sz);
+			XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
+			pObject->Rotate(&xmf4Rotation);
+			pObject->Rotate(90.0f, 0.0f, 0.0f);
+			pObject->SetIsRotate(true);
+			pObject->SetTag("house_2");
+
+			m_ppGameObjects[i++] = pObject;
+		}
+		else if (name.compare("house_3") == 0) {
+			CGameObject* pObject = NULL;
+
+			pObject = new CGameObject;
+			pObject->SetChild(pHouse3Model->m_pModelRootObject, true);
+
+			pObject->m_pTexture = pHouse3Texture;
+
+			float transX = px * (xmf3TerrainScale.x + houseOffsetX) + houseOffsetX_;;
+			float transZ = pz * (xmf3TerrainScale.z + houseOffsetZ) + houseOffsetZ_;
+			float terrainY = m_pTerrain->GetHeight(transX, transZ);
+
+			XMFLOAT3 position = XMFLOAT3(transX, terrainY + 90.0f * sy, transZ);
+			pObject->SetPosition(position);
+			pObject->SetScale(sx, sy, sz);
+			XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
+			pObject->Rotate(&xmf4Rotation);
+			pObject->Rotate(90.0f, 0.0f, 0.0f);
+			pObject->SetIsRotate(true);
+			pObject->SetTag("house_3");
+
+			m_ppGameObjects[i++] = pObject;
+		}
+		else if (name.compare("house_4") == 0) {
+			CGameObject* pObject = NULL;
+
+			pObject = new CGameObject;
+			pObject->SetChild(pHouse4Model->m_pModelRootObject, true);
+
+			pObject->m_pTexture = pHouse4Texture;
+
+			float transX = px * (xmf3TerrainScale.x + houseOffsetX) + houseOffsetX_;;
+			float transZ = pz * (xmf3TerrainScale.z + houseOffsetZ) + houseOffsetZ_;
+			float terrainY = m_pTerrain->GetHeight(transX, transZ);
+
+			XMFLOAT3 position = XMFLOAT3(transX, terrainY + 60.0f * sy, transZ);
+			pObject->SetPosition(position);
+			pObject->SetScale(sx, sy, sz);
+			XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
+			pObject->Rotate(&xmf4Rotation);
+			pObject->Rotate(90.0f, 0.0f, 0.0f);
+			pObject->SetIsRotate(true);
+			pObject->SetTag("house_4");
+
+			m_ppGameObjects[i++] = pObject;
+		}
+	}
 }
 
 void CScene::BuildCollisions(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
@@ -415,16 +663,14 @@ void CScene::BuildCollisions(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 
 void CScene::SetObjectCollision(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
 {
-	CGameObject** m_ppObjects = ((CObjectsShader*)m_ppShaders[ShaderData::objects])->GetObjects();
-	int m_nObjects = ((CObjectsShader*)m_ppShaders[ShaderData::objects])->GetObjectsNum();
-
 	string root = "../Assets/Model/Bounding/";
 	string tail = ".txt";
-	for (int i = 0; i < m_nObjects; i++)
+	for (int i = 0; i < m_nGameObjects; i++)
 	{
-		string tag = m_ppObjects[i]->GetTag();
+		m_ppGameObjects[i]->UpdateTransform(nullptr);
+		string tag = m_ppGameObjects[i]->GetTag();
 		string filename = "../Assets/Model/Bounding/" + tag + ".txt";
-		CCollisionManager* manager = new CCollisionManager(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, m_ppObjects[i], filename);
+		CCollisionManager* manager = new CCollisionManager(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, m_ppGameObjects[i], filename);
 		collManagers.emplace_back(manager);
 	}
 }
@@ -747,18 +993,11 @@ void CScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera
 			m_ppGameObjects[i]->Animate(m_fElapsedTime);
 			if (!m_ppGameObjects[i]->m_pSkinnedAnimationController) m_ppGameObjects[i]->UpdateTransform(NULL);
 			m_ppGameObjects[i]->Render(pd3dCommandList, pCamera);
+			collManagers[i]->Render(pd3dCommandList, pCamera);
 		}
 	}
 
-	for (int i = 0; i < m_nShaders; i++)
-	{
-		m_ppShaders[i]->Render(pd3dCommandList, pCamera);
-	}
-
 	for (CCollision* col : collisions)
-		col->Render(pd3dCommandList, pCamera);
-
-	for (CCollisionManager* col : collManagers)
 		col->Render(pd3dCommandList, pCamera);
 }
 
