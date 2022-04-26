@@ -435,7 +435,7 @@ void CGameFramework::OnProcessingKeyboardMessage
 	if (m_pPlayer) m_pPlayer->OnProcessingKeyboardMessage(hWnd, nMessageID, wParam, lParam);
 
 	// test
-	CSkinnedAnimationObjectsWireFrameShader* testShader = (CSkinnedAnimationObjectsWireFrameShader*)m_pScene->m_ppShaders[2];
+	CSkinnedAnimationObjectsWireFrameShader* testShader = (CSkinnedAnimationObjectsWireFrameShader*)m_pScene->m_ppShaders[1];
 	((CMonsterObject*)(testShader->m_ppObjects[0]))->OnProcessingKeyboardMessage(hWnd, nMessageID, wParam, lParam);
 
 	switch (nMessageID)
