@@ -829,61 +829,48 @@ void CGameObject::UpdateCollision()
 {
 	for (int i = 0; i < collisions.size(); ++i)
 	{
-		CalculateBoundPerIndex(i);
-		m_bHaveBound = true;
+		//CalculateBoundPerIndex(i);
+		//m_bHaveBound = true;
 	}
 
 }
 
 bool CGameObject::IsBoundingBox(int i)
 {
-	return (collisions[i]->GetBoundingState() != BOUNDING_STATE::SPHERE);
+	//return (collisions[i]->GetBoundingState() != BOUNDING_STATE::SPHERE);
+	return false;
 }
 
 BoundingBox CGameObject::GetBoundingBoxPerIndex(int i)
 {
-	CalculateBoundPerIndex(i);
+	//CalculateBoundPerIndex(i);
 	return m_xmBoundingBox;
 }
 
 BoundingSphere CGameObject::GetBoundingSpherePerIndex(int i)
 {
-	CalculateBoundPerIndex(i);
+	//CalculateBoundPerIndex(i);
 	return m_xmBoundingSphere;
 }
 
 void CGameObject::CalculateBoundPerIndex(int i)
 {
-	BOUNDING_STATE cur_state = collisions[i]->GetBoundingState();
-	BoundingBox BB;
-	BoundingSphere BS;
+	//BOUNDING_STATE cur_state = collisions[i]->GetBoundingState();
+	//BoundingBox BB;
+	//BoundingSphere BS;
 
-	switch (cur_state)
-	{
-	case BOUNDING_STATE::HIERACY:
-	case BOUNDING_STATE::BODY:
-		BB = collisions[i]->GetBoundingBox();
-		BB.Transform(m_xmBoundingBox, XMLoadFloat4x4(&collisions[i]->m_xmf4x4World));
-		break;
-	case BOUNDING_STATE::SPHERE:
-		BS = collisions[i]->GetBoundingSphere();
-		BS.Transform(m_xmBoundingSphere, XMLoadFloat4x4(&collisions[i]->m_xmf4x4World));
-		break;
-	}
-}
-
-void CGameObject::SetBoundingScales(float x, float y, float z)
-{
-	for (CCollision* col : collisions)
-	{
-		BOUNDING_STATE cur_state = col->GetBoundingState();
-		if (cur_state == BOUNDING_STATE::SPHERE) continue;
-
-		col->SetBBScale(x, y, z);
-
-	}
-	if (m_pSibling) m_pSibling->SetBoundingScales(x,y,z);
-	if (m_pChild) m_pChild->SetBoundingScales(x,y,z);
+	//switch (cur_state)
+	//{
+	//case BOUNDING_STATE::HIERACY:
+	//case BOUNDING_STATE::BODY:
+	//	BB = collisions[i]->GetBoundingBox();
+	//	BB.Transform(m_xmBoundingBox, XMLoadFloat4x4(&collisions[i]->m_xmf4x4World));
+	//	break;
+	//case BOUNDING_STATE::SPHERE:
+	//	BS = collisions[i]->GetBoundingSphere();
+	//	BS.Transform(m_xmBoundingSphere, XMLoadFloat4x4(&collisions[i]->m_xmf4x4World));
+	//	break;
+	//}
 }
 
 CGameObject* CGameObject::LoadFrameHierarchyFromFile(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CGameObject* pParent, FILE* pInFile, CShader* pShader, int* pnSkinnedMeshes)

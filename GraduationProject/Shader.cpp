@@ -804,7 +804,6 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 			pObject->Rotate(&xmf4Rotation);
 			pObject->Rotate(90.0f, 0.0f, 0.0f);
 			pObject->SetIsRotate(true);
-			pObject->SetBoundingScales(0.7, 1.0, 0.7);
 			pObject->SetTag("house_1");
 
 			m_ppObjects[i++] = pObject;
@@ -828,7 +827,6 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 			pObject->Rotate(&xmf4Rotation);
 			pObject->Rotate(90.0f, 0.0f, 0.0f);
 			pObject->SetIsRotate(true);
-			pObject->SetBoundingScales(0.6, 1.0, 0.9);
 			pObject->SetTag("house_2");
 
 			m_ppObjects[i++] = pObject;
@@ -852,7 +850,6 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 			pObject->Rotate(&xmf4Rotation);
 			pObject->Rotate(90.0f, 0.0f, 0.0f);
 			pObject->SetIsRotate(true);
-			pObject->SetBoundingScales(0.6, 1.0, 0.6);
 			pObject->SetTag("house_3");
 
 			m_ppObjects[i++] = pObject;
@@ -876,7 +873,6 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 			pObject->Rotate(&xmf4Rotation);
 			pObject->Rotate(90.0f, 0.0f, 0.0f);
 			pObject->SetIsRotate(true);
-			pObject->SetBoundingScales(0.65, 1.0, 0.65);
 			pObject->SetTag("house_4");
 
 			m_ppObjects[i++] = pObject;
