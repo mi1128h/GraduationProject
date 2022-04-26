@@ -5,12 +5,24 @@
 #include "Camera.h"
 #include "Animation.h"
 
-enum BOUNDING_STATE
+enum BOUNDING_INFO
 {
 	SPHERE,
-	BODY,
-	HIERACY,
-	length
+	BOX,
+	LENGTH
+};
+
+class CCollisionManager
+{
+public:
+	CCollisionManager(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, 
+		CGameObject* pGameObject, string& filename);
+	~CCollisionManager();
+
+private:
+	BoundingBox m_xmBoundingBox;
+	BoundingSphere m_xmBoundingSphere;
+	array<CCollision*, static_cast<int>(BOUNDING_INFO::LENGTH)> collisions;
 };
 
 class CCollision : public CGameObject
@@ -24,8 +36,6 @@ public:
 	virtual void SetCollisionMaterial(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3dGraphicsRootSignature, ID3D12GraphicsCommandList* pd3dCommandList);
 	void SetFrameObject(CGameObject* pObject) { if (FrameObject == nullptr) FrameObject = pObject; }
 	virtual void UpdateBoundings(XMFLOAT4X4 pxmf4x4World);
-	void SetBoundingState(int index) { state = static_cast<BOUNDING_STATE>(index);}
-	BOUNDING_STATE GetBoundingState() { return state; }
 	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
 	void ToggleDebug() { m_bDebug = !m_bDebug; }
 	void SetBBScale(float x, float y, float z);
@@ -35,7 +45,6 @@ protected:
 	bool m_bRotate = false;
 	bool isScale = false;
 	CGameObject* FrameObject = nullptr;
-	BOUNDING_STATE state = BOUNDING_STATE::HIERACY;
 	XMFLOAT3 m_xmf3Scale;
 };
 
@@ -44,8 +53,7 @@ protected:
 class CBBCollision : public CCollision
 {
 public:
-	CBBCollision(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature,
-		BoundingBox BB, BOUNDING_STATE index = BOUNDING_STATE::HIERACY);
+	CBBCollision(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature,BoundingBox BB);
 	~CBBCollision();
 
 	void SetBBMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList);

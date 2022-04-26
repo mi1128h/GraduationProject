@@ -4,6 +4,16 @@
 #include "Shader.h"
 #include "Scene.h"
 
+CCollisionManager::CCollisionManager(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature,
+	CGameObject* pGameObject, string& filename)
+{
+}
+
+CCollisionManager::~CCollisionManager()
+{
+}
+
+/////////////////////////////
 CCollision::CCollision() : CGameObject(1)
 {
 
@@ -51,9 +61,8 @@ void CCollision::SetBBScale(float x, float y, float z)
 ////////////////////////////////
 
 CBBCollision::CBBCollision(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature,
-	BoundingBox BB, BOUNDING_STATE index)
+	BoundingBox BB)
 {
-	state = index;
 	SetBB(BB);
 	SetBBMesh(pd3dDevice, pd3dCommandList);
 	CCollision::SetCollisionMaterial(pd3dDevice, pd3dGraphicsRootSignature, pd3dCommandList);
@@ -73,15 +82,7 @@ void CBBCollision::SetBBMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 
 void CBBCollision::SetBB(DirectX::BoundingBox& BB)
 {
-	if (state == BOUNDING_STATE::HIERACY)
-	{
-		XMFLOAT3 center = XMFLOAT3(0.0f, 0.0f, 0.0f);
-		XMStoreFloat3(&m_xmCollBoundingBox.Center, XMLoadFloat3(&center));
-	}
-	else
-	{
-		XMStoreFloat3(&m_xmCollBoundingBox.Center, XMLoadFloat3(&BB.Center));
-	}
+	XMStoreFloat3(&m_xmCollBoundingBox.Center, XMLoadFloat3(&BB.Center));
 	SetPosition(m_xmCollBoundingBox.Center);
 	UpdateTransform(nullptr);
 	XMStoreFloat3(&m_xmCollBoundingBox.Extents, XMLoadFloat3(&BB.Extents));
@@ -96,7 +97,6 @@ void CBBCollision::UpdateBoundings(XMFLOAT4X4 xmf4x4World)
 
 CSphereCollision::CSphereCollision(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, float fradius)
 {
-	state = BOUNDING_STATE::SPHERE;
 	XMFLOAT3 center = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	SetBoundingSphere(center, fradius);
 	
@@ -132,3 +132,4 @@ void CSphereCollision::UpdateBoundings(XMFLOAT4X4 xmf4x4World)
 {
 	CCollision::UpdateBoundings(xmf4x4World);
 }
+
