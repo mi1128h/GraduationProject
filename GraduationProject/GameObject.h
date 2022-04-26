@@ -464,10 +464,12 @@ class CMonsterObject : public CGameObject
 public:
 	enum track_name
 	{
-		attack,
-		death,
-		dying,
-		idle,
+		attack1,
+		attack2,
+		death1,
+		death2,
+		idle1,
+		idle2,
 		walk,
 		length
 	};

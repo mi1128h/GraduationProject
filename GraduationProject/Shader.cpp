@@ -1768,29 +1768,28 @@ void CMonsterObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSig
 	string s;
 	int n;
 	while (metaInfo >> s >> n) {
-		//if (s.compare("Zombie_1:") == 0) {
-		//	m_nObjects += n;
-		//}
+		if (s.compare("Zombie_1:") == 0) {
+			m_nObjects += n;
+		}
 		if (s.compare("Zombie_2:") == 0) {
 			m_nObjects += n;
 		}
-	}
+	}	
 
 	m_ppObjects = new CGameObject * [m_nObjects];
 	int i = 0;
 
-	// Clown
-	CLoadedModelInfo* pClownModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/WhiteClown.bin", NULL);
-	CTexture* pClownTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
-	pClownTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Model/Texture/whiteclown_diffuse.dds", 0);
-	CScene::CreateShaderResourceViews(pd3dDevice, pClownTexture, Signature::Graphics::animation_diffuse, true);
-
-	// Zombie
+	// Zombie_1
 	CLoadedModelInfo* pZombieModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/ZombieGirl.bin", NULL);
 	CTexture* pZombieTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
 	pZombieTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Model/Texture/zombie_diffuse.dds", 0);
 	CScene::CreateShaderResourceViews(pd3dDevice, pZombieTexture, Signature::Graphics::animation_diffuse, true);
 
+	// Zombie_2
+	CLoadedModelInfo* pClownModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/WhiteClown.bin", NULL);
+	CTexture* pClownTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
+	pClownTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Model/Texture/whiteclown_diffuse.dds", 0);
+	CScene::CreateShaderResourceViews(pd3dDevice, pClownTexture, Signature::Graphics::animation_diffuse, true);
 
 	// 
 	string line;
@@ -1822,8 +1821,7 @@ void CMonsterObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSig
 		float sy = stof(match[2].str());
 		float sz = stof(match[3].str());
 
-		if (name.compare("Zombie_2") != 0) {
-		//if (name.compare("Zombie_1") != 0 && name.compare("Zombie_2") != 0) {
+		if (name.compare("Zombie_1") != 0 && name.compare("Zombie_2") != 0) {
 			continue;
 		}
 
@@ -1833,22 +1831,22 @@ void CMonsterObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSig
 		pObject = new CMonsterObject;
 		pObject->SetUpdatedContext(pTerrain);
 
-		//if (name.compare("Zombie_1") == 0) {
-		//	pObject->SetChild(pClownModel->m_pModelRootObject, true);
-		//	pObject->m_pTexture = pClownTexture;
-		//	pObject->m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, CMonsterObject::track_name::length, pClownModel);
-		//}
-		if (name.compare("Zombie_2") == 0) {
+		if (name.compare("Zombie_1") == 0) {
 			pObject->SetChild(pZombieModel->m_pModelRootObject, true);
 			pObject->m_pTexture = pZombieTexture;
 			pObject->m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, CMonsterObject::track_name::length, pZombieModel);
+		}
+		if (name.compare("Zombie_2") == 0) {
+			pObject->SetChild(pClownModel->m_pModelRootObject, true);
+			pObject->m_pTexture = pClownTexture;
+			pObject->m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, CMonsterObject::track_name::length, pClownModel);
 		}
 
 		float transX = px * xmf3TerrainScale.x * 257.0f / 150.0f;
 		float transZ = pz * xmf3TerrainScale.z * 257.0f / 150.0f;
 		float terrainY = pTerrain->GetHeight(transX, transZ);
 
-		XMFLOAT3 position = XMFLOAT3(transX, terrainY + 80.0f * sy, transZ);
+		XMFLOAT3 position = XMFLOAT3(transX, terrainY + 1.0f * sy, transZ);
 		pObject->SetPosition(position);
 		pObject->SetScale(sx, sy, sz);
 		XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
@@ -1857,20 +1855,21 @@ void CMonsterObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSig
 		//pObject->Rotate(0.0f, 180.0f, 0.0f);
 		pObject->SetIsRotate(true);
 
-		pObject->m_pSkinnedAnimationController->SetCurrentTrackNum(CMonsterObject::track_name::idle);
+		int TrackNum = CMonsterObject::track_name::idle1;
+
+		pObject->m_pSkinnedAnimationController->SetCurrentTrackNum(TrackNum);
 
 		//pMonsterObject->m_pSkinnedAnimationController->SetAnimationTracks();
 		for (int i = 0; i < pObject->m_pSkinnedAnimationController->m_nAnimationTracks; ++i)
 		{
 			pObject->m_pSkinnedAnimationController->SetTrackAnimationSet(i, i * 2 + 1);
-			bool bEnable = (i == CMonsterObject::track_name::idle) ? true : false;
+			bool bEnable = (i == TrackNum) ? true : false;
 			pObject->m_pSkinnedAnimationController->SetTrackEnable(i, bEnable);
 		}
 
-		bool bAnimType[CMonsterObject::track_name::length] = { false, false, false, true, true };
+		bool bAnimType[CMonsterObject::track_name::length] = { false, false, false, false, true, true, true };
 		pObject->m_pSkinnedAnimationController->SetAnimationTypes(bAnimType);
 
 		m_ppObjects[i++] = pObject;
 	}
-
 }
