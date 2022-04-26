@@ -371,25 +371,7 @@ void CScene::BuildGameObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 	string s;
 	int n;
 	while (metaInfo >> s >> n) {
-		if (s.compare("cannon:") == 0) {
-			m_nGameObjects += n;
-		}
-		if (s.compare("Barricade_01:") == 0) {
-			m_nGameObjects += n;
-		}
-		if (s.compare("Barricade_02:") == 0) {
-			m_nGameObjects += n;
-		}
-		if (s.compare("house_1:") == 0) {
-			m_nGameObjects += n;
-		}
-		if (s.compare("house_2:") == 0) {
-			m_nGameObjects += n;
-		}
-		if (s.compare("house_3:") == 0) {
-			m_nGameObjects += n;
-		}
-		if (s.compare("house_4:") == 0) {
+		if (IsGameObject(s)) {
 			m_nGameObjects += n;
 		}
 	}
@@ -639,6 +621,21 @@ void CScene::BuildGameObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 		}
 	}
 }
+
+
+bool CScene::IsGameObject(string& name)
+{
+	if (!name.compare("cannon:")) return true;
+	if (!name.compare("Barricade_01:")) return true;
+	if (!name.compare("Barricade_02:")) return true;
+	if (!name.compare("house_1:")) return true;
+	if (!name.compare("house_2:")) return true;
+	if (!name.compare("house_3:")) return true;
+	if (!name.compare("house_4:")) return true;
+
+	return false;
+}
+
 
 void CScene::BuildCollisions(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
 {
