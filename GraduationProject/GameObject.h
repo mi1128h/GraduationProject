@@ -289,7 +289,11 @@ public:
 	void LoadFromCollision(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, string filename);
 	virtual BoundingBox GetBoundingBox() { return m_xmBoundingBox; }
 	virtual BoundingSphere GetBoundingSphere() { return m_xmBoundingSphere; }
+	bool IsBoundingBox(int i);
 	void UpdateCollision();
+	BoundingBox GetBoundingBoxPerIndex(int i);
+	BoundingSphere GetBoundingSpherePerIndex(int i);
+	void CalculateBoundPerIndex(int i);
 	void SetBoundingScales(float x, float y, float z);
 };
 

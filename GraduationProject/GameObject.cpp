@@ -824,22 +824,47 @@ void CGameObject::UpdateCollision()
 {
 	for (int i = 0; i < collisions.size(); ++i)
 	{
-		BOUNDING_STATE cur_state = collisions[i]->GetBoundingState();
-		BoundingBox BB;
-		switch (cur_state)
-		{
-		case BOUNDING_STATE::BODY:
-			BB = collisions[i]->GetBoundingBox();
-			BB.Transform(m_xmBoundingBox, XMLoadFloat4x4(&collisions[i]->m_xmf4x4World));
-			break;
-		case BOUNDING_STATE::SPHERE:
-			//collisions[i]->CalculateBoundingSphere();
-			//m_xmBoundingSphere = collisions[i]->GetBoundingSphere();
-			break;
-		}
+		CalculateBoundPerIndex(i);
 		m_bHaveBound = true;
 	}
 
+}
+
+bool CGameObject::IsBoundingBox(int i)
+{
+	return (collisions[i]->GetBoundingState() != BOUNDING_STATE::SPHERE);
+}
+
+BoundingBox CGameObject::GetBoundingBoxPerIndex(int i)
+{
+	CalculateBoundPerIndex(i);
+	return m_xmBoundingBox;
+}
+
+BoundingSphere CGameObject::GetBoundingSpherePerIndex(int i)
+{
+	CalculateBoundPerIndex(i);
+	return m_xmBoundingSphere;
+}
+
+void CGameObject::CalculateBoundPerIndex(int i)
+{
+	BOUNDING_STATE cur_state = collisions[i]->GetBoundingState();
+	BoundingBox BB;
+	BoundingSphere BS;
+
+	switch (cur_state)
+	{
+	case BOUNDING_STATE::HIERACY:
+	case BOUNDING_STATE::BODY:
+		BB = collisions[i]->GetBoundingBox();
+		BB.Transform(m_xmBoundingBox, XMLoadFloat4x4(&collisions[i]->m_xmf4x4World));
+		break;
+	case BOUNDING_STATE::SPHERE:
+		BS = collisions[i]->GetBoundingSphere();
+		BS.Transform(m_xmBoundingSphere, XMLoadFloat4x4(&collisions[i]->m_xmf4x4World));
+		break;
+	}
 }
 
 void CGameObject::SetBoundingScales(float x, float y, float z)
