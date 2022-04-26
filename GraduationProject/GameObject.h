@@ -206,12 +206,6 @@ public:
 	CMaterial** m_ppMaterials = NULL;
 
 	CTexture* m_pTexture;
-	vector<CCollision*> collisions;
-
-private:
-	BoundingBox	m_xmBoundingBox;
-	BoundingSphere m_xmBoundingSphere;
-	bool m_bHaveBound = false;
 
 public:
 	void SetMesh(CMesh* pMesh);
@@ -233,8 +227,6 @@ public:
 
 	virtual void OnPrepareRender() {};
 	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
-
-	void RenderCollision(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
 
 	virtual void CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList);
 	virtual void UpdateShaderVariables(ID3D12GraphicsCommandList *pd3dCommandList);
@@ -287,16 +279,6 @@ public:
 	static CLoadedModelInfo* LoadGeometryAndAnimationFromFile(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, char* pstrFileName, CShader* pShader);
 
 	static void PrintFrameInfo(CGameObject* pGameObject, CGameObject* pParent);
-	void MakeCollider(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature);
-	void SetIsRotate(bool bVal);
-	virtual BoundingBox GetBoundingBox() { return m_xmBoundingBox; }
-	virtual BoundingSphere GetBoundingSphere() { return m_xmBoundingSphere; }
-	bool IsBoundingBox(int i);
-	void UpdateCollision();
-	BoundingBox GetBoundingBoxPerIndex(int i);
-	BoundingSphere GetBoundingSpherePerIndex(int i);
-	void CalculateBoundPerIndex(int i);
-	void SetBoundingScales(float x, float y, float z);
 };
 
 class CRotatingObject : public CGameObject

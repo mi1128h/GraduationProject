@@ -759,23 +759,8 @@ void CGameObject::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pC
 		}
 	}
 
-	if (!collisions.empty())
-	{
-		RenderCollision(pd3dCommandList, pCamera);
-	}
-
 	if (m_pSibling) m_pSibling->Render(pd3dCommandList, pCamera);
 	if (m_pChild) m_pChild->Render(pd3dCommandList, pCamera);
-}
-
-void CGameObject::RenderCollision(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
-{
-	for (CCollision* col : collisions)
-	{
-		col->UpdateBoundTransform();
-		col->Render(pd3dCommandList, pCamera);
-	}
-	UpdateCollision();
 }
 
 UINT ReadUnsignedIntegerFromFile(FILE* pInFile)
@@ -808,69 +793,6 @@ int ReadStringFromFile(FILE* pInFile, char* pstrToken)
 	pstrToken[nStrLength] = '\0';
 
 	return(nStrLength);
-}
-
-void CGameObject::SetIsRotate(bool bVal)
-{
-	for (CCollision* col : collisions)
-		col->SetIsRotate(bVal);
-
-	if (m_pSibling) m_pSibling->SetIsRotate(bVal);
-	if (m_pChild) m_pChild->SetIsRotate(bVal);
-}
-
-void CGameObject::MakeCollider(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature)
-{
-	CCollision* cols = new CBBCollision(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, m_xmBoundingBox);
-	collisions.emplace_back(cols);
-}
-
-void CGameObject::UpdateCollision()
-{
-	for (int i = 0; i < collisions.size(); ++i)
-	{
-		//CalculateBoundPerIndex(i);
-		//m_bHaveBound = true;
-	}
-
-}
-
-bool CGameObject::IsBoundingBox(int i)
-{
-	//return (collisions[i]->GetBoundingState() != BOUNDING_STATE::SPHERE);
-	return false;
-}
-
-BoundingBox CGameObject::GetBoundingBoxPerIndex(int i)
-{
-	//CalculateBoundPerIndex(i);
-	return m_xmBoundingBox;
-}
-
-BoundingSphere CGameObject::GetBoundingSpherePerIndex(int i)
-{
-	//CalculateBoundPerIndex(i);
-	return m_xmBoundingSphere;
-}
-
-void CGameObject::CalculateBoundPerIndex(int i)
-{
-	//BOUNDING_STATE cur_state = collisions[i]->GetBoundingState();
-	//BoundingBox BB;
-	//BoundingSphere BS;
-
-	//switch (cur_state)
-	//{
-	//case BOUNDING_STATE::HIERACY:
-	//case BOUNDING_STATE::BODY:
-	//	BB = collisions[i]->GetBoundingBox();
-	//	BB.Transform(m_xmBoundingBox, XMLoadFloat4x4(&collisions[i]->m_xmf4x4World));
-	//	break;
-	//case BOUNDING_STATE::SPHERE:
-	//	BS = collisions[i]->GetBoundingSphere();
-	//	BS.Transform(m_xmBoundingSphere, XMLoadFloat4x4(&collisions[i]->m_xmf4x4World));
-	//	break;
-	//}
 }
 
 CGameObject* CGameObject::LoadFrameHierarchyFromFile(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CGameObject* pParent, FILE* pInFile, CShader* pShader, int* pnSkinnedMeshes)
@@ -1407,11 +1329,28 @@ void CCannonObject::FireCannonBall(XMFLOAT3 Origin, XMFLOAT3 Velocity)
 }
 
 
-
 // --- 이번주 내로 끝내야할거 ----
 //		몬스터 - 플레이어
 //			: 공격을 휘두를 경우에만 Attack 충돌검사
 //			: 특정 시간에만 충돌검사
+//			 - sword index를 보유함
+//			 - 검이랑, 몬스터 BB 충돌검사 해야함
+//			 - if (IsBoundingBox()) BB = GetBoundingBoxPerIndex(sword_index);
+//			 - player -> UpdateCollision Override, if sword_index -> continue;
+// 
+//		CollisionManager
+//			m_xmBoundingSphere, m_xmBoundingBox 보유
+//			여기서 충돌 업데이트 전부 처리
+//			CGameObject has CCollision -> Scene에서 별개로 CCollision 가지고있다
+//			state는 Manager에서 관리한다
+//			
+//			 - 가능하면, 충돌검사를 GameObject로 빼내기
+//			 - PlayerBB를 인자로 받아서, 한번이라도 검사 성공하면 return true 하기
 //		플레이어 상호작용
+//			- 대포 handle 부분에 sphere collider 추가
+//			- 키 입력시, 충돌검사
+//			- contains -> Cube_12가 바라보는 방향으로 플레이어 회전
+//			- 플레이어 STATE 변경
+//			- 다시 키 입력시 , 해당 STATE 라면 원래대로 돌아오기
 //		플레이어 컨트롤
 //		플레이어 이동

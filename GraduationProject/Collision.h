@@ -15,19 +15,34 @@ enum BOUNDING_INFO
 class CCollisionManager
 {
 public:
+	CCollisionManager() {};
 	CCollisionManager(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, 
 		CGameObject* pGameObject, string& filename);
 	~CCollisionManager();
 
 	void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
-	void LoadFromFileBoundInfo(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CGameObject* pGameObject, string& filename);
+	virtual void LoadFromFileBoundInfo(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CGameObject* pGameObject, string& filename);
 	void UpdateCollisions();
 
-private:
+protected:
 	BoundingBox m_xmBoundingBox;
 	BoundingSphere m_xmBoundingSphere;
 	array<CCollision*, static_cast<int>(BOUNDING_INFO::LENGTH)> collisions;
 };
+
+class CPlayerCollisionManager : CCollisionManager
+{
+public:
+	CPlayerCollisionManager(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature,
+		CGameObject* pGameObject, string& filename);
+	~CPlayerCollisionManager();
+
+	virtual void LoadFromFileBoundInfo(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CGameObject* pGameObject, string& filename);
+private:
+	
+};
+
+///////////////////////////////////////////////////////
 
 class CCollision : public CGameObject
 {
