@@ -996,18 +996,14 @@ void CScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera
 
 bool CScene::CheckPlayerByObjectBB(XMFLOAT3 xmf3Shift)
 {
-	//CGameObject** m_ppObjects =	((CObjectsShader*)m_ppShaders[ShaderData::objects])->GetObjects();
-	//int m_nObjects = ((CObjectsShader*)m_ppShaders[ShaderData::objects])->GetObjectsNum();
+	BoundingBox playerBB = m_pPlayer->GetCollManager()->GetBoundingBox();
 
-	//BoundingBox playerBB = m_pPlayer->GetBoundingBox();
-	//for (int i = 0; i < m_nObjects; i++)
-	//{
-	//	m_ppObjects[i]->UpdateCollision();
-	//	if (!m_ppObjects[i]->GetHaveBound()) continue;
-
-	//	BoundingBox BB = m_ppObjects[i]->GetBoundingBox();
-	//	if (CheckAABB(playerBB,BB,xmf3Shift)) return false;
-	//}
+	for (CCollisionManager* col : collManagers)
+	{
+		col->UpdateCollisions();
+		BoundingBox BB = col->GetBoundingBox();
+		if (CheckAABB(playerBB, BB, xmf3Shift)) return false;
+	}
 
 	return true;
 }
@@ -1038,13 +1034,12 @@ bool CScene::CheckAABB(BoundingBox A, BoundingBox B, XMFLOAT3 xmf3Shift, bool in
 
 bool CScene::CheckPlayerInScene(XMFLOAT3 xmf3Shift)
 {
-	//BoundingBox playerBB = m_pPlayer->GetBoundingBox();
-	//for (CCollision* col : collisions)
-	//{
-	//	if (CheckAABB(playerBB, col->GetBoundingBox(),xmf3Shift, true)) return true;
-	//}
+	BoundingBox playerBB = m_pPlayer->GetCollManager()->GetBoundingBox();
+	for (CCollision* col : collisions)
+	{
+		if (!col->GetDebug()) continue;
+		if (CheckAABB(playerBB, col->GetBoundingBox(),xmf3Shift, true)) return true;
+	}
 
-	//return false;
-
-	return true;
+	return false;
 }

@@ -9,6 +9,7 @@
 #include "GameObject.h"
 #include "Camera.h"
 #include "Animation.h"
+#include "CollisionManager.h"
 
 class CScene;
 
@@ -50,9 +51,13 @@ protected:
 	
 	//플레이어에 현재 설정된 카메라이다. 
 	CCamera *m_pCamera = NULL;
+
+	CCollisionManager* m_CollManager = nullptr;
 public:
 	CPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, void* pContext = NULL, int nMeshes = 1);
 	virtual ~CPlayer();
+
+	CCollisionManager* GetCollManager(){return m_CollManager;}
 
 	XMFLOAT3 GetPosition() { return(m_xmf3Position); }
 	XMFLOAT3 GetLookVector() { return(m_xmf3Look); }

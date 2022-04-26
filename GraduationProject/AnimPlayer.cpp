@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "AnimPlayer.h"
 #include "Scene.h"
+#include "CollisionManager.h"
 
 CAnimPlayer::CAnimPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 	* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, void* pContext, int
@@ -21,6 +22,9 @@ CAnimPlayer::CAnimPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 	InitPlayerMatrics(pContext);
 
 	SetAnimationTypes();
+
+	string name = "../Assets/Model/Bounding/Knight.txt";
+	m_CollManager = new CCollisionManager(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, dynamic_cast<CGameObject*>(this),name);
 
 	if (pAngrybotModel) delete pAngrybotModel;
 }
