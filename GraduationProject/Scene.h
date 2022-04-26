@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "Timer.h"
 #include "Shader.h"
+#include "Collision.h"
 
 struct LIGHT
 {

@@ -19,6 +19,8 @@ public:
 		CGameObject* pGameObject, string& filename);
 	~CCollisionManager();
 
+	void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
+	void LoadFromFileBoundInfo(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CGameObject* pGameObject, string& filename);
 private:
 	BoundingBox m_xmBoundingBox;
 	BoundingSphere m_xmBoundingSphere;
@@ -41,7 +43,7 @@ public:
 	void SetBBScale(float x, float y, float z);
 
 protected:
-	bool m_bDebug = true;
+	bool m_bDebug = false;
 	bool m_bRotate = false;
 	bool isScale = false;
 	CGameObject* FrameObject = nullptr;

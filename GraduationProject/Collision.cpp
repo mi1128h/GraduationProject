@@ -7,10 +7,22 @@
 CCollisionManager::CCollisionManager(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature,
 	CGameObject* pGameObject, string& filename)
 {
+	for (int i = 0; i < collisions.size(); ++i)
+		collisions[i] = new CCollision();
+	LoadFromFileBoundInfo(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, pGameObject, filename);
+}
+
+CCollisionManager::~CCollisionManager()
+{
+}
+
+void CCollisionManager::LoadFromFileBoundInfo(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature,CGameObject* pGameObject, string& filename)
+{
 	ifstream boundingInfo(filename);
 	string s, frame;
 	XMFLOAT3 center, extends;
 	float radius;
+
 	while (boundingInfo >> s >> frame)
 	{
 		if (s.compare("<Sphere>:") == 0)
@@ -37,8 +49,12 @@ CCollisionManager::CCollisionManager(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	}
 }
 
-CCollisionManager::~CCollisionManager()
+void CCollisionManager::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
 {
+	for (CCollision* col : collisions)
+	{
+		col->Render(pd3dCommandList, pCamera);
+	}
 }
 
 /////////////////////////////
@@ -80,7 +96,6 @@ void CCollision::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCa
 
 void CCollision::SetBBScale(float x, float y, float z)
 {
-	isScale = true;
 	m_xmf3Scale.x = x;
 	m_xmf3Scale.y = y;
 	m_xmf3Scale.z = z;
@@ -94,6 +109,7 @@ CBBCollision::CBBCollision(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* 
 	SetBB(BB);
 	SetBBMesh(pd3dDevice, pd3dCommandList);
 	CCollision::SetCollisionMaterial(pd3dDevice, pd3dGraphicsRootSignature, pd3dCommandList);
+	m_bDebug = true;
 }
 
 CBBCollision::~CBBCollision()
@@ -132,6 +148,7 @@ CSphereCollision::CSphereCollision(ID3D12Device* pd3dDevice, ID3D12GraphicsComma
 	SetMesh(DebugSphere);
 
 	SetCollisionMaterial(pd3dDevice, pd3dGraphicsRootSignature, pd3dCommandList);
+	m_bDebug = true;
 }
 
 void CSphereCollision::SetBoundingSphere(DirectX::XMFLOAT3& center, float fradius)

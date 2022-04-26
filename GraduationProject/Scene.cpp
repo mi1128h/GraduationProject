@@ -407,7 +407,7 @@ void CScene::BuildCollisions(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 			XMStoreFloat3(&BB.Center, XMLoadFloat3(&center));
 			XMStoreFloat3(&BB.Extents, XMLoadFloat3(&extends));
 
-			CCollision* cols = new CBBCollision(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, BB,BOUNDING_STATE::BODY);
+			CCollision* cols = new CBBCollision(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, BB);
 			collisions.emplace_back(cols);
 		}
 	}
@@ -756,6 +756,9 @@ void CScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera
 	}
 
 	for (CCollision* col : collisions)
+		col->Render(pd3dCommandList, pCamera);
+
+	for (CCollisionManager* col : collManagers)
 		col->Render(pd3dCommandList, pCamera);
 }
 
