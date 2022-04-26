@@ -196,6 +196,7 @@ private:
 	int m_nCurrentTracks = 0;
 
 public:
+	int GetCurrentTrackNum() { return m_nCurrentTracks; }
 	void SetCurrentTrackNum(int index) { m_nCurrentTracks = index; }
 
 	void UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList);

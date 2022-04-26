@@ -1453,30 +1453,13 @@ bool CMonsterObject::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 	case WM_KEYDOWN:
 		switch (wParam)
 		{
-		case '6':
-			m_pSkinnedAnimationController->SwitchAnimationState(track_name::attack);
-			break;
-
-		case '7':
-			m_pSkinnedAnimationController->SwitchAnimationState(track_name::death);
-			break;
-
-		case '8':
-			m_pSkinnedAnimationController->SwitchAnimationState(track_name::dying);
-			break;
-
-		case '9':
-			m_pSkinnedAnimationController->SwitchAnimationState(track_name::idle);
-			break;
-
-		case '0':
-			m_pSkinnedAnimationController->SwitchAnimationState(track_name::walk);
-			break;
-
-		default:
+		case 'Y':
+			int trackNum = m_pSkinnedAnimationController->GetCurrentTrackNum();
+			trackNum++;
+			if (trackNum == track_name::length) trackNum = 0;
+			m_pSkinnedAnimationController->SwitchAnimationState(trackNum);
 			break;
 		}
-		break;
 	}
 	return(false);
 }
