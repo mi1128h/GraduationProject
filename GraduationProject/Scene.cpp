@@ -412,6 +412,9 @@ void CScene::SetObjectCollision(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandL
 	CGameObject** m_ppObjects = ((CObjectsShader*)m_ppShaders[ShaderData::objects])->GetObjects();
 	int m_nObjects = ((CObjectsShader*)m_ppShaders[ShaderData::objects])->GetObjectsNum();
 
+	CGameObject** m_ppMonsters = ((CMonsterObjectsShader*)m_ppShaders[ShaderData::monster])->GetObjects();
+	int m_nMonsters = ((CMonsterObjectsShader*)m_ppShaders[ShaderData::monster])->GetObjectsNum();
+
 	string root = "../Assets/Model/Bounding/";
 	string tail = ".txt";
 	for (int i = 0; i < m_nObjects; i++)
@@ -421,6 +424,15 @@ void CScene::SetObjectCollision(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandL
 		string filename = "../Assets/Model/Bounding/" + tag + ".txt";
 		CCollisionManager* manager = new CCollisionManager(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, m_ppObjects[i], filename);
 		m_ppObjects[i]->SetCollisionManager(manager);
+	}
+
+	for (int i = 0; i < m_nMonsters; i++)
+	{
+		m_ppMonsters[i]->UpdateTransform(nullptr);
+		string tag = m_ppMonsters[i]->GetTag();
+		string filename = "../Assets/Model/Bounding/" + tag + ".txt";
+		CCollisionManager* manager = new CCollisionManager(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, m_ppMonsters[i], filename);
+		m_ppMonsters[i]->SetCollisionManager(manager);
 	}
 }
 
@@ -719,6 +731,8 @@ void CScene::AnimateObjects(float fTimeElapsed, CCamera* pCamrea)
 
 	for (int i = 0; i < m_nShaders; i++) m_ppShaders[i]->AnimateObjects(fTimeElapsed, pCamrea);
 	if (m_pLights) {}
+
+	CheckMonsterCollision();
 }
 
 void CScene::OnPrepareRender(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
@@ -833,6 +847,22 @@ void CScene::CheckInteraction()
 		if (playerBB.Contains(BS)) {
 			m_pPlayer->SetInteraction();
 			break;
+		}
+	}
+}
+
+void CScene::CheckMonsterCollision()
+{
+	BoundingSphere playerBS = m_pPlayer->GetCollManager()->GetBoundingSphere();
+
+	int nMonsters = ((CMonsterObjectsShader*)m_ppShaders[ShaderData::monster])->GetObjectsNum();
+	CGameObject** ppMonsters = ((CMonsterObjectsShader*)m_ppShaders[ShaderData::monster])->GetObjects();
+
+	for(int i=0;i<nMonsters; ++i)
+	{
+		BoundingBox BB = ppMonsters[i]->GetCollisionManager()->GetBoundingBox();
+		if (playerBS.Contains(BB)) {
+			((CMonsterObject*)ppMonsters[i])->AttackTarget();
 		}
 	}
 }

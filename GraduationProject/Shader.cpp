@@ -1875,6 +1875,8 @@ void CMonsterObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSig
 		pObject->m_pSkinnedAnimationController->SetAnimationTypes(bAnimType);
 		pObject->m_pSkinnedAnimationController->SetIdleNum(CMonsterObject::track_name::idle1);
 
+		pObject->SetTag("Monster");
+
 		m_ppObjects[i++] = pObject;
 	}
 }

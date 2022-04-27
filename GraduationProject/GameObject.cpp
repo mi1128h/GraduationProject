@@ -1371,10 +1371,7 @@ void CMonsterObject::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera*
 void CMonsterObject::Animate(float fTimeElapsed, CCamera* pCamera)
 {
 	FindTarget();
-	//if(플레이어와 충돌)
-	//if (m_pTargetObject != NULL) {
-		AttackTarget();
-	//}
+	ChaseTarget();
 
 	CGameObject::Animate(fTimeElapsed, pCamera);
 }
