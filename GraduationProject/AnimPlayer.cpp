@@ -215,10 +215,11 @@ void CAnimPlayer::SetAnimationController(ID3D12Device* pd3dDevice, ID3D12Graphic
 
 void CAnimPlayer::SetInteraction(XMFLOAT3& center, XMFLOAT4X4& world)
 {
-	XMFLOAT3 lookPos = XMFLOAT3(world._41, world._42, world._43);
+	XMFLOAT3 lookPos = XMFLOAT3(world._41, 0.0f, world._43);
+	XMFLOAT3 playerPos = XMFLOAT3(m_xmf3Position.x, 0.0f, m_xmf3Position.z);
 
 #ifdef _WITH_LEFT_HAND_COORDINATES
-	XMFLOAT4X4 mtxLookAt = Matrix4x4::LookAtLH(m_xmf3Position, lookPos, m_xmf3Up);
+	XMFLOAT4X4 mtxLookAt = Matrix4x4::LookAtLH(playerPos, lookPos, m_xmf3Up);
 #else
 	XMFLOAT4X4 mtxLookAt = Matrix4x4::LookAtRH(m_xmf3Position, xmf3LookAt, xmf3PlayerUp);
 #endif
