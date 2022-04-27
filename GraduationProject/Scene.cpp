@@ -503,6 +503,21 @@ bool CScene::OnProcessingMouseMessage(
 bool CScene::OnProcessingKeyboardMessage(
 	HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
 {
+	switch (nMessageID)
+	{
+	case WM_KEYDOWN:
+		switch (wParam)
+		{
+			case 'E':
+				CheckInteraction();
+				break;
+			default:
+				break;
+		}
+		break;
+	default:
+		break;
+	}
 	return(false);
 }
 
@@ -805,4 +820,19 @@ bool CScene::CheckPlayerInScene(XMFLOAT3 xmf3Shift)
 	}
 
 	return false;
+}
+
+void CScene::CheckInteraction()
+{
+	BoundingBox playerBB = m_pPlayer->GetCollManager()->GetBoundingBox();
+	vector<CCannonObject*> cannon = ((CObjectsShader*)m_ppShaders[ShaderData::objects])->GetCannon();
+
+	for (auto can : cannon)
+	{
+		BoundingSphere BS = can->GetCollisionManager()->GetBoundingSphere();
+		if (playerBB.Contains(BS)) {
+			m_pPlayer->SetInteraction();
+			break;
+		}
+	}
 }

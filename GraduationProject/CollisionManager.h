@@ -21,7 +21,7 @@ public:
 	virtual void LoadFromFileBoundInfo(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CGameObject* pGameObject, string& filename);
 	virtual void UpdateCollisions();
 	virtual BoundingBox GetBoundingBox(bool bSword = false) { return m_xmBoundingBox; }
-	BoundingSphere GetBoundingSphere() { return BoundingSphere(); }
+	BoundingSphere GetBoundingSphere() { return m_xmBoundingSphere; }
 
 protected:
 	BoundingBox m_xmBoundingBox;

@@ -143,6 +143,8 @@ void CAnimPlayer::Move(DWORD dwDirection, float fDistance, bool bUpdateVelocity)
 
 bool CAnimPlayer::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
 {
+	if (isMove) return false;
+
 	switch (nMessageID)
 	{
 		case WM_KEYDOWN:
@@ -198,7 +200,7 @@ bool CAnimPlayer::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM
 
 void CAnimPlayer::SetAnimationTypes()
 {
-	bool bAnimType[track_name::length] = { true, false, true, true, true, true,true,false, false,false,false,false,false,false,false,true,false};
+	bool bAnimType[track_name::length] = { true, false, true, true, true, true,true,false, false,false,false,false,false,true,false,true,false};
 	m_pSkinnedAnimationController->SetAnimationTypes(bAnimType);
 }
 
@@ -209,4 +211,11 @@ void CAnimPlayer::SetAnimationController(ID3D12Device* pd3dDevice, ID3D12Graphic
 	m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, track_name::length, pModel);
 	m_pSkinnedAnimationController->SetCurrentTrackNum(track_name::idle);
 	m_pSkinnedAnimationController->SetAnimationTracks(bAnimType);
+}
+
+void CAnimPlayer::SetInteraction()
+{
+	isMove = !isMove;
+	int track = (isMove) ? track_name::idle : track_name::handling;
+	m_pSkinnedAnimationController->SwitchAnimationState(track_name::handling);
 }

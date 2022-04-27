@@ -71,10 +71,10 @@ public:
 	bool CheckPlayerByObjectBB(XMFLOAT3 xmf3Shift);
 	bool CheckAABB(BoundingBox A, BoundingBox B, XMFLOAT3 xmf3Shift, bool intersect = false);
 	bool CheckPlayerInScene(XMFLOAT3 XMF3Shift);
+	void CheckInteraction();
 
 	void ReleaseUploadBuffers();
 
-	//그래픽 루트 시그너쳐를 생성한다. 
 	ID3D12RootSignature* CreateRootSignature(ID3D12Device* pd3dDevice, D3D12_ROOT_SIGNATURE_FLAGS d3dRootSignatureFlags, UINT nRootParameters, D3D12_ROOT_PARAMETER* pd3dRootParameters, UINT nStaticSamplerDescs, D3D12_STATIC_SAMPLER_DESC* pd3dStaticSamplerDescs);
 	ID3D12RootSignature *CreateGraphicsRootSignature(ID3D12Device *pd3dDevice);
 	ID3D12RootSignature* GetGraphicsRootSignature() { return(m_pd3dGraphicsRootSignature); }
