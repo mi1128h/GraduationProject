@@ -44,4 +44,8 @@ public:
 	void SetAnimationController(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, CLoadedModelInfo* pAngrybotModel);
 	void SetInteraction();
 	void SetAnimationTypes();
+	bool IsPlayerInteraction() { return isMove; }
+
+private:
+	bool isMove = false;
 };

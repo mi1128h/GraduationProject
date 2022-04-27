@@ -143,6 +143,8 @@ void CAnimPlayer::Move(DWORD dwDirection, float fDistance, bool bUpdateVelocity)
 
 bool CAnimPlayer::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
 {
+	if (isMove) return false;
+
 	switch (nMessageID)
 	{
 		case WM_KEYDOWN:
@@ -213,5 +215,7 @@ void CAnimPlayer::SetAnimationController(ID3D12Device* pd3dDevice, ID3D12Graphic
 
 void CAnimPlayer::SetInteraction()
 {
+	isMove = !isMove;
+	int track = (isMove) ? track_name::idle : track_name::handling;
 	m_pSkinnedAnimationController->SwitchAnimationState(track_name::handling);
 }
