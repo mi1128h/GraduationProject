@@ -830,7 +830,9 @@ void CScene::CheckInteraction()
 	for (auto can : cannon)
 	{
 		BoundingSphere BS = can->GetCollisionManager()->GetBoundingSphere();
-		if (playerBB.Contains(BS)) m_pPlayer->SetInteraction();
+		if (playerBB.Contains(BS)) {
+			m_pPlayer->SetInteraction();
+			break;
+		}
 	}
-
 }

@@ -198,7 +198,7 @@ bool CAnimPlayer::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM
 
 void CAnimPlayer::SetAnimationTypes()
 {
-	bool bAnimType[track_name::length] = { true, false, true, true, true, true,true,false, false,false,false,false,false,false,false,true,false};
+	bool bAnimType[track_name::length] = { true, false, true, true, true, true,true,false, false,false,false,false,false,true,false,true,false};
 	m_pSkinnedAnimationController->SetAnimationTypes(bAnimType);
 }
 
@@ -213,5 +213,5 @@ void CAnimPlayer::SetAnimationController(ID3D12Device* pd3dDevice, ID3D12Graphic
 
 void CAnimPlayer::SetInteraction()
 {
-	m_pSkinnedAnimationController->SwitchAnimationState(track_name::attack);
+	m_pSkinnedAnimationController->SwitchAnimationState(track_name::handling);
 }
