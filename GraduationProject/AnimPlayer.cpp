@@ -215,10 +215,21 @@ void CAnimPlayer::SetAnimationController(ID3D12Device* pd3dDevice, ID3D12Graphic
 
 void CAnimPlayer::SetInteraction(XMFLOAT3& center, XMFLOAT4X4& world)
 {
-	XMFLOAT3 pos = XMFLOAT3(center.x,center.y,center.z);
+	XMFLOAT3 lookPos = XMFLOAT3(world._41, world._42, world._43);
+
+#ifdef _WITH_LEFT_HAND_COORDINATES
+	XMFLOAT4X4 mtxLookAt = Matrix4x4::LookAtLH(m_xmf3Position, lookPos, m_xmf3Up);
+#else
+	XMFLOAT4X4 mtxLookAt = Matrix4x4::LookAtRH(m_xmf3Position, xmf3LookAt, xmf3PlayerUp);
+#endif
+	m_xmf3Right = XMFLOAT3(mtxLookAt._11, mtxLookAt._21, mtxLookAt._31);
+	m_xmf3Up = XMFLOAT3(mtxLookAt._12, mtxLookAt._22, mtxLookAt._32);
+	m_xmf3Look = XMFLOAT3(mtxLookAt._13, mtxLookAt._23, mtxLookAt._33);
+
+	XMFLOAT3 pos = XMFLOAT3(center.x, m_xmf3Position.y, center.z);
 	SetPosition(pos);
 
 	isMove = !isMove;
-	int track = (isMove) ? track_name::idle : track_name::handling;
-	m_pSkinnedAnimationController->SwitchAnimationState(track_name::handling);
+	int track = (isMove) ? track_name::handling : track_name::idle;
+	m_pSkinnedAnimationController->SwitchAnimationState(track);
 }
