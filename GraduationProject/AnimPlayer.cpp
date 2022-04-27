@@ -213,8 +213,11 @@ void CAnimPlayer::SetAnimationController(ID3D12Device* pd3dDevice, ID3D12Graphic
 	m_pSkinnedAnimationController->SetAnimationTracks(bAnimType);
 }
 
-void CAnimPlayer::SetInteraction()
+void CAnimPlayer::SetInteraction(XMFLOAT3& center, XMFLOAT4X4& world)
 {
+	XMFLOAT3 pos = XMFLOAT3(center.x,center.y,center.z);
+	SetPosition(pos);
+
 	isMove = !isMove;
 	int track = (isMove) ? track_name::idle : track_name::handling;
 	m_pSkinnedAnimationController->SwitchAnimationState(track_name::handling);

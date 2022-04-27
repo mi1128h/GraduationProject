@@ -42,7 +42,7 @@ public:
 	virtual bool OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam);
 
 	void SetAnimationController(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, CLoadedModelInfo* pAngrybotModel);
-	void SetInteraction();
+	void SetInteraction(XMFLOAT3& center, XMFLOAT4X4& world);
 	void SetAnimationTypes();
 	bool IsPlayerInteraction() { return isMove; }
 

@@ -831,7 +831,7 @@ void CScene::CheckInteraction()
 	{
 		BoundingSphere BS = can->GetCollisionManager()->GetBoundingSphere();
 		if (playerBB.Contains(BS)) {
-			m_pPlayer->SetInteraction();
+			m_pPlayer->SetInteraction(BS.Center,can->m_xmf4x4World);
 			break;
 		}
 	}

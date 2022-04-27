@@ -76,8 +76,7 @@ public:
 	재 플레이어의 위치에서 xmf3Position 방향으로의 벡터가 된다. 현재 플레이어의 위치에서 이 벡터 만큼 이동한다.*/
 	void SetPosition(XMFLOAT3& xmf3Position) {
 		Move(XMFLOAT3(xmf3Position.x -
-			m_xmf3Position.x, xmf3Position.y - m_xmf3Position.y, xmf3Position.z - m_xmf3Position.z),
-			false);
+			m_xmf3Position.x, xmf3Position.y - m_xmf3Position.y, xmf3Position.z - m_xmf3Position.z),false);
 	}
 
 	virtual bool OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam);
@@ -126,5 +125,5 @@ public:
 	//플레이어의 카메라가 3인칭 카메라일 때 플레이어(메쉬)를 렌더링한다. 
 	virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera = NULL);
 	bool IsPlayerFast();
-	virtual void SetInteraction() {};
+	virtual void SetInteraction(XMFLOAT3& center, XMFLOAT4X4& world) {};
 };
