@@ -149,7 +149,6 @@ protected:
 	ID3D12Resource* m_pd3dcbMaterials = NULL;
 	MATERIAL* m_pcbMappedMaterials = NULL;
 	vector<CCollision*> collisions;
-	vector<CCollisionManager*> collManagers;
 
 public:
 	static ID3D12DescriptorHeap* m_pd3dCbvSrvUavDescriptorHeap;

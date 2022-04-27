@@ -478,12 +478,6 @@ void CGameFramework::OnProcessingKeyboardMessage
 		case VK_F9:
 			ChangeSwapChainState();
 			break;
-		case 'W':
-		case 'A':
-		case 'S':
-		case 'D':
-			m_pPlayer->SetVelocity(XMFLOAT3(0,0,0));
-			break;
 		case 'R':
 			m_pcbMappedFrameworkInfo->m_nRenderMode = 0x00;
 			m_pcbMappedFrameworkInfo->m_nBlurMode = 0x00;

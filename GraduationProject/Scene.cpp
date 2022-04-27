@@ -664,7 +664,7 @@ void CScene::SetObjectCollision(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandL
 		string tag = m_ppGameObjects[i]->GetTag();
 		string filename = "../Assets/Model/Bounding/" + tag + ".txt";
 		CCollisionManager* manager = new CCollisionManager(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, m_ppGameObjects[i], filename);
-		collManagers.emplace_back(manager);
+		m_ppGameObjects[i]->SetCollisionManager(manager);
 	}
 }
 
@@ -986,7 +986,6 @@ void CScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera
 			m_ppGameObjects[i]->Animate(m_fElapsedTime);
 			if (!m_ppGameObjects[i]->m_pSkinnedAnimationController) m_ppGameObjects[i]->UpdateTransform(NULL);
 			m_ppGameObjects[i]->Render(pd3dCommandList, pCamera);
-			collManagers[i]->Render(pd3dCommandList, pCamera);
 		}
 	}
 
@@ -998,8 +997,9 @@ bool CScene::CheckPlayerByObjectBB(XMFLOAT3 xmf3Shift)
 {
 	BoundingBox playerBB = m_pPlayer->GetCollManager()->GetBoundingBox();
 
-	for (CCollisionManager* col : collManagers)
+	for (int i=0; i<m_nGameObjects; ++i)
 	{
+		CCollisionManager* col = m_ppGameObjects[i]->GetCollisionManager();
 		col->UpdateCollisions();
 		BoundingBox BB = col->GetBoundingBox();
 		if (CheckAABB(playerBB, BB, xmf3Shift)) return false;

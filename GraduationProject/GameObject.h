@@ -2,6 +2,7 @@
 #include "Mesh.h"
 #include "Camera.h"
 #include "Animation.h"
+#include "CollisionManager.h"
 
 #define RESOURCE_TEXTURE2D			0x01
 #define RESOURCE_TEXTURE2D_ARRAY	0x02	//[]
@@ -138,7 +139,7 @@ public:
 	int 					m_nTextures = 0;
 	CTexture** m_ppTextures = NULL; //0:Albedo, 1:Specular, 2:Metallic, 3:Normal, 4:Emission, 5:DetailAlbedo, 6:DetailNormal
 	_TCHAR(*m_ppstrTextureNames)[64] = NULL;
-
+	
 
 public:
 	static CShader* m_pWireFrameShader;
@@ -207,6 +208,9 @@ public:
 
 	CTexture* m_pTexture;
 
+protected:
+	CCollisionManager* m_CollisionManager = nullptr;
+
 public:
 	void SetMesh(CMesh* pMesh);
 	void SetShader(CShader* pShader);
@@ -216,6 +220,8 @@ public:
 	void SetMaterial(int nMaterial, CMaterial* pMaterial);
 	void SetScale(XMFLOAT3& xmf3Scale) { m_xmf3Scale = xmf3Scale; }
 
+	void SetCollisionManager(CCollisionManager* coll) { m_CollisionManager = coll; }
+	CCollisionManager* GetCollisionManager() { return m_CollisionManager; }
 	void SetChild(CGameObject* pChild, bool bReferenceUpdate = false);
 	void SetTag(char* tagName);
 	string GetTag() { return string(m_pstrTag); }
