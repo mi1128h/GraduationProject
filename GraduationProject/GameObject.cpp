@@ -2,6 +2,7 @@
 #include "GameObject.h"
 #include "Shader.h"
 #include "Scene.h"
+#include "Collision.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -553,7 +554,7 @@ void CGameObject::FindAndSetSkinnedMesh(CSkinnedMesh** ppSkinnedMeshes, int* pnS
 	if (m_pChild) m_pChild->FindAndSetSkinnedMesh(ppSkinnedMeshes, pnSkinnedMesh);
 }
 
-CGameObject* CGameObject::FindFrame(char* pstrFrameName)
+CGameObject* CGameObject::FindFrame(const char* pstrFrameName)
 {
 	CGameObject* pFrameObject = NULL;
 
@@ -754,19 +755,24 @@ void CGameObject::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pC
 		}
 	}
 
+	if (!collisions.empty())
+	{
+		RenderCollision(pd3dCommandList, pCamera);
+	}
+
 	if (m_pSibling) m_pSibling->Render(pd3dCommandList, pCamera);
 	if (m_pChild) m_pChild->Render(pd3dCommandList, pCamera);
 }
 
-void CGameObject::CalculateBoundingBox()
+void CGameObject::RenderCollision(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
 {
-	// 자식 & 형제노드들로부터 순차적으로 바운딩 박스를 Merge 하도록 변경필요
-	//m_xmBoundingBox = m_ppMeshes[0]->m_xmBoundingBox;
-	//for (int i = 1; i < m_nMeshes; i++)BoundingBox::CreateMerged(m_xmBoundingBox, m_xmBoundingBox, m_ppMeshes[i]->m_xmBoundingBox);
-
-	m_xmBoundingBox.Transform(m_xmBoundingBox, XMLoadFloat4x4(&m_xmf4x4World));
+	for (CCollision* col : collisions)
+	{
+		col->UpdateBoundings(m_xmf4x4World);
+		col->Render(pd3dCommandList, pCamera);
+	}
+	UpdateCollision();
 }
-
 
 UINT ReadUnsignedIntegerFromFile(FILE* pInFile)
 {
@@ -800,6 +806,89 @@ int ReadStringFromFile(FILE* pInFile, char* pstrToken)
 	return(nStrLength);
 }
 
+void CGameObject::SetIsRotate(bool bVal)
+{
+	for (CCollision* col : collisions)
+		col->SetIsRotate(bVal);
+
+	if (m_pSibling) m_pSibling->SetIsRotate(bVal);
+	if (m_pChild) m_pChild->SetIsRotate(bVal);
+}
+
+void CGameObject::MakeCollider(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature)
+{
+	CCollision* cols = new CBBCollision(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, m_xmBoundingBox);
+	collisions.emplace_back(cols);
+}
+
+void CGameObject::UpdateCollision()
+{
+	for (CCollision* col : collisions)
+	{
+		BOUNDING_STATE cur_state = col->GetBoundingState();
+		switch (cur_state)
+		{
+		case BOUNDING_STATE::BODY:
+			m_xmBoundingBox = col->GetBoundingBox();
+			break;
+		case BOUNDING_STATE::SPHERE:
+			m_xmBoundingSphere = col->GetBoundingSphere();
+			break;
+		case BOUNDING_STATE::HIERACY:
+			UpdateBoundingHierachy();
+			break;
+		}
+	}
+}
+
+void CGameObject::UpdateBoundingHierachy()
+{
+	for (CCollision* col : collisions)
+	{
+		if (col->GetBoundingState() == BOUNDING_STATE::HIERACY)
+			m_xmBoundingBox = col->GetBoundingBox();
+	}
+
+	if (m_pSibling) m_pSibling->UpdateBoundingHierachy();
+	if (m_pChild) m_pChild->UpdateBoundingHierachy();
+}
+
+void CGameObject::LoadFromCollision(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, string filename)
+{
+	ifstream boundingInfo(filename);
+	string s, frame;
+	XMFLOAT3 center, extends;
+	float radius;
+	while (boundingInfo >> s >> frame)
+	{
+		if (s.compare("<Sphere>:") == 0) 
+		{
+			boundingInfo >> radius;
+			CGameObject* pBoneObject = FindFrame(frame.c_str());
+			CCollision* cols = new CSphereCollision(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, radius);
+			cols->SetFrameObject(pBoneObject);
+
+			cols->ToggleDebug();
+
+			collisions.emplace_back(cols);
+		}
+		if (s.compare("<Box>:") == 0)
+		{
+			boundingInfo >> center.x >> center.y >> center.z;
+			boundingInfo >> extends.x >> extends.y >> extends.z;
+			CGameObject* pBoneObject = FindFrame(frame.c_str());
+			BoundingBox BB;
+			XMStoreFloat3(&BB.Center, XMLoadFloat3(&center));
+			XMStoreFloat3(&BB.Extents, XMLoadFloat3(&extends));
+
+			CCollision* cols = new CBBCollision(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, 
+				BB, BOUNDING_STATE::BODY);
+			cols->SetFrameObject(pBoneObject);
+			collisions.emplace_back(cols);
+		}
+	}
+}
+
 CGameObject* CGameObject::LoadFrameHierarchyFromFile(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CGameObject* pParent, FILE* pInFile, CShader* pShader, int* pnSkinnedMeshes)
 {
 	char pstrToken[64] = { '\0' };
@@ -826,6 +915,10 @@ CGameObject* CGameObject::LoadFrameHierarchyFromFile(ID3D12Device* pd3dDevice, I
 		{
 			CModelMesh* pMesh = new CModelMesh(pd3dDevice, pd3dCommandList);
 			pMesh->LoadMeshFromFile(pd3dDevice, pd3dCommandList, pInFile);
+
+			pGameObject->m_xmBoundingBox = pMesh->m_xmBoundingBox;
+			pGameObject->MakeCollider(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature);
+
 			pGameObject->SetMesh(pMesh);
 
 			/**/pGameObject->SetWireFrameShader();
@@ -840,7 +933,6 @@ CGameObject* CGameObject::LoadFrameHierarchyFromFile(ID3D12Device* pd3dDevice, I
 
 			::ReadStringFromFile(pInFile, pstrToken); //<Mesh>:
 			if (!strcmp(pstrToken, "<Mesh>:")) pSkinnedMesh->LoadMeshFromFile(pd3dDevice, pd3dCommandList, pInFile);
-
 			pGameObject->SetMesh(pSkinnedMesh);
 
 			/**/pGameObject->SetSkinnedAnimationWireFrameShader();
@@ -1184,8 +1276,8 @@ CMovingCoverObject::~CMovingCoverObject()
 
 void CMovingCoverObject::SetPoints(XMFLOAT3 xmf3Center)
 {
-	m_xmf3Point1 = XMFLOAT3(xmf3Center.x, xmf3Center.y, xmf3Center.z - 20.0f);
-	m_xmf3Point2 = XMFLOAT3(xmf3Center.x, xmf3Center.y, xmf3Center.z + 20.0f);
+	m_xmf3Point1 = XMFLOAT3(xmf3Center.x, xmf3Center.y, xmf3Center.z - 200.0f);
+	m_xmf3Point2 = XMFLOAT3(xmf3Center.x, xmf3Center.y, xmf3Center.z + 200.0f);
 }
 
 void CMovingCoverObject::Animate(float fTimeElapsed, CCamera* pCamrea)
@@ -1329,4 +1421,47 @@ void CCannonObject::FireCannonBall(XMFLOAT3 Origin, XMFLOAT3 Velocity)
 		m_pCannonball->SetFire(true);
 		m_pCannonball->SetActive(true);
 	}
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+CMonsterObject::CMonsterObject()
+{
+}
+
+CMonsterObject::~CMonsterObject()
+{
+}
+
+void CMonsterObject::FindTarget()
+{
+	// 현재 위치 중심 m_DetectionRange 거리만큼 탐색
+	// 플레이어가 있다면 m_pTargetObject = 플레이어
+	// idea: 어그로 아이템 추가
+	//		-> 플레이어가 어그로 아이템 사용 시 어그로 아이템을 Target으로 지정
+}
+
+void CMonsterObject::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
+{
+	UpdateTransform(NULL);
+
+	CGameObject::Render(pd3dCommandList, pCamera);
+}
+
+bool CMonsterObject::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
+{
+	switch (nMessageID)
+	{
+	case WM_KEYDOWN:
+		switch (wParam)
+		{
+		case 'Y':
+			int trackNum = m_pSkinnedAnimationController->GetCurrentTrackNum();
+			trackNum++;
+			if (trackNum == track_name::length) trackNum = 0;
+			m_pSkinnedAnimationController->SwitchAnimationState(trackNum);
+			break;
+		}
+	}
+	return(false);
 }

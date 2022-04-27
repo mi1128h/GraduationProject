@@ -68,6 +68,24 @@ PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSPlayer(VS_DIFFUSED_OUTPUT input) : SV_TARGET
 	return(output);
 }
 
+VS_DIFFUSED_OUTPUT VSCollider(VS_DIFFUSED_INPUT input)
+{
+	VS_DIFFUSED_OUTPUT output;
+
+	output.position = mul(mul(mul(float4(input.position, 1.0f), gmtxGameObject), gmtxView), gmtxProjection);
+	output.color = input.color;
+
+	return(output);
+}
+
+PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSCollider(VS_DIFFUSED_OUTPUT input) : SV_TARGET
+{
+	PS_MULTIPLE_RENDER_TARGETS_OUTPUT output;
+	output.f4Scene = output.f4Color = input.color;
+	output.fDepth = 1.0f - input.position.z;
+	return(output);
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 Texture2D gtxtTexture : register(t0);
@@ -104,6 +122,38 @@ PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSTextured(VS_TEXTURED_OUTPUT input) : SV_TARG
 	output.f4Scene = output.f4Color = cColor;
 	output.fDepth = 1.0f - input.position.z;
 
+	return(output);
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+struct VS_NORMAL_INPUT
+{
+	float3 position : POSITION;
+	float3 normal : NORMAL;
+};
+
+struct VS_NORMAL_OUTPUT
+{
+	float4 position : SV_POSITION;
+	float3 normalW : NORMAL;
+};
+
+VS_NORMAL_OUTPUT VSNormalCollider(VS_NORMAL_INPUT input)
+{
+	VS_NORMAL_OUTPUT output;
+
+	output.position = mul(mul(mul(float4(input.position, 1.0f), gmtxGameObject), gmtxView), gmtxProjection);
+	output.normalW = input.normal;
+
+	return(output);
+}
+
+PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSNormalCollider(VS_NORMAL_OUTPUT input) : SV_TARGET
+{
+	PS_MULTIPLE_RENDER_TARGETS_OUTPUT output;
+	output.f4Scene = output.f4Color = float4(1.0f, 0.0f, 0.0f,1.0f);
+	output.fDepth = 1.0f - input.position.z;
 	return(output);
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

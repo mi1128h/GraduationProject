@@ -11,6 +11,7 @@
 #define RESOURCE_STRUCTURED_BUFFER	0x06
 
 class CShader;
+class CCollision;
 
 class CTexture
 {
@@ -138,6 +139,7 @@ public:
 	CTexture** m_ppTextures = NULL; //0:Albedo, 1:Specular, 2:Metallic, 3:Normal, 4:Emission, 5:DetailAlbedo, 6:DetailNormal
 	_TCHAR(*m_ppstrTextureNames)[64] = NULL;
 
+
 public:
 	static CShader* m_pWireFrameShader;
 	static CShader* m_pSkinnedAnimationWireFrameShader;
@@ -202,9 +204,12 @@ public:
 	int	m_nMaterials = 0;
 	CMaterial** m_ppMaterials = NULL;
 
-	BoundingBox						m_xmBoundingBox;
-
 	CTexture* m_pTexture;
+	vector<CCollision*> collisions;
+
+private:
+	BoundingBox	m_xmBoundingBox;
+	BoundingSphere m_xmBoundingSphere;
 
 public:
 	void SetMesh(CMesh* pMesh);
@@ -224,6 +229,8 @@ public:
 
 	virtual void OnPrepareRender() {};
 	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
+
+	void RenderCollision(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
 
 	virtual void CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList);
 	virtual void UpdateShaderVariables(ID3D12GraphicsCommandList *pd3dCommandList);
@@ -252,12 +259,11 @@ public:
 	void Rotate(XMFLOAT4* pxmf4Quaternion);
 
 	void SetActive(bool bActive) { m_bActive = bActive; }
-	void CalculateBoundingBox();
 
 	CGameObject* GetParent() { return(m_pParent); }
 	void UpdateTransform(XMFLOAT4X4* pxmf4x4Parent = NULL);
 
-	CGameObject* FindFrame(char* pstrFrameName);
+	CGameObject* FindFrame(const char* pstrFrameName);
 	void SetActive(char* pstrFrameName, bool bActive);
 	UINT GetMeshType(int n) { return((m_pMesh) ? m_pMesh->GetType() : 0x00); }
 
@@ -276,6 +282,13 @@ public:
 	static CLoadedModelInfo* LoadGeometryAndAnimationFromFile(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, char* pstrFileName, CShader* pShader);
 
 	static void PrintFrameInfo(CGameObject* pGameObject, CGameObject* pParent);
+	void MakeCollider(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature);
+	void SetIsRotate(bool bVal);
+	void LoadFromCollision(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, string filename);
+	BoundingBox GetBoundingBox() { return m_xmBoundingBox; }
+	BoundingSphere GetBoundingSphere() { return m_xmBoundingSphere; }
+	void UpdateCollision();
+	void UpdateBoundingHierachy();
 };
 
 class CRotatingObject : public CGameObject
@@ -442,4 +455,47 @@ class CAngrybotObject : public CGameObject
 public:
 	CAngrybotObject(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, int nAnimationTracks);
 	virtual ~CAngrybotObject();
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+class CMonsterObject : public CGameObject
+{
+public:
+	enum track_name
+	{
+		attack1,
+		attack2,
+		death1,
+		death2,
+		idle1,
+		idle2,
+		walk,
+		length
+	};
+
+
+	CMonsterObject();
+	virtual ~CMonsterObject();
+
+private:
+	LPVOID m_pUpdatedContext;
+
+	CGameObject* m_pTargetObject = NULL;
+	float m_DetectionRange;
+
+	float m_fHp;
+	float m_fDamage;
+
+public:
+	void SetUpdatedContext(LPVOID pContext) { m_pUpdatedContext = pContext; }
+
+	void FindTarget();
+	void SetDetectionRange(float range) { m_DetectionRange = range; }
+	void SetHp(float hp) { m_fHp = hp; }
+	void SetDamage(float damage) { m_fDamage = damage; }
+
+	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
+
+	virtual bool OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam);
 };

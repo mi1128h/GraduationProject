@@ -135,10 +135,19 @@ float CAnimationSet::SetPosition(float fElapsedTime, float fTrackStartTime, floa
 		//			m_fPosition = fmod(fTrackPosition, m_pfKeyFrameTimes[m_nKeyFrames-1]); // m_fPosition = fTrackPosition - int(fTrackPosition / m_pfKeyFrameTimes[m_nKeyFrames-1]) * m_pfKeyFrameTimes[m_nKeyFrames-1];
 		//			m_fPosition = fmod(fTrackPosition, m_fLength); //if (m_fPosition < 0) m_fPosition += m_fLength;
 		//			m_fPosition = fTrackPosition - int(fTrackPosition / m_fLength) * m_fLength;
+
 		break;
 	}
-	case Animation::Type::Once:
-		break;
+		case Animation::Type::Once:
+			m_fPosition += fElapsedTime;
+			if (m_fPosition < fTrackStartTime) m_fPosition = fTrackStartTime;
+
+			if (m_fPosition >= fTrackEndTime)
+			{
+				m_fPosition = fTrackStartTime;
+				m_bLoopEnd = true;
+			}
+			break;
 	case Animation::Type::PingPong:
 		break;
 	}
@@ -157,6 +166,12 @@ void CAnimationSet::Animate(float fElapsedTime, float fTrackWeight, float fTrack
 			m_pAnimationLayers[i].m_ppAnimatedBoneFrameCaches[j]->m_xmf4x4ToParent = m_pAnimationLayers[i].GetSRT(j, fPosition, fTrackWeight);
 		}
 	}
+}
+
+bool CAnimationSet::IsOnceLoopEnd()
+{
+	if (m_nType != Animation::Type::Once) return false;
+	return (m_bLoopEnd) ? true : false;
 }
 
 void CAnimationSet::SetCallbackKeys(int nCallbackKeys)
@@ -259,6 +274,14 @@ void CAnimationController::SetAnimationSets(CAnimationSets* pAnimationSets)
 	if (m_pAnimationSets) m_pAnimationSets->AddRef();
 }
 
+void CAnimationController::SetAnimationSetsType(int nAnimationSet, int nType)
+{
+	if (m_pAnimationSets == nullptr) return;
+
+	m_pAnimationSets->m_ppAnimationSets[nAnimationSet]->SetType(nType);
+}
+
+
 void CAnimationController::SetCallbackKeys(int nAnimationSet, int nCallbackKeys)
 {
 	if (m_pAnimationSets) m_pAnimationSets->SetCallbackKeys(nAnimationSet, nCallbackKeys);
@@ -337,7 +360,50 @@ void CAnimationController::AdvanceTime(float fTimeElapsed, CGameObject* pRootGam
 		{
 			if (m_pAnimationTracks[k].m_bEnable) m_pAnimationSets->m_ppAnimationSets[m_pAnimationTracks[k].m_nAnimationSet]->HandleCallback();
 		}
+
+		for (int i = 0; i < m_nAnimationTracks; i++)
+		{
+			if (m_pAnimationTracks[i].m_bEnable)
+			{
+				CAnimationSet* pAnimationSet = m_pAnimationSets->m_ppAnimationSets[m_pAnimationTracks[i].m_nAnimationSet];
+				if (pAnimationSet->IsOnceLoopEnd())
+				{
+					SetTrackEnable(i, false);
+					SetTrackEnable(0, true);
+					pAnimationSet->m_bLoopEnd = false;
+				}
+			}
+		}
 	}
+}
+
+void CAnimationController::SetAnimationTypes(bool* types)
+{
+	for (int i = 0; i < m_nAnimationTracks; ++i)
+	{
+		int nType = (types[i] == true) ? Animation::Type::Loop : Animation::Type::Once;
+		SetAnimationSetsType(i, nType);
+	}
+}
+
+void CAnimationController::SetAnimationTracks(bool* isSetNumberOne)
+{
+	int index = 0;
+	for (int i = 0; i < m_nAnimationTracks; ++i)
+	{
+		index += (isSetNumberOne[i]) ? 0 : 1;
+		SetTrackAnimationSet(i, index);
+		bool bEnable = (i == m_nCurrentTracks) ? true : false;
+		SetTrackEnable(i, bEnable);
+		++index;
+	}
+}
+
+void CAnimationController::SwitchAnimationState(int nType)
+{
+	SetTrackEnable(m_nCurrentTracks, false);
+	m_nCurrentTracks = nType;
+	SetTrackEnable(m_nCurrentTracks, true);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

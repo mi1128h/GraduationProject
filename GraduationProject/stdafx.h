@@ -14,6 +14,8 @@
 #include <malloc.h>
 #include <memory.h>
 #include <tchar.h>
+#include <fstream>
+#include <regex>
 
 //
 #include <time.h>
@@ -40,6 +42,7 @@
 
 #include <algorithm>
 #include <vector>
+#include <fstream>
 using namespace std;
 
 #ifdef _DEBUG

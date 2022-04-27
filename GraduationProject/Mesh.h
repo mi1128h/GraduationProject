@@ -2,6 +2,7 @@
 #include "Vertex.h"
 
 class CGameObject;
+class CCollision;
 
 ////////////////////////////////////////////////////////////////////////
 class CMesh
@@ -56,7 +57,7 @@ protected:
 	UINT m_nStride = 0;
 
 public:
-	BoundingBox						m_xmBoundingBox;
+	BoundingBox m_xmBoundingBox;
 
 public:
 	UINT GetType() { return(m_nType); }
@@ -74,6 +75,8 @@ public:
 	void CalculateBoundingBox(XMFLOAT3* pxmf3Points, UINT nStride);
 
 	void LoadMeshFromFile(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, FILE* pInFile);
+	void SetBoundingBoxValues(DirectX::XMFLOAT3& max, DirectX::XMFLOAT3& min);
+	virtual void UpdateBoundingTransform(CCollision* pCollision, XMFLOAT4X4& xmf4x4World);
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -261,6 +264,16 @@ public:
 	CSkyBoxMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, float fWidth = 20.0f, float fHeight = 20.0f, float fDepth = 20.0f);
 	virtual ~CSkyBoxMesh();
 };
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+class CSphereMeshIlluminated : public CMeshIlluminated
+{
+public:
+	CSphereMeshIlluminated(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, float fRadius = 2.0f, UINT nSlices = 20, UINT nStacks = 20);
+	virtual ~CSphereMeshIlluminated();
+};
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 class CModelMesh : public CMesh
@@ -320,4 +333,5 @@ public:
 	virtual void ReleaseUploadBuffers();
 
 	virtual void OnPreRender(ID3D12GraphicsCommandList* pd3dCommandList, void* pContext);
+	virtual void UpdateBoundingTransform(CCollision* pCollision, XMFLOAT4X4& xmf4x4World);
 };

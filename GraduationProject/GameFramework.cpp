@@ -313,7 +313,7 @@ void CGameFramework::BuildObjects()
 	m_pScene = new CScene();
 	m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList);
 
-	CTerrainPlayer* pPlayer = new CTerrainPlayer(m_pd3dDevice, m_pd3dCommandList, m_pScene->GetGraphicsRootSignature(), m_pScene->m_pTerrain);
+	CAnimPlayer* pPlayer = new CAnimPlayer(m_pd3dDevice, m_pd3dCommandList, m_pScene->GetGraphicsRootSignature(), m_pScene->m_pTerrain);
 
 	m_pScene->m_pPlayer = m_pPlayer = pPlayer;
 	m_pCamera = m_pPlayer->GetCamera();
@@ -432,6 +432,13 @@ void CGameFramework::OnProcessingKeyboardMessage
 (HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
 {
 	if (m_pScene) m_pScene->OnProcessingKeyboardMessage(hWnd, nMessageID, wParam, lParam);
+	if (m_pPlayer) m_pPlayer->OnProcessingKeyboardMessage(hWnd, nMessageID, wParam, lParam);
+
+	// test
+	CSkinnedAnimationObjectsWireFrameShader* testShader = (CSkinnedAnimationObjectsWireFrameShader*)m_pScene->m_ppShaders[1];
+	for (int i = 0; i < testShader->m_nObjects; ++i) {
+		((CMonsterObject*)(testShader->m_ppObjects[i]))->OnProcessingKeyboardMessage(hWnd, nMessageID, wParam, lParam);
+	}
 
 	switch (nMessageID)
 	{
@@ -464,9 +471,6 @@ void CGameFramework::OnProcessingKeyboardMessage
 		case VK_CONTROL:
 			//m_pScene->FireBullet();
 			break;
-		/*‘F1’ 키를 누르면 1인칭 카메라, 
-		‘F2’ 키를 누르면 스페이스-쉽 카메라로 변경한다, 
-		‘F3’ 키를 누르면 3인칭 카메라로 변경한다.*/ 
 		case VK_F1:
 		case VK_F2:
 		case VK_F3:
@@ -480,23 +484,29 @@ void CGameFramework::OnProcessingKeyboardMessage
 		case VK_F9:
 			ChangeSwapChainState();
 			break;
+		case 'W':
+		case 'A':
+		case 'S':
+		case 'D':
+			m_pPlayer->SetVelocity(XMFLOAT3(0,0,0));
+			break;
 		case 'R':
 			m_pcbMappedFrameworkInfo->m_nRenderMode = 0x00;
 			m_pcbMappedFrameworkInfo->m_nBlurMode = 0x00;
 			break;
-		case 'D':
-			::gbTerrainTessellationWireframe = !::gbTerrainTessellationWireframe;
-			m_pcbMappedFrameworkInfo->m_nRenderMode |= DEBUG_TESSELLATION;
-			break;
+		//case 'D':
+		//	::gbTerrainTessellationWireframe = !::gbTerrainTessellationWireframe;
+		//	m_pcbMappedFrameworkInfo->m_nRenderMode |= DEBUG_TESSELLATION;
+		//	break;
 		case 'B':
 			m_pcbMappedFrameworkInfo->m_nBlurMode = DEBUG_BLURRING;
 			break;
 		case 'Q':
 			m_fSpeedVal += 10.0f;
 			break;
-		case 'W':
-			m_fSpeedVal -= 10.0f;
-			break;
+		//case 'W':
+		//	m_fSpeedVal -= 10.0f;
+		//	break;
 		case 'F':
 			((CCannonObjectsShader*)m_pScene->m_ppShaders[1])->ActivateCannon();
 			break;
@@ -581,7 +591,7 @@ void CGameFramework::ProcessInput()
 				else
 					m_pPlayer->Rotate(cyDelta, cxDelta, 0.0f);
 			}
-			if (dwDirection) m_pPlayer->Move(dwDirection, 5.0f, true);
+			if (dwDirection) m_pPlayer->Move(dwDirection, 2000.0f, true);
 		}
 	}
 	m_pPlayer->Update(m_GameTimer.GetTimeElapsed());
