@@ -93,22 +93,23 @@ void CBBCollision::UpdateBound(BoundingBox& BB, BoundingSphere& BS)
 
 ////////////////////////////////
 
-CSphereCollision::CSphereCollision(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, float fradius)
+CSphereCollision::CSphereCollision(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, BoundingSphere BS)
 {
-	XMFLOAT3 center = XMFLOAT3(0.0f, 0.0f, 0.0f);
-	SetBoundingSphere(center, fradius);
+	SetBoundingSphere(BS);
 	
-	CSphereMeshIlluminated* DebugSphere = new CSphereMeshIlluminated(pd3dDevice, pd3dCommandList, fradius);
+	CSphereMeshIlluminated* DebugSphere = new CSphereMeshIlluminated(pd3dDevice, pd3dCommandList, BS.Radius);
 	SetMesh(DebugSphere);
 
 	SetCollisionMaterial(pd3dDevice, pd3dGraphicsRootSignature, pd3dCommandList);
 	m_bDebug = true;
 }
 
-void CSphereCollision::SetBoundingSphere(DirectX::XMFLOAT3& center, float fradius)
+void CSphereCollision::SetBoundingSphere(BoundingSphere& BS)
 {
-	XMStoreFloat3(&m_xmCollBoundingSphere.Center, XMLoadFloat3(&center));
-	m_xmCollBoundingSphere.Radius = fradius;
+	XMStoreFloat3(&m_xmCollBoundingSphere.Center, XMLoadFloat3(&BS.Center));
+	m_xmCollBoundingSphere.Radius = BS.Radius;
+	SetPosition(m_xmCollBoundingSphere.Center);
+	UpdateTransform(nullptr);
 }
 
 void CSphereCollision::UpdateBound(BoundingBox& BB, BoundingSphere& BS)

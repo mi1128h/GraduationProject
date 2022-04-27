@@ -24,9 +24,15 @@ void CCollisionManager::LoadFromFileBoundInfo(ID3D12Device* pd3dDevice, ID3D12Gr
 	{
 		if (s.compare("<Sphere>:") == 0)
 		{
+			boundingInfo >> center.x >> center.y >> center.z;
 			boundingInfo >> radius;
 			CGameObject* pBoneObject = pGameObject->FindFrame(frame.c_str());
-			CCollision* cols = new CSphereCollision(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, radius);
+
+			BoundingSphere BS;
+			XMStoreFloat3(&BS.Center, XMLoadFloat3(&center));
+			BS.Radius = radius;
+
+			CCollision* cols = new CSphereCollision(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, BS);
 			cols->SetFrameObject(pBoneObject);
 			collisions[static_cast<int>(BOUNDING_INFO::SPHERE)] = cols;
 		}

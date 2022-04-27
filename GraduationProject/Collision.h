@@ -54,11 +54,11 @@ private:
 class CSphereCollision : public CCollision
 {
 public:
-	CSphereCollision(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, float fradius);
+	CSphereCollision(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, BoundingSphere BS);
 	~CSphereCollision();
 	
 	virtual void SetCollisionMaterial(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3dGraphicsRootSignature, ID3D12GraphicsCommandList* pd3dCommandList);
-	void SetBoundingSphere(DirectX::XMFLOAT3& center, float fradius);
+	void SetBoundingSphere(BoundingSphere& BS);
 
 	virtual void UpdateBound(BoundingBox& BB, BoundingSphere& BS);
 	virtual void UpdateBoundTransform();
