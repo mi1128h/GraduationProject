@@ -477,7 +477,7 @@ private:
 	LPVOID m_pUpdatedContext;
 
 	CGameObject* m_pTargetObject = NULL;
-	float m_DetectionRange;
+	float m_fDetectionRange = 200.0f;
 
 	float m_fHp;
 	float m_fDamage;
@@ -486,11 +486,15 @@ public:
 	void SetUpdatedContext(LPVOID pContext) { m_pUpdatedContext = pContext; }
 
 	void FindTarget();
-	void SetDetectionRange(float range) { m_DetectionRange = range; }
+	void ChaseTarget();
+	void AttackTarget();
+
+	void SetDetectionRange(float range) { m_fDetectionRange = range; }
 	void SetHp(float hp) { m_fHp = hp; }
 	void SetDamage(float damage) { m_fDamage = damage; }
 
 	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
+	virtual void Animate(float fTimeElapsed, CCamera* pCamera = NULL);
 
 	virtual bool OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam);
 };

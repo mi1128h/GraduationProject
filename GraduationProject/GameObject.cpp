@@ -1343,10 +1343,22 @@ CMonsterObject::~CMonsterObject()
 
 void CMonsterObject::FindTarget()
 {
-	// 현재 위치 중심 m_DetectionRange 거리만큼 탐색
-	// 플레이어가 있다면 m_pTargetObject = 플레이어
-	// idea: 어그로 아이템 추가
-	//		-> 플레이어가 어그로 아이템 사용 시 어그로 아이템을 Target으로 지정
+}
+
+void CMonsterObject::ChaseTarget()
+{
+}
+
+void CMonsterObject::AttackTarget()
+{
+	int curNum = m_pSkinnedAnimationController->GetCurrentTrackNum();
+
+	int randomNum = rand() % 2;
+	int trackNum = randomNum ? track_name::attack1 : track_name::attack2;
+
+	if (curNum == track_name::idle1 || curNum == track_name::idle2 || curNum == track_name::walk) {
+		m_pSkinnedAnimationController->SwitchAnimationState(trackNum);
+	}
 }
 
 void CMonsterObject::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
@@ -1354,6 +1366,17 @@ void CMonsterObject::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera*
 	UpdateTransform(NULL);
 
 	CGameObject::Render(pd3dCommandList, pCamera);
+}
+
+void CMonsterObject::Animate(float fTimeElapsed, CCamera* pCamera)
+{
+	FindTarget();
+	//if(플레이어와 충돌)
+	//if (m_pTargetObject != NULL) {
+		AttackTarget();
+	//}
+
+	CGameObject::Animate(fTimeElapsed, pCamera);
 }
 
 bool CMonsterObject::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
