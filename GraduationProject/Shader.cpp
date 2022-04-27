@@ -1869,6 +1869,7 @@ void CMonsterObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSig
 
 		bool bAnimType[CMonsterObject::track_name::length] = { false, false, false, false, true, true, true };
 		pObject->m_pSkinnedAnimationController->SetAnimationTypes(bAnimType);
+		pObject->m_pSkinnedAnimationController->SetIdleNum(CMonsterObject::track_name::idle1);
 
 		m_ppObjects[i++] = pObject;
 	}

@@ -195,10 +195,12 @@ public:
 private:
 	//int m_nTracks = track_name::length;
 	int m_nCurrentTracks = 0;
+	int m_idleNum = 0;
 
 public:
 	int GetCurrentTrackNum() { return m_nCurrentTracks; }
 	void SetCurrentTrackNum(int index) { m_nCurrentTracks = index; }
+	void SetIdleNum(int num) { m_idleNum = num; }
 
 	void UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList);
 
