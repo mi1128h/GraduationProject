@@ -1330,3 +1330,46 @@ void CCannonObject::FireCannonBall(XMFLOAT3 Origin, XMFLOAT3 Velocity)
 		m_pCannonball->SetActive(true);
 	}
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+CMonsterObject::CMonsterObject()
+{
+}
+
+CMonsterObject::~CMonsterObject()
+{
+}
+
+void CMonsterObject::FindTarget()
+{
+	// 현재 위치 중심 m_DetectionRange 거리만큼 탐색
+	// 플레이어가 있다면 m_pTargetObject = 플레이어
+	// idea: 어그로 아이템 추가
+	//		-> 플레이어가 어그로 아이템 사용 시 어그로 아이템을 Target으로 지정
+}
+
+void CMonsterObject::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
+{
+	UpdateTransform(NULL);
+
+	CGameObject::Render(pd3dCommandList, pCamera);
+}
+
+bool CMonsterObject::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
+{
+	switch (nMessageID)
+	{
+	case WM_KEYDOWN:
+		switch (wParam)
+		{
+		case 'Y':
+			int trackNum = m_pSkinnedAnimationController->GetCurrentTrackNum();
+			trackNum++;
+			if (trackNum == track_name::length) trackNum = 0;
+			m_pSkinnedAnimationController->SwitchAnimationState(trackNum);
+			break;
+		}
+	}
+	return(false);
+}

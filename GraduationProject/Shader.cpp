@@ -611,6 +611,9 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 	string s;
 	int n;
 	while (metaInfo >> s >> n) {
+		if (s.compare("crystal:") == 0) {
+			m_nObjects += n;
+		}
 		if (s.compare("cannon:") == 0) {
 			m_nObjects += n;
 		}
@@ -632,10 +635,19 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 		if (s.compare("house_4:") == 0) {
 			m_nObjects += n;
 		}
+		if (s.compare("floor_segment:") == 0) {
+			m_nObjects += n;
+		}
 	}
 
 	m_ppObjects = new CGameObject * [m_nObjects];
 	int i = 0;
+
+	// crystal
+	CLoadedModelInfo* pCrystalModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/crystal_17_2.bin", NULL);
+	CTexture* pCrystalTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
+	pCrystalTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Model/Texture/crystal_17_2.dds", 0);
+	CScene::CreateShaderResourceViews(pd3dDevice, pCrystalTexture, Signature::Graphics::model_diffuse, true);
 
 	// cannon
 	CLoadedModelInfo* pCannonModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/cannon.bin", NULL);
@@ -679,6 +691,12 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 	float houseOffsetZ = 20.0f;
 	float houseOffsetZ_ = 18000.0f;
 
+	// floor_segment
+	CLoadedModelInfo* pFloorModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/floor_segment.bin", NULL);
+	CTexture* pFloorTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
+	pFloorTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Model/Texture/floor_segment_updated.dds", 0);
+	CScene::CreateShaderResourceViews(pd3dDevice, pFloorTexture, Signature::Graphics::model_diffuse, true);
+
 	// 
 	string line;
 	smatch match;
@@ -719,8 +737,8 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 
 			pObject->SetCannonball(pCannonballObject);
 
-			float transX = px * (xmf3TerrainScale.x + 30.0f);
-			float transZ = pz * (xmf3TerrainScale.z + 30.0f) + 20000.0f;
+			float transX = px * xmf3TerrainScale.x * 257.0f / 150.0f;
+			float transZ = pz * xmf3TerrainScale.z * 257.0f / 150.0f;
 			float terrainY = pTerrain->GetHeight(transX, transZ);
 
 			XMFLOAT3 position = XMFLOAT3(transX, terrainY + 80.0f * sy, transZ);
@@ -733,6 +751,7 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 			pObject->SetTag("cannon");
 
 			m_ppObjects[i++] = pObject;
+			m_vCannonObjects.push_back(pObject);
 		}
 		else if (name.compare("Barricade_01") == 0) {
 			CCoverObject* pObject = NULL;
@@ -742,8 +761,8 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 
 			pObject->m_pTexture = pCoverTexture;
 			
-			float transX = px * (xmf3TerrainScale.x + 30.0f);
-			float transZ = pz * (xmf3TerrainScale.z + 30.0f) + 20000.0f;
+			float transX = px * xmf3TerrainScale.x * 257.0f / 150.0f;
+			float transZ = pz * xmf3TerrainScale.z * 257.0f / 150.0f;
 			float terrainY = pTerrain->GetHeight(transX, transZ);
 
 			XMFLOAT3 position = XMFLOAT3(transX, terrainY + 20.0f * sy, transZ);
@@ -767,8 +786,8 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 
 			pObject->m_pTexture = pCoverTexture;
 			
-			float transX = px * (xmf3TerrainScale.x + 30.0f);
-			float transZ = pz * (xmf3TerrainScale.z + 30.0f) + 20000.0f;
+			float transX = px * xmf3TerrainScale.x * 257.0f / 150.0f;
+			float transZ = pz * xmf3TerrainScale.z * 257.0f / 150.0f;
 			float terrainY = pTerrain->GetHeight(transX, transZ);
 
 			XMFLOAT3 position = XMFLOAT3(transX, terrainY + 20.0f * sy, transZ);
@@ -784,6 +803,48 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 
 			m_ppObjects[i++] = pObject;
 		}
+		else if (name.compare("crystal") == 0) {
+			CGameObject* pObject = NULL;
+
+			pObject = new CGameObject;
+			pObject->SetChild(pCrystalModel->m_pModelRootObject, true);
+
+			pObject->m_pTexture = pCrystalTexture;
+
+			float transX = px * xmf3TerrainScale.x * 257.0f / 150.0f;
+			float transZ = pz * xmf3TerrainScale.z * 257.0f / 150.0f;
+			float terrainY = pTerrain->GetHeight(transX, transZ);
+
+			XMFLOAT3 position = XMFLOAT3(transX, terrainY + 1.0f * sy, transZ);
+			pObject->SetPosition(position);
+			pObject->SetScale(1, 1, 1);
+			XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
+			pObject->Rotate(&xmf4Rotation);
+			//pObject->Rotate(90.0f, 0.0f, 0.0f);
+
+			m_ppObjects[i++] = pObject;
+		}
+		else if (name.compare("floor_segment") == 0) {
+			CGameObject* pObject = NULL;
+
+			pObject = new CGameObject;
+			pObject->SetChild(pFloorModel->m_pModelRootObject, true);
+
+			pObject->m_pTexture = pFloorTexture;
+
+			float transX = px * xmf3TerrainScale.x * 257.0f / 150.0f;
+			float transZ = pz * xmf3TerrainScale.z * 257.0f / 150.0f;
+			float terrainY = pTerrain->GetHeight(transX, transZ);
+
+			XMFLOAT3 position = XMFLOAT3(transX, terrainY + 1.0f * sy, transZ);
+			pObject->SetPosition(position);
+			pObject->SetScale(100, 100, 100);
+			XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
+			pObject->Rotate(&xmf4Rotation);
+			//pObject->Rotate(90.0f, 0.0f, 0.0f);
+
+			m_ppObjects[i++] = pObject;
+		}
 		else if (name.compare("house_1") == 0) {
 			CGameObject* pObject = NULL;
 
@@ -792,8 +853,8 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 
 			pObject->m_pTexture = pHouse1Texture;
 
-			float transX = px * (xmf3TerrainScale.x + houseOffsetX) + houseOffsetX_;;
-			float transZ = pz * (xmf3TerrainScale.z + houseOffsetZ) + houseOffsetZ_;
+			float transX = px * xmf3TerrainScale.x * 257.0f / 150.0f;
+			float transZ = pz * xmf3TerrainScale.z * 257.0f / 150.0f;
 			float terrainY = pTerrain->GetHeight(transX, transZ);
 
 			XMFLOAT3 position = XMFLOAT3(transX, terrainY + 60.0f * sy, transZ);
@@ -814,8 +875,8 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 
 			pObject->m_pTexture = pHouse2Texture;
 
-			float transX = px * (xmf3TerrainScale.x + houseOffsetX) + houseOffsetX_;
-			float transZ = pz * (xmf3TerrainScale.z + houseOffsetZ) + houseOffsetZ_;
+			float transX = px * xmf3TerrainScale.x * 257.0f / 150.0f;
+			float transZ = pz * xmf3TerrainScale.z * 257.0f / 150.0f;
 			float terrainY = pTerrain->GetHeight(transX, transZ);
 
 			XMFLOAT3 position = XMFLOAT3(transX, terrainY + 66.0f * sy, transZ);
@@ -836,8 +897,8 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 
 			pObject->m_pTexture = pHouse3Texture;
 
-			float transX = px * (xmf3TerrainScale.x + houseOffsetX) + houseOffsetX_;;
-			float transZ = pz * (xmf3TerrainScale.z + houseOffsetZ) + houseOffsetZ_;
+			float transX = px * xmf3TerrainScale.x * 257.0f / 150.0f;
+			float transZ = pz * xmf3TerrainScale.z * 257.0f / 150.0f;
 			float terrainY = pTerrain->GetHeight(transX, transZ);
 
 			XMFLOAT3 position = XMFLOAT3(transX, terrainY + 90.0f * sy, transZ);
@@ -858,8 +919,8 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 
 			pObject->m_pTexture = pHouse4Texture;
 
-			float transX = px * (xmf3TerrainScale.x + houseOffsetX) + houseOffsetX_;;
-			float transZ = pz * (xmf3TerrainScale.z + houseOffsetZ) + houseOffsetZ_;
+			float transX = px * xmf3TerrainScale.x * 257.0f / 150.0f;
+			float transZ = pz * xmf3TerrainScale.z * 257.0f / 150.0f;
 			float terrainY = pTerrain->GetHeight(transX, transZ);
 
 			XMFLOAT3 position = XMFLOAT3(transX, terrainY + 60.0f * sy, transZ);
@@ -1139,8 +1200,6 @@ void CCannonObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSign
 	CScene::CreateShaderResourceViews(pd3dDevice, pModelTexture, Signature::Graphics::model_diffuse, true);
 	pCannonObject->m_pTexture = pModelTexture;
 	//pCannonObject->SetModelTexture(pModelTexture);
-	CGameObject* pCannonL = pCannonObject->FindFrame("Cube_001");
-	if (pCannonL) pCannonL->m_xmf4x4ToParent = Matrix4x4::Multiply(XMMatrixRotationX(120.0f), pCannonL->m_xmf4x4ToParent);
 
 #ifndef _WITH_BATCH_MATERIAL
 #endif
@@ -1665,7 +1724,7 @@ void CSkinnedAnimationObjectsWireFrameShader::ReleaseObjects()
 	}
 }
 
-void CSkinnedAnimationObjectsWireFrameShader::AnimateObjects(float fTimeElapsed)
+void CSkinnedAnimationObjectsWireFrameShader::AnimateObjects(float fTimeElapsed, CCamera* pCamera)
 {
 	m_fElapsedTime = fTimeElapsed;
 }
@@ -1690,3 +1749,133 @@ void CSkinnedAnimationObjectsWireFrameShader::Render(ID3D12GraphicsCommandList* 
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+CMonsterObjectsShader::CMonsterObjectsShader()
+{
+}
+
+CMonsterObjectsShader::~CMonsterObjectsShader()
+{
+
+}
+
+void CMonsterObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3dGraphicsRootSignature, ID3D12GraphicsCommandList* pd3dCommandList, void* pContext)
+{
+	CHeightMapTerrain* pTerrain = (CHeightMapTerrain*)pContext;
+
+	float fTerrainWidth = pTerrain->GetWidth();
+	float fTerrainLength = pTerrain->GetLength();
+	XMFLOAT3 xmf3TerrainScale = pTerrain->GetScale();
+
+
+	ifstream metaInfo("../Assets/Image/Terrain/ObjectsMetaInfo.txt");
+	ifstream objectsInfo("../Assets/Image/Terrain/ObjectsInfo.txt");
+
+	string s;
+	int n;
+	while (metaInfo >> s >> n) {
+		if (s.compare("Zombie_1:") == 0) {
+			m_nObjects += n;
+		}
+		if (s.compare("Zombie_2:") == 0) {
+			m_nObjects += n;
+		}
+	}	
+
+	m_ppObjects = new CGameObject * [m_nObjects];
+	int i = 0;
+
+	// Zombie_1
+	CLoadedModelInfo* pZombieModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/ZombieGirl.bin", NULL);
+	CTexture* pZombieTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
+	pZombieTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Model/Texture/zombie_diffuse.dds", 0);
+	CScene::CreateShaderResourceViews(pd3dDevice, pZombieTexture, Signature::Graphics::animation_diffuse, true);
+
+	// Zombie_2
+	CLoadedModelInfo* pClownModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/WhiteClown.bin", NULL);
+	CTexture* pClownTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
+	pClownTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Model/Texture/whiteclown_diffuse.dds", 0);
+	CScene::CreateShaderResourceViews(pd3dDevice, pClownTexture, Signature::Graphics::animation_diffuse, true);
+
+	// 
+	string line;
+	smatch match;
+	regex reName(R"(name: (\w+))");
+	regex rePosition(R"(position: \(([+-]?\d*[.]?\d*), ([+-]?\d*[.]?\d*), ([+-]?\d*[.]?\d*)\))");
+	regex reRotation(R"(rotation: \(([+-]?\d*[.]?\d*), ([+-]?\d*[.]?\d*), ([+-]?\d*[.]?\d*), ([+-]?\d*[.]?\d*)\))");
+	regex reScale(R"(scale: \(([+-]?\d*[.]?\d*), ([+-]?\d*[.]?\d*), ([+-]?\d*[.]?\d*)\))");
+	while (getline(objectsInfo, line)) {
+		regex_match(line, match, reName);
+		string name = match[1].str();
+
+		getline(objectsInfo, line);
+		regex_match(line, match, rePosition);
+		float px = stof(match[1].str());
+		float py = stof(match[2].str());
+		float pz = stof(match[3].str());
+
+		getline(objectsInfo, line);
+		regex_match(line, match, reRotation);
+		float rx = stof(match[1].str());
+		float ry = stof(match[2].str());
+		float rz = stof(match[3].str());
+		float rw = stof(match[4].str());
+
+		getline(objectsInfo, line);
+		regex_match(line, match, reScale);
+		float sx = stof(match[1].str());
+		float sy = stof(match[2].str());
+		float sz = stof(match[3].str());
+
+		if (name.compare("Zombie_1") != 0 && name.compare("Zombie_2") != 0) {
+			continue;
+		}
+
+		//
+		CMonsterObject* pObject = NULL;
+
+		pObject = new CMonsterObject;
+		pObject->SetUpdatedContext(pTerrain);
+
+		if (name.compare("Zombie_1") == 0) {
+			pObject->SetChild(pZombieModel->m_pModelRootObject, true);
+			pObject->m_pTexture = pZombieTexture;
+			pObject->m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, CMonsterObject::track_name::length, pZombieModel);
+		}
+		if (name.compare("Zombie_2") == 0) {
+			pObject->SetChild(pClownModel->m_pModelRootObject, true);
+			pObject->m_pTexture = pClownTexture;
+			pObject->m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, CMonsterObject::track_name::length, pClownModel);
+		}
+
+		float transX = px * xmf3TerrainScale.x * 257.0f / 150.0f;
+		float transZ = pz * xmf3TerrainScale.z * 257.0f / 150.0f;
+		float terrainY = pTerrain->GetHeight(transX, transZ);
+
+		XMFLOAT3 position = XMFLOAT3(transX, terrainY + 1.0f * sy, transZ);
+		pObject->SetPosition(position);
+		pObject->SetScale(sx, sy, sz);
+		XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
+		pObject->Rotate(&xmf4Rotation);
+		//pObject->Rotate(90.0f, 0.0f, 0.0f);
+		//pObject->Rotate(0.0f, 180.0f, 0.0f);
+		pObject->SetIsRotate(true);
+
+		int TrackNum = CMonsterObject::track_name::idle1;
+
+		pObject->m_pSkinnedAnimationController->SetCurrentTrackNum(TrackNum);
+
+		//pMonsterObject->m_pSkinnedAnimationController->SetAnimationTracks();
+		for (int i = 0; i < pObject->m_pSkinnedAnimationController->m_nAnimationTracks; ++i)
+		{
+			pObject->m_pSkinnedAnimationController->SetTrackAnimationSet(i, i * 2 + 1);
+			bool bEnable = (i == TrackNum) ? true : false;
+			pObject->m_pSkinnedAnimationController->SetTrackEnable(i, bEnable);
+		}
+
+		bool bAnimType[CMonsterObject::track_name::length] = { false, false, false, false, true, true, true };
+		pObject->m_pSkinnedAnimationController->SetAnimationTypes(bAnimType);
+
+		m_ppObjects[i++] = pObject;
+	}
+}
