@@ -369,8 +369,7 @@ void CAnimationController::AdvanceTime(float fTimeElapsed, CGameObject* pRootGam
 				CAnimationSet* pAnimationSet = m_pAnimationSets->m_ppAnimationSets[m_pAnimationTracks[i].m_nAnimationSet];
 				if (pAnimationSet->IsOnceLoopEnd())
 				{
-					SetTrackEnable(i, false);
-					SetTrackEnable(m_idleNum, true);
+					SwitchAnimationState(m_idleNum);
 					pAnimationSet->m_bLoopEnd = false;
 				}
 			}
