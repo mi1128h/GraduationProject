@@ -549,7 +549,8 @@ void CGameFramework::ProcessInput()
 	bool bProcessedByScene = false;
 	if (GetKeyboardState(pKeysBuffer) && m_pScene) bProcessedByScene = m_pScene->ProcessInput(pKeysBuffer);
 
-	if (dynamic_cast<CAnimPlayer*>(m_pPlayer)->IsPlayerInteraction()) return;
+	bProcessedByScene = dynamic_cast<CAnimPlayer*>(m_pPlayer)->IsPlayerInteraction();
+
 
 	if (!bProcessedByScene)
 	{
