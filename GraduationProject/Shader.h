@@ -148,6 +148,7 @@ public:
 	virtual int GetObjectsNum() { return(m_nObjects); }
 
 	void CalculateBoundingBox();
+	vector<CCannonObject*> GetCannon() { return m_vCannonObjects; }
 
 protected:
 	CGameObject** m_ppObjects = NULL;

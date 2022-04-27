@@ -210,3 +210,8 @@ void CAnimPlayer::SetAnimationController(ID3D12Device* pd3dDevice, ID3D12Graphic
 	m_pSkinnedAnimationController->SetCurrentTrackNum(track_name::idle);
 	m_pSkinnedAnimationController->SetAnimationTracks(bAnimType);
 }
+
+void CAnimPlayer::SetInteraction()
+{
+	m_pSkinnedAnimationController->SwitchAnimationState(track_name::attack);
+}
