@@ -828,8 +828,8 @@ void CScene::CheckMonsterCollision()
 
 	for (auto& monster : monsters)
 	{
-		BoundingBox BB = monster->GetCollisionManager()->GetBoundingBox();
-		if (playerBS.Contains(BB)) {
+		BoundingSphere BS = monster->GetCollisionManager()->GetBoundingSphere();
+		if (BS.Contains(playerBS)) {
 			((CMonsterObject*)monster)->AttackTarget();
 		}
 	}
