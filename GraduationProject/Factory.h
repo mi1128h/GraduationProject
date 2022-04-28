@@ -6,10 +6,11 @@
 class CFactory
 {
 public:
-	CFactory();
-	~CFactory();
+	CFactory() {};
+	~CFactory() {};
 
-	virtual void BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3dGraphicsRootSignature, ID3D12GraphicsCommandList* pd3dCommandList, void* pContext);
+	virtual void BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3dGraphicsRootSignature, 
+		ID3D12GraphicsCommandList* pd3dCommandList, void* pContext) = 0;
 	virtual void AnimateObjects(float fTimeElapsed, CCamera* pCamrea = NULL);
 	void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
 
@@ -22,8 +23,8 @@ protected:
 class CObjectFactory : public CFactory
 {
 public:
-	CObjectFactory();
-	~CObjectFactory();
+	CObjectFactory() {};
+	~CObjectFactory() {};
 
 	virtual void BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3dGraphicsRootSignature, ID3D12GraphicsCommandList* pd3dCommandList, void* pContext);
 };
@@ -31,8 +32,8 @@ public:
 class CCannonFactory : public CFactory
 {
 public:
-	CCannonFactory();
-	~CCannonFactory();
+	CCannonFactory() {};
+	~CCannonFactory() {};
 
 	virtual void BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3dGraphicsRootSignature, ID3D12GraphicsCommandList* pd3dCommandList, void* pContext);
 };
@@ -40,8 +41,8 @@ public:
 class CMonsterFactory : public CFactory
 {
 public:
-	CMonsterFactory();
-	~CMonsterFactory();
+	CMonsterFactory() {};
+	~CMonsterFactory() {};
 
 	virtual void BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3dGraphicsRootSignature, ID3D12GraphicsCommandList* pd3dCommandList, void* pContext);
 };

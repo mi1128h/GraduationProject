@@ -144,16 +144,10 @@ public:
 	virtual void ReleaseUploadBuffers();
 	
 	virtual void Render(ID3D12GraphicsCommandList * pd3dCommandList, CCamera * pCamera);
-	virtual CGameObject** GetObjects() { return(m_ppObjects); }
-	virtual int GetObjectsNum() { return(m_nObjects); }
-
-	void CalculateBoundingBox();
-	vector<CCannonObject*> GetCannon() { return m_vCannonObjects; }
 
 protected:
 	CGameObject** m_ppObjects = NULL;
 	int m_nObjects = 0;
-	vector<CCannonObject*> m_vCannonObjects;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

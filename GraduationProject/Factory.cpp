@@ -3,18 +3,6 @@
 #include "Scene.h"
 
 
-CFactory::CFactory()
-{
-}
-
-CFactory::~CFactory()
-{
-}
-
-void CFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3dGraphicsRootSignature, ID3D12GraphicsCommandList* pd3dCommandList, void* pContext)
-{
-}
-
 void CFactory::AnimateObjects(float fTimeElapsed, CCamera* pCamrea)
 {
 	for (auto &object : _gameObjects)
@@ -29,13 +17,6 @@ void CFactory::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCame
 
 //////
 
-CObjectFactory::CObjectFactory()
-{
-}
-
-CObjectFactory::~CObjectFactory()
-{
-}
 
 void CObjectFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3dGraphicsRootSignature, ID3D12GraphicsCommandList* pd3dCommandList, void* pContext)
 {
@@ -300,14 +281,6 @@ void CObjectFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 
 ///
 
-CCannonFactory::CCannonFactory()
-{
-}
-
-CCannonFactory::~CCannonFactory()
-{
-}
-
 
 void CCannonFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3dGraphicsRootSignature, ID3D12GraphicsCommandList* pd3dCommandList, void* pContext)
 {
@@ -391,13 +364,6 @@ void CCannonFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 
 ///
 
-CMonsterFactory::CMonsterFactory()
-{
-}
-
-CMonsterFactory::~CMonsterFactory()
-{
-}
 
 void CMonsterFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3dGraphicsRootSignature, ID3D12GraphicsCommandList* pd3dCommandList, void* pContext)
 {
