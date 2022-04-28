@@ -196,8 +196,11 @@ private:
 	//int m_nTracks = track_name::length;
 	int m_nCurrentTracks = 0;
 	int m_idleNum = 0;
+	bool isAttack = false;
 
 public:
+	void SetAttackEnable(bool value) { isAttack = value; }
+	bool GetAttackEnable() { return isAttack; }
 	int GetCurrentTrackNum() { return m_nCurrentTracks; }
 	void SetCurrentTrackNum(int index) { m_nCurrentTracks = index; }
 	void SetIdleNum(int num) { m_idleNum = num; }

@@ -1358,6 +1358,7 @@ void CMonsterObject::AttackTarget()
 
 	if (curNum == track_name::idle1 || curNum == track_name::idle2 || curNum == track_name::walk) {
 		m_pSkinnedAnimationController->SwitchAnimationState(trackNum);
+		m_pSkinnedAnimationController->SetAttackEnable(true);
 	}
 }
 

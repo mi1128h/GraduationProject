@@ -371,6 +371,7 @@ void CAnimationController::AdvanceTime(float fTimeElapsed, CGameObject* pRootGam
 				{
 					SwitchAnimationState(m_idleNum);
 					pAnimationSet->m_bLoopEnd = false;
+					isAttack = false;
 				}
 			}
 		}
