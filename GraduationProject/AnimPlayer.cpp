@@ -215,6 +215,23 @@ void CAnimPlayer::SetAnimationController(ID3D12Device* pd3dDevice, ID3D12Graphic
 
 void CAnimPlayer::SetInteraction(XMFLOAT3& center, XMFLOAT4X4& world)
 {
+	SetPlayerLookAtPos(world, center);
+
+	XMFLOAT3 pos = XMFLOAT3(center.x, m_xmf3Position.y, center.z);
+	SetPosition(pos);
+
+	XMFLOAT3 xmf3Position = GetPosition();
+	xmf3Position = Vector3::Add(xmf3Position,m_xmf3Look, 30.0f);
+	SetPosition(xmf3Position);
+
+	isMove = !isMove;
+	int track = (isMove) ? track_name::handling : track_name::idle;
+	m_pSkinnedAnimationController->SwitchAnimationState(track);
+}
+
+
+void CAnimPlayer::SetPlayerLookAtPos(DirectX::XMFLOAT4X4& world, DirectX::XMFLOAT3& center)
+{
 	XMFLOAT3 lookPos = XMFLOAT3(world._41, 0.0f, world._43);
 	XMFLOAT3 playerPos = XMFLOAT3(m_xmf3Position.x, 0.0f, m_xmf3Position.z);
 
@@ -226,11 +243,4 @@ void CAnimPlayer::SetInteraction(XMFLOAT3& center, XMFLOAT4X4& world)
 	m_xmf3Right = XMFLOAT3(mtxLookAt._11, mtxLookAt._21, mtxLookAt._31);
 	m_xmf3Up = XMFLOAT3(mtxLookAt._12, mtxLookAt._22, mtxLookAt._32);
 	m_xmf3Look = XMFLOAT3(mtxLookAt._13, mtxLookAt._23, mtxLookAt._33);
-
-	XMFLOAT3 pos = XMFLOAT3(center.x, m_xmf3Position.y, center.z);
-	SetPosition(pos);
-
-	isMove = !isMove;
-	int track = (isMove) ? track_name::handling : track_name::idle;
-	m_pSkinnedAnimationController->SwitchAnimationState(track);
 }
