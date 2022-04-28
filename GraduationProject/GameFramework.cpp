@@ -597,6 +597,11 @@ void CGameFramework::UpdatePlayerMove(const DWORD& dwDirection)
 	{
 		m_pPlayer->Move(xmf3Shift, false);
 	}
+
+	if (dwDirection & DIR_LEFT) m_pPlayer->m_pSkinnedAnimationController->SwitchAnimationState(track_name::walk_left);
+	if (dwDirection & DIR_RIGHT) m_pPlayer->m_pSkinnedAnimationController->SwitchAnimationState(track_name::walk_right);
+	if (dwDirection & DIR_BACKWARD) m_pPlayer->m_pSkinnedAnimationController->SwitchAnimationState(track_name::walk_back);
+	if (dwDirection & DIR_FORWARD) m_pPlayer->m_pSkinnedAnimationController->SwitchAnimationState(track_name::run);
 }
 
 bool CGameFramework::IsPlayerMove(const DWORD& dwDirection, const DirectX::XMFLOAT3& xmf3Shift)
