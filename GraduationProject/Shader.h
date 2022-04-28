@@ -339,4 +339,7 @@ public:
 	virtual ~CMonsterObjectsShader();
 
 	virtual void BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3dGraphicsRootSignature, ID3D12GraphicsCommandList* pd3dCommandList, void* pContext);
+	
+	virtual CGameObject** GetObjects() { return(m_ppObjects); }
+	virtual int GetObjectsNum() { return(m_nObjects); }
 };
