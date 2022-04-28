@@ -3,6 +3,7 @@
 #include "Shader.h"
 #include "Collision.h"
 #include "CollisionManager.h"
+#include "Factory.h"
 
 struct LIGHT
 {
@@ -149,6 +150,7 @@ protected:
 	ID3D12Resource* m_pd3dcbMaterials = NULL;
 	MATERIAL* m_pcbMappedMaterials = NULL;
 	vector<CCollision*> collisions;
+	vector<CFactory*> _factory;
 
 public:
 	static ID3D12DescriptorHeap* m_pd3dCbvSrvUavDescriptorHeap;

@@ -215,7 +215,6 @@ void CAnimPlayer::SetAnimationController(ID3D12Device* pd3dDevice, ID3D12Graphic
 
 void CAnimPlayer::SetInteraction(XMFLOAT3& center, XMFLOAT4X4& world)
 {
-
 	XMFLOAT3 pos = XMFLOAT3(center.x, m_xmf3Position.y, center.z);
 	SetPosition(pos);
 	SetPlayerLookAtPos(world, center);
