@@ -410,31 +410,31 @@ void CScene::BuildCollisions(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 
 void CScene::SetObjectCollision(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
 {
-	CGameObject** m_ppObjects = ((CObjectsShader*)m_ppShaders[ShaderData::objects])->GetObjects();
-	int m_nObjects = ((CObjectsShader*)m_ppShaders[ShaderData::objects])->GetObjectsNum();
+	//CGameObject** m_ppObjects = ((CObjectsShader*)m_ppShaders[ShaderData::objects])->GetObjects();
+	//int m_nObjects = ((CObjectsShader*)m_ppShaders[ShaderData::objects])->GetObjectsNum();
 
-	CGameObject** m_ppMonsters = ((CMonsterObjectsShader*)m_ppShaders[ShaderData::monster])->GetObjects();
-	int m_nMonsters = ((CMonsterObjectsShader*)m_ppShaders[ShaderData::monster])->GetObjectsNum();
+	//CGameObject** m_ppMonsters = ((CMonsterObjectsShader*)m_ppShaders[ShaderData::monster])->GetObjects();
+	//int m_nMonsters = ((CMonsterObjectsShader*)m_ppShaders[ShaderData::monster])->GetObjectsNum();
 
-	string root = "../Assets/Model/Bounding/";
-	string tail = ".txt";
-	for (int i = 0; i < m_nObjects; i++)
-	{
-		m_ppObjects[i]->UpdateTransform(nullptr);
-		string tag = m_ppObjects[i]->GetTag();
-		string filename = "../Assets/Model/Bounding/" + tag + ".txt";
-		CCollisionManager* manager = new CCollisionManager(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, m_ppObjects[i], filename);
-		m_ppObjects[i]->SetCollisionManager(manager);
-	}
+	//string root = "../Assets/Model/Bounding/";
+	//string tail = ".txt";
+	//for (int i = 0; i < m_nObjects; i++)
+	//{
+	//	m_ppObjects[i]->UpdateTransform(nullptr);
+	//	string tag = m_ppObjects[i]->GetTag();
+	//	string filename = "../Assets/Model/Bounding/" + tag + ".txt";
+	//	CCollisionManager* manager = new CCollisionManager(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, m_ppObjects[i], filename);
+	//	m_ppObjects[i]->SetCollisionManager(manager);
+	//}
 
-	for (int i = 0; i < m_nMonsters; i++)
-	{
-		m_ppMonsters[i]->UpdateTransform(nullptr);
-		string tag = m_ppMonsters[i]->GetTag();
-		string filename = "../Assets/Model/Bounding/" + tag + ".txt";
-		CCollisionManager* manager = new CCollisionManager(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, m_ppMonsters[i], filename);
-		m_ppMonsters[i]->SetCollisionManager(manager);
-	}
+	//for (int i = 0; i < m_nMonsters; i++)
+	//{
+	//	m_ppMonsters[i]->UpdateTransform(nullptr);
+	//	string tag = m_ppMonsters[i]->GetTag();
+	//	string filename = "../Assets/Model/Bounding/" + tag + ".txt";
+	//	CCollisionManager* manager = new CCollisionManager(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, m_ppMonsters[i], filename);
+	//	m_ppMonsters[i]->SetCollisionManager(manager);
+	//}
 }
 
 void CScene::ReleaseObjects()
@@ -730,8 +730,11 @@ void CScene::AnimateObjects(float fTimeElapsed, CCamera* pCamrea)
 {
 	m_fElapsedTime = fTimeElapsed;
 
+	for (auto& factory :_factory) factory->AnimateObjects(fTimeElapsed, pCamrea);
+
 	for (int i = 0; i < m_nShaders; i++) m_ppShaders[i]->AnimateObjects(fTimeElapsed, pCamrea);
 	if (m_pLights) {}
+	
 
 	CheckMonsterCollision();
 }
@@ -765,15 +768,7 @@ void CScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera
 	if (m_pSkyBox) m_pSkyBox->Render(pd3dCommandList, pCamera);
 	if (m_pTerrain) m_pTerrain->Render(pd3dCommandList, pCamera);
 
-	for (int i = 0; i < m_nGameObjects; i++)
-	{
-		if (m_ppGameObjects[i])
-		{
-			m_ppGameObjects[i]->Animate(m_fElapsedTime);
-			if (!m_ppGameObjects[i]->m_pSkinnedAnimationController) m_ppGameObjects[i]->UpdateTransform(NULL);
-			m_ppGameObjects[i]->Render(pd3dCommandList, pCamera);
-		}
-	}
+	for (auto& factory : _factory) factory->Render(pd3dCommandList, pCamera);
 
 	for (int i = 0; i < m_nShaders; i++)
 	{
@@ -786,17 +781,17 @@ void CScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera
 
 bool CScene::CheckPlayerByObjectBB(XMFLOAT3 xmf3Shift)
 {
-	BoundingBox playerBB = m_pPlayer->GetCollManager()->GetBoundingBox();
-	CGameObject** m_ppObjects = ((CObjectsShader*)m_ppShaders[ShaderData::objects])->GetObjects();
-	int m_nObjects = ((CObjectsShader*)m_ppShaders[ShaderData::objects])->GetObjectsNum();
+	//BoundingBox playerBB = m_pPlayer->GetCollManager()->GetBoundingBox();
+	//CGameObject** m_ppObjects = ((CObjectsShader*)m_ppShaders[ShaderData::objects])->GetObjects();
+	//int m_nObjects = ((CObjectsShader*)m_ppShaders[ShaderData::objects])->GetObjectsNum();
 
-	for (int i=0; i< m_nObjects; ++i)
-	{
-		CCollisionManager* col = m_ppObjects[i]->GetCollisionManager();
-		col->UpdateCollisions();
-		BoundingBox BB = col->GetBoundingBox();
-		if (CheckAABB(playerBB, BB, xmf3Shift)) return false;
-	}
+	//for (int i=0; i< m_nObjects; ++i)
+	//{
+	//	CCollisionManager* col = m_ppObjects[i]->GetCollisionManager();
+	//	col->UpdateCollisions();
+	//	BoundingBox BB = col->GetBoundingBox();
+	//	if (CheckAABB(playerBB, BB, xmf3Shift)) return false;
+	//}
 
 	return true;
 }
@@ -827,44 +822,46 @@ bool CScene::CheckAABB(BoundingBox A, BoundingBox B, XMFLOAT3 xmf3Shift, bool in
 
 bool CScene::CheckPlayerInScene(XMFLOAT3 xmf3Shift)
 {
-	BoundingBox playerBB = m_pPlayer->GetCollManager()->GetBoundingBox();
-	for (CCollision* col : collisions)
-	{
-		if (!col->GetDebug()) continue;
-		if (CheckAABB(playerBB, col->GetBoundingBox(),xmf3Shift, true)) return true;
-	}
+	//BoundingBox playerBB = m_pPlayer->GetCollManager()->GetBoundingBox();
+	//for (CCollision* col : collisions)
+	//{
+	//	if (!col->GetDebug()) continue;
+	//	if (CheckAABB(playerBB, col->GetBoundingBox(),xmf3Shift, true)) return true;
+	//}
 
-	return false;
+	//return false;
+
+	return true;
 }
 
 void CScene::CheckInteraction()
 {
-	BoundingBox playerBB = m_pPlayer->GetCollManager()->GetBoundingBox();
-	vector<CCannonObject*> cannon = ((CObjectsShader*)m_ppShaders[ShaderData::objects])->GetCannon();
+	//BoundingBox playerBB = m_pPlayer->GetCollManager()->GetBoundingBox();
+	//vector<CCannonObject*> cannon = ((CObjectsShader*)m_ppShaders[ShaderData::objects])->GetCannon();
 
-	for (auto can : cannon)
-	{
-		BoundingSphere BS = can->GetCollisionManager()->GetBoundingSphere();
-		if (playerBB.Contains(BS)) {
-			CGameObject* object = can->FindFrame("Cube_002");
-			m_pPlayer->SetInteraction(BS.Center, object->m_xmf4x4World);
-			break;
-		}
-	}
+	//for (auto can : cannon)
+	//{
+	//	BoundingSphere BS = can->GetCollisionManager()->GetBoundingSphere();
+	//	if (playerBB.Contains(BS)) {
+	//		CGameObject* object = can->FindFrame("Cube_002");
+	//		m_pPlayer->SetInteraction(BS.Center, object->m_xmf4x4World);
+	//		break;
+	//	}
+	//}
 }
 
 void CScene::CheckMonsterCollision()
 {
-	BoundingSphere playerBS = m_pPlayer->GetCollManager()->GetBoundingSphere();
+	//BoundingSphere playerBS = m_pPlayer->GetCollManager()->GetBoundingSphere();
 
-	int nMonsters = ((CMonsterObjectsShader*)m_ppShaders[ShaderData::monster])->GetObjectsNum();
-	CGameObject** ppMonsters = ((CMonsterObjectsShader*)m_ppShaders[ShaderData::monster])->GetObjects();
+	//int nMonsters = ((CMonsterObjectsShader*)m_ppShaders[ShaderData::monster])->GetObjectsNum();
+	//CGameObject** ppMonsters = ((CMonsterObjectsShader*)m_ppShaders[ShaderData::monster])->GetObjects();
 
-	for(int i=0;i<nMonsters; ++i)
-	{
-		BoundingBox BB = ppMonsters[i]->GetCollisionManager()->GetBoundingBox();
-		if (playerBS.Contains(BB)) {
-			((CMonsterObject*)ppMonsters[i])->AttackTarget();
-		}
-	}
+	//for(int i=0;i<nMonsters; ++i)
+	//{
+	//	BoundingBox BB = ppMonsters[i]->GetCollisionManager()->GetBoundingBox();
+	//	if (playerBS.Contains(BB)) {
+	//		((CMonsterObject*)ppMonsters[i])->AttackTarget();
+	//	}
+	//}
 }
