@@ -487,6 +487,11 @@ bool CScene::OnProcessingMouseMessage(
 bool CScene::OnProcessingKeyboardMessage(
 	HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
 {
+	vector<CGameObject*> test = _factory[2]->GetGameObjects();
+	for (int i = 0; i < test.size(); ++i) {
+		((CMonsterObject*)(test[i]))->OnProcessingKeyboardMessage(hWnd, nMessageID, wParam, lParam);
+	}
+
 	switch (nMessageID)
 	{
 	case WM_KEYDOWN:
