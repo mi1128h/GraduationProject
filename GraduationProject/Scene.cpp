@@ -350,24 +350,24 @@ void CScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* p
 
 	CObjectFactory * pObject = new CObjectFactory();
 	pObject->BuildObjects(pd3dDevice, m_pd3dGraphicsRootSignature, pd3dCommandList, m_pTerrain);
+	pObject->SetObjectCollision(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 	_factory.emplace_back(pObject);
 
 	CCannonFactory* pCannon = new CCannonFactory();
 	pCannon->BuildObjects(pd3dDevice, m_pd3dGraphicsRootSignature, pd3dCommandList, m_pTerrain);
+	pCannon->SetObjectCollision(pd3dDevice, pd3dCommandList,m_pd3dGraphicsRootSignature);
 	_factory.emplace_back(pCannon);
 
 	CMonsterFactory* pMonster = new CMonsterFactory();
 	pMonster->BuildObjects(pd3dDevice, m_pd3dGraphicsRootSignature, pd3dCommandList, m_pTerrain);
+	pMonster->SetObjectCollision(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 	_factory.emplace_back(pMonster);
-
-
-
 
 
 	//////
 	
 	BuildCollisions(pd3dDevice, pd3dCommandList);
-	SetObjectCollision(pd3dDevice, pd3dCommandList);
+
 	////////
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
@@ -406,35 +406,6 @@ void CScene::BuildCollisions(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 			collisions.emplace_back(cols);
 		}
 	}
-}
-
-void CScene::SetObjectCollision(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
-{
-	//CGameObject** m_ppObjects = ((CObjectsShader*)m_ppShaders[ShaderData::objects])->GetObjects();
-	//int m_nObjects = ((CObjectsShader*)m_ppShaders[ShaderData::objects])->GetObjectsNum();
-
-	//CGameObject** m_ppMonsters = ((CMonsterObjectsShader*)m_ppShaders[ShaderData::monster])->GetObjects();
-	//int m_nMonsters = ((CMonsterObjectsShader*)m_ppShaders[ShaderData::monster])->GetObjectsNum();
-
-	//string root = "../Assets/Model/Bounding/";
-	//string tail = ".txt";
-	//for (int i = 0; i < m_nObjects; i++)
-	//{
-	//	m_ppObjects[i]->UpdateTransform(nullptr);
-	//	string tag = m_ppObjects[i]->GetTag();
-	//	string filename = "../Assets/Model/Bounding/" + tag + ".txt";
-	//	CCollisionManager* manager = new CCollisionManager(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, m_ppObjects[i], filename);
-	//	m_ppObjects[i]->SetCollisionManager(manager);
-	//}
-
-	//for (int i = 0; i < m_nMonsters; i++)
-	//{
-	//	m_ppMonsters[i]->UpdateTransform(nullptr);
-	//	string tag = m_ppMonsters[i]->GetTag();
-	//	string filename = "../Assets/Model/Bounding/" + tag + ".txt";
-	//	CCollisionManager* manager = new CCollisionManager(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, m_ppMonsters[i], filename);
-	//	m_ppMonsters[i]->SetCollisionManager(manager);
-	//}
 }
 
 void CScene::ReleaseObjects()

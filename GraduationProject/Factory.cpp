@@ -15,6 +15,20 @@ void CFactory::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCame
 		object->Render(pd3dCommandList, pCamera);
 }
 
+void CFactory::SetObjectCollision(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature)
+{
+	string root = "../Assets/Model/Bounding/";
+	string tail = ".txt";
+	for (int i = 0; i < _gameObjects.size(); i++)
+	{
+		string tag = _gameObjects[i]->GetTag();
+		string filename = "../Assets/Model/Bounding/" + tag + ".txt";
+		CCollisionManager* manager = new CCollisionManager(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, _gameObjects[i], filename);
+		_gameObjects[i]->SetCollisionManager(manager);
+		_gameObjects[i]->UpdateTransform(nullptr);
+	}
+}
+
 //////
 
 
