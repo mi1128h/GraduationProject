@@ -752,17 +752,19 @@ void CScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera
 
 bool CScene::CheckPlayerByObjectBB(XMFLOAT3 xmf3Shift)
 {
-	//BoundingBox playerBB = m_pPlayer->GetCollManager()->GetBoundingBox();
-	//CGameObject** m_ppObjects = ((CObjectsShader*)m_ppShaders[ShaderData::objects])->GetObjects();
-	//int m_nObjects = ((CObjectsShader*)m_ppShaders[ShaderData::objects])->GetObjectsNum();
+	BoundingBox playerBB = m_pPlayer->GetCollManager()->GetBoundingBox();
 
-	//for (int i=0; i< m_nObjects; ++i)
-	//{
-	//	CCollisionManager* col = m_ppObjects[i]->GetCollisionManager();
-	//	col->UpdateCollisions();
-	//	BoundingBox BB = col->GetBoundingBox();
-	//	if (CheckAABB(playerBB, BB, xmf3Shift)) return false;
-	//}
+	for (auto& fac : _factory)
+	{
+		vector<CGameObject*> objects = fac->GetGameObjects();
+		for (int i = 0; i < objects.size(); ++i)
+		{
+			CCollisionManager* col = objects[i]->GetCollisionManager();
+			col->UpdateCollisions();
+			BoundingBox BB = col->GetBoundingBox();
+			if (CheckAABB(playerBB, BB, xmf3Shift)) return false;
+		}
+	}
 
 	return true;
 }
@@ -793,46 +795,42 @@ bool CScene::CheckAABB(BoundingBox A, BoundingBox B, XMFLOAT3 xmf3Shift, bool in
 
 bool CScene::CheckPlayerInScene(XMFLOAT3 xmf3Shift)
 {
-	//BoundingBox playerBB = m_pPlayer->GetCollManager()->GetBoundingBox();
-	//for (CCollision* col : collisions)
-	//{
-	//	if (!col->GetDebug()) continue;
-	//	if (CheckAABB(playerBB, col->GetBoundingBox(),xmf3Shift, true)) return true;
-	//}
+	BoundingBox playerBB = m_pPlayer->GetCollManager()->GetBoundingBox();
+	for (CCollision* col : collisions)
+	{
+		if (!col->GetDebug()) continue;
+		if (CheckAABB(playerBB, col->GetBoundingBox(),xmf3Shift, true)) return true;
+	}
 
-	//return false;
-
-	return true;
+	return false;
 }
 
 void CScene::CheckInteraction()
 {
-	//BoundingBox playerBB = m_pPlayer->GetCollManager()->GetBoundingBox();
-	//vector<CCannonObject*> cannon = ((CObjectsShader*)m_ppShaders[ShaderData::objects])->GetCannon();
+	BoundingBox playerBB = m_pPlayer->GetCollManager()->GetBoundingBox();
+	vector<CGameObject*> cannon = _factory[1]->GetGameObjects();
 
-	//for (auto can : cannon)
-	//{
-	//	BoundingSphere BS = can->GetCollisionManager()->GetBoundingSphere();
-	//	if (playerBB.Contains(BS)) {
-	//		CGameObject* object = can->FindFrame("Cube_002");
-	//		m_pPlayer->SetInteraction(BS.Center, object->m_xmf4x4World);
-	//		break;
-	//	}
-	//}
+	for (auto& can : cannon)
+	{
+		BoundingSphere BS = can->GetCollisionManager()->GetBoundingSphere();
+		if (playerBB.Contains(BS)) {
+			CGameObject* object = can->FindFrame("Cube_002");
+			m_pPlayer->SetInteraction(BS.Center, object->m_xmf4x4World);
+			break;
+		}
+	}
 }
 
 void CScene::CheckMonsterCollision()
 {
-	//BoundingSphere playerBS = m_pPlayer->GetCollManager()->GetBoundingSphere();
+	BoundingSphere playerBS = m_pPlayer->GetCollManager()->GetBoundingSphere();
+	vector<CGameObject*> monsters = _factory[2]->GetGameObjects();
 
-	//int nMonsters = ((CMonsterObjectsShader*)m_ppShaders[ShaderData::monster])->GetObjectsNum();
-	//CGameObject** ppMonsters = ((CMonsterObjectsShader*)m_ppShaders[ShaderData::monster])->GetObjects();
-
-	//for(int i=0;i<nMonsters; ++i)
-	//{
-	//	BoundingBox BB = ppMonsters[i]->GetCollisionManager()->GetBoundingBox();
-	//	if (playerBS.Contains(BB)) {
-	//		((CMonsterObject*)ppMonsters[i])->AttackTarget();
-	//	}
-	//}
+	for (auto& monster : monsters)
+	{
+		BoundingBox BB = monster->GetCollisionManager()->GetBoundingBox();
+		if (playerBS.Contains(BB)) {
+			((CMonsterObject*)monster)->AttackTarget();
+		}
+	}
 }
