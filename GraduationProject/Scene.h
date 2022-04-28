@@ -74,6 +74,8 @@ public:
 	bool CheckPlayerInScene(XMFLOAT3 XMF3Shift);
 	void CheckInteraction();
 	void CheckMonsterCollision();
+	void CheckMonsterAttack();
+	void CheckPlayerAttack();
 
 	void ReleaseUploadBuffers();
 

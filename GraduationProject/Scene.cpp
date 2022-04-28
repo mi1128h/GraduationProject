@@ -713,6 +713,8 @@ void CScene::AnimateObjects(float fTimeElapsed, CCamera* pCamrea)
 	
 
 	CheckMonsterCollision();
+	CheckPlayerAttack();
+	CheckMonsterAttack();
 }
 
 void CScene::OnPrepareRender(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
@@ -837,5 +839,36 @@ void CScene::CheckMonsterCollision()
 		if (BS.Contains(playerBS)) {
 			((CMonsterObject*)monster)->AttackTarget();
 		}
+	}
+}
+
+void CScene::CheckMonsterAttack()
+{
+	vector<CGameObject*> objects = _factory[2]->GetGameObjects();
+	BoundingBox playerBB = m_pPlayer->GetCollManager()->GetBoundingBox();
+
+	for (auto& object : objects)
+	{
+		bool Enable = (object->m_pSkinnedAnimationController) ? object->m_pSkinnedAnimationController->GetAttackEnable() : false;
+		if (!Enable) continue;
+
+		BoundingBox AttackBB = object->GetCollisionManager()->GetBoundingBox(true);
+		//if (playerBB.Contains(AttackBB)) m_pPlayer->();
+
+	}
+}
+
+void CScene::CheckPlayerAttack()
+{
+	bool Enable = (m_pPlayer->m_pSkinnedAnimationController) ? m_pPlayer->m_pSkinnedAnimationController->GetAttackEnable() : false;
+	if (!Enable) return;
+
+	BoundingBox AttackBB = m_pPlayer->GetCollManager()->GetBoundingBox(true);
+	vector<CGameObject*> objects = _factory[2]->GetGameObjects();
+	for (auto& object : objects)
+	{
+		BoundingBox BB = object->GetCollisionManager()->GetBoundingBox();
+
+		//if (BB.Contains(AttackBB)) object->();
 	}
 }
