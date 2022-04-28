@@ -215,14 +215,10 @@ void CAnimPlayer::SetAnimationController(ID3D12Device* pd3dDevice, ID3D12Graphic
 
 void CAnimPlayer::SetInteraction(XMFLOAT3& center, XMFLOAT4X4& world)
 {
-	SetPlayerLookAtPos(world, center);
 
 	XMFLOAT3 pos = XMFLOAT3(center.x, m_xmf3Position.y, center.z);
 	SetPosition(pos);
-
-	XMFLOAT3 xmf3Position = GetPosition();
-	xmf3Position = Vector3::Add(xmf3Position,m_xmf3Look, 30.0f);
-	SetPosition(xmf3Position);
+	SetPlayerLookAtPos(world, center);
 
 	isMove = !isMove;
 	int track = (isMove) ? track_name::handling : track_name::idle;

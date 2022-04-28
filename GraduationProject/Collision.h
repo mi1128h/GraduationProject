@@ -46,6 +46,7 @@ public:
 	virtual void UpdateBoundTransform();
 	virtual void UpdateBound(BoundingBox& BB, BoundingSphere& BS);
 	virtual BoundingBox GetBoundingBox() { return m_xmCollBoundingBox; }
+	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
 private:
 	BoundingBox m_xmCollBoundingBox;
 };
@@ -63,6 +64,7 @@ public:
 	virtual void UpdateBound(BoundingBox& BB, BoundingSphere& BS);
 	virtual void UpdateBoundTransform();
 	virtual BoundingSphere GetBoundingSphere() { return m_xmCollBoundingSphere; }
+	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
 private:
 	BoundingSphere m_xmCollBoundingSphere;
 };
