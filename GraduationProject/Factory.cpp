@@ -378,7 +378,6 @@ void CCannonFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 
 ///
 
-
 void CMonsterFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3dGraphicsRootSignature, ID3D12GraphicsCommandList* pd3dCommandList, void* pContext)
 {
 	CHeightMapTerrain* pTerrain = (CHeightMapTerrain*)pContext;
@@ -482,5 +481,19 @@ void CMonsterFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature
 		pObject->SetTag("Monster");
 
 		_gameObjects.emplace_back(pObject);
+	}
+}
+
+void CMonsterFactory::SetObjectCollision(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature)
+{
+	string root = "../Assets/Model/Bounding/";
+	string tail = ".txt";
+	for (int i = 0; i < _gameObjects.size(); i++)
+	{
+		string tag = _gameObjects[i]->GetTag();
+		string filename = "../Assets/Model/Bounding/" + tag + ".txt";
+		CPlayerCollisionManager* manager = new CPlayerCollisionManager(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, _gameObjects[i], filename);
+		_gameObjects[i]->SetCollisionManager(manager);
+		_gameObjects[i]->UpdateTransform(nullptr);
 	}
 }
