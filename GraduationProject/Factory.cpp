@@ -48,39 +48,28 @@ void CObjectFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 	ifstream objectsInfo("../Assets/Image/Terrain/ObjectsInfo.txt");
 
 	// crystal
-	CLoadedModelInfo* pCrystalModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/crystal_17_2.bin", NULL);
 	CTexture* pCrystalTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
 	pCrystalTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Model/Texture/crystal_17_2.dds", 0);
 	CScene::CreateShaderResourceViews(pd3dDevice, pCrystalTexture, Signature::Graphics::model_diffuse, true);
 
-	// cannonball
-	CCannonballObject* pCannonballObject = new CCannonballObject(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature);
-	pCannonballObject->SetUpdatedContext(pTerrain);
-
 	// barricade
-	CLoadedModelInfo* pCover1Model = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/Barricade_01.bin", NULL);
-	CLoadedModelInfo* pCover2Model = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/Barricade_02.bin", NULL);
 	CTexture* pCoverTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
 	pCoverTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Model/Texture/Wooden_Barricades_AlbedoTransparency.dds", 0);
 	CScene::CreateShaderResourceViews(pd3dDevice, pCoverTexture, Signature::Graphics::model_diffuse, true);
 
 	// house_1
-	CLoadedModelInfo* pHouse1Model = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/house_1.bin", NULL);
 	CTexture* pHouse1Texture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
 	pHouse1Texture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Model/Texture/house_1_Diffuse.dds", 0);
 	CScene::CreateShaderResourceViews(pd3dDevice, pHouse1Texture, Signature::Graphics::model_diffuse, true);
 	// house_2
-	CLoadedModelInfo* pHouse2Model = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/house_2.bin", NULL);
 	CTexture* pHouse2Texture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
 	pHouse2Texture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Model/Texture/house_2_Diffuse.dds", 0);
 	CScene::CreateShaderResourceViews(pd3dDevice, pHouse2Texture, Signature::Graphics::model_diffuse, true);
 	// house_3
-	CLoadedModelInfo* pHouse3Model = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/house_3.bin", NULL);
 	CTexture* pHouse3Texture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
 	pHouse3Texture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Model/Texture/house_3_Diffuse.dds", 0);
 	CScene::CreateShaderResourceViews(pd3dDevice, pHouse3Texture, Signature::Graphics::model_diffuse, true);
 	// house_4
-	CLoadedModelInfo* pHouse4Model = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/house_4.bin", NULL);
 	CTexture* pHouse4Texture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
 	pHouse4Texture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Model/Texture/house_4_Diffuse.dds", 0);
 	CScene::CreateShaderResourceViews(pd3dDevice, pHouse4Texture, Signature::Graphics::model_diffuse, true);
@@ -90,7 +79,6 @@ void CObjectFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 	float houseOffsetZ_ = 18000.0f;
 
 	// floor_segment
-	CLoadedModelInfo* pFloorModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/floor_segment.bin", NULL);
 	CTexture* pFloorTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
 	pFloorTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Model/Texture/floor_segment_updated.dds", 0);
 	CScene::CreateShaderResourceViews(pd3dDevice, pFloorTexture, Signature::Graphics::model_diffuse, true);
@@ -129,6 +117,7 @@ void CObjectFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 		if (name.compare("Barricade_01") == 0) {
 			CCoverObject* pObject = NULL;
 
+			CLoadedModelInfo* pCover1Model = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/Barricade_01.bin", NULL);
 			pObject = new CCoverObject;
 			pObject->SetChild(pCover1Model->m_pModelRootObject, true);
 
@@ -149,6 +138,8 @@ void CObjectFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 		}
 		else if (name.compare("Barricade_02") == 0) {
 			CCoverObject* pObject = NULL;
+
+			CLoadedModelInfo* pCover2Model = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/Barricade_02.bin", NULL);
 
 			pObject = new CCoverObject;
 			pObject->SetChild(pCover2Model->m_pModelRootObject, true);
@@ -172,6 +163,7 @@ void CObjectFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 			CGameObject* pObject = NULL;
 
 			pObject = new CGameObject;
+			CLoadedModelInfo* pCrystalModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/crystal_17_2.bin", NULL);
 			pObject->SetChild(pCrystalModel->m_pModelRootObject, true);
 
 			pObject->m_pTexture = pCrystalTexture;
@@ -191,6 +183,7 @@ void CObjectFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 		}
 		else if (name.compare("floor_segment") == 0) {
 			CGameObject* pObject = NULL;
+			CLoadedModelInfo* pFloorModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/floor_segment.bin", NULL);
 
 			pObject = new CGameObject;
 			pObject->SetChild(pFloorModel->m_pModelRootObject, true);
@@ -212,6 +205,7 @@ void CObjectFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 		}
 		else if (name.compare("house_1") == 0) {
 			CGameObject* pObject = NULL;
+			CLoadedModelInfo* pHouse1Model = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/house_1.bin", NULL);
 
 			pObject = new CGameObject;
 			pObject->SetChild(pHouse1Model->m_pModelRootObject, true);
@@ -234,6 +228,7 @@ void CObjectFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 		}
 		else if (name.compare("house_2") == 0) {
 			CGameObject* pObject = NULL;
+			CLoadedModelInfo* pHouse2Model = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/house_2.bin", NULL);
 
 			pObject = new CGameObject;
 			pObject->SetChild(pHouse2Model->m_pModelRootObject, true);
@@ -256,6 +251,7 @@ void CObjectFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 		}
 		else if (name.compare("house_3") == 0) {
 			CGameObject* pObject = NULL;
+			CLoadedModelInfo* pHouse3Model = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/house_3.bin", NULL);
 
 			pObject = new CGameObject;
 			pObject->SetChild(pHouse3Model->m_pModelRootObject, true);
@@ -278,6 +274,7 @@ void CObjectFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 		}
 		else if (name.compare("house_4") == 0) {
 			CGameObject* pObject = NULL;
+			CLoadedModelInfo* pHouse4Model = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/house_4.bin", NULL);
 
 			pObject = new CGameObject;
 			pObject->SetChild(pHouse4Model->m_pModelRootObject, true);
@@ -324,7 +321,6 @@ void CCannonFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 	ifstream objectsInfo("../Assets/Image/Terrain/ObjectsInfo.txt");
 
 	// cannon
-	CLoadedModelInfo* pCannonModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/cannon.bin", NULL);
 	CTexture* pCannonTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
 	pCannonTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Model/Texture/cannon_diffuse.dds", 0);
 	CScene::CreateShaderResourceViews(pd3dDevice, pCannonTexture, Signature::Graphics::model_diffuse, true);
@@ -366,6 +362,7 @@ void CCannonFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 
 		if (name.compare("cannon") == 0) {
 			CCannonObject* pObject = NULL;
+			CLoadedModelInfo* pCannonModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/cannon.bin", NULL);
 
 			pObject = new CCannonObject;
 			pObject->SetChild(pCannonModel->m_pModelRootObject, true);
@@ -413,24 +410,24 @@ void CMonsterFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature
 	ifstream objectsInfo("../Assets/Image/Terrain/ObjectsInfo.txt");
 
 	// Zombie_1
-	//CLoadedModelInfo* pZombieModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/ZombieGirl.bin", NULL);
-	CTexture* pZombieTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
+		CTexture* pZombieTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
 	pZombieTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Model/Texture/zombie_diffuse.dds", 0);
 	CScene::CreateShaderResourceViews(pd3dDevice, pZombieTexture, Signature::Graphics::animation_diffuse, true);
 
 	// Zombie_2
-	//CLoadedModelInfo* pClownModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/WhiteClown.bin", NULL);
-	CTexture* pClownTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
+		CTexture* pClownTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
 	pClownTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Model/Texture/whiteclown_diffuse.dds", 0);
 	CScene::CreateShaderResourceViews(pd3dDevice, pClownTexture, Signature::Graphics::animation_diffuse, true);
 
-	// 
+
 	string line;
 	smatch match;
 	regex reName(R"(name: (\w+))");
 	regex rePosition(R"(position: \(([+-]?\d*[.]?\d*), ([+-]?\d*[.]?\d*), ([+-]?\d*[.]?\d*)\))");
 	regex reRotation(R"(rotation: \(([+-]?\d*[.]?\d*), ([+-]?\d*[.]?\d*), ([+-]?\d*[.]?\d*), ([+-]?\d*[.]?\d*)\))");
 	regex reScale(R"(scale: \(([+-]?\d*[.]?\d*), ([+-]?\d*[.]?\d*), ([+-]?\d*[.]?\d*)\))");
+
+
 	while (getline(objectsInfo, line)) {
 		regex_match(line, match, reName);
 		string name = match[1].str();
