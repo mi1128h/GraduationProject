@@ -497,4 +497,16 @@ public:
 	virtual void Animate(float fTimeElapsed, CCamera* pCamera = NULL);
 
 	virtual bool OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam);
+
+	void MonsterDead();
+};
+
+class CBillObject : public CGameObject
+{
+public:
+	CBillObject();
+	virtual ~CBillObject();
+
+	virtual void Animate(float fElapsedTime, CCamera* pCamrea = NULL);
+	virtual void SetLookAt(XMFLOAT3& xmf3Target);
 };
