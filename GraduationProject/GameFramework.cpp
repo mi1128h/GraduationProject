@@ -592,7 +592,7 @@ void CGameFramework::ProcessInput()
 
 void CGameFramework::UpdatePlayerMove(const DWORD& dwDirection)
 {
-	XMFLOAT3 xmf3Shift = m_pPlayer->SetMoveShift(dwDirection, 10.0f);
+	XMFLOAT3 xmf3Shift = m_pPlayer->SetMoveShift(dwDirection, 20.0f);
 	if (IsPlayerMove(dwDirection, xmf3Shift))
 	{
 		m_pPlayer->Move(xmf3Shift, false);

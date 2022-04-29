@@ -112,7 +112,7 @@ void CObjectFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 		if (name.compare("Barricade_01") == 0) {
 			CCoverObject* pObject = NULL;
 
-			CLoadedModelInfo* pCover1Model = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/Barricade_01.bin", NULL);
+			CLoadedModelInfo* pCover1Model = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/Barricade_02.bin", NULL);
 			pObject = new CCoverObject;
 			pObject->SetChild(pCover1Model->m_pModelRootObject, true);
 
@@ -127,7 +127,9 @@ void CObjectFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 			pObject->SetScale(sx, sy, sz);
 			XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
 			pObject->Rotate(&xmf4Rotation);
-			pObject->SetTag("Barricade_01");
+			pObject->Rotate(0.0f, 180.0f, -180.0f);
+
+			pObject->SetTag("Barricade_02");
 
 			_gameObjects.emplace_back(pObject);
 		}
@@ -150,6 +152,8 @@ void CObjectFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 			pObject->SetScale(sx, sy, sz);
 			XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
 			pObject->Rotate(&xmf4Rotation);
+			pObject->Rotate(0.0f, 180.0f, -180.0f);
+
 			pObject->SetTag("Barricade_02");
 
 			_gameObjects.emplace_back(pObject);
@@ -172,7 +176,7 @@ void CObjectFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 			pObject->SetScale(1, 1, 1);
 			XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
 			pObject->Rotate(&xmf4Rotation);
-			//pObject->Rotate(90.0f, 0.0f, 0.0f);
+			pObject->Rotate(0.0f, 180.0f, -180.0f);
 
 			_gameObjects.emplace_back(pObject);
 		}
@@ -194,7 +198,7 @@ void CObjectFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 			pObject->SetScale(100, 100, 100);
 			XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
 			pObject->Rotate(&xmf4Rotation);
-			//pObject->Rotate(90.0f, 0.0f, 0.0f);
+			pObject->Rotate(0.0f, 180.0f, -180.0f);
 
 			_gameObjects.emplace_back(pObject);
 		}
@@ -217,6 +221,7 @@ void CObjectFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 			XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
 			pObject->Rotate(&xmf4Rotation);
 			pObject->Rotate(90.0f, 0.0f, 0.0f);
+			pHouse1Model->m_pModelRootObject->Rotate(0.0f,-180.0f, 0.0f);
 			pObject->SetTag("house_1");
 
 			_gameObjects.emplace_back(pObject);
@@ -240,6 +245,7 @@ void CObjectFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 			XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
 			pObject->Rotate(&xmf4Rotation);
 			pObject->Rotate(90.0f, 0.0f, 0.0f);
+			pHouse2Model->m_pModelRootObject->Rotate(0.0f, -180.0f, 0.0f);
 			pObject->SetTag("house_2");
 
 			_gameObjects.emplace_back(pObject);
@@ -263,6 +269,7 @@ void CObjectFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 			XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
 			pObject->Rotate(&xmf4Rotation);
 			pObject->Rotate(90.0f, 0.0f, 0.0f);
+			pHouse3Model->m_pModelRootObject->Rotate(0.0f, -180.0f, 0.0f);
 			pObject->SetTag("house_3");
 
 			_gameObjects.emplace_back(pObject);
@@ -286,6 +293,7 @@ void CObjectFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 			XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
 			pObject->Rotate(&xmf4Rotation);
 			pObject->Rotate(90.0f, 0.0f, 0.0f);
+			pHouse4Model->m_pModelRootObject->Rotate(0.0f, -180.0f, 0.0f);
 			pObject->SetTag("house_4");
 
 			_gameObjects.emplace_back(pObject);
@@ -368,7 +376,7 @@ void CCannonFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 			XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
 			pObject->Rotate(&xmf4Rotation);
 			pObject->Rotate(90.0f, 0.0f, 0.0f);
-			pObject->Rotate(0.0f, 180.0f, 0.0f);
+			pObject->Rotate(0.0f, 0.0f, -180.0f);
 			pObject->SetTag("cannon");
 
 			_gameObjects.emplace_back(pObject);
