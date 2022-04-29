@@ -157,18 +157,22 @@ bool CAnimPlayer::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM
 	
 				case 'W':
 					m_pSkinnedAnimationController->SwitchAnimationState(track_name::run);
+					m_pSkinnedAnimationController->SetAttackEnable(false);
 					break;
 
 				case 'S':
 					m_pSkinnedAnimationController->SwitchAnimationState(track_name::walk_back);
+					m_pSkinnedAnimationController->SetAttackEnable(false);
 					break;
 
 				case 'A':
 					m_pSkinnedAnimationController->SwitchAnimationState(track_name::walk_left);
+					m_pSkinnedAnimationController->SetAttackEnable(false);
 					break;
 
 				case 'D':
 					m_pSkinnedAnimationController->SwitchAnimationState(track_name::walk_right);
+					m_pSkinnedAnimationController->SetAttackEnable(false);
 					break;
 
 				case '1':

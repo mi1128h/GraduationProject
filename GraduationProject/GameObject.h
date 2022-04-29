@@ -497,4 +497,5 @@ public:
 	virtual void Animate(float fTimeElapsed, CCamera* pCamera = NULL);
 
 	virtual bool OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam);
+	void MonsterDead();
 };

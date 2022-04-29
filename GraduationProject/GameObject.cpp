@@ -1351,7 +1351,9 @@ void CMonsterObject::ChaseTarget()
 
 void CMonsterObject::AttackTarget()
 {
+
 	int curNum = m_pSkinnedAnimationController->GetCurrentTrackNum();
+	if (curNum == track_name::death1 || curNum == track_name::death2) return;
 
 	int randomNum = rand() % 2;
 	int trackNum = randomNum ? track_name::attack1 : track_name::attack2;
@@ -1360,6 +1362,16 @@ void CMonsterObject::AttackTarget()
 		m_pSkinnedAnimationController->SwitchAnimationState(trackNum);
 		m_pSkinnedAnimationController->SetAttackEnable(true);
 	}
+}
+
+void CMonsterObject::MonsterDead()
+{
+	int curNum = m_pSkinnedAnimationController->GetCurrentTrackNum();
+
+	if (curNum == track_name::death1 || curNum == track_name::death2) return;
+
+	m_pSkinnedAnimationController->SwitchAnimationState(track_name::death2);
+	m_pSkinnedAnimationController->SetAttackEnable(false);
 }
 
 void CMonsterObject::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
