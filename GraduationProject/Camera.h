@@ -6,6 +6,7 @@
 #define FIRST_PERSON_CAMERA 0x01
 #define SPACESHIP_CAMERA 0x02
 #define THIRD_PERSON_CAMERA 0x03
+#define UI_CAMERA 0x04
 
 class CPlayer;
 
@@ -79,8 +80,8 @@ public:
 	void RegenerateViewMatrix();
 
 	// 투영 변환 행렬을 생성한다.
-	void GenerateProjectionMatrix(float fNearPlaneDistance, float fFarPlaneDistance, float
-		fAspectRatio, float fFOVAngle);
+	void GeneratePerspectiveProjectionMatrix(float fNearPlaneDistance, float fFarPlaneDistance, float fAspectRatio, float fFOVAngle);
+	void GenerateOrthographicProjectionMatrix(float fNearPlaneDistance, float fFarPlaneDistance, float fWidth, float fHeight);
 
 	void SetViewport(int xTopLeft, int yTopLeft, int nWidth, int nHeight, float fMinZ =
 		0.0f, float fMaxZ = 1.0f);
@@ -130,6 +131,8 @@ public:
 	/*3인칭 카메라에서 카메라가 바라보는 지점을 설정한다.
 	일반적으로 플레이어를 바라보도록 설정한다.*/
 	virtual void SetLookAt(XMFLOAT3& xmf3LookAt) {}
+
+	void SwitchProjection(int nMode);
 };
 
 class CSpaceShipCamera : public CCamera

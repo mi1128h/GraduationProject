@@ -73,16 +73,23 @@ void CCamera::SetScissorRect(LONG xLeft, LONG yTop, LONG xRight, LONG yBottom)
 	m_d3dScissorRect.bottom = yBottom;
 }
 
-void CCamera::GenerateProjectionMatrix(float fNearPlaneDistance, float fFarPlaneDistance,
-	float fAspectRatio, float fFOVAngle)
+void CCamera::GeneratePerspectiveProjectionMatrix(float fNearPlaneDistance, float fFarPlaneDistance, float fAspectRatio, float fFOVAngle)
 {
 #ifdef _WITH_LEFT_HAND_COORDINATES
 	m_xmf4x4Projection = Matrix4x4::PerspectiveFovLH(XMConvertToRadians(fFOVAngle), fAspectRatio, fNearPlaneDistance, fFarPlaneDistance);
 #else
 	m_xmf4x4Projection = Matrix4x4::PerspectiveFovRH(XMConvertToRadians(fFOVAngle), fAspectRatio, fNearPlaneDistance, fFarPlaneDistance);
 #endif
-//	XMMATRIX xmmtxProjection = XMMatrixPerspectiveFovLH(XMConvertToRadians(fFOVAngle), fAspectRatio, fNearPlaneDistance, fFarPlaneDistance);
-//	XMStoreFloat4x4(&m_xmf4x4Projection, xmmtxProjection);
+}
+
+void CCamera::GenerateOrthographicProjectionMatrix(float fNearPlaneDistance, float fFarPlaneDistance, float fWidth, float fHeight)
+{
+#ifdef _WITH_LEFT_HAND_COORDINATES
+	XMMATRIX xmmtxProjection = XMMatrixOrthographicLH(fWidth, fHeight, fNearPlaneDistance, fFarPlaneDistance);
+#else
+	XMMATRIX xmmtxProjection = XMMatrixOrthographicRH(fWidth, fHeight, fNearPlaneDistance, fFarPlaneDistance);
+#endif
+	XMStoreFloat4x4(&m_xmf4x4Projection, xmmtxProjection);
 }
 
 /*카메라 변환 행렬을 생성한다. 카메라의 위치 벡터, 카메라가 바라보는 지점, 
@@ -154,6 +161,14 @@ void CCamera::SetViewportsAndScissorRects(ID3D12GraphicsCommandList* pd3dCommand
 {
 	pd3dCommandList->RSSetViewports(1, &m_d3dViewport);
 	pd3dCommandList->RSSetScissorRects(1, &m_d3dScissorRect);
+}
+
+void CCamera::SwitchProjection(int nMode)
+{
+	if (nMode == UI_CAMERA)
+		GeneratePerspectiveProjectionMatrix(1.01f, 5000.0f, ASPECT_RATIO, 60.0f);
+	else
+		GenerateOrthographicProjectionMatrix(1.01f, 5000.0f, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT);
 }
 
 /////////////////////////////////////////////////////////////////////////
