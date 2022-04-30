@@ -78,6 +78,8 @@ void CObjectFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 	pFloorTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Model/Texture/floor_segment_updated.dds", 0);
 	CScene::CreateShaderResourceViews(pd3dDevice, pFloorTexture, Signature::Graphics::model_diffuse, true);
 
+	float terrainOffset = 240.0f / 150.0f;
+
 	// 
 	string line;
 	smatch match;
@@ -118,8 +120,8 @@ void CObjectFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 
 			pObject->m_pTexture = pCoverTexture;
 
-			float transX = px * xmf3TerrainScale.x * 257.0f / 150.0f;
-			float transZ = pz * xmf3TerrainScale.z * 257.0f / 150.0f;
+			float transX = px * xmf3TerrainScale.x * terrainOffset;
+			float transZ = pz * xmf3TerrainScale.z * terrainOffset;
 			float terrainY = pTerrain->GetHeight(transX, transZ);
 
 			XMFLOAT3 position = XMFLOAT3(transX, terrainY + 20.0f * sy, transZ);
@@ -143,8 +145,8 @@ void CObjectFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 
 			pObject->m_pTexture = pCoverTexture;
 
-			float transX = px * xmf3TerrainScale.x * 257.0f / 150.0f;
-			float transZ = pz * xmf3TerrainScale.z * 257.0f / 150.0f;
+			float transX = px * xmf3TerrainScale.x * terrainOffset;
+			float transZ = pz * xmf3TerrainScale.z * terrainOffset;
 			float terrainY = pTerrain->GetHeight(transX, transZ);
 
 			XMFLOAT3 position = XMFLOAT3(transX, terrainY + 20.0f * sy, transZ);
@@ -167,8 +169,8 @@ void CObjectFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 
 			pObject->m_pTexture = pCrystalTexture;
 
-			float transX = px * xmf3TerrainScale.x * 257.0f / 150.0f;
-			float transZ = pz * xmf3TerrainScale.z * 257.0f / 150.0f;
+			float transX = px * xmf3TerrainScale.x * terrainOffset;
+			float transZ = pz * xmf3TerrainScale.z * terrainOffset;
 			float terrainY = pTerrain->GetHeight(transX, transZ);
 
 			XMFLOAT3 position = XMFLOAT3(transX, terrainY + 1.0f * sy, transZ);
@@ -189,8 +191,8 @@ void CObjectFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 
 			pObject->m_pTexture = pFloorTexture;
 
-			float transX = px * xmf3TerrainScale.x * 257.0f / 150.0f;
-			float transZ = pz * xmf3TerrainScale.z * 257.0f / 150.0f;
+			float transX = px * xmf3TerrainScale.x * terrainOffset;
+			float transZ = pz * xmf3TerrainScale.z * terrainOffset;
 			float terrainY = pTerrain->GetHeight(transX, transZ);
 
 			XMFLOAT3 position = XMFLOAT3(transX, terrainY + 1.0f * sy, transZ);
@@ -211,8 +213,8 @@ void CObjectFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 
 			pObject->m_pTexture = pHouse1Texture;
 
-			float transX = px * xmf3TerrainScale.x * 257.0f / 150.0f;
-			float transZ = pz * xmf3TerrainScale.z * 257.0f / 150.0f;
+			float transX = px * xmf3TerrainScale.x * terrainOffset;
+			float transZ = pz * xmf3TerrainScale.z * terrainOffset;
 			float terrainY = pTerrain->GetHeight(transX, transZ);
 
 			XMFLOAT3 position = XMFLOAT3(transX, terrainY + 60.0f * sy, transZ);
@@ -220,6 +222,7 @@ void CObjectFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 			pObject->SetScale(sx, sy, sz);
 			XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
 			pObject->Rotate(&xmf4Rotation);
+			pObject->Rotate(0.0f, 180.0f, 0.0f);
 			pObject->Rotate(90.0f, 0.0f, 0.0f);
 			pHouse1Model->m_pModelRootObject->Rotate(0.0f,-180.0f, 0.0f);
 			pObject->SetTag("house_1");
@@ -235,8 +238,8 @@ void CObjectFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 
 			pObject->m_pTexture = pHouse2Texture;
 
-			float transX = px * xmf3TerrainScale.x * 257.0f / 150.0f;
-			float transZ = pz * xmf3TerrainScale.z * 257.0f / 150.0f;
+			float transX = px * xmf3TerrainScale.x * terrainOffset;
+			float transZ = pz * xmf3TerrainScale.z * terrainOffset;
 			float terrainY = pTerrain->GetHeight(transX, transZ);
 
 			XMFLOAT3 position = XMFLOAT3(transX, terrainY + 66.0f * sy, transZ);
@@ -244,6 +247,7 @@ void CObjectFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 			pObject->SetScale(sx, sy, sz);
 			XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
 			pObject->Rotate(&xmf4Rotation);
+			pObject->Rotate(0.0f, 180.0f, 0.0f);
 			pObject->Rotate(90.0f, 0.0f, 0.0f);
 			pHouse2Model->m_pModelRootObject->Rotate(0.0f, -180.0f, 0.0f);
 			pObject->SetTag("house_2");
@@ -259,8 +263,8 @@ void CObjectFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 
 			pObject->m_pTexture = pHouse3Texture;
 
-			float transX = px * xmf3TerrainScale.x * 257.0f / 150.0f;
-			float transZ = pz * xmf3TerrainScale.z * 257.0f / 150.0f;
+			float transX = px * xmf3TerrainScale.x * terrainOffset;
+			float transZ = pz * xmf3TerrainScale.z * terrainOffset;
 			float terrainY = pTerrain->GetHeight(transX, transZ);
 
 			XMFLOAT3 position = XMFLOAT3(transX, terrainY + 90.0f * sy, transZ);
@@ -283,8 +287,8 @@ void CObjectFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 
 			pObject->m_pTexture = pHouse4Texture;
 
-			float transX = px * xmf3TerrainScale.x * 257.0f / 150.0f;
-			float transZ = pz * xmf3TerrainScale.z * 257.0f / 150.0f;
+			float transX = px * xmf3TerrainScale.x * terrainOffset;
+			float transZ = pz * xmf3TerrainScale.z * terrainOffset;
 			float terrainY = pTerrain->GetHeight(transX, transZ);
 
 			XMFLOAT3 position = XMFLOAT3(transX, terrainY + 60.0f * sy, transZ);
@@ -292,6 +296,7 @@ void CObjectFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 			pObject->SetScale(sx, sy, sz);
 			XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
 			pObject->Rotate(&xmf4Rotation);
+			pObject->Rotate(0.0f, 180.0f, 0.0f);
 			pObject->Rotate(90.0f, 0.0f, 0.0f);
 			pHouse4Model->m_pModelRootObject->Rotate(0.0f, -180.0f, 0.0f);
 			pObject->SetTag("house_4");
@@ -323,6 +328,8 @@ void CCannonFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 	// cannonball
 	CCannonballObject* pCannonballObject = new CCannonballObject(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature);
 	pCannonballObject->SetUpdatedContext(pTerrain);
+
+	float terrainOffset = 240.0f / 150.0f;
 
 	// 
 	string line;
@@ -366,8 +373,8 @@ void CCannonFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 
 			pObject->SetCannonball(pCannonballObject);
 
-			float transX = px * xmf3TerrainScale.x * 257.0f / 150.0f;
-			float transZ = pz * xmf3TerrainScale.z * 257.0f / 150.0f;
+			float transX = px * xmf3TerrainScale.x * terrainOffset;
+			float transZ = pz * xmf3TerrainScale.z * terrainOffset;
 			float terrainY = pTerrain->GetHeight(transX, transZ);
 
 			XMFLOAT3 position = XMFLOAT3(transX, terrainY + 80.0f * sy, transZ);
@@ -406,6 +413,7 @@ void CMonsterFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature
 	pClownTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Model/Texture/whiteclown_diffuse.dds", 0);
 	CScene::CreateShaderResourceViews(pd3dDevice, pClownTexture, Signature::Graphics::animation_diffuse, true);
 
+	float terrainOffset = 240.0f / 150.0f;
 
 	string line;
 	smatch match;
@@ -463,8 +471,8 @@ void CMonsterFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature
 			pObject->m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, CMonsterObject::track_name::length, pClownModel);
 		}
 
-		float transX = px * xmf3TerrainScale.x * 257.0f / 150.0f;
-		float transZ = pz * xmf3TerrainScale.z * 257.0f / 150.0f;
+		float transX = px * xmf3TerrainScale.x * terrainOffset;
+		float transZ = pz * xmf3TerrainScale.z * terrainOffset;
 		float terrainY = pTerrain->GetHeight(transX, transZ);
 
 		XMFLOAT3 position = XMFLOAT3(transX, terrainY + 1.0f * sy, transZ);
