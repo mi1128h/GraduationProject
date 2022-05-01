@@ -1258,7 +1258,7 @@ void CCannonballObject::Animate(float fTimeElapsed, CCamera* pCamera)
 {
 	if (m_bIsFired) {
 		XMFLOAT3 xmf3Gravity = XMFLOAT3(0.0f, -10.0f, 0.0f);
-		m_xmf3Velocity = Vector3::Add(m_xmf3Velocity, Vector3::ScalarProduct(xmf3Gravity, fTimeElapsed * 0.5f, false));
+		m_xmf3Velocity = Vector3::Add(m_xmf3Velocity, Vector3::ScalarProduct(xmf3Gravity, fTimeElapsed * 0.1f, false));
 
 		SetPosition(Vector3::Add(GetPosition(), m_xmf3Velocity));
 	}

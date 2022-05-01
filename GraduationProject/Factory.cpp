@@ -396,7 +396,7 @@ void CCannonFactory::ActiveCannon()
 	XMFLOAT3 origin = pBarrel->GetPosition();
 	XMFLOAT3 offset = Vector3::ScalarProduct(pBarrel->GetUp(), 100.0f * m_pInteractedCannon->m_xmf3Scale.y);
 	origin = Vector3::Add(origin, offset);
-	XMFLOAT3 velocity = Vector3::ScalarProduct(pBarrel->GetUp(), 3.0f);
+	XMFLOAT3 velocity = Vector3::ScalarProduct(pBarrel->GetUp(), 5.0f);
 
 	m_pInteractedCannon->FireCannonBall(origin, velocity);
 }
