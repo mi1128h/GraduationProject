@@ -432,6 +432,7 @@ void CGameFramework::OnProcessingKeyboardMessage
 (HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
 {
 	if (m_pScene) m_pScene->OnProcessingKeyboardMessage(hWnd, nMessageID, wParam, lParam);
+	m_pCamera = m_pPlayer->GetCamera();
 	if (m_pPlayer) m_pPlayer->OnProcessingKeyboardMessage(hWnd, nMessageID, wParam, lParam);
 
 	switch (nMessageID)

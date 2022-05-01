@@ -229,6 +229,9 @@ void CAnimPlayer::SetInteraction(XMFLOAT3& center, XMFLOAT4X4& world)
 	isMove = !isMove;
 	int track = (isMove) ? track_name::handling : track_name::idle;
 	m_pSkinnedAnimationController->SwitchAnimationState(track);
+
+	if (track == track_name::handling) ChangeCamera(FIRST_PERSON_CAMERA, 0.0f);
+	else ChangeCamera(THIRD_PERSON_CAMERA, 0.0f);
 }
 
 
