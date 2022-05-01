@@ -37,7 +37,10 @@ public:
 	CCannonFactory() {};
 	~CCannonFactory() {};
 
+	CCannonObject* m_pInteractedCannon = NULL;
+
 	virtual void BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3dGraphicsRootSignature, ID3D12GraphicsCommandList* pd3dCommandList, void* pContext);
+	void ActiveCannon();
 };
 
 class CMonsterFactory : public CFactory

@@ -388,6 +388,19 @@ void CCannonFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 	}
 }
 
+void CCannonFactory::ActiveCannon()
+{
+	if (!m_pInteractedCannon) return;
+
+	CGameObject* pBarrel = m_pInteractedCannon->m_pChild->FindFrame("Cube_001");
+	XMFLOAT3 origin = pBarrel->GetPosition();
+	XMFLOAT3 offset = Vector3::ScalarProduct(pBarrel->GetUp(), 100.0f * m_pInteractedCannon->m_xmf3Scale.y);
+	origin = Vector3::Add(origin, offset);
+	XMFLOAT3 velocity = Vector3::ScalarProduct(pBarrel->GetUp(), 3.0f);
+
+	m_pInteractedCannon->FireCannonBall(origin, velocity);
+}
+
 ///
 
 void CMonsterFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3dGraphicsRootSignature, ID3D12GraphicsCommandList* pd3dCommandList, void* pContext)

@@ -489,6 +489,9 @@ bool CScene::OnProcessingKeyboardMessage(
 			case 'E':
 				CheckInteraction();
 				break;
+			case VK_SPACE:
+				dynamic_cast<CCannonFactory*>(_factory[1])->ActiveCannon();
+				break;
 			default:
 				break;
 		}
@@ -812,6 +815,7 @@ void CScene::CheckInteraction()
 		if (playerBB.Contains(BS)) {
 			CGameObject* object = can->FindFrame("Cube_002");
 			m_pPlayer->SetInteraction(BS.Center, object->m_xmf4x4World);
+			dynamic_cast<CCannonFactory*>(_factory[1])->m_pInteractedCannon = dynamic_cast<CCannonObject*>(can);
 			break;
 		}
 	}

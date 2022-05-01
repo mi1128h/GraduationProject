@@ -436,23 +436,6 @@ void CGameFramework::OnProcessingKeyboardMessage
 
 	switch (nMessageID)
 	{
-	case WM_KEYDOWN:
-		switch(wParam)
-		{
-		case VK_LEFT:
-			((CCannonObjectsShader*)m_pScene->m_ppShaders[1])->RotateCannon(XMFLOAT3(0, 0, 1), -10.0f);
-			break;
-		case VK_RIGHT:
-			((CCannonObjectsShader*)m_pScene->m_ppShaders[1])->RotateCannon(XMFLOAT3(0, 0, 1), 10.0f);
-			break;
-		case VK_UP:
-			((CCannonObjectsShader*)m_pScene->m_ppShaders[1])->RotateCannon(XMFLOAT3(1, 0, 0), 10.0f);
-			break;
-		case VK_DOWN:
-			((CCannonObjectsShader*)m_pScene->m_ppShaders[1])->RotateCannon(XMFLOAT3(1, 0, 0), -10.0f);
-			break;
-		}
-		break;
 	case WM_KEYUP:
 		switch (wParam)
 		{
@@ -463,7 +446,6 @@ void CGameFramework::OnProcessingKeyboardMessage
 			break;
 			
 		case VK_CONTROL:
-			//m_pScene->FireBullet();
 			break;
 		case VK_F1:
 		case VK_F2:
@@ -495,8 +477,6 @@ void CGameFramework::OnProcessingKeyboardMessage
 		//case 'W':
 		//	m_fSpeedVal -= 10.0f;
 		//	break;
-		case 'F':
-			((CCannonObjectsShader*)m_pScene->m_ppShaders[1])->ActivateCannon();
 			break;
 		default:
 			break;
