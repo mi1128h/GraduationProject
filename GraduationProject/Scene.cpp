@@ -816,8 +816,11 @@ void CScene::CheckInteraction()
 		BoundingSphere BS = can->GetCollisionManager()->GetBoundingSphere();
 		if (playerBB.Contains(BS)) {
 			CGameObject* object = can->FindFrame("Cube_002");
-			m_pPlayer->SetInteraction(BS.Center, object->m_xmf4x4World);
-			dynamic_cast<CCannonFactory*>(_factory[1])->m_pInteractedCannon = dynamic_cast<CCannonObject*>(can);
+			bool interact = m_pPlayer->SetInteraction(BS.Center, object->m_xmf4x4World);
+			if (interact)
+				dynamic_cast<CCannonFactory*>(_factory[1])->m_pInteractedCannon = dynamic_cast<CCannonObject*>(can);
+			else
+				dynamic_cast<CCannonFactory*>(_factory[1])->m_pInteractedCannon = NULL;
 			break;
 		}
 	}

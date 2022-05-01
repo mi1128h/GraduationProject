@@ -220,7 +220,7 @@ void CAnimPlayer::SetAnimationController(ID3D12Device* pd3dDevice, ID3D12Graphic
 	m_pSkinnedAnimationController->SetAnimationTracks(bAnimType);
 }
 
-void CAnimPlayer::SetInteraction(XMFLOAT3& center, XMFLOAT4X4& world)
+bool CAnimPlayer::SetInteraction(XMFLOAT3& center, XMFLOAT4X4& world)
 {
 	XMFLOAT3 pos = XMFLOAT3(center.x, m_xmf3Position.y, center.z);
 	SetPosition(pos);
@@ -230,8 +230,14 @@ void CAnimPlayer::SetInteraction(XMFLOAT3& center, XMFLOAT4X4& world)
 	int track = (isMove) ? track_name::handling : track_name::idle;
 	m_pSkinnedAnimationController->SwitchAnimationState(track);
 
-	if (track == track_name::handling) ChangeCamera(FIRST_PERSON_CAMERA, 0.0f);
-	else ChangeCamera(THIRD_PERSON_CAMERA, 0.0f);
+	if (track == track_name::handling) {
+		ChangeCamera(FIRST_PERSON_CAMERA, 0.0f);
+		return true;
+	}
+	else {
+		ChangeCamera(THIRD_PERSON_CAMERA, 0.0f);
+		return false;
+	}
 }
 
 
