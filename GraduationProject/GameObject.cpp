@@ -1073,11 +1073,13 @@ CHeightMapTerrain::CHeightMapTerrain(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
-	CTexture* pTerrainBaseTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0,1,0,0);
-	pTerrainBaseTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/Terrain/Base_Texture.dds",0);
+	CTexture* pTerrainTexture = new CTexture(5, RESOURCE_TEXTURE2D, 0,1,0,0);
 
-	CTexture* pTerrainDetailTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0,1,0,0);
-	pTerrainDetailTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/Terrain/Detail_Texture_7.dds",0);
+	pTerrainTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/Terrain/Base_Texture.dds", 0);
+	pTerrainTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/Texture/ground_base.dds", 1);
+	pTerrainTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/Texture/ground_dry.dds", 2);
+	pTerrainTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/Texture/ground_dirt.dds", 3);
+	pTerrainTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/Texture/G_dry_B_dirt.dds", 4);
 
 	DXGI_FORMAT pdxgiRtvFormats[3] = { DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM };
 
@@ -1085,12 +1087,10 @@ CHeightMapTerrain::CHeightMapTerrain(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	pTerrainShader->CreateShader(pd3dDevice, pd3dGraphicsRootSignature, 3, pdxgiRtvFormats, DXGI_FORMAT_D32_FLOAT);
 	pTerrainShader->CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
-	CScene::CreateShaderResourceViews(pd3dDevice, pTerrainBaseTexture, Signature::Graphics::terrain_base, false);
-	CScene::CreateShaderResourceViews(pd3dDevice, pTerrainDetailTexture, Signature::Graphics::terrain_detail, false);
+	CScene::CreateShaderResourceViews(pd3dDevice, pTerrainTexture, Signature::Graphics::terrain_textures, false);
 
-	CMaterial* pTerrainMaterial = new CMaterial(2);
-	pTerrainMaterial->SetTexture(pTerrainBaseTexture, 0);
-	pTerrainMaterial->SetTexture(pTerrainDetailTexture, 1);
+	CMaterial* pTerrainMaterial = new CMaterial(1);
+	pTerrainMaterial->SetTexture(pTerrainTexture, 0);
 	pTerrainMaterial->SetShader(pTerrainShader);
 
 	SetMaterial(0, pTerrainMaterial);

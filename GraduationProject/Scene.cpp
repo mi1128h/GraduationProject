@@ -56,7 +56,7 @@ ID3D12RootSignature* CScene::CreateGraphicsRootSignature(ID3D12Device* pd3dDevic
 
 	ID3D12RootSignature* pd3dGraphicsRootSignature = NULL;
 
-	D3D12_DESCRIPTOR_RANGE pd3dDescriptorRanges[8];
+	D3D12_DESCRIPTOR_RANGE pd3dDescriptorRanges[7];
 
 	pd3dDescriptorRanges[Descriptor::Graphics::texture].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
 	pd3dDescriptorRanges[Descriptor::Graphics::texture].NumDescriptors = 1;
@@ -64,49 +64,43 @@ ID3D12RootSignature* CScene::CreateGraphicsRootSignature(ID3D12Device* pd3dDevic
 	pd3dDescriptorRanges[Descriptor::Graphics::texture].RegisterSpace = 0;
 	pd3dDescriptorRanges[Descriptor::Graphics::texture].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 	
-	pd3dDescriptorRanges[Descriptor::Graphics::terrain_base].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
-	pd3dDescriptorRanges[Descriptor::Graphics::terrain_base].NumDescriptors = 1;
-	pd3dDescriptorRanges[Descriptor::Graphics::terrain_base].BaseShaderRegister = 1;
-	pd3dDescriptorRanges[Descriptor::Graphics::terrain_base].RegisterSpace = 0;
-	pd3dDescriptorRanges[Descriptor::Graphics::terrain_base].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
-
-	pd3dDescriptorRanges[Descriptor::Graphics::terrain_detail].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
-	pd3dDescriptorRanges[Descriptor::Graphics::terrain_detail].NumDescriptors = 1;
-	pd3dDescriptorRanges[Descriptor::Graphics::terrain_detail].BaseShaderRegister = 2;
-	pd3dDescriptorRanges[Descriptor::Graphics::terrain_detail].RegisterSpace = 0;
-	pd3dDescriptorRanges[Descriptor::Graphics::terrain_detail].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+	pd3dDescriptorRanges[Descriptor::Graphics::terrain_textures].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+	pd3dDescriptorRanges[Descriptor::Graphics::terrain_textures].NumDescriptors = 5; //gtxtTerrainBaseTexture, gtxtTerrainDetailTexture[3], gtxtTerrainAlphaTexture
+	pd3dDescriptorRanges[Descriptor::Graphics::terrain_textures].BaseShaderRegister = 1;
+	pd3dDescriptorRanges[Descriptor::Graphics::terrain_textures].RegisterSpace = 0;
+	pd3dDescriptorRanges[Descriptor::Graphics::terrain_textures].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 
 	pd3dDescriptorRanges[Descriptor::Graphics::skybox].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
 	pd3dDescriptorRanges[Descriptor::Graphics::skybox].NumDescriptors = 1;
-	pd3dDescriptorRanges[Descriptor::Graphics::skybox].BaseShaderRegister = 3;
+	pd3dDescriptorRanges[Descriptor::Graphics::skybox].BaseShaderRegister = 6;
 	pd3dDescriptorRanges[Descriptor::Graphics::skybox].RegisterSpace = 0;
 	pd3dDescriptorRanges[Descriptor::Graphics::skybox].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 
 	pd3dDescriptorRanges[Descriptor::Graphics::g_input].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
 	pd3dDescriptorRanges[Descriptor::Graphics::g_input].NumDescriptors = 3;
-	pd3dDescriptorRanges[Descriptor::Graphics::g_input].BaseShaderRegister = 4; //t4~t6 : gtxinput
+	pd3dDescriptorRanges[Descriptor::Graphics::g_input].BaseShaderRegister = 7; //t4~t6 : gtxinput
 	pd3dDescriptorRanges[Descriptor::Graphics::g_input].RegisterSpace = 0;
 	pd3dDescriptorRanges[Descriptor::Graphics::g_input].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 
 	pd3dDescriptorRanges[Descriptor::Graphics::g_output].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
 	pd3dDescriptorRanges[Descriptor::Graphics::g_output].NumDescriptors = 1;
-	pd3dDescriptorRanges[Descriptor::Graphics::g_output].BaseShaderRegister = 7; //t7: gtxoutput
+	pd3dDescriptorRanges[Descriptor::Graphics::g_output].BaseShaderRegister = 10; //t7: gtxoutput
 	pd3dDescriptorRanges[Descriptor::Graphics::g_output].RegisterSpace = 0;
 	pd3dDescriptorRanges[Descriptor::Graphics::g_output].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 
 	pd3dDescriptorRanges[Descriptor::Graphics::animation_diffuse].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
 	pd3dDescriptorRanges[Descriptor::Graphics::animation_diffuse].NumDescriptors = 1;
-	pd3dDescriptorRanges[Descriptor::Graphics::animation_diffuse].BaseShaderRegister = 8; // t8 animation_diffuse
+	pd3dDescriptorRanges[Descriptor::Graphics::animation_diffuse].BaseShaderRegister = 11; // t8 animation_diffuse
 	pd3dDescriptorRanges[Descriptor::Graphics::animation_diffuse].RegisterSpace = 0;
 	pd3dDescriptorRanges[Descriptor::Graphics::animation_diffuse].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 
 	pd3dDescriptorRanges[Descriptor::Graphics::model_diffuse].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
 	pd3dDescriptorRanges[Descriptor::Graphics::model_diffuse].NumDescriptors = 1;
-	pd3dDescriptorRanges[Descriptor::Graphics::model_diffuse].BaseShaderRegister = 9; //t7: model_diffuse
+	pd3dDescriptorRanges[Descriptor::Graphics::model_diffuse].BaseShaderRegister = 12; //t7: model_diffuse
 	pd3dDescriptorRanges[Descriptor::Graphics::model_diffuse].RegisterSpace = 0;
 	pd3dDescriptorRanges[Descriptor::Graphics::model_diffuse].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 
-	D3D12_ROOT_PARAMETER pd3dRootParameters[16];
+	D3D12_ROOT_PARAMETER pd3dRootParameters[15];
 
 	pd3dRootParameters[Signature::Graphics::player].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
 	pd3dRootParameters[Signature::Graphics::player].Descriptor.ShaderRegister = 0; //Player
@@ -154,15 +148,10 @@ ID3D12RootSignature* CScene::CreateGraphicsRootSignature(ID3D12Device* pd3dDevic
 	pd3dRootParameters[Signature::Graphics::texture].DescriptorTable.pDescriptorRanges = &pd3dDescriptorRanges[Descriptor::Graphics::texture];
 	pd3dRootParameters[Signature::Graphics::texture].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 
-	pd3dRootParameters[Signature::Graphics::terrain_base].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
-	pd3dRootParameters[Signature::Graphics::terrain_base].DescriptorTable.NumDescriptorRanges = 1;
-	pd3dRootParameters[Signature::Graphics::terrain_base].DescriptorTable.pDescriptorRanges = &pd3dDescriptorRanges[Descriptor::Graphics::terrain_base];
-	pd3dRootParameters[Signature::Graphics::terrain_base].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
-
-	pd3dRootParameters[Signature::Graphics::terrain_detail].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
-	pd3dRootParameters[Signature::Graphics::terrain_detail].DescriptorTable.NumDescriptorRanges = 1;
-	pd3dRootParameters[Signature::Graphics::terrain_detail].DescriptorTable.pDescriptorRanges = &pd3dDescriptorRanges[Descriptor::Graphics::terrain_detail];
-	pd3dRootParameters[Signature::Graphics::terrain_detail].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+	pd3dRootParameters[Signature::Graphics::terrain_textures].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+	pd3dRootParameters[Signature::Graphics::terrain_textures].DescriptorTable.NumDescriptorRanges = 1;
+	pd3dRootParameters[Signature::Graphics::terrain_textures].DescriptorTable.pDescriptorRanges = &pd3dDescriptorRanges[Descriptor::Graphics::terrain_textures];
+	pd3dRootParameters[Signature::Graphics::terrain_textures].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 
 	pd3dRootParameters[Signature::Graphics::skybox].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
 	pd3dRootParameters[Signature::Graphics::skybox].DescriptorTable.NumDescriptorRanges = 1;

@@ -106,8 +106,7 @@ namespace Signature {
 		bone_offsets,
 		bone_trans,
 		texture,
-		terrain_base,
-		terrain_detail,
+		terrain_textures,
 		skybox,
 		g_input,
 		g_output,
@@ -124,8 +123,7 @@ namespace Signature {
 namespace Descriptor {
 	enum Graphics {
 		texture,
-		terrain_base,
-		terrain_detail,
+		terrain_textures,
 		skybox,
 		g_input,
 		g_output,
