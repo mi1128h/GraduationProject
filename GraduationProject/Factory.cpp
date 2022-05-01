@@ -375,13 +375,12 @@ void CCannonFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 			float transZ = pz * xmf3TerrainScale.z * terrainSizeOffset + terrainZOffset;
 			float terrainY = pTerrain->GetHeight(transX, transZ);
 
-			XMFLOAT3 position = XMFLOAT3(transX, terrainY + 80.0f * sy, transZ);
+			XMFLOAT3 position = XMFLOAT3(transX, terrainY + 50.0f * sy, transZ);
 			pObject->SetPosition(position);
 			pObject->SetScale(sx, sy, sz);
 			XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
 			pObject->Rotate(&xmf4Rotation);
-			pObject->Rotate(90.0f, 0.0f, 0.0f);
-			pObject->Rotate(0.0f, 0.0f, -180.0f);
+			pObject->Rotate(-90.0f, 0.0f, 0.0f);
 			pObject->SetTag("cannon");
 
 			_gameObjects.emplace_back(pObject);
@@ -476,8 +475,6 @@ void CMonsterFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature
 		pObject->SetScale(sx, sy, sz);
 		XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
 		pObject->Rotate(&xmf4Rotation);
-		//pObject->Rotate(90.0f, 0.0f, 0.0f);
-		//pObject->Rotate(0.0f, 180.0f, 0.0f);
 
 		int TrackNum = CMonsterObject::track_name::idle1;
 
