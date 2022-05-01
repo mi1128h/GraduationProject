@@ -1,6 +1,9 @@
 ﻿#pragma once
 #include "Timer.h"
 #include "Shader.h"
+#include "Collision.h"
+#include "CollisionManager.h"
+#include "Factory.h"
 
 struct LIGHT
 {
@@ -38,6 +41,12 @@ struct MATERIALS
 	MATERIAL				m_pReflections[MAX_MATERIALS];
 };
 
+enum ShaderData
+{
+	objects,
+	monster,
+};
+
 class CScene
 {
 public:
@@ -49,6 +58,9 @@ public:
 	bool OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam);
 
 	void BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList);
+	void BuildCollisions(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList);
+
+	bool IsGameObject(string& name);
 	void ReleaseObjects();
 
 	void BuildLightsAndMaterials();
@@ -57,9 +69,16 @@ public:
 	void AnimateObjects(float fTimeElapsed,CCamera* AnimateObjects = NULL);
 	void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
 
+	bool CheckPlayerByObjectBB(XMFLOAT3 xmf3Shift);
+	bool CheckAABB(BoundingBox A, BoundingBox B, XMFLOAT3 xmf3Shift, bool intersect = false);
+	bool CheckPlayerInScene(XMFLOAT3 XMF3Shift);
+	void CheckInteraction();
+	void CheckMonsterCollision();
+	void CheckMonsterAttack();
+	void CheckPlayerAttack();
+
 	void ReleaseUploadBuffers();
 
-	//그래픽 루트 시그너쳐를 생성한다. 
 	ID3D12RootSignature* CreateRootSignature(ID3D12Device* pd3dDevice, D3D12_ROOT_SIGNATURE_FLAGS d3dRootSignatureFlags, UINT nRootParameters, D3D12_ROOT_PARAMETER* pd3dRootParameters, UINT nStaticSamplerDescs, D3D12_STATIC_SAMPLER_DESC* pd3dStaticSamplerDescs);
 	ID3D12RootSignature *CreateGraphicsRootSignature(ID3D12Device *pd3dDevice);
 	ID3D12RootSignature* GetGraphicsRootSignature() { return(m_pd3dGraphicsRootSignature); }
@@ -98,6 +117,7 @@ public:
 	D3D12_CPU_DESCRIPTOR_HANDLE GetUavCPUDescriptorNextHandle() { return(m_d3dSrvCPUDescriptorNextHandle); }
 	D3D12_GPU_DESCRIPTOR_HANDLE GetUavGPUDescriptorNextHandle() { return(m_d3dSrvGPUDescriptorNextHandle); }
 
+
 public:
 	float								m_fElapsedTime = 0.0f;
 
@@ -130,6 +150,8 @@ protected:
 
 	ID3D12Resource* m_pd3dcbMaterials = NULL;
 	MATERIAL* m_pcbMappedMaterials = NULL;
+	vector<CCollision*> collisions;
+	vector<CFactory*> _factory;
 
 public:
 	static ID3D12DescriptorHeap* m_pd3dCbvSrvUavDescriptorHeap;

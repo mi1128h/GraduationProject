@@ -2,6 +2,7 @@
 #include "Mesh.h"
 #include "Camera.h"
 #include "Animation.h"
+#include "CollisionManager.h"
 
 #define RESOURCE_TEXTURE2D			0x01
 #define RESOURCE_TEXTURE2D_ARRAY	0x02	//[]
@@ -138,7 +139,7 @@ public:
 	int 					m_nTextures = 0;
 	CTexture** m_ppTextures = NULL; //0:Albedo, 1:Specular, 2:Metallic, 3:Normal, 4:Emission, 5:DetailAlbedo, 6:DetailNormal
 	_TCHAR(*m_ppstrTextureNames)[64] = NULL;
-
+	
 
 public:
 	static CShader* m_pWireFrameShader;
@@ -185,6 +186,7 @@ public:
 
 public:
 	char m_pstrFrameName[64];
+	char m_pstrTag[64];
 
 	bool m_bActive = true;
 
@@ -205,11 +207,9 @@ public:
 	CMaterial** m_ppMaterials = NULL;
 
 	CTexture* m_pTexture;
-	vector<CCollision*> collisions;
 
-private:
-	BoundingBox	m_xmBoundingBox;
-	BoundingSphere m_xmBoundingSphere;
+protected:
+	CCollisionManager* m_CollisionManager = nullptr;
 
 public:
 	void SetMesh(CMesh* pMesh);
@@ -220,7 +220,11 @@ public:
 	void SetMaterial(int nMaterial, CMaterial* pMaterial);
 	void SetScale(XMFLOAT3& xmf3Scale) { m_xmf3Scale = xmf3Scale; }
 
+	void SetCollisionManager(CCollisionManager* coll) { m_CollisionManager = coll; }
+	CCollisionManager* GetCollisionManager() { return m_CollisionManager; }
 	void SetChild(CGameObject* pChild, bool bReferenceUpdate = false);
+	void SetTag(char* tagName);
+	string GetTag() { return string(m_pstrTag); }
 
 	virtual void BuildMaterials(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList) { }
 
@@ -229,8 +233,6 @@ public:
 
 	virtual void OnPrepareRender() {};
 	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
-
-	void RenderCollision(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
 
 	virtual void CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList);
 	virtual void UpdateShaderVariables(ID3D12GraphicsCommandList *pd3dCommandList);
@@ -282,13 +284,6 @@ public:
 	static CLoadedModelInfo* LoadGeometryAndAnimationFromFile(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, char* pstrFileName, CShader* pShader);
 
 	static void PrintFrameInfo(CGameObject* pGameObject, CGameObject* pParent);
-	void MakeCollider(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature);
-	void SetIsRotate(bool bVal);
-	void LoadFromCollision(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, string filename);
-	BoundingBox GetBoundingBox() { return m_xmBoundingBox; }
-	BoundingSphere GetBoundingSphere() { return m_xmBoundingSphere; }
-	void UpdateCollision();
-	void UpdateBoundingHierachy();
 };
 
 class CRotatingObject : public CGameObject
@@ -482,7 +477,7 @@ private:
 	LPVOID m_pUpdatedContext;
 
 	CGameObject* m_pTargetObject = NULL;
-	float m_DetectionRange;
+	float m_fDetectionRange = 200.0f;
 
 	float m_fHp;
 	float m_fDamage;
@@ -491,11 +486,16 @@ public:
 	void SetUpdatedContext(LPVOID pContext) { m_pUpdatedContext = pContext; }
 
 	void FindTarget();
-	void SetDetectionRange(float range) { m_DetectionRange = range; }
+	void ChaseTarget();
+	void AttackTarget();
+
+	void SetDetectionRange(float range) { m_fDetectionRange = range; }
 	void SetHp(float hp) { m_fHp = hp; }
 	void SetDamage(float damage) { m_fDamage = damage; }
 
 	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
+	virtual void Animate(float fTimeElapsed, CCamera* pCamera = NULL);
 
 	virtual bool OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam);
+	void MonsterDead();
 };

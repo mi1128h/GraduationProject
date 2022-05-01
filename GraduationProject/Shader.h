@@ -144,15 +144,10 @@ public:
 	virtual void ReleaseUploadBuffers();
 	
 	virtual void Render(ID3D12GraphicsCommandList * pd3dCommandList, CCamera * pCamera);
-	virtual CGameObject** GetObjects() { return(m_ppObjects); }
-	virtual int GetObjectsNum() { return(m_nObjects); }
-
-	BoundingBox CalculateBoundingBox();
 
 protected:
 	CGameObject** m_ppObjects = NULL;
 	int m_nObjects = 0;
-	vector<CCannonObject*> m_vCannonObjects;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -297,45 +292,4 @@ public:
 
 	virtual D3D12_SHADER_BYTECODE CreateVertexShader(ID3DBlob** ppd3dShaderBlob);
 	virtual D3D12_SHADER_BYTECODE CreatePixelShader(ID3DBlob** ppd3dShaderBlob);
-};
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-class CSkinnedAnimationObjectsWireFrameShader : public CSkinnedAnimationWireFrameShader
-{
-public:
-	CSkinnedAnimationObjectsWireFrameShader();
-	virtual ~CSkinnedAnimationObjectsWireFrameShader();
-
-	virtual void BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, void* pContext = NULL);
-	virtual void AnimateObjects(float fTimeElapsed, CCamera* pCamera = NULL);
-	virtual void ReleaseObjects();
-
-	virtual void ReleaseUploadBuffers();
-
-	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
-
-//protected:
-	CGameObject** m_ppObjects = 0;
-	int								m_nObjects = 0;
-};
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-class CAngrybotObjectsShader : public CSkinnedAnimationObjectsWireFrameShader
-{
-public:
-	CAngrybotObjectsShader();
-	virtual ~CAngrybotObjectsShader();
-
-	virtual void BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, void* pContext = NULL);
-};
-
-class CMonsterObjectsShader : public CSkinnedAnimationObjectsWireFrameShader
-{
-public:
-	CMonsterObjectsShader();
-	virtual ~CMonsterObjectsShader();
-
-	virtual void BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3dGraphicsRootSignature, ID3D12GraphicsCommandList* pd3dCommandList, void* pContext);
 };
