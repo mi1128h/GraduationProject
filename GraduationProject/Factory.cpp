@@ -401,6 +401,35 @@ void CCannonFactory::ActiveCannon()
 	m_pInteractedCannon->FireCannonBall(origin, velocity);
 }
 
+void CCannonFactory::RotateCannon(WPARAM wParam)
+{
+	if (!m_pInteractedCannon) return;
+
+	XMFLOAT3 xmf3RotateAxis;
+	float fAngle;
+
+	switch (wParam) {
+	case 'W':
+		xmf3RotateAxis = XMFLOAT3(1, 0, 0);
+		fAngle = +10.0f;
+		break;
+	case 'A':
+		xmf3RotateAxis = XMFLOAT3(0, 0, 1);
+		fAngle = -10.0f;
+		break;
+	case 'S':
+		xmf3RotateAxis = XMFLOAT3(1, 0, 0);
+		fAngle = -10.0f;
+		break;
+	case 'D':
+		xmf3RotateAxis = XMFLOAT3(0, 0, 1);
+		fAngle = +10.0f;
+		break;
+	}
+
+	m_pInteractedCannon->RotateCannon(&xmf3RotateAxis, fAngle);
+}
+
 ///
 
 void CMonsterFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3dGraphicsRootSignature, ID3D12GraphicsCommandList* pd3dCommandList, void* pContext)

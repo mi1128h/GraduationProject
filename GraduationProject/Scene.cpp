@@ -492,6 +492,8 @@ bool CScene::OnProcessingKeyboardMessage(
 			case VK_SPACE:
 				dynamic_cast<CCannonFactory*>(_factory[1])->ActiveCannon();
 				break;
+			case 'W': case 'A': case 'S': case 'D':
+				dynamic_cast<CCannonFactory*>(_factory[1])->RotateCannon(wParam);
 			default:
 				break;
 		}
