@@ -1,6 +1,8 @@
 ﻿#include "stdafx.h"
 #include "Scene.h"
 #include "Player.h"
+#include "Collision.h"
+#include "CollisionManager.h"
 
 ID3D12DescriptorHeap* CScene::m_pd3dCbvSrvUavDescriptorHeap = NULL;
 
@@ -346,35 +348,64 @@ void CScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* p
 
 	m_pSkyBox = new CSkyBox(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 
-	DXGI_FORMAT pdxgiRtvFormats[3] = { DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM };
+	CObjectFactory * pObject = new CObjectFactory();
+	pObject->BuildObjects(pd3dDevice, m_pd3dGraphicsRootSignature, pd3dCommandList, m_pTerrain);
+	pObject->SetObjectCollision(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+	_factory.emplace_back(pObject);
 
-	m_nShaders = 2;
-	m_ppShaders = new CShader * [m_nShaders];
+	CCannonFactory* pCannon = new CCannonFactory();
+	pCannon->BuildObjects(pd3dDevice, m_pd3dGraphicsRootSignature, pd3dCommandList, m_pTerrain);
+	pCannon->SetObjectCollision(pd3dDevice, pd3dCommandList,m_pd3dGraphicsRootSignature);
+	_factory.emplace_back(pCannon);
 
-	CObjectsShader* pObjectsShader = new CObjectsShader();
-	pObjectsShader->CreateShader(pd3dDevice, m_pd3dGraphicsRootSignature, 3, pdxgiRtvFormats, DXGI_FORMAT_D32_FLOAT);
-	pObjectsShader->BuildObjects(pd3dDevice, m_pd3dGraphicsRootSignature, pd3dCommandList, m_pTerrain);
-	m_ppShaders[0] = pObjectsShader;
+	CMonsterFactory* pMonster = new CMonsterFactory();
+	pMonster->BuildObjects(pd3dDevice, m_pd3dGraphicsRootSignature, pd3dCommandList, m_pTerrain);
+	pMonster->SetObjectCollision(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+	_factory.emplace_back(pMonster);
 
-	CMonsterObjectsShader* pMonsterObjectsShader = new CMonsterObjectsShader();
-	pMonsterObjectsShader->CreateShader(pd3dDevice, m_pd3dGraphicsRootSignature, 3, pdxgiRtvFormats, DXGI_FORMAT_D32_FLOAT);
-	pMonsterObjectsShader->BuildObjects(pd3dDevice, m_pd3dGraphicsRootSignature, pd3dCommandList, m_pTerrain);
-	m_ppShaders[1] = pMonsterObjectsShader;
+
+	//////
+	
+	BuildCollisions(pd3dDevice, pd3dCommandList);
 
 	////////
 
-	m_nGameObjects = 1;
-	m_ppGameObjects = new CGameObject * [m_nGameObjects];
-
-	CLoadedModelInfo* pAngrybotModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "../Assets/Model/Angrybot.bin", NULL);
-	m_ppGameObjects[0] = new CAngrybotObject(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pAngrybotModel, 1);
-	m_ppGameObjects[0]->m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);
-	m_ppGameObjects[0]->m_pSkinnedAnimationController->SetTrackPosition(0, 0.55f);
-	m_ppGameObjects[0]->m_pSkinnedAnimationController->SetTrackSpeed(0, 0.5f);
-	m_ppGameObjects[0]->SetPosition(380.0f, m_pTerrain->GetHeight(380.0f, 725.0f), 725.0f);
-	if (pAngrybotModel) delete pAngrybotModel;
-
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
+}
+
+bool CScene::IsGameObject(string& name)
+{
+	if (!name.compare("cannon:")) return true;
+	if (!name.compare("Barricade_01:")) return true;
+	if (!name.compare("Barricade_02:")) return true;
+	if (!name.compare("house_1:")) return true;
+	if (!name.compare("house_2:")) return true;
+	if (!name.compare("house_3:")) return true;
+	if (!name.compare("house_4:")) return true;
+
+	return false;
+}
+
+
+void CScene::BuildCollisions(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
+{
+	ifstream boundingInfo("../Assets/Model/Bounding/scene.txt");
+	string s;
+	XMFLOAT3 center, extends;
+	while (boundingInfo >> s)
+	{
+		if (s.compare("<Box>:") == 0)
+		{
+			boundingInfo >> center.x >> center.y >> center.z;
+			boundingInfo >> extends.x >> extends.y >> extends.z;
+			BoundingBox BB;
+			XMStoreFloat3(&BB.Center, XMLoadFloat3(&center));
+			XMStoreFloat3(&BB.Extents, XMLoadFloat3(&extends));
+
+			CCollision* cols = new CBBCollision(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, BB);
+			collisions.emplace_back(cols);
+		}
+	}
 }
 
 void CScene::ReleaseObjects()
@@ -409,8 +440,7 @@ void CScene::ReleaseObjects()
 
 void CScene::ReleaseUploadBuffers()
 {
-	for (int i = 0; i < m_nShaders; i++) 
-		m_ppShaders[i]->ReleaseUploadBuffers();
+	for (int i = 0; i < m_nShaders; i++) m_ppShaders[i]->ReleaseUploadBuffers();
 	if (m_pTerrain) m_pTerrain->ReleaseUploadBuffers();
 	if (m_pSkyBox) m_pSkyBox->ReleaseUploadBuffers();
 }
@@ -457,6 +487,26 @@ bool CScene::OnProcessingMouseMessage(
 bool CScene::OnProcessingKeyboardMessage(
 	HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
 {
+	vector<CGameObject*> test = _factory[2]->GetGameObjects();
+	for (int i = 0; i < test.size(); ++i) {
+		((CMonsterObject*)(test[i]))->OnProcessingKeyboardMessage(hWnd, nMessageID, wParam, lParam);
+	}
+
+	switch (nMessageID)
+	{
+	case WM_KEYDOWN:
+		switch (wParam)
+		{
+			case 'E':
+				CheckInteraction();
+				break;
+			default:
+				break;
+		}
+		break;
+	default:
+		break;
+	}
 	return(false);
 }
 
@@ -656,8 +706,15 @@ void CScene::AnimateObjects(float fTimeElapsed, CCamera* pCamrea)
 {
 	m_fElapsedTime = fTimeElapsed;
 
+	for (auto& factory :_factory) factory->AnimateObjects(fTimeElapsed, pCamrea);
+
 	for (int i = 0; i < m_nShaders; i++) m_ppShaders[i]->AnimateObjects(fTimeElapsed, pCamrea);
 	if (m_pLights) {}
+	
+
+	CheckMonsterCollision();
+	CheckPlayerAttack();
+	CheckMonsterAttack();
 }
 
 void CScene::OnPrepareRender(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
@@ -689,19 +746,132 @@ void CScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera
 	if (m_pSkyBox) m_pSkyBox->Render(pd3dCommandList, pCamera);
 	if (m_pTerrain) m_pTerrain->Render(pd3dCommandList, pCamera);
 
-	for (int i = 0; i < m_nGameObjects; i++)
-	{
-		if (m_ppGameObjects[i])
-		{
-			m_ppGameObjects[i]->Animate(m_fElapsedTime);
-			if (!m_ppGameObjects[i]->m_pSkinnedAnimationController) m_ppGameObjects[i]->UpdateTransform(NULL);
-			m_ppGameObjects[i]->Render(pd3dCommandList, pCamera);
-		}
-	}
+	for (auto& factory : _factory) factory->Render(pd3dCommandList, pCamera);
 
 	for (int i = 0; i < m_nShaders; i++)
 	{
 		m_ppShaders[i]->Render(pd3dCommandList, pCamera);
 	}
+
+	for (CCollision* col : collisions)
+		col->Render(pd3dCommandList, pCamera);
 }
 
+bool CScene::CheckPlayerByObjectBB(XMFLOAT3 xmf3Shift)
+{
+	BoundingBox playerBB = m_pPlayer->GetCollManager()->GetBoundingBox();
+
+	for (auto& fac : _factory)
+	{
+		vector<CGameObject*> objects = fac->GetGameObjects();
+		for (int i = 0; i < objects.size(); ++i)
+		{
+			CCollisionManager* col = objects[i]->GetCollisionManager();
+			col->UpdateCollisions();
+			BoundingBox BB = col->GetBoundingBox();
+			if (CheckAABB(playerBB, BB, xmf3Shift)) return false;
+		}
+	}
+
+	return true;
+}
+
+bool CScene::CheckAABB(BoundingBox A, BoundingBox B, XMFLOAT3 xmf3Shift, bool intersect)
+{
+	XMFLOAT3 min1 = Vector3::Add(Vector3::Subtract(A.Center, A.Extents),xmf3Shift);
+	XMFLOAT3 max1 = Vector3::Add(Vector3::Add(A.Center, A.Extents), xmf3Shift);
+
+	XMFLOAT3 min2 = Vector3::Subtract(B.Center, B.Extents);
+	XMFLOAT3 max2 = Vector3::Add(B.Center, B.Extents);
+
+	BoundingBox aabb1;
+	BoundingBox::CreateFromPoints(aabb1,XMLoadFloat3(&min1),XMLoadFloat3(&max1));
+	BoundingBox aabb2;
+	BoundingBox::CreateFromPoints(aabb2, XMLoadFloat3(&min2), XMLoadFloat3(&max2));
+
+	if (intersect)
+	{
+		if (aabb1.Intersects(aabb2)) return true;
+	}
+	else 
+	{
+		if (aabb1.Contains(aabb2)) return true;
+	}
+	return false;
+}
+
+bool CScene::CheckPlayerInScene(XMFLOAT3 xmf3Shift)
+{
+	BoundingBox playerBB = m_pPlayer->GetCollManager()->GetBoundingBox();
+	for (CCollision* col : collisions)
+	{
+		if (!col->GetDebug()) continue;
+		if (CheckAABB(playerBB, col->GetBoundingBox(),xmf3Shift, true)) return true;
+	}
+
+	return false;
+}
+
+void CScene::CheckInteraction()
+{
+	BoundingBox playerBB = m_pPlayer->GetCollManager()->GetBoundingBox();
+	vector<CGameObject*> cannon = _factory[1]->GetGameObjects();
+
+	for (auto& can : cannon)
+	{
+		BoundingSphere BS = can->GetCollisionManager()->GetBoundingSphere();
+		if (playerBB.Contains(BS)) {
+			CGameObject* object = can->FindFrame("Cube_002");
+			m_pPlayer->SetInteraction(BS.Center, object->m_xmf4x4World);
+			break;
+		}
+	}
+}
+
+void CScene::CheckMonsterCollision()
+{
+	BoundingSphere playerBS = m_pPlayer->GetCollManager()->GetBoundingSphere();
+	vector<CGameObject*> monsters = _factory[2]->GetGameObjects();
+
+	for (auto& monster : monsters)
+	{
+		BoundingSphere BS = monster->GetCollisionManager()->GetBoundingSphere();
+		if (BS.Contains(playerBS)) {
+			((CMonsterObject*)monster)->AttackTarget();
+		}
+	}
+}
+
+void CScene::CheckMonsterAttack()
+{
+	vector<CGameObject*> objects = _factory[2]->GetGameObjects();
+	BoundingBox playerBB = m_pPlayer->GetCollManager()->GetBoundingBox();
+
+	for (auto& object : objects)
+	{
+		bool Enable = (object->m_pSkinnedAnimationController) ? object->m_pSkinnedAnimationController->GetAttackEnable() : false;
+		if (!Enable) continue;
+
+		BoundingBox AttackBB = object->GetCollisionManager()->GetBoundingBox(true);
+		//if (playerBB.Contains(AttackBB))
+
+	}
+}
+
+void CScene::CheckPlayerAttack()
+{
+	bool Enable = (m_pPlayer->m_pSkinnedAnimationController) ? m_pPlayer->m_pSkinnedAnimationController->GetAttackEnable() : false;
+	if (!Enable) return;
+
+	BoundingBox AttackBB = m_pPlayer->GetCollManager()->GetBoundingBox(true);
+	vector<CGameObject*> objects = _factory[2]->GetGameObjects();
+	for (auto& object : objects)
+	{
+		BoundingBox BB = object->GetCollisionManager()->GetBoundingBox();
+
+		if (BB.Contains(AttackBB))
+		{
+			((CMonsterObject*)object)->MonsterDead();
+		}
+	}
+}

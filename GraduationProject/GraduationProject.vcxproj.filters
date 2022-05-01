@@ -52,6 +52,9 @@
     <Filter Include="헤더 파일\InitHeader">
       <UniqueIdentifier>{d015ef62-9520-4abb-bb23-2cb015586686}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\Factory">
+      <UniqueIdentifier>{7989fec0-f65f-4f93-9525-b828bfa3202a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GraduationProject.h">
@@ -111,6 +114,12 @@
     <ClInclude Include="Collision.h">
       <Filter>헤더 파일\Object</Filter>
     </ClInclude>
+    <ClInclude Include="CollisionManager.h">
+      <Filter>헤더 파일\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Factory.h">
+      <Filter>헤더 파일\Factory</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GraduationProject.cpp">
@@ -160,6 +169,12 @@
     </ClCompile>
     <ClCompile Include="Collision.cpp">
       <Filter>소스 파일\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionManager.cpp">
+      <Filter>소스 파일\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Factory.cpp">
+      <Filter>소스 파일\Factory</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

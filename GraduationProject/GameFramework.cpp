@@ -434,12 +434,6 @@ void CGameFramework::OnProcessingKeyboardMessage
 	if (m_pScene) m_pScene->OnProcessingKeyboardMessage(hWnd, nMessageID, wParam, lParam);
 	if (m_pPlayer) m_pPlayer->OnProcessingKeyboardMessage(hWnd, nMessageID, wParam, lParam);
 
-	// test
-	CSkinnedAnimationObjectsWireFrameShader* testShader = (CSkinnedAnimationObjectsWireFrameShader*)m_pScene->m_ppShaders[1];
-	for (int i = 0; i < testShader->m_nObjects; ++i) {
-		((CMonsterObject*)(testShader->m_ppObjects[i]))->OnProcessingKeyboardMessage(hWnd, nMessageID, wParam, lParam);
-	}
-
 	switch (nMessageID)
 	{
 	case WM_KEYDOWN:
@@ -483,12 +477,6 @@ void CGameFramework::OnProcessingKeyboardMessage
 			//“F9” 키가 눌려지면 윈도우 모드와 전체화면 모드의 전환을 처리한다.
 		case VK_F9:
 			ChangeSwapChainState();
-			break;
-		case 'W':
-		case 'A':
-		case 'S':
-		case 'D':
-			m_pPlayer->SetVelocity(XMFLOAT3(0,0,0));
 			break;
 		case 'R':
 			m_pcbMappedFrameworkInfo->m_nRenderMode = 0x00;
@@ -554,6 +542,10 @@ void CGameFramework::ProcessInput()
 	static UCHAR pKeysBuffer[256];
 	bool bProcessedByScene = false;
 	if (GetKeyboardState(pKeysBuffer) && m_pScene) bProcessedByScene = m_pScene->ProcessInput(pKeysBuffer);
+
+	bProcessedByScene = dynamic_cast<CAnimPlayer*>(m_pPlayer)->IsPlayerInteraction();
+
+
 	if (!bProcessedByScene)
 	{
 		DWORD dwDirection = 0;
@@ -591,10 +583,33 @@ void CGameFramework::ProcessInput()
 				else
 					m_pPlayer->Rotate(cyDelta, cxDelta, 0.0f);
 			}
-			if (dwDirection) m_pPlayer->Move(dwDirection, 2000.0f, true);
+
+			UpdatePlayerMove(dwDirection);
 		}
 	}
 	m_pPlayer->Update(m_GameTimer.GetTimeElapsed());
+}
+
+void CGameFramework::UpdatePlayerMove(const DWORD& dwDirection)
+{
+	XMFLOAT3 xmf3Shift = m_pPlayer->SetMoveShift(dwDirection, 20.0f);
+	if (IsPlayerMove(dwDirection, xmf3Shift))
+	{
+		m_pPlayer->Move(xmf3Shift, false);
+	}
+
+	if (dwDirection & DIR_LEFT) m_pPlayer->m_pSkinnedAnimationController->SwitchAnimationState(track_name::walk_left);
+	if (dwDirection & DIR_RIGHT) m_pPlayer->m_pSkinnedAnimationController->SwitchAnimationState(track_name::walk_right);
+	if (dwDirection & DIR_BACKWARD) m_pPlayer->m_pSkinnedAnimationController->SwitchAnimationState(track_name::walk_back);
+	if (dwDirection & DIR_FORWARD) m_pPlayer->m_pSkinnedAnimationController->SwitchAnimationState(track_name::run);
+}
+
+bool CGameFramework::IsPlayerMove(const DWORD& dwDirection, const DirectX::XMFLOAT3& xmf3Shift)
+{
+	if (!dwDirection) return false;
+	if (!m_pScene->CheckPlayerByObjectBB(xmf3Shift)) return false;
+	if (!m_pScene->CheckPlayerInScene(xmf3Shift)) return false;
+	return true;
 }
 
 void CGameFramework::AnimateObjects()
@@ -607,14 +622,9 @@ void CGameFramework::AnimateObjects()
 
 void CGameFramework::WaitForGpuComplete()
 {
-	// 원래 후치로 되어있었는데 전치로 변경함
-	// CPU 펜스의 값을 증가한다.
 	UINT64 nFenceValue = ++m_nFenceValues[m_nSwapChainBufferIndex];
-	// GPU가 펜스의 값을 설정하는 명령을 명령 큐에 추가한다. 	
 	HRESULT hResult = m_pd3dCommandQueue->Signal(m_pd3dFence, nFenceValue);
 
-	/*펜스의 현재 값이 설정한 값보다 작으면
-	펜스의 현재 값이 설정한 값이 될 때까지 기다린다.*/
 	if (m_pd3dFence->GetCompletedValue() < nFenceValue)
 	{
 		hResult = m_pd3dFence->SetEventOnCompletion(nFenceValue, m_hFenceEvent);
@@ -710,10 +720,6 @@ void CGameFramework::FrameAdvance()
 	m_pdxgiSwapChain->Present(0, 0);
 #endif
 #endif
-
-	/*현재의 프레임 레이트를 문자열로 가져와서 주 윈도우의 타이틀로 출력한다. m_pszBuffer 문자열이
-	"LapProject ("으로 초기화되었으므로 (m_pszFrameRate+12)에서부터 프레임 레이트를 문자열로 출력
-	하여 “ FPS)” 문자열과 합친다.*/
 
 	MoveToNextFrame();
 
