@@ -290,13 +290,15 @@ PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSTerrain(VS_TERRAIN_OUTPUT input) : SV_TARGET
 	cDetailTexColors[1] = gtxtTerrainDetailTextures[1].Sample(gSamplerState, input.uv1);
 	cDetailTexColors[2] = gtxtTerrainDetailTextures[2].Sample(gSamplerState, input.uv1);
 
+	float fAlphaR = gtxtTerrainAlphaTexture.Sample(gSamplerState, input.uv0).r;
 	float fAlphaG = gtxtTerrainAlphaTexture.Sample(gSamplerState, input.uv0).g;
 	float fAlphaB = gtxtTerrainAlphaTexture.Sample(gSamplerState, input.uv0).b;
 
 	float4 cColor = input.color * saturate((cBaseTexColor * 0.5f) + (cDetailTexColors[0] * 0.5f));
 
-	cColor += lerp(cBaseTexColor, cDetailTexColors[1], fAlphaG);
-	cColor += lerp(cBaseTexColor, cDetailTexColors[2], fAlphaB);
+	cColor += cDetailTexColors[1] * fAlphaG;
+	cColor += cDetailTexColors[2] * fAlphaB;
+	
 
 	PS_MULTIPLE_RENDER_TARGETS_OUTPUT output;
 
