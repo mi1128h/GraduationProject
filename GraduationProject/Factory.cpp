@@ -145,8 +145,8 @@ void CObjectFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 
 			pObject->m_pTexture = pCoverTexture;
 
-			float transX = px * xmf3TerrainScale.x * terrainSizeOffset;
-			float transZ = pz * xmf3TerrainScale.z * terrainSizeOffset;
+			float transX = px * xmf3TerrainScale.x * terrainSizeOffset + terrainXOffset;
+			float transZ = pz * xmf3TerrainScale.z * terrainSizeOffset + terrainZOffset;
 			float terrainY = pTerrain->GetHeight(transX, transZ);
 
 			XMFLOAT3 position = XMFLOAT3(transX, terrainY + 20.0f * sy, transZ);
