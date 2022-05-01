@@ -288,6 +288,7 @@ PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSTerrain(VS_TERRAIN_OUTPUT input) : SV_TARGET
 	float4 cDetailTexColors[3];
 	cDetailTexColors[0] = gtxtTerrainDetailTextures[0].Sample(gSamplerState, input.uv1);
 	cDetailTexColors[1] = gtxtTerrainDetailTextures[1].Sample(gSamplerState, input.uv1);
+	cDetailTexColors[2] = gtxtTerrainDetailTextures[2].Sample(gSamplerState, input.uv1);
 
 	float fAlphaG = gtxtTerrainAlphaTexture.Sample(gSamplerState, input.uv0).g;
 	float fAlphaB = gtxtTerrainAlphaTexture.Sample(gSamplerState, input.uv0).b;
