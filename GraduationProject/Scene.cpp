@@ -854,6 +854,7 @@ void CScene::CheckMonsterAttack()
 		if (playerBB.Contains(AttackBB))
 		{
 			m_pPlayer->DecreaseHp(m_pPlayer->GetDamage());
+			object->SetAttackEnable(false);
 		}
 	}
 }
@@ -872,6 +873,7 @@ void CScene::CheckPlayerAttack()
 		if (BB.Contains(AttackBB))
 		{
 			((CMonsterObject*)object)->DecreaseHp(m_pPlayer->GetDamage());
+			m_pPlayer->SetAttackEnable(false);
 		}
 	}
 }
