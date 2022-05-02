@@ -25,6 +25,8 @@ cbuffer cbFrameworkInfo : register(b6)
 	float		gfElapsedTime : packoffset(c0.y);
 	uint		gnRenderMode : packoffset(c0.z);
 	uint		gnBlurMode : packoffset(c0.w);
+	float4		gcFogColor : packoffset(c1);
+	float4		gvFogParameter : packoffset(c2);
 };
 
 #define DEBUG_TESSELLATION			0x20
@@ -281,7 +283,7 @@ VS_TERRAIN_OUTPUT VSTerrain(VS_TERRAIN_INPUT input)
 
 	// fogFactor
 	float4 cameraPosition = mul(mul(float4(input.position, 1.0f), gmtxGameObject), gmtxView);
-	output.fogFactor = saturate((10000.0f - cameraPosition.z) / (10000.0f - 4000.0f));
+	output.fogFactor = saturate((gvFogParameter.z - cameraPosition.z) / (gvFogParameter.z - gvFogParameter.y));
 
 	return(output);
 }
@@ -305,8 +307,7 @@ PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSTerrain(VS_TERRAIN_OUTPUT input) : SV_TARGET
 	cColor += cDetailTexColors[2] * fAlphaB;
 
 	// fogColor
-	float4 fogColor = float4(0.5, 0.5, 0.5, 1.0f);
-	cColor = input.fogFactor * cColor + (1.0f - input.fogFactor) * fogColor;
+	cColor = input.fogFactor * cColor + (1.0f - input.fogFactor) * gcFogColor;
 
 	PS_MULTIPLE_RENDER_TARGETS_OUTPUT output;
 
@@ -454,7 +455,7 @@ VS_WIREFRAME_OUTPUT VSModelTextured(VS_WIREFRAME_INPUT input)
 
 	// fogFactor
 	float4 cameraPosition = mul(mul(float4(input.position, 1.0f), gmtxGameObject), gmtxView);
-	output.fogFactor = saturate((10000.0f - cameraPosition.z) / (10000.0f - 4000.0f));
+	output.fogFactor = saturate((gvFogParameter.z - cameraPosition.z) / (gvFogParameter.z - gvFogParameter.y));
 
 	return(output);
 }
@@ -464,8 +465,7 @@ PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSModelTextured(VS_WIREFRAME_OUTPUT input) : S
 	float4 cColor = gtxtModelDiffuseTexture.Sample(gSamplerState, input.uv);
 
 	// fogColor
-	float4 fogColor = float4(0.5, 0.5, 0.5, 1.0f);
-	cColor = input.fogFactor * cColor + (1.0f - input.fogFactor) * fogColor;
+	cColor = input.fogFactor * cColor + (1.0f - input.fogFactor) * gcFogColor;
 
 	PS_MULTIPLE_RENDER_TARGETS_OUTPUT output;
 
@@ -522,7 +522,7 @@ VS_SKINNED_OUTPUT VSSkinnedAnimation(VS_SKINNED_INPUT input)
 
 	// fogFactor
 	float4 cameraPosition = mul(mul(float4(input.position, 1.0f), gmtxGameObject), gmtxView);
-	output.fogFactor = saturate((10000.0f - cameraPosition.z) / (10000.0f - 4000.0f));
+	output.fogFactor = saturate((gvFogParameter.z - cameraPosition.z) / (gvFogParameter.z - gvFogParameter.y));
 
 	return(output);
 }
@@ -532,8 +532,7 @@ PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSSkinnedAnimation(VS_SKINNED_OUTPUT input) : 
 	float4 cColor = gtxtAnimationDiffuseTexture.Sample(gSamplerState, input.uv);
 
 	// fogColor
-	float4 fogColor = float4(0.5, 0.5, 0.5, 1.0f);
-	cColor = input.fogFactor * cColor + (1.0f - input.fogFactor) * fogColor;
+	cColor = input.fogFactor * cColor + (1.0f - input.fogFactor) * gcFogColor;
 
 	PS_MULTIPLE_RENDER_TARGETS_OUTPUT output;
 
