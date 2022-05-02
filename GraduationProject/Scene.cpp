@@ -851,8 +851,10 @@ void CScene::CheckMonsterAttack()
 		if (!Enable) continue;
 
 		BoundingBox AttackBB = object->GetCollisionManager()->GetBoundingBox(true);
-		//if (playerBB.Contains(AttackBB))
-
+		if (playerBB.Contains(AttackBB))
+		{
+			m_pPlayer->DecreaseHp(m_pPlayer->GetDamage());
+		}
 	}
 }
 
@@ -869,7 +871,7 @@ void CScene::CheckPlayerAttack()
 
 		if (BB.Contains(AttackBB))
 		{
-			((CMonsterObject*)object)->MonsterDead();
+			((CMonsterObject*)object)->DecreaseHp(m_pPlayer->GetDamage());
 		}
 	}
 }

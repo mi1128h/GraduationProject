@@ -215,6 +215,15 @@ void CAnimPlayer::SetAnimationTypes()
 	m_pSkinnedAnimationController->SetAnimationTypes(bAnimType);
 }
 
+void CAnimPlayer::DecreaseHp(float val)
+{
+	m_fHp -= val;
+	if (m_fHp < 0)
+	{
+		m_pSkinnedAnimationController->SwitchAnimationState(track_name::deth);
+	}
+}
+
 void CAnimPlayer::SetAnimationController(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, CLoadedModelInfo* pModel)
 {
 	bool bAnimType[track_name::length] = {false,true,false,false,false,false,false,true,false,false,false,false,true,true,true,false,false};
