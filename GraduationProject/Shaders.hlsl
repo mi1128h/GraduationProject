@@ -267,6 +267,7 @@ struct VS_TERRAIN_OUTPUT
 	float4 color : COLOR;
 	float2 uv0 : TEXCOORD0;
 	float2 uv1 : TEXCOORD1;
+	float fogFactor : FOG;
 };
 
 VS_TERRAIN_OUTPUT VSTerrain(VS_TERRAIN_INPUT input)
@@ -277,6 +278,10 @@ VS_TERRAIN_OUTPUT VSTerrain(VS_TERRAIN_INPUT input)
 	output.color = input.color;
 	output.uv0 = input.uv0;
 	output.uv1 = input.uv1;
+
+	// fogFactor
+	float4 cameraPosition = mul(mul(float4(input.position, 1.0f), gmtxGameObject), gmtxView);
+	output.fogFactor = saturate((10000.0f - cameraPosition.z) / (10000.0f - 4000.0f));
 
 	return(output);
 }
@@ -298,7 +303,10 @@ PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSTerrain(VS_TERRAIN_OUTPUT input) : SV_TARGET
 
 	cColor += cDetailTexColors[1] * fAlphaG;
 	cColor += cDetailTexColors[2] * fAlphaB;
-	
+
+	// fogColor
+	float4 fogColor = float4(0.5, 0.5, 0.5, 1.0f);
+	cColor = input.fogFactor * cColor + (1.0f - input.fogFactor) * fogColor;
 
 	PS_MULTIPLE_RENDER_TARGETS_OUTPUT output;
 
@@ -434,6 +442,7 @@ struct VS_WIREFRAME_OUTPUT
 {
 	float4 position : SV_POSITION;
 	float2 uv : TEXCOORD;
+	float fogFactor : FOG;
 };
 
 VS_WIREFRAME_OUTPUT VSModelTextured(VS_WIREFRAME_INPUT input)
@@ -443,12 +452,20 @@ VS_WIREFRAME_OUTPUT VSModelTextured(VS_WIREFRAME_INPUT input)
 	output.position = mul(mul(mul(float4(input.position, 1.0f), gmtxGameObject), gmtxView), gmtxProjection);
 	output.uv = input.uv;
 
+	// fogFactor
+	float4 cameraPosition = mul(mul(float4(input.position, 1.0f), gmtxGameObject), gmtxView);
+	output.fogFactor = saturate((10000.0f - cameraPosition.z) / (10000.0f - 4000.0f));
+
 	return(output);
 }
 
 PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSModelTextured(VS_WIREFRAME_OUTPUT input) : SV_TARGET
 {
 	float4 cColor = gtxtModelDiffuseTexture.Sample(gSamplerState, input.uv);
+
+	// fogColor
+	float4 fogColor = float4(0.5, 0.5, 0.5, 1.0f);
+	cColor = input.fogFactor * cColor + (1.0f - input.fogFactor) * fogColor;
 
 	PS_MULTIPLE_RENDER_TARGETS_OUTPUT output;
 
@@ -485,6 +502,7 @@ struct VS_SKINNED_OUTPUT
 {
 	float4 position : SV_POSITION;
 	float2 uv : TEXCOORD;
+	float fogFactor : FOG;
 };
 
 VS_SKINNED_OUTPUT VSSkinnedAnimation(VS_SKINNED_INPUT input)
@@ -502,12 +520,20 @@ VS_SKINNED_OUTPUT VSSkinnedAnimation(VS_SKINNED_INPUT input)
 	output.position = mul(mul(float4(positionW, 1.0f), gmtxView), gmtxProjection);
 	//	output.position = mul(mul(mul(float4(input.position, 1.0f), gmtxGameObject), gmtxView), gmtxProjection);
 
+	// fogFactor
+	float4 cameraPosition = mul(mul(float4(input.position, 1.0f), gmtxGameObject), gmtxView);
+	output.fogFactor = saturate((10000.0f - cameraPosition.z) / (10000.0f - 4000.0f));
+
 	return(output);
 }
 
 PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSSkinnedAnimation(VS_SKINNED_OUTPUT input) : SV_TARGET
 {
 	float4 cColor = gtxtAnimationDiffuseTexture.Sample(gSamplerState, input.uv);
+
+	// fogColor
+	float4 fogColor = float4(0.5, 0.5, 0.5, 1.0f);
+	cColor = input.fogFactor * cColor + (1.0f - input.fogFactor) * fogColor;
 
 	PS_MULTIPLE_RENDER_TARGETS_OUTPUT output;
 
