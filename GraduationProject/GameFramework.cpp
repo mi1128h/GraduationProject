@@ -368,7 +368,7 @@ void CGameFramework::CreateShaderVariables()
 	m_pd3dcbFrameworkInfo->Map(0, NULL, (void**)&m_pcbMappedFrameworkInfo);
 
 	m_pcbMappedFrameworkInfo->m_xmf4FogColor = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);	// 회색
-	m_pcbMappedFrameworkInfo->m_xmf4FogParameter = XMFLOAT4(0, 4000.0f, 10000.0f, 0);	// Mode, Start, End, Density
+	m_pcbMappedFrameworkInfo->m_xmf4FogParameter = XMFLOAT4(2.0f, 4000.0f, 10000.0f, 0.0002);	// Mode, Start, End, Density
 }
 
 void CGameFramework::UpdateShaderVariables()

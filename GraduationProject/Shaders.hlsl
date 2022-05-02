@@ -88,6 +88,23 @@ PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSCollider(VS_DIFFUSED_OUTPUT input) : SV_TARG
 	return(output);
 }
 
+// Get FogFactor by Mode
+float GetFogFactor(float4 cameraPosition)
+{
+	float fogFactor = 0.0f;
+	if (gvFogParameter.x == 1.0f) {
+		fogFactor = saturate((gvFogParameter.z - cameraPosition.z) / (gvFogParameter.z - gvFogParameter.y));
+	}
+	else if (gvFogParameter.x == 2.0f) {
+		fogFactor = 1 / exp(cameraPosition.z * gvFogParameter.w);
+	}
+	else if (gvFogParameter.x == 3.0f) {
+		fogFactor = 1 / exp(pow(cameraPosition.z * gvFogParameter.w, 2));
+	}
+
+	return fogFactor;
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 Texture2D gtxtTexture : register(t0);
@@ -283,7 +300,7 @@ VS_TERRAIN_OUTPUT VSTerrain(VS_TERRAIN_INPUT input)
 
 	// fogFactor
 	float4 cameraPosition = mul(mul(float4(input.position, 1.0f), gmtxGameObject), gmtxView);
-	output.fogFactor = saturate((gvFogParameter.z - cameraPosition.z) / (gvFogParameter.z - gvFogParameter.y));
+	output.fogFactor = GetFogFactor(cameraPosition);
 
 	return(output);
 }
@@ -455,7 +472,7 @@ VS_WIREFRAME_OUTPUT VSModelTextured(VS_WIREFRAME_INPUT input)
 
 	// fogFactor
 	float4 cameraPosition = mul(mul(float4(input.position, 1.0f), gmtxGameObject), gmtxView);
-	output.fogFactor = saturate((gvFogParameter.z - cameraPosition.z) / (gvFogParameter.z - gvFogParameter.y));
+	output.fogFactor = GetFogFactor(cameraPosition);
 
 	return(output);
 }
@@ -522,7 +539,7 @@ VS_SKINNED_OUTPUT VSSkinnedAnimation(VS_SKINNED_INPUT input)
 
 	// fogFactor
 	float4 cameraPosition = mul(mul(float4(input.position, 1.0f), gmtxGameObject), gmtxView);
-	output.fogFactor = saturate((gvFogParameter.z - cameraPosition.z) / (gvFogParameter.z - gvFogParameter.y));
+	output.fogFactor = GetFogFactor(cameraPosition);
 
 	return(output);
 }
