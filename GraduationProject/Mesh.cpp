@@ -1162,8 +1162,8 @@ CModelMesh::~CModelMesh()
 
 void CModelMesh::OnPreRender(ID3D12GraphicsCommandList* pd3dCommandList, void* pContext)
 {
-	D3D12_VERTEX_BUFFER_VIEW pVertexBufferViews[2] = { m_d3dPositionBufferView, m_d3dTextureCoordBufferView };
-	pd3dCommandList->IASetVertexBuffers(m_nSlot, 2, pVertexBufferViews);
+	D3D12_VERTEX_BUFFER_VIEW pVertexBufferViews[3] = { m_d3dPositionBufferView,m_d3dNormalBufferView, m_d3dTextureCoordBufferView };
+	pd3dCommandList->IASetVertexBuffers(m_nSlot, 3, pVertexBufferViews);
 }
 
 void CModelMesh::LoadMeshFromFile(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, FILE* pInFile)
@@ -1249,6 +1249,34 @@ void CModelMesh::LoadMeshFromFile(ID3D12Device* pd3dDevice, ID3D12GraphicsComman
 						}
 					}
 				}
+				else if (!strcmp(pstrToken, "<Normals>:"))
+				{
+					m_nVertices = ::ReadUnsignedIntegerFromFile(pInFile);
+					int num = ::ReadUnsignedIntegerFromFile(pInFile);
+
+					if (m_nVertices > 0)
+					{
+						for (int i = 0; i < num; ++i) {
+
+							::ReadStringFromFile(pInFile, pstrToken);
+
+							if (!strcmp(pstrToken, "<Normal>:"))
+							{
+								int index = ::ReadIntegerFromFile(pInFile);
+								XMFLOAT3* pxmf3Normal = new XMFLOAT3[m_nVertices];
+								nReads = (UINT)::fread(pxmf3Normal, sizeof(XMFLOAT3), m_nVertices, pInFile);
+
+								if (i) continue;
+
+								m_pd3dNormalBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList, pxmf3Normal, sizeof(XMFLOAT3) * m_nVertices, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, &m_pd3dNormalUploadBuffer);
+
+								m_d3dNormalBufferView.BufferLocation = m_pd3dNormalBuffer->GetGPUVirtualAddress();
+								m_d3dNormalBufferView.StrideInBytes = sizeof(XMFLOAT3);
+								m_d3dNormalBufferView.SizeInBytes = sizeof(XMFLOAT3) * m_nVertices;
+							}
+						}
+					}
+				}
 				else if (!strcmp(pstrToken, "</Polygons>"))
 				{
 					break;
@@ -1263,6 +1291,7 @@ void CModelMesh::LoadMeshFromFile(ID3D12Device* pd3dDevice, ID3D12GraphicsComman
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
+
 CSkyBoxMesh::CSkyBoxMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, float fWidth, float fHeight, float fDepth) : CMesh(pd3dDevice, pd3dCommandList)
 {
 	m_nVertices = 36;

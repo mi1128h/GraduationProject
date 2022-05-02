@@ -225,7 +225,7 @@ struct VS_SKYBOX_CUBEMAP_OUTPUT
 	float4	position : SV_POSITION;
 };
 
-TextureCube gtxtSkyCubeTexture : register(t6);
+TextureCube gtxtSkyCubeTexture : register(t3);
 
 VS_SKYBOX_CUBEMAP_OUTPUT VSSkyBox(VS_SKYBOX_CUBEMAP_INPUT input)
 {
@@ -249,9 +249,8 @@ PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSSkyBox(VS_SKYBOX_CUBEMAP_OUTPUT input) : SV_
 }
 
 //--------------------------------------------------------------------------------------
-Texture2D gtxtTerrainBaseTexture : register(t1);
-Texture2D gtxtTerrainDetailTextures[3] : register(t2);
-Texture2D gtxtTerrainAlphaTexture : register(t5);
+Texture2D<float4> gtxtTerrainBaseTexture : register(t1);
+Texture2D<float4> gtxtTerrainDetailTexture : register(t2);
 
 struct VS_TERRAIN_INPUT
 {
@@ -284,21 +283,9 @@ VS_TERRAIN_OUTPUT VSTerrain(VS_TERRAIN_INPUT input)
 PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSTerrain(VS_TERRAIN_OUTPUT input) : SV_TARGET
 {
 	float4 cBaseTexColor = gtxtTerrainBaseTexture.Sample(gSamplerState, input.uv0);
-
-	float4 cDetailTexColors[3];
-	cDetailTexColors[0] = gtxtTerrainDetailTextures[0].Sample(gSamplerState, input.uv1);
-	cDetailTexColors[1] = gtxtTerrainDetailTextures[1].Sample(gSamplerState, input.uv1);
-	cDetailTexColors[2] = gtxtTerrainDetailTextures[2].Sample(gSamplerState, input.uv1);
-
-	float fAlphaR = gtxtTerrainAlphaTexture.Sample(gSamplerState, input.uv0).r;
-	float fAlphaG = gtxtTerrainAlphaTexture.Sample(gSamplerState, input.uv0).g;
-	float fAlphaB = gtxtTerrainAlphaTexture.Sample(gSamplerState, input.uv0).b;
-
-	float4 cColor = input.color * saturate((cBaseTexColor * 0.5f) + (cDetailTexColors[0] * 0.5f));
-
-	cColor += cDetailTexColors[1] * fAlphaG;
-	cColor += cDetailTexColors[2] * fAlphaB;
-	
+	float4 cDetailTexColor = gtxtTerrainDetailTexture.Sample(gSamplerState, input.uv1*2.0f);
+	//float4 cColor = saturate((cBaseTexColor * 0.6f) + (cDetailTexColor * 0.4f));
+	float4 cColor = input.color * saturate((cBaseTexColor * 0.5f) + (cDetailTexColor * 0.5f));
 
 	PS_MULTIPLE_RENDER_TARGETS_OUTPUT output;
 
@@ -310,8 +297,8 @@ PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSTerrain(VS_TERRAIN_OUTPUT input) : SV_TARGET
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 RWTexture2D<float4> gtxtRWOutput : register(u0);
-Texture2D<float4> gtxtInputTextures[3] : register(t7);
-Texture2D gtxtOutput : register(t10);
+Texture2D<float4> gtxtInputTextures[3] : register(t4);
+Texture2D gtxtOutput : register(t7);
 
 groupshared float4 gTextureCache[(480 + 2 * 5)];
 groupshared float4 gHorzCache[(640 + 2 * 5)];
@@ -423,16 +410,19 @@ float4 PSPostProcessing(VS_TEXTURED_OUTPUT input) : SV_Target
 // Animation
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-Texture2D<float4> gtxtModelDiffuseTexture : register(t12);
+Texture2D<float4> gtxtModelDiffuseTexture : register(t9);
 struct VS_WIREFRAME_INPUT
 {
 	float3 position : POSITION;
+	float3 normal : NORMAL;
 	float2 uv : TEXCOORD;
 };
 
 struct VS_WIREFRAME_OUTPUT
 {
 	float4 position : SV_POSITION;
+	float3 positionW : POSITION;
+	float3 normalW : NORMAL;
 	float2 uv : TEXCOORD;
 };
 
@@ -440,6 +430,8 @@ VS_WIREFRAME_OUTPUT VSModelTextured(VS_WIREFRAME_INPUT input)
 {
 	VS_WIREFRAME_OUTPUT output;
 
+	output.normalW = mul(input.normal, (float3x3)gmtxGameObject);
+	output.positionW = (float3)mul(float4(input.position, 1.0f), gmtxGameObject);
 	output.position = mul(mul(mul(float4(input.position, 1.0f), gmtxGameObject), gmtxView), gmtxProjection);
 	output.uv = input.uv;
 
@@ -448,12 +440,16 @@ VS_WIREFRAME_OUTPUT VSModelTextured(VS_WIREFRAME_INPUT input)
 
 PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSModelTextured(VS_WIREFRAME_OUTPUT input) : SV_TARGET
 {
+
 	float4 cColor = gtxtModelDiffuseTexture.Sample(gSamplerState, input.uv);
+	input.normalW = normalize(input.normalW);
+	float4 uvs[MAX_LIGHTS];
+	float4 cIllumination = Lighting(input.positionW, input.normalW, false, uvs);
 
 	PS_MULTIPLE_RENDER_TARGETS_OUTPUT output;
-
-	output.f4Scene = output.f4Color = cColor;
+	output.f4Scene = output.f4Color = cColor * cIllumination;
 	output.fDepth = 1.0f - input.position.z;
+
 	return(output);
 }
 
@@ -461,7 +457,7 @@ PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSModelTextured(VS_WIREFRAME_OUTPUT input) : S
 //
 #define MAX_VERTEX_INFLUENCES			4
 #define SKINNED_ANIMATION_BONES			128
-Texture2D<float4> gtxtAnimationDiffuseTexture : register(t11);
+Texture2D<float4> gtxtAnimationDiffuseTexture : register(t8);
 
 cbuffer cbBoneOffsets : register(b7)
 {
