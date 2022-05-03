@@ -375,18 +375,59 @@ void CCannonFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 			float transZ = pz * xmf3TerrainScale.z * terrainSizeOffset + terrainZOffset;
 			float terrainY = pTerrain->GetHeight(transX, transZ);
 
-			XMFLOAT3 position = XMFLOAT3(transX, terrainY + 80.0f * sy, transZ);
+			XMFLOAT3 position = XMFLOAT3(transX, terrainY + 50.0f * sy, transZ);
 			pObject->SetPosition(position);
 			pObject->SetScale(sx, sy, sz);
 			XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
 			pObject->Rotate(&xmf4Rotation);
-			pObject->Rotate(90.0f, 0.0f, 0.0f);
-			pObject->Rotate(0.0f, 0.0f, -180.0f);
+			pObject->Rotate(-90.0f, 0.0f, 0.0f);
 			pObject->SetTag("cannon");
 
 			_gameObjects.emplace_back(pObject);
 		}
 	}
+}
+
+void CCannonFactory::ActiveCannon()
+{
+	if (!m_pInteractedCannon) return;
+
+	CGameObject* pBarrel = m_pInteractedCannon->m_pChild->FindFrame("Cube_001");
+	XMFLOAT3 origin = pBarrel->GetPosition();
+	XMFLOAT3 offset = Vector3::ScalarProduct(pBarrel->GetUp(), 100.0f * m_pInteractedCannon->m_xmf3Scale.y);
+	origin = Vector3::Add(origin, offset);
+	XMFLOAT3 velocity = Vector3::ScalarProduct(pBarrel->GetUp(), 5.0f);
+
+	m_pInteractedCannon->FireCannonBall(origin, velocity);
+}
+
+void CCannonFactory::RotateCannon(WPARAM wParam)
+{
+	if (!m_pInteractedCannon) return;
+
+	XMFLOAT3 xmf3RotateAxis;
+	float fAngle;
+
+	switch (wParam) {
+	case 'W':
+		xmf3RotateAxis = XMFLOAT3(1, 0, 0);
+		fAngle = +10.0f;
+		break;
+	case 'A':
+		xmf3RotateAxis = XMFLOAT3(0, 0, 1);
+		fAngle = -10.0f;
+		break;
+	case 'S':
+		xmf3RotateAxis = XMFLOAT3(1, 0, 0);
+		fAngle = -10.0f;
+		break;
+	case 'D':
+		xmf3RotateAxis = XMFLOAT3(0, 0, 1);
+		fAngle = +10.0f;
+		break;
+	}
+
+	m_pInteractedCannon->RotateCannon(&xmf3RotateAxis, fAngle);
 }
 
 ///
@@ -476,8 +517,6 @@ void CMonsterFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature
 		pObject->SetScale(sx, sy, sz);
 		XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
 		pObject->Rotate(&xmf4Rotation);
-		//pObject->Rotate(90.0f, 0.0f, 0.0f);
-		//pObject->Rotate(0.0f, 180.0f, 0.0f);
 
 		int TrackNum = CMonsterObject::track_name::idle1;
 

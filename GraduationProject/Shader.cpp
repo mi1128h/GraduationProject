@@ -843,6 +843,7 @@ void CCannonObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSign
 
 	CCannonballObject* pCannonballObject = new CCannonballObject(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature);
 	pCannonballObject->SetUpdatedContext(pTerrain);
+	pCannonballObject->SetScale(0.5, 0.5, 0.5);
 
 	//
 	CCannonObject* pCannonObject = NULL;
@@ -861,8 +862,8 @@ void CCannonObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSign
 	float xPosition = fTerrainWidth * 0.5f;
 	float zPosition = fTerrainLength * 0.5f - 10.0f;
 	float fHeight = pTerrain->GetHeight(xPosition, zPosition);
-	pCannonObject->SetPosition(xPosition, fHeight + 80.0f, zPosition);
-
+	pCannonObject->SetPosition(xPosition, fHeight + 80.0f * 0.5f, zPosition);
+	pCannonObject->SetScale(0.5, 0.5, 0.5);
 	pCannonObject->SetCannonball(pCannonballObject);
 
 	m_ppObjects[0] = pCannonObject;
@@ -894,6 +895,8 @@ void CCannonObjectsShader::ActivateCannon()
 
 	CGameObject* pBarrel = ((CCannonObject*)m_ppObjects[0])->m_pChild->FindFrame("Cube_001");
 	XMFLOAT3 origin = pBarrel->GetPosition();
+	XMFLOAT3 offset = Vector3::ScalarProduct(pBarrel->GetUp(), 100.0f * m_ppObjects[0]->m_xmf3Scale.y);
+	origin = Vector3::Add(origin, offset);
 	XMFLOAT3 velocity = Vector3::ScalarProduct(pBarrel->GetUp(), 3.0f);
 
 	((CCannonObject*)m_ppObjects[0])->FireCannonBall(origin, velocity);

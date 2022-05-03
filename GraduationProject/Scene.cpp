@@ -489,6 +489,11 @@ bool CScene::OnProcessingKeyboardMessage(
 			case 'E':
 				CheckInteraction();
 				break;
+			case VK_SPACE:
+				dynamic_cast<CCannonFactory*>(_factory[1])->ActiveCannon();
+				break;
+			case 'W': case 'A': case 'S': case 'D':
+				dynamic_cast<CCannonFactory*>(_factory[1])->RotateCannon(wParam);
 			default:
 				break;
 		}
@@ -812,7 +817,11 @@ void CScene::CheckInteraction()
 		BoundingSphere BS = can->GetCollisionManager()->GetBoundingSphere();
 		if (playerBB.Contains(BS)) {
 			CGameObject* object = can->FindFrame("Cube_002");
-			m_pPlayer->SetInteraction(BS.Center, object->m_xmf4x4World);
+			bool interact = m_pPlayer->SetInteraction(BS.Center, object->m_xmf4x4World);
+			if (interact)
+				dynamic_cast<CCannonFactory*>(_factory[1])->m_pInteractedCannon = dynamic_cast<CCannonObject*>(can);
+			else
+				dynamic_cast<CCannonFactory*>(_factory[1])->m_pInteractedCannon = NULL;
 			break;
 		}
 	}

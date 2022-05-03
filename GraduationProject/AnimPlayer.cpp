@@ -64,7 +64,7 @@ CCamera* CAnimPlayer::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
 		SetMaxVelocityY(400.0f);
 		m_pCamera = OnChangeCamera(FIRST_PERSON_CAMERA, nCurrentCameraMode);
 		m_pCamera->SetTimeLag(0.0f);
-		m_pCamera->SetOffset(XMFLOAT3(0.0f, 100.0f, 0.0f));
+		m_pCamera->SetOffset(XMFLOAT3(0.0f, 150.0f, 40.0f));
 		m_pCamera->GenerateProjectionMatrix(1.01f, 50000.0f, ASPECT_RATIO, 60.0f);
 		break;
 	//case SPACESHIP_CAMERA:
@@ -220,7 +220,7 @@ void CAnimPlayer::SetAnimationController(ID3D12Device* pd3dDevice, ID3D12Graphic
 	m_pSkinnedAnimationController->SetAnimationTracks(bAnimType);
 }
 
-void CAnimPlayer::SetInteraction(XMFLOAT3& center, XMFLOAT4X4& world)
+bool CAnimPlayer::SetInteraction(XMFLOAT3& center, XMFLOAT4X4& world)
 {
 	XMFLOAT3 pos = XMFLOAT3(center.x, m_xmf3Position.y, center.z);
 	SetPosition(pos);
@@ -229,6 +229,15 @@ void CAnimPlayer::SetInteraction(XMFLOAT3& center, XMFLOAT4X4& world)
 	isMove = !isMove;
 	int track = (isMove) ? track_name::handling : track_name::idle;
 	m_pSkinnedAnimationController->SwitchAnimationState(track);
+
+	if (track == track_name::handling) {
+		ChangeCamera(FIRST_PERSON_CAMERA, 0.0f);
+		return true;
+	}
+	else {
+		ChangeCamera(THIRD_PERSON_CAMERA, 0.0f);
+		return false;
+	}
 }
 
 

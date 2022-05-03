@@ -509,6 +509,7 @@ void CGameObject::SetPosition(XMFLOAT3 xmf3Position)
 
 void CGameObject::SetScale(float x, float y, float z)
 {
+	m_xmf3Scale = XMFLOAT3(x, y, z);
 	XMMATRIX mtxScale = XMMatrixScaling(x, y, z);
 	m_xmf4x4ToParent = Matrix4x4::Multiply(mtxScale, m_xmf4x4ToParent);
 
@@ -1257,7 +1258,7 @@ void CCannonballObject::Animate(float fTimeElapsed, CCamera* pCamera)
 {
 	if (m_bIsFired) {
 		XMFLOAT3 xmf3Gravity = XMFLOAT3(0.0f, -10.0f, 0.0f);
-		m_xmf3Velocity = Vector3::Add(m_xmf3Velocity, Vector3::ScalarProduct(xmf3Gravity, fTimeElapsed * 0.5f, false));
+		m_xmf3Velocity = Vector3::Add(m_xmf3Velocity, Vector3::ScalarProduct(xmf3Gravity, fTimeElapsed * 0.1f, false));
 
 		SetPosition(Vector3::Add(GetPosition(), m_xmf3Velocity));
 	}
@@ -1296,9 +1297,10 @@ CCannonObject::~CCannonObject()
 
 void CCannonObject::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
 {
-	XMFLOAT4X4 xmf4x4TempWolrd;
-	xmf4x4TempWolrd = m_xmf4x4ToParent = m_xmf4x4World;
-	m_xmf4x4ToParent = Matrix4x4::Multiply(XMMatrixRotationY(110.0f), m_xmf4x4ToParent);
+	//XMFLOAT4X4 xmf4x4TempWolrd;
+	//xmf4x4TempWolrd = m_xmf4x4ToParent = m_xmf4x4World;
+
+	//m_xmf4x4ToParent = Matrix4x4::Multiply(XMMatrixRotationY(110.0f), m_xmf4x4ToParent);
 	UpdateTransform(NULL);
 
 	CGameObject::Render(pd3dCommandList, pCamera);
@@ -1306,7 +1308,7 @@ void CCannonObject::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* 
 		m_pCannonball->Render(pd3dCommandList, pCamera);
 	}
 
-	m_xmf4x4World = m_xmf4x4ToParent = xmf4x4TempWolrd;
+	//m_xmf4x4World = m_xmf4x4ToParent = xmf4x4TempWolrd;
 }
 
 void CCannonObject::Animate(float fTimeElapsed, CCamera* pCamera)
