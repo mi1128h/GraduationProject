@@ -153,7 +153,7 @@ void CPlayer::Update(float fTimeElapsed)
 	if (m_pPlayerUpdatedContext) OnPlayerUpdateCallback(fTimeElapsed);
 	
 	DWORD nCameraMode = m_pCamera->GetMode();
-	if (nCameraMode == THIRD_PERSON_CAMERA) m_pCamera->Update(m_xmf3Position, fTimeElapsed);
+	if (nCameraMode == THIRD_PERSON_CAMERA || nCameraMode == FIRST_PERSON_CAMERA) m_pCamera->Update(m_xmf3Position, fTimeElapsed);
 	if (m_pCameraUpdatedContext) OnCameraUpdateCallback(fTimeElapsed);
 	if (nCameraMode == THIRD_PERSON_CAMERA) m_pCamera->SetLookAt(m_xmf3Position);
 	m_pCamera->RegenerateViewMatrix();
@@ -242,7 +242,7 @@ void CPlayer::OnPrepareRender()
 void CPlayer::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
 {
 	DWORD nCameraMode = (pCamera) ? pCamera->GetMode() : 0x00;
-	if (nCameraMode == THIRD_PERSON_CAMERA /* || nCameraMode == FIRST_PERSON_CAMERA*/)
+	if (nCameraMode == THIRD_PERSON_CAMERA || nCameraMode == FIRST_PERSON_CAMERA)
 	{
 		CGameObject::Render(pd3dCommandList, pCamera);
 		m_CollManager->Render(pd3dCommandList, pCamera);
