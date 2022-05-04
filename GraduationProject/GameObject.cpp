@@ -1353,8 +1353,34 @@ void CMonsterObject::FindTarget(CGameObject* pObject)
 		m_pTargetObject = NULL;
 }
 
-void CMonsterObject::ChaseTarget()
+void CMonsterObject::ChaseTarget(float fTimeElapsed)
 {
+	if (m_pTargetObject == NULL) return;
+
+	XMFLOAT3 targetPosition = m_pTargetObject->GetPosition();
+	XMFLOAT3 monsterPosition = GetPosition();
+
+	XMFLOAT3 xmf3Direction = Vector3::Subtract(targetPosition, monsterPosition);
+
+	float fPitch = 0.0f, fYaw = 0.0f, fRoll = 0.0f;
+	float fAngle = 0.0f, fScalarTriple = 0.0f, nSign = 0.0;
+
+	XMFLOAT3 projDir_xz = xmf3Direction;
+	projDir_xz.y = 0;
+	projDir_xz = Vector3::Normalize(projDir_xz);
+
+	fScalarTriple = Vector3::DotProduct(GetUp(), Vector3::CrossProduct(projDir_xz, GetLook()));
+	nSign = fScalarTriple < 0.0f ? 1.0f : -1.0f;
+	fAngle = Vector3::Angle(projDir_xz, GetLook()) * nSign;
+	fYaw = fAngle * fTimeElapsed;
+
+	Rotate(fPitch, fYaw, fRoll);
+
+	// 전진
+	XMFLOAT3 XZpos = XMFLOAT3(targetPosition.x, monsterPosition.y, targetPosition.z);
+	float distance = Vector3::Distance(monsterPosition, XZpos);
+	if (distance > 200.0f)
+		MoveForward(50.f * fTimeElapsed);
 }
 
 void CMonsterObject::AttackTarget()
@@ -1391,7 +1417,16 @@ void CMonsterObject::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera*
 
 void CMonsterObject::Animate(float fTimeElapsed, CCamera* pCamera)
 {
-	ChaseTarget();
+	if (m_pTargetObject != NULL) {
+		ChaseTarget(fTimeElapsed);
+		if (m_pSkinnedAnimationController->GetCurrentTrackNum() == track_name::idle1 ||
+			m_pSkinnedAnimationController->GetCurrentTrackNum() == track_name::idle2) {
+			m_pSkinnedAnimationController->SwitchAnimationState(track_name::walk);
+		}
+	}
+	else {
+		m_pSkinnedAnimationController->SwitchAnimationState(track_name::idle1);
+	}
 
 	CGameObject::Animate(fTimeElapsed, pCamera);
 }

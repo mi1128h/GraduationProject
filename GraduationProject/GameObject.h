@@ -477,7 +477,7 @@ private:
 	LPVOID m_pUpdatedContext;
 
 	CGameObject* m_pTargetObject = NULL;
-	float m_fDetectionRange = 200.0f;
+	float m_fDetectionRange = 2000.0f;
 
 	float m_fHp;
 	float m_fDamage;
@@ -485,8 +485,8 @@ private:
 public:
 	void SetUpdatedContext(LPVOID pContext) { m_pUpdatedContext = pContext; }
 
-	void ChaseTarget();
 	void FindTarget(CGameObject* pObject);
+	void ChaseTarget(float fTimeElapsed);
 	void AttackTarget();
 
 	void SetDetectionRange(float range) { m_fDetectionRange = range; }
