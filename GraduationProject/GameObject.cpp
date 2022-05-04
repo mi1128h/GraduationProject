@@ -1425,7 +1425,9 @@ void CMonsterObject::Animate(float fTimeElapsed, CCamera* pCamera)
 		}
 	}
 	else {
-		m_pSkinnedAnimationController->SwitchAnimationState(track_name::idle1);
+		if (m_pSkinnedAnimationController->GetCurrentTrackNum() == track_name::walk) {
+			m_pSkinnedAnimationController->SwitchAnimationState(track_name::idle1);
+		}
 	}
 
 	CGameObject::Animate(fTimeElapsed, pCamera);
