@@ -548,3 +548,11 @@ void CMonsterFactory::SetObjectCollision(ID3D12Device* pd3dDevice, ID3D12Graphic
 		_gameObjects[i]->UpdateTransform(nullptr);
 	}
 }
+
+void CMonsterFactory::FindTarget(CGameObject* pObject)
+{
+	for (auto& monster : _gameObjects)
+	{
+		dynamic_cast<CMonsterObject*>(monster)->FindTarget(pObject);
+	}
+}

@@ -73,6 +73,7 @@ public:
 	bool CheckAABB(BoundingBox A, BoundingBox B, XMFLOAT3 xmf3Shift, bool intersect = false);
 	bool CheckPlayerInScene(XMFLOAT3 XMF3Shift);
 	void CheckInteraction();
+	void CheckMonsterFindTarget();
 	void CheckMonsterCollision();
 	void CheckMonsterAttack();
 	void CheckPlayerAttack();

@@ -705,7 +705,7 @@ void CScene::AnimateObjects(float fTimeElapsed, CCamera* pCamrea)
 	for (int i = 0; i < m_nShaders; i++) m_ppShaders[i]->AnimateObjects(fTimeElapsed, pCamrea);
 	if (m_pLights) {}
 	
-
+	CheckMonsterFindTarget();
 	CheckMonsterCollision();
 	CheckPlayerAttack();
 	CheckMonsterAttack();
@@ -823,6 +823,17 @@ void CScene::CheckInteraction()
 			else
 				dynamic_cast<CCannonFactory*>(_factory[1])->m_pInteractedCannon = NULL;
 			break;
+		}
+	}
+}
+
+void CScene::CheckMonsterFindTarget()
+{
+	for (auto factory : _factory) {
+		CMonsterFactory* pMonsterFactory = dynamic_cast<CMonsterFactory*>(factory);
+		if (pMonsterFactory)
+		{
+			pMonsterFactory->FindTarget(m_pPlayer);
 		}
 	}
 }

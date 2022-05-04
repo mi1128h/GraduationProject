@@ -485,8 +485,8 @@ private:
 public:
 	void SetUpdatedContext(LPVOID pContext) { m_pUpdatedContext = pContext; }
 
-	void FindTarget();
 	void ChaseTarget();
+	void FindTarget(CGameObject* pObject);
 	void AttackTarget();
 
 	void SetDetectionRange(float range) { m_fDetectionRange = range; }

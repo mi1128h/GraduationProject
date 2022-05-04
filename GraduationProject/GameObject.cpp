@@ -1343,8 +1343,14 @@ CMonsterObject::~CMonsterObject()
 {
 }
 
-void CMonsterObject::FindTarget()
+void CMonsterObject::FindTarget(CGameObject* pObject)
 {
+	float distance = Vector3::Distance(GetPosition(), pObject->GetPosition());
+
+	if (distance < m_fDetectionRange)
+		m_pTargetObject = pObject;
+	else
+		m_pTargetObject = NULL;
 }
 
 void CMonsterObject::ChaseTarget()
@@ -1385,7 +1391,6 @@ void CMonsterObject::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera*
 
 void CMonsterObject::Animate(float fTimeElapsed, CCamera* pCamera)
 {
-	FindTarget();
 	ChaseTarget();
 
 	CGameObject::Animate(fTimeElapsed, pCamera);
