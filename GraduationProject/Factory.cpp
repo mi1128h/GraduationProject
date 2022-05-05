@@ -261,8 +261,8 @@ void CObjectFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 
 			pObject = new CGameObject;
 			pObject->SetChild(pHouse3Model->m_pModelRootObject, true);
-	//CCubeMeshTextured* pMesh = new CCubeMeshTextured(pd3dDevice, pd3dCommandList, 100.0f, 100.0f, 100.0f);
-	CBillboardMesh* pMesh = new CBillboardMesh(pd3dDevice, pd3dCommandList, 100.0f, 100.0f);
+	CCubeMeshTextured* pMesh = new CCubeMeshTextured(pd3dDevice, pd3dCommandList, 100.0f, 100.0f, 100.0f);
+	//CBillboardMesh* pMesh = new CBillboardMesh(pd3dDevice, pd3dCommandList, 100.0f, 100.0f);
 	pObject->SetMesh(pMesh);
 
 			pObject->m_pTexture = pHouse3Texture;
