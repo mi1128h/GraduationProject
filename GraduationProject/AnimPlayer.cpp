@@ -20,6 +20,8 @@ CAnimPlayer::CAnimPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
 	InitPlayerMatrics(pContext);
+	SetHp(3000.0f);
+	SetDamage(50.0f);
 
 	SetAnimationTypes();
 
@@ -153,6 +155,7 @@ bool CAnimPlayer::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM
 				case 'Q':
 					m_pSkinnedAnimationController->SwitchAnimationState(track_name::attack);
 					m_pSkinnedAnimationController->SetAttackEnable(true);
+					SetDamage(50.0f);
 					break;
 	
 				case 'W':
@@ -178,6 +181,7 @@ bool CAnimPlayer::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM
 				case '1':
 					m_pSkinnedAnimationController->SwitchAnimationState(track_name::attack_combo);
 					m_pSkinnedAnimationController->SetAttackEnable(true);
+					SetDamage(70.0f);
 
 					break;
 				case '2':
@@ -209,6 +213,15 @@ void CAnimPlayer::SetAnimationTypes()
 {
 	bool bAnimType[track_name::length] = { true, false, true, true, true, true,true,false, false,false,false,false,false,true,false,true,false};
 	m_pSkinnedAnimationController->SetAnimationTypes(bAnimType);
+}
+
+void CAnimPlayer::DecreaseHp(float val)
+{
+	m_fHp -= val;
+	if (m_fHp < 0)
+	{
+		m_pSkinnedAnimationController->SwitchAnimationState(track_name::deth);
+	}
 }
 
 void CAnimPlayer::SetAnimationController(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, CLoadedModelInfo* pModel)

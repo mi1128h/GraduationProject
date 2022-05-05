@@ -82,6 +82,11 @@ bool CPlayer::IsPlayerFast()
 	return false;
 }
 
+void CPlayer::DecreaseHp(float val)
+{
+
+}
+
 //플레이어를 로컬 x-축, y-축, z-축을 중심으로 회전한다.
 void CPlayer::Rotate(float x, float y, float z)
 {

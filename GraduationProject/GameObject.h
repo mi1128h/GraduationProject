@@ -284,6 +284,7 @@ public:
 	static CLoadedModelInfo* LoadGeometryAndAnimationFromFile(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, char* pstrFileName, CShader* pShader);
 
 	static void PrintFrameInfo(CGameObject* pGameObject, CGameObject* pParent);
+	void SetAttackEnable(bool value){m_pSkinnedAnimationController->SetAttackEnable(value);}
 };
 
 class CRotatingObject : public CGameObject
@@ -493,9 +494,13 @@ public:
 	void SetHp(float hp) { m_fHp = hp; }
 	void SetDamage(float damage) { m_fDamage = damage; }
 
+	float GetDamage(float val) { return m_fDamage; }
+	float GetHp(float val) { return m_fHp; }
+
 	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
 	virtual void Animate(float fTimeElapsed, CCamera* pCamera = NULL);
 
 	virtual bool OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam);
 	void MonsterDead();
+	void DecreaseHp(float val);
 };

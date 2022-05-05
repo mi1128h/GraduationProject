@@ -1408,6 +1408,15 @@ void CMonsterObject::MonsterDead()
 	m_pSkinnedAnimationController->SetAttackEnable(false);
 }
 
+void CMonsterObject::DecreaseHp(float val)
+{
+	m_fHp -= val;
+	if (m_fHp < 0)
+	{
+		MonsterDead();
+	}
+}
+
 void CMonsterObject::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
 {
 	UpdateTransform(NULL);
