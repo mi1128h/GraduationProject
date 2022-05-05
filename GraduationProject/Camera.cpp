@@ -84,12 +84,7 @@ void CCamera::GeneratePerspectiveProjectionMatrix(float fNearPlaneDistance, floa
 
 void CCamera::GenerateOrthographicProjectionMatrix(float fNearPlaneDistance, float fFarPlaneDistance, float fWidth, float fHeight)
 {
-#ifdef _WITH_LEFT_HAND_COORDINATES
-	XMMATRIX xmmtxProjection = XMMatrixOrthographicLH(fWidth, fHeight, fNearPlaneDistance, fFarPlaneDistance);
-#else
-	XMMATRIX xmmtxProjection = XMMatrixOrthographicRH(fWidth, fHeight, fNearPlaneDistance, fFarPlaneDistance);
-#endif
-	XMStoreFloat4x4(&m_xmf4x4Projection, xmmtxProjection);
+	m_xmf4x4OrthoProjection = Matrix4x4::PerspectiveOrthoLH(fWidth, fHeight, fNearPlaneDistance, fFarPlaneDistance);
 }
 
 /*카메라 변환 행렬을 생성한다. 카메라의 위치 벡터, 카메라가 바라보는 지점, 
@@ -141,6 +136,7 @@ void CCamera::UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList)
 	XMStoreFloat4x4(&m_pcbMappedCamera->m_xmf4x4View, XMMatrixTranspose(XMLoadFloat4x4(&m_xmf4x4View)));
 	XMStoreFloat4x4(&m_pcbMappedCamera->m_xmf4x4Projection, XMMatrixTranspose(XMLoadFloat4x4(&m_xmf4x4Projection)));
 	XMStoreFloat4x4(&m_pcbMappedCamera->m_xmf4x4ViewProjection, XMMatrixTranspose(XMMatrixMultiply(XMLoadFloat4x4(&m_xmf4x4View), XMLoadFloat4x4(&m_xmf4x4Projection))));
+	XMStoreFloat4x4(&m_pcbMappedCamera->m_xmf4x4OrthoProjection, XMMatrixTranspose(XMLoadFloat4x4(&m_xmf4x4OrthoProjection)));
 
 	::memcpy(&m_pcbMappedCamera->m_xmf3Position, &m_xmf3Position, sizeof(XMFLOAT3));
 

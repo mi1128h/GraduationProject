@@ -18,6 +18,7 @@ struct VS_CB_CAMERA_INFO
 	XMFLOAT4X4						m_xmf4x4View;
 	XMFLOAT4X4						m_xmf4x4Projection;
 	XMFLOAT4X4						m_xmf4x4ViewProjection;
+	XMFLOAT4X4						m_xmf4x4OrthoProjection;
 	XMFLOAT3						m_xmf3Position;
 };
 
@@ -50,6 +51,7 @@ protected:
 	XMFLOAT4X4 m_xmf4x4View;
 	// 투영 변환 행렬
 	XMFLOAT4X4 m_xmf4x4Projection;
+	XMFLOAT4X4 m_xmf4x4OrthoProjection;
 
 	// 뷰포트와 씨저 사각형
 	D3D12_VIEWPORT m_d3dViewport;

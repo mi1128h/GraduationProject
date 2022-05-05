@@ -389,6 +389,13 @@ namespace Matrix4x4
 		return(xmmtx4x4Result);
 	}
 
+	inline XMFLOAT4X4 PerspectiveOrthoLH(float width, float height, float NearZ, float FarZ)
+	{
+		XMFLOAT4X4 xmmtx4x4Result;
+		XMStoreFloat4x4(&xmmtx4x4Result, XMMatrixOrthographicLH(width, height, NearZ, FarZ));
+		return(xmmtx4x4Result);
+	}
+
 	inline XMFLOAT4X4 LookAtLH(XMFLOAT3& xmf3EyePosition, XMFLOAT3& xmf3LookAtPosition,
 		XMFLOAT3& xmf3UpDirection)
 	{
