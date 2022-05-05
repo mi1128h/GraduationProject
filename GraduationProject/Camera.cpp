@@ -159,14 +159,6 @@ void CCamera::SetViewportsAndScissorRects(ID3D12GraphicsCommandList* pd3dCommand
 	pd3dCommandList->RSSetScissorRects(1, &m_d3dScissorRect);
 }
 
-void CCamera::SwitchProjection(int nMode)
-{
-	if (nMode == UI_CAMERA)
-		GeneratePerspectiveProjectionMatrix(1.01f, 5000.0f, ASPECT_RATIO, 60.0f);
-	else
-		GenerateOrthographicProjectionMatrix(1.01f, 5000.0f, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT);
-}
-
 /////////////////////////////////////////////////////////////////////////
 
 CSpaceShipCamera::CSpaceShipCamera(CCamera* pCamera) : CCamera(pCamera)

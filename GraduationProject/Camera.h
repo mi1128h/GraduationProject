@@ -6,7 +6,6 @@
 #define FIRST_PERSON_CAMERA 0x01
 #define SPACESHIP_CAMERA 0x02
 #define THIRD_PERSON_CAMERA 0x03
-#define UI_CAMERA 0x04
 
 class CPlayer;
 
@@ -134,7 +133,6 @@ public:
 	일반적으로 플레이어를 바라보도록 설정한다.*/
 	virtual void SetLookAt(XMFLOAT3& xmf3LookAt) {}
 
-	void SwitchProjection(int nMode);
 };
 
 class CSpaceShipCamera : public CCamera
