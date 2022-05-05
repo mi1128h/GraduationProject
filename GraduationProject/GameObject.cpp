@@ -1360,27 +1360,28 @@ void CMonsterObject::ChaseTarget(float fTimeElapsed)
 	XMFLOAT3 targetPosition = m_pTargetObject->GetPosition();
 	XMFLOAT3 monsterPosition = GetPosition();
 
+	targetPosition.y = 0;
+	monsterPosition.y = 0;
+
 	XMFLOAT3 xmf3Direction = Vector3::Subtract(targetPosition, monsterPosition);
 
-	float fPitch = 0.0f, fYaw = 0.0f, fRoll = 0.0f;
-	float fAngle = 0.0f, fScalarTriple = 0.0f, nSign = 0.0;
+	float fYaw = 0.0f;
+	float fAngle = 0.0f, fScalarTriple = 0.0f, nSign = 0.0f;
 
-	XMFLOAT3 projDir_xz = xmf3Direction;
-	projDir_xz.y = 0;
-	projDir_xz = Vector3::Normalize(projDir_xz);
+	XMFLOAT3 monsterLook = GetLook();
 
-	fScalarTriple = Vector3::DotProduct(GetUp(), Vector3::CrossProduct(projDir_xz, GetLook()));
+	fScalarTriple = Vector3::DotProduct(GetUp(), Vector3::CrossProduct(xmf3Direction, monsterLook));
 	nSign = fScalarTriple < 0.0f ? 1.0f : -1.0f;
-	fAngle = Vector3::Angle(projDir_xz, GetLook()) * nSign;
-	fYaw = fAngle * fTimeElapsed;
+	fAngle = Vector3::Angle(xmf3Direction, monsterLook) * nSign;
 
-	Rotate(fPitch, fYaw, fRoll);
+	fYaw = fAngle * fTimeElapsed;
+	
+	Rotate(0.0f, fYaw, 0.0f);
 
 	// 전진
-	XMFLOAT3 XZpos = XMFLOAT3(targetPosition.x, monsterPosition.y, targetPosition.z);
-	float distance = Vector3::Distance(monsterPosition, XZpos);
+	float distance = Vector3::Distance(monsterPosition, targetPosition);
 	if (distance > 200.0f)
-		MoveForward(50.f * fTimeElapsed);
+		MoveForward(50.0f * fTimeElapsed);
 }
 
 void CMonsterObject::AttackTarget()
@@ -1427,7 +1428,10 @@ void CMonsterObject::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera*
 void CMonsterObject::Animate(float fTimeElapsed, CCamera* pCamera)
 {
 	if (m_pTargetObject != NULL) {
-		ChaseTarget(fTimeElapsed);
+		if (m_pSkinnedAnimationController->GetCurrentTrackNum() != track_name::attack1 &&
+			m_pSkinnedAnimationController->GetCurrentTrackNum() != track_name::attack2) {
+			ChaseTarget(fTimeElapsed);
+		}
 		if (m_pSkinnedAnimationController->GetCurrentTrackNum() == track_name::idle1 ||
 			m_pSkinnedAnimationController->GetCurrentTrackNum() == track_name::idle2) {
 			m_pSkinnedAnimationController->SwitchAnimationState(track_name::walk);

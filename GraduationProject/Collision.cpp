@@ -93,7 +93,7 @@ void CBBCollision::UpdateBound(BoundingBox& BB, BoundingSphere& BS)
 
 void CBBCollision::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
 {
-#define _SHOW_DEBUG_BOX
+//#define _SHOW_DEBUG_BOX
 #ifdef _SHOW_DEBUG_BOX
 	if (m_bDebug) CGameObject::Render(pd3dCommandList, pCamera);
 #endif
@@ -148,7 +148,7 @@ void CSphereCollision::UpdateBoundTransform()
 
 void CSphereCollision::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
 {
-#define _SHOW_DEBUG_SPHERE
+//#define _SHOW_DEBUG_SPHERE
 #ifdef _SHOW_DEBUG_SPHERE
 	if (m_bDebug) CGameObject::Render(pd3dCommandList, pCamera);
 #endif
