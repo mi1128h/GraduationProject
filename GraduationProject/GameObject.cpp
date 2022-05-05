@@ -1386,9 +1386,9 @@ void CMonsterObject::ChaseTarget(float fTimeElapsed)
 
 void CMonsterObject::AttackTarget()
 {
+	if (m_fHp <= 0) return;
 
 	int curNum = m_pSkinnedAnimationController->GetCurrentTrackNum();
-	if (curNum == track_name::death1 || curNum == track_name::death2) return;
 
 	int randomNum = rand() % 2;
 	int trackNum = randomNum ? track_name::attack1 : track_name::attack2;
@@ -1427,22 +1427,23 @@ void CMonsterObject::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera*
 
 void CMonsterObject::Animate(float fTimeElapsed, CCamera* pCamera)
 {
-	if (m_pTargetObject != NULL) {
-		if (m_pSkinnedAnimationController->GetCurrentTrackNum() != track_name::attack1 &&
-			m_pSkinnedAnimationController->GetCurrentTrackNum() != track_name::attack2) {
-			ChaseTarget(fTimeElapsed);
+	if (m_fHp > 0) {
+		if (m_pTargetObject != NULL) {
+			if (m_pSkinnedAnimationController->GetCurrentTrackNum() != track_name::attack1 &&
+				m_pSkinnedAnimationController->GetCurrentTrackNum() != track_name::attack2) {
+				ChaseTarget(fTimeElapsed);
+			}
+			if (m_pSkinnedAnimationController->GetCurrentTrackNum() == track_name::idle1 ||
+				m_pSkinnedAnimationController->GetCurrentTrackNum() == track_name::idle2) {
+				m_pSkinnedAnimationController->SwitchAnimationState(track_name::walk);
+			}
 		}
-		if (m_pSkinnedAnimationController->GetCurrentTrackNum() == track_name::idle1 ||
-			m_pSkinnedAnimationController->GetCurrentTrackNum() == track_name::idle2) {
-			m_pSkinnedAnimationController->SwitchAnimationState(track_name::walk);
+		else {
+			if (m_pSkinnedAnimationController->GetCurrentTrackNum() == track_name::walk) {
+				m_pSkinnedAnimationController->SwitchAnimationState(track_name::idle1);
+			}
 		}
 	}
-	else {
-		if (m_pSkinnedAnimationController->GetCurrentTrackNum() == track_name::walk) {
-			m_pSkinnedAnimationController->SwitchAnimationState(track_name::idle1);
-		}
-	}
-
 	CGameObject::Animate(fTimeElapsed, pCamera);
 }
 
