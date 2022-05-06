@@ -478,6 +478,9 @@ void CGameFramework::OnProcessingKeyboardMessage
 		//case 'W':
 		//	m_fSpeedVal -= 10.0f;
 		//	break;
+		
+		case 'C':
+			::gbCollisionDebug = !::gbCollisionDebug;
 			break;
 		default:
 			break;

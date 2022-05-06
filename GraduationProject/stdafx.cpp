@@ -3,6 +3,7 @@
 #include "DDSTextureLoader12.h"
 
 bool gbTerrainTessellationWireframe = false;
+bool gbCollisionDebug = false;
 UINT gnCbvSrvUavDescriptorIncrementSize = 0;
 UINT gnRtvDescriptorIncrementSize = 0;
 UINT gnDsvDescriptorIncrementSize = 0;
