@@ -133,6 +133,8 @@ public:
 	일반적으로 플레이어를 바라보도록 설정한다.*/
 	virtual void SetLookAt(XMFLOAT3& xmf3LookAt) {}
 
+	void SetViewOrtho();
+
 };
 
 class CSpaceShipCamera : public CCamera

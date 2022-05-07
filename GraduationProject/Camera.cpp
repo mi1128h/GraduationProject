@@ -159,6 +159,13 @@ void CCamera::SetViewportsAndScissorRects(ID3D12GraphicsCommandList* pd3dCommand
 	pd3dCommandList->RSSetScissorRects(1, &m_d3dScissorRect);
 }
 
+void CCamera::SetViewOrtho()
+{
+	m_xmf4x4View = Matrix4x4::Identity();
+	XMMATRIX mtxScale = XMMatrixScaling(100.0f,100.0f, 1.0f);
+	m_xmf4x4View = Matrix4x4::Multiply(mtxScale, m_xmf4x4View);
+}
+
 /////////////////////////////////////////////////////////////////////////
 
 CSpaceShipCamera::CSpaceShipCamera(CCamera* pCamera) : CCamera(pCamera)
