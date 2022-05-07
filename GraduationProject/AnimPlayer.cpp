@@ -32,8 +32,8 @@ CAnimPlayer::CAnimPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 void CAnimPlayer::InitPlayerMatrics(void* pContext)
 {
 	CHeightMapTerrain* pTerrain = (CHeightMapTerrain*)pContext;
-	float x = 974.0f, z = 1313.0f;
-	SetPosition(XMFLOAT3(x * 10, pTerrain->GetHeight(x * 10, z * 10), z * 10));
+	//float x = 974.0f, z = 1313.0f;
+	//SetPosition(XMFLOAT3(x * 10, pTerrain->GetHeight(x * 10, z * 10), z * 10));
 	SetScale(XMFLOAT3(1, 1, 1));
 	Rotate(0.0f, 0.0f, 90.0f);
 }
@@ -84,7 +84,6 @@ CCamera* CAnimPlayer::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
 	default:
 		break;
 	}
-	m_pCamera->GenerateOrthographicProjectionMatrix(0.0f, 50000.0f, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT);
 	m_pCamera->SetPosition(Vector3::Add(m_xmf3Position, m_pCamera->GetOffset()));
 	Update(fTimeElapsed);
 
