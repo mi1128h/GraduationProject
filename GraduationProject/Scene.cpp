@@ -363,6 +363,9 @@ void CScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* p
 	pMonster->SetObjectCollision(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 	_factory.emplace_back(pMonster);
 
+	_ui = new CUIFactory();
+	_ui->BuildObjects(pd3dDevice, m_pd3dGraphicsRootSignature, pd3dCommandList, m_pTerrain);
+	_ui->SetObjectCollision(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 
 	//////
 	
@@ -710,7 +713,8 @@ void CScene::AnimateObjects(float fTimeElapsed, CCamera* pCamrea)
 
 	for (int i = 0; i < m_nShaders; i++) m_ppShaders[i]->AnimateObjects(fTimeElapsed, pCamrea);
 	if (m_pLights) {}
-	
+	_ui->AnimateObjects(fTimeElapsed, pCamrea);
+
 
 	CheckMonsterCollision();
 	CheckPlayerAttack();
@@ -745,6 +749,7 @@ void CScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera
 
 	if (m_pSkyBox) m_pSkyBox->Render(pd3dCommandList, pCamera);
 	if (m_pTerrain) m_pTerrain->Render(pd3dCommandList, pCamera);
+	_ui->Render(pd3dCommandList, pCamera);
 
 	for (auto& factory : _factory) factory->Render(pd3dCommandList, pCamera);
 
