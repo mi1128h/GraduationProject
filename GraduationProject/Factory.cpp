@@ -253,25 +253,17 @@ void CObjectFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 		else if (name.compare("house_3") == 0) {
 			CGameObject* pObject = NULL;
 			CLoadedModelInfo* pHouse3Model = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/house_3.bin", NULL);
-	CGameObject* pObject = NULL;
-	pObject = new CGameObject(1);
-	CTexture* phptexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
-	phptexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/UI/hp.dds", 0);
-	CScene::CreateShaderResourceViews(pd3dDevice, phptexture, Signature::Graphics::texture, true);
+
 
 			pObject = new CGameObject;
 			pObject->SetChild(pHouse3Model->m_pModelRootObject, true);
-	CCubeMeshTextured* pMesh = new CCubeMeshTextured(pd3dDevice, pd3dCommandList, 100.0f, 100.0f, 100.0f);
-	//CBillboardMesh* pMesh = new CBillboardMesh(pd3dDevice, pd3dCommandList, 100.0f, 100.0f);
-	pObject->SetMesh(pMesh);
+
 
 			pObject->m_pTexture = pHouse3Texture;
 
 			float transX = px * xmf3TerrainScale.x * 257.0f / 150.0f;
 			float transZ = pz * xmf3TerrainScale.z * 257.0f / 150.0f;
 			float terrainY = pTerrain->GetHeight(transX, transZ);
-	float x = 974.0f, z = 1313.0f;
-	pObject->SetPosition(XMFLOAT3(x * 10, pTerrain->GetHeight(x * 10, z * 10), z * 10));
 
 			XMFLOAT3 position = XMFLOAT3(transX, terrainY + 90.0f * sy, transZ);
 			pObject->SetPosition(position);
@@ -281,29 +273,21 @@ void CObjectFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 			pObject->Rotate(90.0f, 0.0f, 0.0f);
 			pHouse3Model->m_pModelRootObject->Rotate(0.0f, -180.0f, 0.0f);
 			pObject->SetTag("house_3");
-	CHpShader* m_pShader = new CHpShader();
 
 			_gameObjects.emplace_back(pObject);
 		}
 		else if (name.compare("house_4") == 0) {
 			CGameObject* pObject = NULL;
 			CLoadedModelInfo* pHouse4Model = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/house_4.bin", NULL);
-	DXGI_FORMAT pdxgiRtvFormats[3] = { DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM };
-
 			pObject = new CGameObject;
 			pObject->SetChild(pHouse4Model->m_pModelRootObject, true);
-	m_pShader->CreateShader(pd3dDevice, pd3dGraphicsRootSignature, 3, pdxgiRtvFormats, DXGI_FORMAT_D32_FLOAT);
 
 			pObject->m_pTexture = pHouse4Texture;
-	CMaterial* m_pMaterial = new CMaterial(1);
-	m_pMaterial->SetTexture(phptexture);
-	m_pMaterial->SetShader(m_pShader);
-	pObject->SetMaterial(0, m_pMaterial);
+
 
 			float transX = px * xmf3TerrainScale.x * 257.0f / 150.0f;
 			float transZ = pz * xmf3TerrainScale.z * 257.0f / 150.0f;
 			float terrainY = pTerrain->GetHeight(transX, transZ);
-	_gameObjects.emplace_back(pObject);
 
 			XMFLOAT3 position = XMFLOAT3(transX, terrainY + 60.0f * sy, transZ);
 			pObject->SetPosition(position);
@@ -317,6 +301,7 @@ void CObjectFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 			_gameObjects.emplace_back(pObject);
 		}
 	}
+
 }
 
 ///
@@ -522,4 +507,51 @@ void CMonsterFactory::SetObjectCollision(ID3D12Device* pd3dDevice, ID3D12Graphic
 		_gameObjects[i]->SetCollisionManager(manager);
 		_gameObjects[i]->UpdateTransform(nullptr);
 	}
+}
+
+/////////////////////////
+
+void CUIFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3dGraphicsRootSignature, ID3D12GraphicsCommandList* pd3dCommandList, void* pContext)
+{
+	CHeightMapTerrain* pTerrain = (CHeightMapTerrain*)pContext;
+
+	m_pCamera = new CCamera();
+	m_pCamera->GenerateOrthographicProjectionMatrix(0.0f, 5000.0f, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT);
+	m_pCamera->CreateShaderVariables(pd3dDevice, pd3dCommandList);
+
+	CGameObject* pObject = NULL;
+	pObject = new CBillObject();
+	CTexture* phptexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
+	phptexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/UI/hp.dds", 0);
+	CScene::CreateShaderResourceViews(pd3dDevice, phptexture, Signature::Graphics::texture, true);
+	//CCubeMeshTextured* pMesh = new CCubeMeshTextured(pd3dDevice, pd3dCommandList, 100.0f, 100.0f, 100.0f);
+	CBillboardMesh* pMesh = new CBillboardMesh(pd3dDevice, pd3dCommandList, 100.0f, 100.0f);
+
+	//float x = 974.0f, z = 1313.0f;
+	//pObject->SetPosition(XMFLOAT3(x * 10, pTerrain->GetHeight(x * 10, z * 10), z * 10));
+
+	//pObject->SetPosition(0.0f, pTerrain->GetHeight(0, 0), 0.0f);
+	pObject->SetMesh(pMesh);
+	CHpShader* m_pShader = new CHpShader();
+
+	DXGI_FORMAT pdxgiRtvFormats[3] = { DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM };
+
+	m_pShader->CreateShader(pd3dDevice, pd3dGraphicsRootSignature, 3, pdxgiRtvFormats, DXGI_FORMAT_D32_FLOAT);
+
+	CMaterial* m_pMaterial = new CMaterial(1);
+	m_pMaterial->SetTexture(phptexture);
+	m_pMaterial->SetShader(m_pShader);
+	pObject->SetMaterial(0, m_pMaterial);
+	_gameObjects.emplace_back(pObject);
+}
+
+void CUIFactory::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
+{
+	m_pCamera->SetViewportsAndScissorRects(pd3dCommandList);
+	//m_pCamera->SetViewOrtho();
+	//m_pCamera->RegenerateViewMatrix();
+	m_pCamera->UpdateShaderVariables(pd3dCommandList);
+	for (auto& object : _gameObjects)
+		object->Render(pd3dCommandList, pCamera);
+	pCamera->UpdateShaderVariables(pd3dCommandList);
 }
