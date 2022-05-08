@@ -53,6 +53,8 @@ protected:
 	CCamera *m_pCamera = NULL;
 
 	CCollisionManager* m_CollManager = nullptr;
+	float m_fMaxHp;
+public:
 	float m_fHp;
 	float m_fDamage;
 
@@ -68,8 +70,11 @@ public:
 	XMFLOAT3 GetRightVector() { return(m_xmf3Right); }
 	void SetDamage(float val) { m_fDamage = val; }
 	void SetHp(float val) { m_fHp = val; }
+	void SetMaxHp(float val) { m_fMaxHp = val; }
+
 	float GetDamage() { return m_fDamage; }
 	float GetHp() { return m_fHp; }
+	float GetMaxHp() { return m_fMaxHp; }
 
 	void SetVectors();
 

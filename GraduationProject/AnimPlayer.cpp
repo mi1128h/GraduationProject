@@ -21,6 +21,7 @@ CAnimPlayer::CAnimPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 
 	InitPlayerMatrics(pContext);
 	SetHp(3000.0f);
+	SetMaxHp(3000.0f);
 	SetDamage(50.0f);
 
 	SetAnimationTypes();
