@@ -881,9 +881,12 @@ void CScene::CheckMonsterAttack()
 		if (!Enable) continue;
 
 		BoundingBox AttackBB = object->GetCollisionManager()->GetBoundingBox(true);
+		CCollisionManager* col = object->GetCollisionManager();
+		col->UpdateCollisions();
+
 		if (playerBB.Contains(AttackBB))
 		{
-			m_pPlayer->DecreaseHp(m_pPlayer->GetDamage());
+			m_pPlayer->DecreaseHp(object->GetDamage());
 			object->SetAttackEnable(false);
 		}
 	}
@@ -898,6 +901,8 @@ void CScene::CheckPlayerAttack()
 	vector<CGameObject*> objects = _factory[2]->GetGameObjects();
 	for (auto& object : objects)
 	{
+		CCollisionManager* col = object->GetCollisionManager();
+		col->UpdateCollisions();
 		BoundingBox BB = object->GetCollisionManager()->GetBoundingBox();
 
 		if (BB.Contains(AttackBB))
