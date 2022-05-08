@@ -511,9 +511,11 @@ VS_TEXTURED_OUTPUT VSHp(VS_TEXTURED_INPUT input)
 	VS_TEXTURED_OUTPUT output;
 	
 	//output.position = float4(input.position, 1.0f);
-	//output.position = mul(mul(mul(float4(input.position, 1.0f), gmtxGameObject), gmtxView), gmtxProjection);
+	//output.position = mul(mul(mul(float4(input.position, 1.0f), gmtxGameObject), gmtxView), gmtxOrthoProjection);
 	//output.position = mul(mul(float4(input.position, 1.0f),gmtxView), gmtxOrthoProjection);
+	//output.position = mul(mul(float4(input.position, 1.0f), gmtxGameObject), gmtxOrthoProjection);
 	output.position = mul(mul(float4(input.position, 1.0f), gmtxGameObject), gmtxOrthoProjection);
+
 	output.uv = input.uv;
 
 	return(output);

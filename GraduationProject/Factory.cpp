@@ -530,7 +530,7 @@ void CUIFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3
 	//float x = 974.0f, z = 1313.0f;
 	//pObject->SetPosition(XMFLOAT3(x * 10, pTerrain->GetHeight(x * 10, z * 10), z * 10));
 
-	//pObject->SetPosition(0.0f, pTerrain->GetHeight(0, 0), 0.0f);
+	pObject->SetPosition(0.0f, 0.0f, 0.0f);
 	pObject->SetMesh(pMesh);
 	CHpShader* m_pShader = new CHpShader();
 
@@ -548,8 +548,6 @@ void CUIFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3
 void CUIFactory::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
 {
 	m_pCamera->SetViewportsAndScissorRects(pd3dCommandList);
-	//m_pCamera->SetViewOrtho();
-	//m_pCamera->RegenerateViewMatrix();
 	m_pCamera->UpdateShaderVariables(pd3dCommandList);
 	for (auto& object : _gameObjects)
 		object->Render(pd3dCommandList, pCamera);
@@ -558,8 +556,8 @@ void CUIFactory::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCa
 
 void CUIFactory::AnimateObjects(float fTimeElapsed, CCamera* pCamrea)
 {
-	//for (auto& object : _gameObjects)
-	//	object->Animate(fTimeElapsed, m_pCamera);
 	for (auto& object : _gameObjects)
-		object->Animate(fTimeElapsed, pCamrea);
+		object->Animate(fTimeElapsed, m_pCamera);
+	//for (auto& object : _gameObjects)
+	//	object->Animate(fTimeElapsed, pCamrea);
 }
