@@ -1399,6 +1399,8 @@ bool CMonsterObject::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 
 CBillObject::CBillObject() : CGameObject(1)
 {
+	XMFLOAT3 m_xmf3RotationAxis = XMFLOAT3(0.0f, 1.0f, 0.0f);
+	CGameObject::Rotate(&m_xmf3RotationAxis, 180.0f);
 }
 
 CBillObject::~CBillObject()
@@ -1407,8 +1409,6 @@ CBillObject::~CBillObject()
 
 void CBillObject::Animate(float fElapsedTime, CCamera* pCamera)
 {
-	XMFLOAT3 m_xmf3RotationAxis = XMFLOAT3(0.0f, 1.0f, 0.0f);
-	CGameObject::Rotate(&m_xmf3RotationAxis, 1000 * fElapsedTime);
 
 	//XMFLOAT3 xmf3CameraPosition = pCamera->GetPosition();
 	//SetLookAt(xmf3CameraPosition);
