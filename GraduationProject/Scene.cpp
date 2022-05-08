@@ -716,11 +716,6 @@ void CScene::AnimateObjects(float fTimeElapsed, CCamera* pCamrea)
 	if (m_pLights) {}
 	_ui->AnimateObjects(fTimeElapsed, pCamrea);
 
-	
-	CheckMonsterFindTarget();
-	CheckMonsterCollision();
-	CheckPlayerAttack();
-	CheckMonsterAttack();
 }
 
 void CScene::OnPrepareRender(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
@@ -762,6 +757,11 @@ void CScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera
 
 	for (CCollision* col : collisions)
 		col->Render(pd3dCommandList, pCamera);
+
+	CheckMonsterFindTarget();
+	CheckMonsterCollision();
+	CheckPlayerAttack();
+	CheckMonsterAttack();
 }
 
 void CScene::UIRender(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
