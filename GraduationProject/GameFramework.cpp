@@ -468,10 +468,6 @@ void CGameFramework::OnProcessingKeyboardMessage
 			m_pcbMappedFrameworkInfo->m_nRenderMode = 0x00;
 			m_pcbMappedFrameworkInfo->m_nBlurMode = 0x00;
 			break;
-		//case 'D':
-		//	::gbTerrainTessellationWireframe = !::gbTerrainTessellationWireframe;
-		//	m_pcbMappedFrameworkInfo->m_nRenderMode |= DEBUG_TESSELLATION;
-		//	break;
 		case 'B':
 			m_pcbMappedFrameworkInfo->m_nBlurMode = DEBUG_BLURRING;
 			break;
@@ -572,7 +568,7 @@ void CGameFramework::ProcessInput()
 
 void CGameFramework::UpdatePlayerMove(const DWORD& dwDirection)
 {
-	XMFLOAT3 xmf3Shift = m_pPlayer->SetMoveShift(dwDirection, 20.0f);
+	XMFLOAT3 xmf3Shift = m_pPlayer->SetMoveShift(dwDirection, 10.0f);
 	if (IsPlayerMove(dwDirection, xmf3Shift))
 	{
 		m_pPlayer->Move(xmf3Shift, false);
@@ -714,7 +710,6 @@ void CGameFramework::FrameAdvance()
 void CGameFramework::ChangeSwapChainState()
 {
 	WaitForGpuComplete();
-	//::WaitForGpuComplete(m_pd3dCommandQueue, m_pd3dFence, ++m_nFenceValues[m_nSwapChainBufferIndex], m_hFenceEvent);
 
 	BOOL bFullScreenState = FALSE;
 	m_pdxgiSwapChain->GetFullscreenState(&bFullScreenState, NULL);
