@@ -516,7 +516,7 @@ void CUIFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3
 	CHeightMapTerrain* pTerrain = (CHeightMapTerrain*)pContext;
 
 	m_pCamera = new CCamera();
-	m_pCamera->GenerateOrthographicProjectionMatrix(0.0f, 5000.0f, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT);
+	m_pCamera->GenerateOrthographicProjectionMatrix(0.0f,1.0f, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT);
 	m_pCamera->CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
 	CGameObject* pObject = NULL;
@@ -554,4 +554,12 @@ void CUIFactory::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCa
 	for (auto& object : _gameObjects)
 		object->Render(pd3dCommandList, pCamera);
 	pCamera->UpdateShaderVariables(pd3dCommandList);
+}
+
+void CUIFactory::AnimateObjects(float fTimeElapsed, CCamera* pCamrea)
+{
+	//for (auto& object : _gameObjects)
+	//	object->Animate(fTimeElapsed, m_pCamera);
+	for (auto& object : _gameObjects)
+		object->Animate(fTimeElapsed, pCamrea);
 }
