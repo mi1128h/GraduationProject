@@ -506,12 +506,9 @@ public:
 
 };
 
-class CBillObject : public CGameObject
+class CUIObject : public CGameObject
 {
 public:
-	CBillObject();
-	virtual ~CBillObject();
-
-	virtual void Animate(float fElapsedTime, CCamera* pCamrea = NULL);
-	virtual void SetLookAt(XMFLOAT3& xmf3Target);
+	CUIObject();
+	virtual ~CUIObject();
 };

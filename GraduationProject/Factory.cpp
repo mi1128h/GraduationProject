@@ -574,15 +574,11 @@ void CUIFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3
 	m_pCamera->CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
 	CGameObject* pObject = NULL;
-	pObject = new CBillObject();
+	pObject = new CUIObject();
 	CTexture* phptexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
 	phptexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/UI/hp.dds", 0);
 	CScene::CreateShaderResourceViews(pd3dDevice, phptexture, Signature::Graphics::texture, true);
-	//CCubeMeshTextured* pMesh = new CCubeMeshTextured(pd3dDevice, pd3dCommandList, 100.0f, 100.0f, 100.0f);
-	CBillboardMesh* pMesh = new CBillboardMesh(pd3dDevice, pd3dCommandList, 100.0f, 100.0f);
-
-	//float x = 974.0f, z = 1313.0f;
-	//pObject->SetPosition(XMFLOAT3(x * 10, pTerrain->GetHeight(x * 10, z * 10), z * 10));
+	CBillboardMesh* pMesh = new CBillboardMesh(pd3dDevice, pd3dCommandList, 100.0f, 10.0f);
 
 	pObject->SetPosition(0.0f, 0.0f, 0.0f);
 	pObject->SetMesh(pMesh);
