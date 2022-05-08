@@ -20,7 +20,7 @@ CAnimPlayer::CAnimPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
 	InitPlayerMatrics(pContext);
-	SetHp(100.0f);
+	SetHp(1000.0f);
 	SetMaxHp(1000.0f);
 	SetDamage(50.0f);
 
