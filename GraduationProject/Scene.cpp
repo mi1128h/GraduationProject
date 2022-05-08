@@ -709,7 +709,8 @@ void CScene::AnimateObjects(float fTimeElapsed, CCamera* pCamrea)
 	if (m_pLights) {}
 	_ui->AnimateObjects(fTimeElapsed, pCamrea);
 
-
+	
+	CheckMonsterFindTarget();
 	CheckMonsterCollision();
 	CheckPlayerAttack();
 	CheckMonsterAttack();
@@ -737,11 +738,12 @@ void CScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera
 {
 	pd3dCommandList->SetGraphicsRootSignature(m_pd3dGraphicsRootSignature);
 	if (m_pd3dCbvSrvUavDescriptorHeap) pd3dCommandList->SetDescriptorHeaps(1, &m_pd3dCbvSrvUavDescriptorHeap);
+	if (m_pd3dCbvSrvUavDescriptorHeap) pd3dCommandList->SetDescriptorHeaps(1, &m_pd3dCbvSrvUavDescriptorHeap);
 
 	pCamera->SetViewportsAndScissorRects(pd3dCommandList);
 	pCamera->UpdateShaderVariables(pd3dCommandList);
 
-	if (m_pSkyBox) m_pSkyBox->Render(pd3dCommandList, pCamera);
+	//if (m_pSkyBox) m_pSkyBox->Render(pd3dCommandList, pCamera);
 	if (m_pTerrain) m_pTerrain->Render(pd3dCommandList, pCamera);
 
 	for (auto& factory : _factory) factory->Render(pd3dCommandList, pCamera);
@@ -766,6 +768,7 @@ bool CScene::CheckPlayerByObjectBB(XMFLOAT3 xmf3Shift)
 
 	for (auto& fac : _factory)
 	{
+		if (dynamic_cast<CMonsterFactory*>(fac))continue;
 		vector<CGameObject*> objects = fac->GetGameObjects();
 		for (int i = 0; i < objects.size(); ++i)
 		{
@@ -831,6 +834,17 @@ void CScene::CheckInteraction()
 			else
 				dynamic_cast<CCannonFactory*>(_factory[1])->m_pInteractedCannon = NULL;
 			break;
+		}
+	}
+}
+
+void CScene::CheckMonsterFindTarget()
+{
+	for (auto factory : _factory) {
+		CMonsterFactory* pMonsterFactory = dynamic_cast<CMonsterFactory*>(factory);
+		if (pMonsterFactory)
+		{
+			pMonsterFactory->FindTarget(m_pPlayer);
 		}
 	}
 }

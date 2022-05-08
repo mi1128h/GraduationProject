@@ -555,6 +555,14 @@ void CMonsterFactory::SetObjectCollision(ID3D12Device* pd3dDevice, ID3D12Graphic
 	}
 }
 
+void CMonsterFactory::FindTarget(CGameObject* pObject)
+{
+	for (auto& monster : _gameObjects)
+	{
+		dynamic_cast<CMonsterObject*>(monster)->FindTarget(pObject);
+	}
+}
+
 /////////////////////////
 
 void CUIFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3dGraphicsRootSignature, ID3D12GraphicsCommandList* pd3dCommandList, void* pContext)
@@ -604,6 +612,5 @@ void CUIFactory::AnimateObjects(float fTimeElapsed, CCamera* pCamrea)
 {
 	for (auto& object : _gameObjects)
 		object->Animate(fTimeElapsed, m_pCamera);
-	//for (auto& object : _gameObjects)
-	//	object->Animate(fTimeElapsed, pCamrea);
 }
+

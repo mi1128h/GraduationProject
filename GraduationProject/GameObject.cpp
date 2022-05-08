@@ -1343,19 +1343,52 @@ CMonsterObject::~CMonsterObject()
 {
 }
 
-void CMonsterObject::FindTarget()
+void CMonsterObject::FindTarget(CGameObject* pObject)
 {
+	float distance = Vector3::Distance(GetPosition(), pObject->GetPosition());
+
+	if (distance < m_fDetectionRange)
+		m_pTargetObject = pObject;
+	else
+		m_pTargetObject = NULL;
 }
 
-void CMonsterObject::ChaseTarget()
+void CMonsterObject::ChaseTarget(float fTimeElapsed)
 {
+	if (m_pTargetObject == NULL) return;
+
+	XMFLOAT3 targetPosition = m_pTargetObject->GetPosition();
+	XMFLOAT3 monsterPosition = GetPosition();
+
+	targetPosition.y = 0;
+	monsterPosition.y = 0;
+
+	XMFLOAT3 xmf3Direction = Vector3::Subtract(targetPosition, monsterPosition);
+
+	float fYaw = 0.0f;
+	float fAngle = 0.0f, fScalarTriple = 0.0f, nSign = 0.0f;
+
+	XMFLOAT3 monsterLook = GetLook();
+
+	fScalarTriple = Vector3::DotProduct(GetUp(), Vector3::CrossProduct(xmf3Direction, monsterLook));
+	nSign = fScalarTriple < 0.0f ? 1.0f : -1.0f;
+	fAngle = Vector3::Angle(xmf3Direction, monsterLook) * nSign;
+
+	fYaw = fAngle * fTimeElapsed;
+	
+	Rotate(0.0f, fYaw, 0.0f);
+
+	// 전진
+	float distance = Vector3::Distance(monsterPosition, targetPosition);
+	if (distance > 200.0f)
+		MoveForward(50.0f * fTimeElapsed);
 }
 
 void CMonsterObject::AttackTarget()
 {
+	if (m_fHp <= 0) return;
 
 	int curNum = m_pSkinnedAnimationController->GetCurrentTrackNum();
-	if (curNum == track_name::death1 || curNum == track_name::death2) return;
 
 	int randomNum = rand() % 2;
 	int trackNum = randomNum ? track_name::attack1 : track_name::attack2;
@@ -1394,9 +1427,23 @@ void CMonsterObject::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera*
 
 void CMonsterObject::Animate(float fTimeElapsed, CCamera* pCamera)
 {
-	FindTarget();
-	ChaseTarget();
-
+	if (m_fHp > 0) {
+		if (m_pTargetObject != NULL) {
+			if (m_pSkinnedAnimationController->GetCurrentTrackNum() != track_name::attack1 &&
+				m_pSkinnedAnimationController->GetCurrentTrackNum() != track_name::attack2) {
+				ChaseTarget(fTimeElapsed);
+			}
+			if (m_pSkinnedAnimationController->GetCurrentTrackNum() == track_name::idle1 ||
+				m_pSkinnedAnimationController->GetCurrentTrackNum() == track_name::idle2) {
+				m_pSkinnedAnimationController->SwitchAnimationState(track_name::walk);
+			}
+		}
+		else {
+			if (m_pSkinnedAnimationController->GetCurrentTrackNum() == track_name::walk) {
+				m_pSkinnedAnimationController->SwitchAnimationState(track_name::idle1);
+			}
+		}
+	}
 	CGameObject::Animate(fTimeElapsed, pCamera);
 }
 
