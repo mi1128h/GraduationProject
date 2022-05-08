@@ -747,20 +747,23 @@ void CScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera
 	pCamera->SetViewportsAndScissorRects(pd3dCommandList);
 	pCamera->UpdateShaderVariables(pd3dCommandList);
 
+	if (m_pSkyBox) m_pSkyBox->Render(pd3dCommandList, pCamera);
+	if (m_pTerrain) m_pTerrain->Render(pd3dCommandList, pCamera);
+
+	for (auto& factory : _factory) factory->Render(pd3dCommandList, pCamera);
+
+	for (int i = 0; i < m_nShaders; i++)
+	{
+		m_ppShaders[i]->Render(pd3dCommandList, pCamera);
+	}
+
+	for (CCollision* col : collisions)
+		col->Render(pd3dCommandList, pCamera);
+}
+
+void CScene::UIRender(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
+{
 	_ui->Render(pd3dCommandList, pCamera);
-
-	//if (m_pSkyBox) m_pSkyBox->Render(pd3dCommandList, pCamera);
-	//if (m_pTerrain) m_pTerrain->Render(pd3dCommandList, pCamera);
-
-	//for (auto& factory : _factory) factory->Render(pd3dCommandList, pCamera);
-
-	//for (int i = 0; i < m_nShaders; i++)
-	//{
-	//	m_ppShaders[i]->Render(pd3dCommandList, pCamera);
-	//}
-
-	//for (CCollision* col : collisions)
-	//	col->Render(pd3dCommandList, pCamera);
 }
 
 bool CScene::CheckPlayerByObjectBB(XMFLOAT3 xmf3Shift)

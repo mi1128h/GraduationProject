@@ -679,7 +679,11 @@ void CGameFramework::FrameAdvance()
 		D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, NULL);
 #endif
 
-	//if (m_pPlayer) m_pPlayer->Render(m_pd3dCommandList, m_pCamera);
+	if (m_pPlayer) m_pPlayer->Render(m_pd3dCommandList, m_pCamera);
+
+	m_pd3dCommandList->ClearDepthStencilView(m_d3dDsvDescriptorCPUHandle,D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, NULL);
+	m_pScene->UIRender(m_pd3dCommandList, m_pCamera);
+
 
 	m_pPostProcessingShader->OnPostRenderTarget(m_pd3dCommandList);
 
