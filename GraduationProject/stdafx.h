@@ -111,7 +111,9 @@ namespace Signature {
 		g_input,
 		g_output,
 		animation_diffuse,
-		model_diffuse
+		model_diffuse,
+		hp,
+		length
 	};
 
 	enum Compute {
@@ -128,7 +130,8 @@ namespace Descriptor {
 		g_input,
 		g_output,
 		animation_diffuse,
-		model_diffuse
+		model_diffuse,
+		length
 	};
 
 	enum Compute {

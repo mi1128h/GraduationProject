@@ -561,6 +561,11 @@ PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSSkinnedAnimation(VS_SKINNED_OUTPUT input) : 
 }
 /////////////////////////
 
+cbuffer cbFrameworkInfo : register(b9)
+{
+	float ratioHp : packoffset(c0.x);
+};
+
 VS_TEXTURED_OUTPUT VSHp(VS_TEXTURED_INPUT input)
 {
 	VS_TEXTURED_OUTPUT output;
@@ -576,6 +581,11 @@ PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSHp(VS_TEXTURED_OUTPUT input) :SV_TARGET
 {
 	float4 cColor = gtxtTexture.Sample(gSamplerState, input.uv);
 	
+	if (input.uv.x > ratioHp)
+	{
+		cColor = float4(0.6f, 0.6f, 0.6f, 1);
+	}
+
 	PS_MULTIPLE_RENDER_TARGETS_OUTPUT output;
 	output.f4Scene = output.f4Color = cColor;
 	output.fDepth = 1.0f - input.position.z;

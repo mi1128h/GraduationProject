@@ -506,9 +506,26 @@ public:
 
 };
 
+struct CB_HP_INFO
+{
+	float ratioHp;
+};
+
 class CUIObject : public CGameObject
 {
 public:
 	CUIObject();
 	virtual ~CUIObject();
+
+	virtual void CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList);
+	virtual void UpdateShaderVariable(ID3D12GraphicsCommandList* pd3dCommandList, XMFLOAT4X4* pxmf4x4World);
+	void UpdateHpRatio();
+
+private:
+	ID3D12Resource* m_pd3dcbHpInfo = NULL;
+	CB_HP_INFO* m_pcbMappedHpInfo = NULL;
+	float hp = 1500.0f;
+	float _MaxHp = 3000.0f;
+
+	float ratioHp = 1.0f;
 };
