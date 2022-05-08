@@ -1497,7 +1497,12 @@ void CUIObject::UpdateShaderVariable(ID3D12GraphicsCommandList* pd3dCommandList,
 	D3D12_GPU_VIRTUAL_ADDRESS d3dGpuVirtualAddress = m_pd3dcbHpInfo->GetGPUVirtualAddress();
 	pd3dCommandList->SetGraphicsRootConstantBufferView(Signature::Graphics::hp, d3dGpuVirtualAddress);
 }
+
 void CUIObject::UpdateHpRatio()
 {
-	ratioHp = hp / _MaxHp;
+	if (m_pTargetObject == NULL) return;
+	float hp = m_pTargetObject->GetHp();
+	float maxhp = m_pTargetObject->GetMaxHp();
+
+	ratioHp = hp / maxhp;
 }
