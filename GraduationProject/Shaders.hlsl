@@ -564,11 +564,7 @@ PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSSkinnedAnimation(VS_SKINNED_OUTPUT input) : 
 VS_TEXTURED_OUTPUT VSHp(VS_TEXTURED_INPUT input)
 {
 	VS_TEXTURED_OUTPUT output;
-	
-	//output.position = float4(input.position, 1.0f);
-	//output.position = mul(mul(mul(float4(input.position, 1.0f), gmtxGameObject), gmtxView), gmtxOrthoProjection);
-	//output.position = mul(mul(float4(input.position, 1.0f),gmtxView), gmtxOrthoProjection);
-	//output.position = mul(mul(float4(input.position, 1.0f), gmtxGameObject), gmtxOrthoProjection);
+
 	output.position = mul(mul(float4(input.position, 1.0f), gmtxGameObject), gmtxOrthoProjection);
 
 	output.uv = input.uv;
@@ -578,8 +574,7 @@ VS_TEXTURED_OUTPUT VSHp(VS_TEXTURED_INPUT input)
 
 PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSHp(VS_TEXTURED_OUTPUT input) :SV_TARGET
 {
-//	float4 cColor = gtxtTexture.Sample(gSamplerState, input.uv);
-	float4 cColor = float4(1.0f, 0.0f, 0.0f, 1.0f);
+	float4 cColor = gtxtTexture.Sample(gSamplerState, input.uv);
 	
 	PS_MULTIPLE_RENDER_TARGETS_OUTPUT output;
 	output.f4Scene = output.f4Color = cColor;
