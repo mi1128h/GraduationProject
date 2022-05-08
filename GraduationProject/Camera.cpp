@@ -285,6 +285,15 @@ void CFirstPersonCamera::Update(XMFLOAT3& xmf3LookAt, float fTimeElapsed)
 	}
 }
 
+void CFirstPersonCamera::SetLook(XMFLOAT3& xmf3Look)
+{
+	m_xmf3Look = XMFLOAT3(xmf3Look);
+	m_xmf3Up = m_pPlayer->GetUpVector();
+	m_xmf3Right = Vector3::CrossProduct(m_xmf3Up, m_xmf3Look, true);
+}
+
+
+
 ////////////////////////////////////////////////////////////////////////////
 
 CThirdPersonCamera::CThirdPersonCamera(CCamera* pCamera) : CCamera(pCamera)

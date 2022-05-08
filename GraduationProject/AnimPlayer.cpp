@@ -246,6 +246,7 @@ bool CAnimPlayer::SetInteraction(XMFLOAT3& center, XMFLOAT4X4& world)
 
 	if (track == track_name::handling) {
 		ChangeCamera(FIRST_PERSON_CAMERA, 0.0f);
+		dynamic_cast<CFirstPersonCamera*>(m_pCamera)->SetLook(GetLookVector());
 		return true;
 	}
 	else {
