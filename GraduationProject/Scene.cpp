@@ -858,14 +858,17 @@ void CScene::CheckMonsterFindTarget()
 
 void CScene::CheckMonsterCollision()
 {
+	m_pPlayer->GetCollManager()->UpdateCollisions();
 	BoundingSphere playerBS = m_pPlayer->GetCollManager()->GetBoundingSphere();
 	vector<CGameObject*> monsters = _factory[2]->GetGameObjects();
 
 	for (auto& monster : monsters)
 	{
+		monster->GetCollisionManager()->UpdateCollisions();
 		BoundingSphere BS = monster->GetCollisionManager()->GetBoundingSphere();
 		if (BS.Contains(playerBS)) {
 			((CMonsterObject*)monster)->AttackTarget();
+			_ui->SetTargetMonster(monster);
 		}
 	}
 }
@@ -897,6 +900,7 @@ void CScene::CheckPlayerAttack()
 	bool Enable = (m_pPlayer->m_pSkinnedAnimationController) ? m_pPlayer->m_pSkinnedAnimationController->GetAttackEnable() : false;
 	if (!Enable) return;
 
+	m_pPlayer->GetCollManager()->UpdateCollisions();
 	BoundingBox AttackBB = m_pPlayer->GetCollManager()->GetBoundingBox(true);
 	vector<CGameObject*> objects = _factory[2]->GetGameObjects();
 	for (auto& object : objects)
@@ -908,6 +912,7 @@ void CScene::CheckPlayerAttack()
 		if (BB.Contains(AttackBB))
 		{
 			((CMonsterObject*)object)->DecreaseHp(m_pPlayer->GetDamage());
+			_ui->SetTargetMonster(object);
 			m_pPlayer->SetAttackEnable(false);
 		}
 	}

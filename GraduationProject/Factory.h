@@ -66,6 +66,7 @@ public:
 	virtual void SetObjectCollision(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature) {};
 	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
 	virtual void AnimateObjects(float fTimeElapsed, CCamera* pCamrea = NULL);
+	void SetTargetMonster(CGameObject* pObject);
 
 private:
 	CCamera* m_pCamera = NULL;

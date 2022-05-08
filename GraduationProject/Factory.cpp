@@ -573,6 +573,8 @@ void CUIFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3
 	m_pCamera = new CCamera();
 	m_pCamera->GenerateOrthographicProjectionMatrix(0.0f,1.0f, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT);
 	m_pCamera->CreateShaderVariables(pd3dDevice, pd3dCommandList);
+	
+	///
 
 	CGameObject* pObject = NULL;
 	pObject = new CUIObject();
@@ -580,7 +582,6 @@ void CUIFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3
 	phptexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/UI/hp.dds", 0);
 	CScene::CreateShaderResourceViews(pd3dDevice, phptexture, Signature::Graphics::texture, true);
 	CBillboardMesh* pMesh = new CBillboardMesh(pd3dDevice, pd3dCommandList, 100.0f, 10.0f);
-
 
 	CGameObject* pTarget = pPlayer;
 	dynamic_cast<CUIObject*>(pObject)->SetTarget(pTarget);
@@ -600,6 +601,19 @@ void CUIFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3
 	m_pMaterial->SetShader(m_pShader);
 	pObject->SetMaterial(0, m_pMaterial);
 	_gameObjects.emplace_back(pObject);
+
+	////
+
+	CGameObject* pMonsterUIObject = NULL;
+	pMonsterUIObject = new CUIObject();
+	CBillboardMesh* pMesh2 = new CBillboardMesh(pd3dDevice, pd3dCommandList, 200.0f, 20.0f);
+	pMonsterUIObject->SetPosition(0.0f, FRAME_BUFFER_HEIGHT/4 + FRAME_BUFFER_HEIGHT/6, 0.0f);
+	pMonsterUIObject->SetMesh(pMesh2);
+	pMonsterUIObject->CreateShaderVariables(pd3dDevice, pd3dCommandList);
+
+	pMonsterUIObject->SetMaterial(0, m_pMaterial);
+	_gameObjects.emplace_back(pMonsterUIObject);
+
 }
 
 void CUIFactory::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
@@ -607,13 +621,23 @@ void CUIFactory::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCa
 	m_pCamera->SetViewportsAndScissorRects(pd3dCommandList);
 	m_pCamera->UpdateShaderVariables(pd3dCommandList);
 	for (auto& object : _gameObjects)
+	{
+		if (!dynamic_cast<CUIObject*>(object)->IsTarget()) continue;
 		object->Render(pd3dCommandList, pCamera);
+	}
 	pCamera->UpdateShaderVariables(pd3dCommandList);
 }
 
 void CUIFactory::AnimateObjects(float fTimeElapsed, CCamera* pCamrea)
 {
 	for (auto& object : _gameObjects)
+	{
 		object->Animate(fTimeElapsed, m_pCamera);
+	}
+}
+
+void CUIFactory::SetTargetMonster(CGameObject* pObject)
+{
+	dynamic_cast<CUIObject*>(_gameObjects[1])->SetTarget(pObject);
 }
 

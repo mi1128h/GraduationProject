@@ -155,7 +155,7 @@ protected:
 	MATERIAL* m_pcbMappedMaterials = NULL;
 	vector<CCollision*> collisions;
 	vector<CFactory*> _factory;
-	CFactory* _ui;
+	CUIFactory* _ui;
 
 public:
 	static ID3D12DescriptorHeap* m_pd3dCbvSrvUavDescriptorHeap;

@@ -525,6 +525,7 @@ public:
 	//void SetHp(CMonsterObject* pObject);
 	void SetTarget(CGameObject* pObject) { m_pTargetObject = pObject;}
 	void UpdateHpRatio();
+	bool IsTarget() { return (m_pTargetObject) ? true : false; }
 
 private:
 	ID3D12Resource* m_pd3dcbHpInfo = NULL;
