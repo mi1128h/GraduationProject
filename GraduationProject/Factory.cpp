@@ -565,7 +565,7 @@ void CMonsterFactory::FindTarget(CGameObject* pObject)
 
 /////////////////////////
 
-void CUIFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3dGraphicsRootSignature, ID3D12GraphicsCommandList* pd3dCommandList, void* pContext)
+void CUIFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3dGraphicsRootSignature, ID3D12GraphicsCommandList* pd3dCommandList, void* pContext,CPlayer* pPlayer)
 {
 	CHeightMapTerrain* pTerrain = (CHeightMapTerrain*)pContext;
 
@@ -582,6 +582,8 @@ void CUIFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3
 
 	pObject->SetPosition(-FRAME_BUFFER_WIDTH / 2 + 60, -FRAME_BUFFER_HEIGHT / 2 + 10, 0.0f);
 	pObject->SetMesh(pMesh);
+	pObject->CreateShaderVariables(pd3dDevice, pd3dCommandList);
+
 	CHpShader* m_pShader = new CHpShader();
 
 	DXGI_FORMAT pdxgiRtvFormats[3] = { DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM };

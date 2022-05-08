@@ -317,6 +317,8 @@ void CGameFramework::BuildObjects()
 
 	m_pScene->m_pPlayer = m_pPlayer = pPlayer;
 	m_pCamera = m_pPlayer->GetCamera();
+	
+	m_pScene->BuildUIObjects(m_pd3dDevice, m_pd3dCommandList);
 
 	CreateShaderVariables();
 

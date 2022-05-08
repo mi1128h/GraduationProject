@@ -357,10 +357,6 @@ void CScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* p
 	pMonster->SetObjectCollision(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 	_factory.emplace_back(pMonster);
 
-	_ui = new CUIFactory();
-	_ui->BuildObjects(pd3dDevice, m_pd3dGraphicsRootSignature, pd3dCommandList, m_pTerrain);
-	_ui->SetObjectCollision(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
-
 	//////
 	
 	BuildCollisions(pd3dDevice, pd3dCommandList);
@@ -368,6 +364,12 @@ void CScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* p
 	////////
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
+}
+
+void CScene::BuildUIObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
+{
+	_ui = new CUIFactory();
+	((CUIFactory*)_ui)->BuildObjects(pd3dDevice, m_pd3dGraphicsRootSignature, pd3dCommandList, m_pTerrain, m_pPlayer);
 }
 
 bool CScene::IsGameObject(string& name)
