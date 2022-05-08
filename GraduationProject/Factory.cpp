@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Factory.h"
 #include "Scene.h"
+#include "Player.h"
 #define terrainSizeOffset 220.0f / 150.0f
 #define terrainXOffset 1000.0f;
 #define terrainZOffset 1000.0f;

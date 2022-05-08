@@ -210,6 +210,9 @@ public:
 
 protected:
 	CCollisionManager* m_CollisionManager = nullptr;
+	float m_fMaxHp;
+	float m_fHp;
+	float m_fDamage;
 
 public:
 	void SetMesh(CMesh* pMesh);
@@ -285,6 +288,14 @@ public:
 
 	static void PrintFrameInfo(CGameObject* pGameObject, CGameObject* pParent);
 	void SetAttackEnable(bool value){m_pSkinnedAnimationController->SetAttackEnable(value);}
+
+	void SetDamage(float val) { m_fDamage = val; }
+	void SetHp(float val) { m_fHp = val; }
+	void SetMaxHp(float val) { m_fMaxHp = val; }
+
+	float GetDamage() { return m_fDamage; }
+	float GetHp() { return m_fHp; }
+	float GetMaxHp() { return m_fMaxHp; }
 };
 
 class CRotatingObject : public CGameObject
