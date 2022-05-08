@@ -580,7 +580,7 @@ void CUIFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3
 	CScene::CreateShaderResourceViews(pd3dDevice, phptexture, Signature::Graphics::texture, true);
 	CBillboardMesh* pMesh = new CBillboardMesh(pd3dDevice, pd3dCommandList, 100.0f, 10.0f);
 
-	pObject->SetPosition(-250.0f,-200.0f, 0.0f);
+	pObject->SetPosition(-FRAME_BUFFER_WIDTH / 2 + 60, -FRAME_BUFFER_HEIGHT / 2 + 10, 0.0f);
 	pObject->SetMesh(pMesh);
 	CHpShader* m_pShader = new CHpShader();
 
