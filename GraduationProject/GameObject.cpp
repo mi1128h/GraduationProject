@@ -509,6 +509,7 @@ void CGameObject::SetPosition(XMFLOAT3 xmf3Position)
 
 void CGameObject::SetScale(float x, float y, float z)
 {
+	m_xmf3Scale = XMFLOAT3(x, y, z);
 	XMMATRIX mtxScale = XMMatrixScaling(x, y, z);
 	m_xmf4x4ToParent = Matrix4x4::Multiply(mtxScale, m_xmf4x4ToParent);
 
@@ -1073,11 +1074,13 @@ CHeightMapTerrain::CHeightMapTerrain(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
-	CTexture* pTerrainBaseTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0,1,0,0);
-	pTerrainBaseTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/Terrain/Base_Texture.dds",0);
+	CTexture* pTerrainTexture = new CTexture(5, RESOURCE_TEXTURE2D, 0,1,0,0);
 
-	CTexture* pTerrainDetailTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0,1,0,0);
-	pTerrainDetailTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/Terrain/Detail_Texture_7.dds",0);
+	pTerrainTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/Terrain/Base_Texture.dds", 0);
+	pTerrainTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/Texture/ground_base.dds", 1);
+	pTerrainTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/Texture/ground_dry.dds", 2);
+	pTerrainTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/Texture/ground_dirt.dds", 3);
+	pTerrainTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/Texture/G_dry_B_dirt.dds", 4);
 
 	DXGI_FORMAT pdxgiRtvFormats[3] = { DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM };
 
@@ -1085,12 +1088,10 @@ CHeightMapTerrain::CHeightMapTerrain(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	pTerrainShader->CreateShader(pd3dDevice, pd3dGraphicsRootSignature, 3, pdxgiRtvFormats, DXGI_FORMAT_D32_FLOAT);
 	pTerrainShader->CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
-	CScene::CreateShaderResourceViews(pd3dDevice, pTerrainBaseTexture, Signature::Graphics::terrain_base, false);
-	CScene::CreateShaderResourceViews(pd3dDevice, pTerrainDetailTexture, Signature::Graphics::terrain_detail, false);
+	CScene::CreateShaderResourceViews(pd3dDevice, pTerrainTexture, Signature::Graphics::terrain_textures, false);
 
-	CMaterial* pTerrainMaterial = new CMaterial(2);
-	pTerrainMaterial->SetTexture(pTerrainBaseTexture, 0);
-	pTerrainMaterial->SetTexture(pTerrainDetailTexture, 1);
+	CMaterial* pTerrainMaterial = new CMaterial(1);
+	pTerrainMaterial->SetTexture(pTerrainTexture, 0);
 	pTerrainMaterial->SetShader(pTerrainShader);
 
 	SetMaterial(0, pTerrainMaterial);
@@ -1257,7 +1258,7 @@ void CCannonballObject::Animate(float fTimeElapsed, CCamera* pCamera)
 {
 	if (m_bIsFired) {
 		XMFLOAT3 xmf3Gravity = XMFLOAT3(0.0f, -10.0f, 0.0f);
-		m_xmf3Velocity = Vector3::Add(m_xmf3Velocity, Vector3::ScalarProduct(xmf3Gravity, fTimeElapsed * 0.5f, false));
+		m_xmf3Velocity = Vector3::Add(m_xmf3Velocity, Vector3::ScalarProduct(xmf3Gravity, fTimeElapsed * 0.1f, false));
 
 		SetPosition(Vector3::Add(GetPosition(), m_xmf3Velocity));
 	}
@@ -1296,9 +1297,10 @@ CCannonObject::~CCannonObject()
 
 void CCannonObject::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
 {
-	XMFLOAT4X4 xmf4x4TempWolrd;
-	xmf4x4TempWolrd = m_xmf4x4ToParent = m_xmf4x4World;
-	m_xmf4x4ToParent = Matrix4x4::Multiply(XMMatrixRotationY(110.0f), m_xmf4x4ToParent);
+	//XMFLOAT4X4 xmf4x4TempWolrd;
+	//xmf4x4TempWolrd = m_xmf4x4ToParent = m_xmf4x4World;
+
+	//m_xmf4x4ToParent = Matrix4x4::Multiply(XMMatrixRotationY(110.0f), m_xmf4x4ToParent);
 	UpdateTransform(NULL);
 
 	CGameObject::Render(pd3dCommandList, pCamera);
@@ -1306,7 +1308,7 @@ void CCannonObject::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* 
 		m_pCannonball->Render(pd3dCommandList, pCamera);
 	}
 
-	m_xmf4x4World = m_xmf4x4ToParent = xmf4x4TempWolrd;
+	//m_xmf4x4World = m_xmf4x4ToParent = xmf4x4TempWolrd;
 }
 
 void CCannonObject::Animate(float fTimeElapsed, CCamera* pCamera)
@@ -1351,7 +1353,9 @@ void CMonsterObject::ChaseTarget()
 
 void CMonsterObject::AttackTarget()
 {
+
 	int curNum = m_pSkinnedAnimationController->GetCurrentTrackNum();
+	if (curNum == track_name::death1 || curNum == track_name::death2) return;
 
 	int randomNum = rand() % 2;
 	int trackNum = randomNum ? track_name::attack1 : track_name::attack2;
@@ -1359,6 +1363,25 @@ void CMonsterObject::AttackTarget()
 	if (curNum == track_name::idle1 || curNum == track_name::idle2 || curNum == track_name::walk) {
 		m_pSkinnedAnimationController->SwitchAnimationState(trackNum);
 		m_pSkinnedAnimationController->SetAttackEnable(true);
+	}
+}
+
+void CMonsterObject::MonsterDead()
+{
+	int curNum = m_pSkinnedAnimationController->GetCurrentTrackNum();
+
+	if (curNum == track_name::death1 || curNum == track_name::death2) return;
+
+	m_pSkinnedAnimationController->SwitchAnimationState(track_name::death2);
+	m_pSkinnedAnimationController->SetAttackEnable(false);
+}
+
+void CMonsterObject::DecreaseHp(float val)
+{
+	m_fHp -= val;
+	if (m_fHp < 0)
+	{
+		MonsterDead();
 	}
 }
 

@@ -101,7 +101,6 @@ void CPlayerCollisionManager::UpdateCollisions()
 	for (auto iter : collisions)
 	{
 		iter.second->UpdateBound(
-			(iter.first==static_cast<int>(SWORD)) ? m_xmSwordBound : m_xmBoundingBox
-			, m_xmBoundingSphere);
+			(iter.first==static_cast<int>(SWORD)) ? m_xmSwordBound : m_xmBoundingBox, m_xmBoundingSphere);
 	}
 }

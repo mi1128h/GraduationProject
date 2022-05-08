@@ -1,7 +1,9 @@
 #include "stdafx.h"
 #include "Factory.h"
 #include "Scene.h"
-
+#define terrainSizeOffset 220.0f / 150.0f
+#define terrainXOffset 1000.0f;
+#define terrainZOffset 1000.0f;
 
 void CFactory::AnimateObjects(float fTimeElapsed, CCamera* pCamrea)
 {
@@ -118,8 +120,8 @@ void CObjectFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 
 			pObject->m_pTexture = pCoverTexture;
 
-			float transX = px * xmf3TerrainScale.x * 257.0f / 150.0f;
-			float transZ = pz * xmf3TerrainScale.z * 257.0f / 150.0f;
+			float transX = px * xmf3TerrainScale.x * terrainSizeOffset + terrainXOffset;
+			float transZ = pz * xmf3TerrainScale.z * terrainSizeOffset + terrainZOffset;
 			float terrainY = pTerrain->GetHeight(transX, transZ);
 
 			XMFLOAT3 position = XMFLOAT3(transX, terrainY + 20.0f * sy, transZ);
@@ -143,8 +145,8 @@ void CObjectFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 
 			pObject->m_pTexture = pCoverTexture;
 
-			float transX = px * xmf3TerrainScale.x * 257.0f / 150.0f;
-			float transZ = pz * xmf3TerrainScale.z * 257.0f / 150.0f;
+			float transX = px * xmf3TerrainScale.x * terrainSizeOffset + terrainXOffset;
+			float transZ = pz * xmf3TerrainScale.z * terrainSizeOffset + terrainZOffset;
 			float terrainY = pTerrain->GetHeight(transX, transZ);
 
 			XMFLOAT3 position = XMFLOAT3(transX, terrainY + 20.0f * sy, transZ);
@@ -167,8 +169,8 @@ void CObjectFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 
 			pObject->m_pTexture = pCrystalTexture;
 
-			float transX = px * xmf3TerrainScale.x * 257.0f / 150.0f;
-			float transZ = pz * xmf3TerrainScale.z * 257.0f / 150.0f;
+			float transX = px * xmf3TerrainScale.x * terrainSizeOffset + terrainXOffset;
+			float transZ = pz * xmf3TerrainScale.z * terrainSizeOffset + terrainZOffset;
 			float terrainY = pTerrain->GetHeight(transX, transZ);
 
 			XMFLOAT3 position = XMFLOAT3(transX, terrainY + 1.0f * sy, transZ);
@@ -189,8 +191,8 @@ void CObjectFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 
 			pObject->m_pTexture = pFloorTexture;
 
-			float transX = px * xmf3TerrainScale.x * 257.0f / 150.0f;
-			float transZ = pz * xmf3TerrainScale.z * 257.0f / 150.0f;
+			float transX = px * xmf3TerrainScale.x * terrainSizeOffset + terrainXOffset;
+			float transZ = pz * xmf3TerrainScale.z * terrainSizeOffset + terrainZOffset;
 			float terrainY = pTerrain->GetHeight(transX, transZ);
 
 			XMFLOAT3 position = XMFLOAT3(transX, terrainY + 1.0f * sy, transZ);
@@ -211,8 +213,8 @@ void CObjectFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 
 			pObject->m_pTexture = pHouse1Texture;
 
-			float transX = px * xmf3TerrainScale.x * 257.0f / 150.0f;
-			float transZ = pz * xmf3TerrainScale.z * 257.0f / 150.0f;
+			float transX = px * xmf3TerrainScale.x * terrainSizeOffset + terrainXOffset;
+			float transZ = pz * xmf3TerrainScale.z * terrainSizeOffset + terrainZOffset;
 			float terrainY = pTerrain->GetHeight(transX, transZ);
 
 			XMFLOAT3 position = XMFLOAT3(transX, terrainY + 60.0f * sy, transZ);
@@ -220,6 +222,7 @@ void CObjectFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 			pObject->SetScale(sx, sy, sz);
 			XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
 			pObject->Rotate(&xmf4Rotation);
+			pObject->Rotate(0.0f, 180.0f, 0.0f);
 			pObject->Rotate(90.0f, 0.0f, 0.0f);
 			pHouse1Model->m_pModelRootObject->Rotate(0.0f,-180.0f, 0.0f);
 			pObject->SetTag("house_1");
@@ -235,8 +238,8 @@ void CObjectFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 
 			pObject->m_pTexture = pHouse2Texture;
 
-			float transX = px * xmf3TerrainScale.x * 257.0f / 150.0f;
-			float transZ = pz * xmf3TerrainScale.z * 257.0f / 150.0f;
+			float transX = px * xmf3TerrainScale.x * terrainSizeOffset + terrainXOffset;
+			float transZ = pz * xmf3TerrainScale.z * terrainSizeOffset + terrainZOffset;
 			float terrainY = pTerrain->GetHeight(transX, transZ);
 
 			XMFLOAT3 position = XMFLOAT3(transX, terrainY + 66.0f * sy, transZ);
@@ -244,6 +247,7 @@ void CObjectFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 			pObject->SetScale(sx, sy, sz);
 			XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
 			pObject->Rotate(&xmf4Rotation);
+			pObject->Rotate(0.0f, 180.0f, 0.0f);
 			pObject->Rotate(90.0f, 0.0f, 0.0f);
 			pHouse2Model->m_pModelRootObject->Rotate(0.0f, -180.0f, 0.0f);
 			pObject->SetTag("house_2");
@@ -261,8 +265,8 @@ void CObjectFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 
 			pObject->m_pTexture = pHouse3Texture;
 
-			float transX = px * xmf3TerrainScale.x * 257.0f / 150.0f;
-			float transZ = pz * xmf3TerrainScale.z * 257.0f / 150.0f;
+			float transX = px * xmf3TerrainScale.x * terrainSizeOffset + terrainXOffset;
+			float transZ = pz * xmf3TerrainScale.z * terrainSizeOffset + terrainZOffset;
 			float terrainY = pTerrain->GetHeight(transX, transZ);
 
 			XMFLOAT3 position = XMFLOAT3(transX, terrainY + 90.0f * sy, transZ);
@@ -284,9 +288,8 @@ void CObjectFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 
 			pObject->m_pTexture = pHouse4Texture;
 
-
-			float transX = px * xmf3TerrainScale.x * 257.0f / 150.0f;
-			float transZ = pz * xmf3TerrainScale.z * 257.0f / 150.0f;
+			float transX = px * xmf3TerrainScale.x * terrainSizeOffset + terrainXOffset;
+			float transZ = pz * xmf3TerrainScale.z * terrainSizeOffset + terrainZOffset;
 			float terrainY = pTerrain->GetHeight(transX, transZ);
 
 			XMFLOAT3 position = XMFLOAT3(transX, terrainY + 60.0f * sy, transZ);
@@ -294,6 +297,7 @@ void CObjectFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 			pObject->SetScale(sx, sy, sz);
 			XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
 			pObject->Rotate(&xmf4Rotation);
+			pObject->Rotate(0.0f, 180.0f, 0.0f);
 			pObject->Rotate(90.0f, 0.0f, 0.0f);
 			pHouse4Model->m_pModelRootObject->Rotate(0.0f, -180.0f, 0.0f);
 			pObject->SetTag("house_4");
@@ -369,22 +373,63 @@ void CCannonFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 
 			pObject->SetCannonball(pCannonballObject);
 
-			float transX = px * xmf3TerrainScale.x * 257.0f / 150.0f;
-			float transZ = pz * xmf3TerrainScale.z * 257.0f / 150.0f;
+			float transX = px * xmf3TerrainScale.x * terrainSizeOffset + terrainXOffset;
+			float transZ = pz * xmf3TerrainScale.z * terrainSizeOffset + terrainZOffset;
 			float terrainY = pTerrain->GetHeight(transX, transZ);
 
-			XMFLOAT3 position = XMFLOAT3(transX, terrainY + 80.0f * sy, transZ);
+			XMFLOAT3 position = XMFLOAT3(transX, terrainY + 50.0f * sy, transZ);
 			pObject->SetPosition(position);
 			pObject->SetScale(sx, sy, sz);
 			XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
 			pObject->Rotate(&xmf4Rotation);
-			pObject->Rotate(90.0f, 0.0f, 0.0f);
-			pObject->Rotate(0.0f, 0.0f, -180.0f);
+			pObject->Rotate(-90.0f, 0.0f, 0.0f);
 			pObject->SetTag("cannon");
 
 			_gameObjects.emplace_back(pObject);
 		}
 	}
+}
+
+void CCannonFactory::ActiveCannon()
+{
+	if (!m_pInteractedCannon) return;
+
+	CGameObject* pBarrel = m_pInteractedCannon->m_pChild->FindFrame("Cube_001");
+	XMFLOAT3 origin = pBarrel->GetPosition();
+	XMFLOAT3 offset = Vector3::ScalarProduct(pBarrel->GetUp(), 100.0f * m_pInteractedCannon->m_xmf3Scale.y);
+	origin = Vector3::Add(origin, offset);
+	XMFLOAT3 velocity = Vector3::ScalarProduct(pBarrel->GetUp(), 5.0f);
+
+	m_pInteractedCannon->FireCannonBall(origin, velocity);
+}
+
+void CCannonFactory::RotateCannon(WPARAM wParam)
+{
+	if (!m_pInteractedCannon) return;
+
+	XMFLOAT3 xmf3RotateAxis;
+	float fAngle;
+
+	switch (wParam) {
+	case 'W':
+		xmf3RotateAxis = XMFLOAT3(1, 0, 0);
+		fAngle = +10.0f;
+		break;
+	case 'A':
+		xmf3RotateAxis = XMFLOAT3(0, 0, 1);
+		fAngle = -10.0f;
+		break;
+	case 'S':
+		xmf3RotateAxis = XMFLOAT3(1, 0, 0);
+		fAngle = -10.0f;
+		break;
+	case 'D':
+		xmf3RotateAxis = XMFLOAT3(0, 0, 1);
+		fAngle = +10.0f;
+		break;
+	}
+
+	m_pInteractedCannon->RotateCannon(&xmf3RotateAxis, fAngle);
 }
 
 ///
@@ -408,7 +453,6 @@ void CMonsterFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature
 		CTexture* pClownTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
 	pClownTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Model/Texture/whiteclown_diffuse.dds", 0);
 	CScene::CreateShaderResourceViews(pd3dDevice, pClownTexture, Signature::Graphics::animation_diffuse, true);
-
 
 	string line;
 	smatch match;
@@ -457,6 +501,8 @@ void CMonsterFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature
 			pObject->SetChild(pZombieModel->m_pModelRootObject, true);
 			pObject->m_pTexture = pZombieTexture;
 			pObject->m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, CMonsterObject::track_name::length, pZombieModel);
+			pObject->SetHp(200.0f);
+			pObject->SetDamage(30.0f);
 		}
 		if (name.compare("Zombie_2") == 0) {
 			CLoadedModelInfo* pClownModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/WhiteClown.bin", NULL);
@@ -464,10 +510,12 @@ void CMonsterFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature
 			pObject->SetChild(pClownModel->m_pModelRootObject, true);
 			pObject->m_pTexture = pClownTexture;
 			pObject->m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, CMonsterObject::track_name::length, pClownModel);
+			pObject->SetHp(250.0f);
+			pObject->SetDamage(50.0f);
 		}
 
-		float transX = px * xmf3TerrainScale.x * 257.0f / 150.0f;
-		float transZ = pz * xmf3TerrainScale.z * 257.0f / 150.0f;
+		float transX = px * xmf3TerrainScale.x * terrainSizeOffset + terrainXOffset;
+		float transZ = pz * xmf3TerrainScale.z * terrainSizeOffset + terrainZOffset;
 		float terrainY = pTerrain->GetHeight(transX, transZ);
 
 		XMFLOAT3 position = XMFLOAT3(transX, terrainY + 1.0f * sy, transZ);
@@ -475,8 +523,6 @@ void CMonsterFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature
 		pObject->SetScale(sx, sy, sz);
 		XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
 		pObject->Rotate(&xmf4Rotation);
-		//pObject->Rotate(90.0f, 0.0f, 0.0f);
-		//pObject->Rotate(0.0f, 180.0f, 0.0f);
 
 		int TrackNum = CMonsterObject::track_name::idle1;
 
