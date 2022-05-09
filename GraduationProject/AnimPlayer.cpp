@@ -155,6 +155,9 @@ bool CAnimPlayer::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM
 			switch (wParam)
 			{
 				case 'Q':
+					if (m_pSkinnedAnimationController->GetCurrentTrackNum() == track_name::attack)
+						return false;
+
 					m_pSkinnedAnimationController->SwitchAnimationState(track_name::attack);
 					m_pSkinnedAnimationController->SetAttackEnable(true);
 					SetDamage(50.0f);
@@ -181,6 +184,10 @@ bool CAnimPlayer::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM
 					break;
 
 				case '1':
+
+					if (m_pSkinnedAnimationController->GetCurrentTrackNum() == track_name::attack_combo)
+						return false;
+
 					m_pSkinnedAnimationController->SwitchAnimationState(track_name::attack_combo);
 					m_pSkinnedAnimationController->SetAttackEnable(true);
 					SetDamage(70.0f);
