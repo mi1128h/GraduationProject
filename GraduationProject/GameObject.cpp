@@ -1412,7 +1412,7 @@ void CMonsterObject::MonsterDead()
 void CMonsterObject::DecreaseHp(float val)
 {
 	m_fHp -= val;
-	if (m_fHp < 0)
+	if (m_fHp <= 0)
 	{
 		MonsterDead();
 	}
