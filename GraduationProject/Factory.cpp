@@ -583,12 +583,12 @@ void CUIFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3
 	CTexture* phptexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
 	phptexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/UI/hp.dds", 0);
 	CScene::CreateShaderResourceViews(pd3dDevice, phptexture, Signature::Graphics::texture, true);
-	CBillboardMesh* pMesh = new CBillboardMesh(pd3dDevice, pd3dCommandList, 100.0f, 10.0f);
+	CBillboardMesh* pMesh = new CBillboardMesh(pd3dDevice, pd3dCommandList, 150.0f, 15.0f);
 
 	CGameObject* pTarget = pPlayer;
 	dynamic_cast<CUIObject*>(pObject)->SetTarget(pTarget);
 
-	pObject->SetPosition(-FRAME_BUFFER_WIDTH / 2 + 60, -FRAME_BUFFER_HEIGHT / 2 + 10, 0.0f);
+	pObject->SetPosition(-FRAME_BUFFER_WIDTH / 2 + 90, -FRAME_BUFFER_HEIGHT / 2 + 15, 0.0f);
 	pObject->SetMesh(pMesh);
 	pObject->CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
