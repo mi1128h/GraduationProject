@@ -775,7 +775,7 @@ bool CScene::CheckPlayerByObjectBB(XMFLOAT3 xmf3Shift)
 
 	for (auto& fac : _factory)
 	{
-		if (dynamic_cast<CMonsterFactory*>(fac))continue;
+		//if (dynamic_cast<CMonsterFactory*>(fac))continue;
 		vector<CGameObject*> objects = fac->GetGameObjects();
 		for (int i = 0; i < objects.size(); ++i)
 		{
