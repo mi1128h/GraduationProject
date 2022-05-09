@@ -503,6 +503,7 @@ void CMonsterFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature
 			pObject->m_pTexture = pZombieTexture;
 			pObject->m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, CMonsterObject::track_name::length, pZombieModel);
 			pObject->SetHp(200.0f);
+			pObject->SetMaxHp(200.0f);
 			pObject->SetDamage(30.0f);
 		}
 		if (name.compare("Zombie_2") == 0) {
@@ -512,6 +513,7 @@ void CMonsterFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature
 			pObject->m_pTexture = pClownTexture;
 			pObject->m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, CMonsterObject::track_name::length, pClownModel);
 			pObject->SetHp(250.0f);
+			pObject->SetMaxHp(250.0f);
 			pObject->SetDamage(50.0f);
 		}
 
