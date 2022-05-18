@@ -49,12 +49,12 @@ void CMesh::ReleaseUploadBuffers()
 	}
 };
 
-void CMesh::OnPreRender(ID3D12GraphicsCommandList* pd3dCommandList, void* pContext)
+void CMesh::OnPreRender(ID3D12GraphicsCommandList* pd3dCommandList, void* pContext, int nPipelineState)
 {
 	pd3dCommandList->IASetVertexBuffers(m_nSlot, 1, &m_d3dPositionBufferView);
 }
 
-void CMesh::Render(ID3D12GraphicsCommandList* pd3dCommandList, int nSubSet)
+void CMesh::Render(ID3D12GraphicsCommandList* pd3dCommandList, int nSubSet, int nPipelineState)
 {
 	UpdateShaderVariables(pd3dCommandList);
 
@@ -73,7 +73,7 @@ void CMesh::Render(ID3D12GraphicsCommandList* pd3dCommandList, int nSubSet)
 	}
 }
 
-void CMesh::OnPostRender(ID3D12GraphicsCommandList* pd3dCommandList, void* pContext)
+void CMesh::OnPostRender(ID3D12GraphicsCommandList* pd3dCommandList, void* pContext, int nPipelineState)
 {
 }
 
@@ -700,7 +700,7 @@ XMFLOAT4 CHeightMapGridMesh::OnGetColor(int x, int z, void* pContext)
 	return(xmf4Color);
 }
 
-void CHeightMapGridMesh::OnPreRender(ID3D12GraphicsCommandList* pd3dCommandList, void* pContext)
+void CHeightMapGridMesh::OnPreRender(ID3D12GraphicsCommandList* pd3dCommandList, void* pContext, int nPipelineState)
 {
 	D3D12_VERTEX_BUFFER_VIEW pVertexBufferViews[4] = { m_d3dPositionBufferView, m_d3dColorBufferView, m_d3dTextureCoord0BufferView, m_d3dTextureCoord1BufferView };
 	pd3dCommandList->IASetVertexBuffers(m_nSlot, 4, pVertexBufferViews);
@@ -1161,7 +1161,7 @@ CModelMesh::~CModelMesh()
 
 }
 
-void CModelMesh::OnPreRender(ID3D12GraphicsCommandList* pd3dCommandList, void* pContext)
+void CModelMesh::OnPreRender(ID3D12GraphicsCommandList* pd3dCommandList, void* pContext, int nPipelineState)
 {
 	D3D12_VERTEX_BUFFER_VIEW pVertexBufferViews[2] = { m_d3dPositionBufferView, m_d3dTextureCoordBufferView };
 	pd3dCommandList->IASetVertexBuffers(m_nSlot, 2, pVertexBufferViews);
@@ -1632,7 +1632,7 @@ void CSkinnedMesh::LoadSkinDeformationsFromFile(ID3D12Device* pd3dDevice, ID3D12
 	}
 }
 
-void CSkinnedMesh::OnPreRender(ID3D12GraphicsCommandList* pd3dCommandList, void* pContext)
+void CSkinnedMesh::OnPreRender(ID3D12GraphicsCommandList* pd3dCommandList, void* pContext, int nPipelineState)
 {
 	D3D12_VERTEX_BUFFER_VIEW pVertexBufferViews[4] = { m_d3dPositionBufferView, m_d3dBoneIndexBufferView, m_d3dBoneWeightBufferView,m_d3dTextureCoordBufferView };
 	pd3dCommandList->IASetVertexBuffers(m_nSlot, 4, pVertexBufferViews);
@@ -1700,7 +1700,7 @@ CParticleMesh::~CParticleMesh()
 	if (m_pd3dReadBackBufferFilledSize) m_pd3dReadBackBufferFilledSize->Release();
 }
 
-void CParticleMesh::PreRender(ID3D12GraphicsCommandList* pd3dCommandList, int nPipelineState)
+void CParticleMesh::OnPreRender(ID3D12GraphicsCommandList* pd3dCommandList, void* pContext, int nPipelineState)
 {
 	if (nPipelineState == 0)
 	{
@@ -1728,14 +1728,14 @@ void CParticleMesh::PreRender(ID3D12GraphicsCommandList* pd3dCommandList, int nP
 	}
 }
 
-void CParticleMesh::Render(ID3D12GraphicsCommandList* pd3dCommandList, int nPipelineState)
+void CParticleMesh::Render(ID3D12GraphicsCommandList* pd3dCommandList, int nSubSet, int nPipelineState)
 {
 	if (nPipelineState == 0)
 	{
 		D3D12_STREAM_OUTPUT_BUFFER_VIEW pStreamOutputBufferViews[1] = { m_d3dStreamOutputBufferView };
 		pd3dCommandList->SOSetTargets(0, 1, pStreamOutputBufferViews);
 
-		CMesh::Render(pd3dCommandList);
+		CMesh::Render(pd3dCommandList, nSubSet);
 
 		::SynchronizeResourceTransition(pd3dCommandList, m_pd3dDefaultBufferFilledSize, D3D12_RESOURCE_STATE_STREAM_OUT, D3D12_RESOURCE_STATE_COPY_SOURCE);
 		::SynchronizeResourceTransition(pd3dCommandList, m_pd3dStreamOutputBuffer, D3D12_RESOURCE_STATE_STREAM_OUT, D3D12_RESOURCE_STATE_COPY_SOURCE);
@@ -1743,6 +1743,7 @@ void CParticleMesh::Render(ID3D12GraphicsCommandList* pd3dCommandList, int nPipe
 
 		pd3dCommandList->CopyResource(m_pd3dReadBackBufferFilledSize, m_pd3dDefaultBufferFilledSize);
 		pd3dCommandList->CopyResource(m_pd3dDrawBuffer, m_pd3dStreamOutputBuffer);
+
 		::SynchronizeResourceTransition(pd3dCommandList, m_pd3dStreamOutputBuffer, D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_STREAM_OUT);
 		::SynchronizeResourceTransition(pd3dCommandList, m_pd3dDrawBuffer, D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
 		::SynchronizeResourceTransition(pd3dCommandList, m_pd3dDefaultBufferFilledSize, D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_STREAM_OUT);
@@ -1751,11 +1752,11 @@ void CParticleMesh::Render(ID3D12GraphicsCommandList* pd3dCommandList, int nPipe
 	{
 		pd3dCommandList->SOSetTargets(0, 1, NULL);
 
-		CMesh::Render(pd3dCommandList);
+		CMesh::Render(pd3dCommandList, nSubSet);
 	}
 }
 
-void CParticleMesh::PostRender(ID3D12GraphicsCommandList* pd3dCommandList, int nPipelineState)
+void CParticleMesh::OnPostRender(ID3D12GraphicsCommandList* pd3dCommandList, void* pContext, int nPipelineState)
 {
 	if (nPipelineState == 0)
 	{

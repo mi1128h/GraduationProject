@@ -28,7 +28,7 @@ public:
 	CVertex(XMFLOAT3 xmf3Position) { m_xmf3Position = xmf3Position; }
 	~CVertex() { }
 
-	SetPosition(XMFLOAT3& position) { m_xmf3Position = position; }
+	void SetPosition(XMFLOAT3& position) { m_xmf3Position = position; }
 };
 
 class CDiffusedVertex : public CVertex
