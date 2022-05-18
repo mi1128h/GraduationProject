@@ -100,6 +100,19 @@ ID3D12RootSignature* CScene::CreateGraphicsRootSignature(ID3D12Device* pd3dDevic
 	pd3dDescriptorRanges[Descriptor::Graphics::model_diffuse].RegisterSpace = 0;
 	pd3dDescriptorRanges[Descriptor::Graphics::model_diffuse].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 
+	pd3dDescriptorRanges[Descriptor::Graphics::particle_texture].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+	pd3dDescriptorRanges[Descriptor::Graphics::particle_texture].NumDescriptors = 1;
+	pd3dDescriptorRanges[Descriptor::Graphics::particle_texture].BaseShaderRegister = 13;
+	pd3dDescriptorRanges[Descriptor::Graphics::particle_texture].RegisterSpace = 0;
+	pd3dDescriptorRanges[Descriptor::Graphics::particle_texture].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+
+	pd3dDescriptorRanges[Descriptor::Graphics::particle_buffer].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+	pd3dDescriptorRanges[Descriptor::Graphics::particle_buffer].NumDescriptors = 1;
+	pd3dDescriptorRanges[Descriptor::Graphics::particle_buffer].BaseShaderRegister = 14;
+	pd3dDescriptorRanges[Descriptor::Graphics::particle_buffer].RegisterSpace = 0;
+	pd3dDescriptorRanges[Descriptor::Graphics::particle_buffer].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+
+
 	D3D12_ROOT_PARAMETER pd3dRootParameters[Signature::Graphics::length];
 
 	pd3dRootParameters[Signature::Graphics::player].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
@@ -182,6 +195,17 @@ ID3D12RootSignature* CScene::CreateGraphicsRootSignature(ID3D12Device* pd3dDevic
 	pd3dRootParameters[Signature::Graphics::model_diffuse].DescriptorTable.NumDescriptorRanges = 1;
 	pd3dRootParameters[Signature::Graphics::model_diffuse].DescriptorTable.pDescriptorRanges = &pd3dDescriptorRanges[Descriptor::Graphics::model_diffuse];
 	pd3dRootParameters[Signature::Graphics::model_diffuse].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+
+	pd3dRootParameters[Signature::Graphics::particle_texture].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+	pd3dRootParameters[Signature::Graphics::particle_texture].DescriptorTable.NumDescriptorRanges = 1;
+	pd3dRootParameters[Signature::Graphics::particle_texture].DescriptorTable.pDescriptorRanges = &pd3dDescriptorRanges[Descriptor::Graphics::particle_texture];
+	pd3dRootParameters[Signature::Graphics::particle_texture].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+
+	pd3dRootParameters[Signature::Graphics::particle_buffer].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+	pd3dRootParameters[Signature::Graphics::particle_buffer].DescriptorTable.NumDescriptorRanges = 1;
+	pd3dRootParameters[Signature::Graphics::particle_buffer].DescriptorTable.pDescriptorRanges = &pd3dDescriptorRanges[Descriptor::Graphics::particle_buffer]; 
+	pd3dRootParameters[Signature::Graphics::particle_buffer].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+
 
 	D3D12_STATIC_SAMPLER_DESC pd3dSamplerDescs[2];
 

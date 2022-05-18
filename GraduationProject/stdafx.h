@@ -113,6 +113,8 @@ namespace Signature {
 		animation_diffuse,
 		model_diffuse,
 		hp,
+		particle_texture,
+		particle_buffer,
 		length
 	};
 
@@ -131,6 +133,8 @@ namespace Descriptor {
 		g_output,
 		animation_diffuse,
 		model_diffuse,
+		particle_texture,
+		particle_buffer,
 		length
 	};
 
