@@ -354,7 +354,7 @@ void CScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* p
 	m_pd3dGraphicsRootSignature = CreateGraphicsRootSignature(pd3dDevice);
 	m_pd3dComputeRootSignature = CreateComputeRootSignature(pd3dDevice);
 
-	CreateCbvSrvUavDescriptorHeaps(pd3dDevice, 0, 25,1); //Gunship(2), Player:Mi24(1), Angrybot()
+	CreateCbvSrvUavDescriptorHeaps(pd3dDevice, 0, 30,1); //Gunship(2), Player:Mi24(1), Angrybot()
 	CMaterial::PrepareShaders(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 
 	BuildLightsAndMaterials();
@@ -387,6 +387,32 @@ void CScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* p
 
 	////////
 
+	float fxPitch = 800.0f * 3.5f;
+	float fzPitch = 800.0f * 3.5f;
+
+	float fTerrainWidth = m_pTerrain->GetWidth();
+	float fTerrainLength = m_pTerrain->GetLength();
+
+	int xObjects = int(fTerrainWidth / fxPitch);
+	int zObjects = int(fTerrainLength / fzPitch);
+	m_nParticleObjects = (xObjects * zObjects);
+
+	m_ppParticleObjects = new CParticleObject * [m_nParticleObjects];
+
+	XMFLOAT3 xmf3RotateAxis, xmf3SurfaceNormal;
+	CParticleObject* pRotatingObject = NULL;
+	for (int i = 0, x = 0; x < xObjects; x++)
+	{
+		for (int z = 0; z < zObjects; z++)
+		{
+			float xPosition = x * fxPitch;
+			float zPosition = z * fzPitch;
+			float fHeight = m_pTerrain->GetHeight(xPosition, zPosition);
+			pRotatingObject = new CParticleObject(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, XMFLOAT3(xPosition, fHeight, zPosition), XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(1.0f, 0.0f, 0.0f), XMFLOAT2(150.0f, 150.0f), 15.0f, MAX_PARTICLES);
+			m_ppParticleObjects[i++] = pRotatingObject;
+		}
+	}
+
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 }
 
@@ -396,7 +422,9 @@ void CScene::BuildUIObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList*
 	((CUIFactory*)_ui)->BuildObjects(pd3dDevice, m_pd3dGraphicsRootSignature, pd3dCommandList, m_pTerrain, m_pPlayer);
 }
 
+void CScene::RenderParticle(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
 {
+	for (int i = 0; i < m_nParticleObjects; i++) m_ppParticleObjects[i]->Render(pd3dCommandList, pCamera);
 }
 
 void CScene::BuildCollisions(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
@@ -724,6 +752,7 @@ void CScene::AnimateObjects(float fTimeElapsed, CCamera* pCamrea)
 	m_fElapsedTime = fTimeElapsed;
 
 	for (auto& factory :_factory) factory->AnimateObjects(fTimeElapsed, pCamrea);
+	for (int i = 0; i < m_nParticleObjects; i++) m_ppParticleObjects[i]->Animate(fTimeElapsed, pCamrea);
 
 	for (int i = 0; i < m_nShaders; i++) m_ppShaders[i]->AnimateObjects(fTimeElapsed, pCamrea);
 	if (m_pLights) {}

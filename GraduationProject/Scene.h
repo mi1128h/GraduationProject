@@ -95,6 +95,7 @@ public:
 	CHeightMapTerrain* GetTerrain() { return(m_pTerrain); }
 
 	void OnPrepareRender(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
+	void RenderParticle(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
 
 public:
 	static void CreateCbvSrvUavDescriptorHeaps(ID3D12Device* pd3dDevice, int nConstantBufferViews, int nShaderResourceViews, int nUnorderedAccessViews);
@@ -125,6 +126,8 @@ public:
 
 	int									m_nGameObjects = 0;
 	CGameObject** m_ppGameObjects = NULL;
+	CParticleObject** m_ppParticleObjects = NULL;
+	int	m_nParticleObjects = 0;
 
 	CPlayer* m_pPlayer = NULL;
 
