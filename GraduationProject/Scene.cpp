@@ -247,7 +247,7 @@ ID3D12RootSignature* CScene::CreateComputeRootSignature(ID3D12Device* pd3dDevice
 
 	pd3dDescriptorRanges[Descriptor::Compute::c_input].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
 	pd3dDescriptorRanges[Descriptor::Compute::c_input].NumDescriptors = 3;
-	pd3dDescriptorRanges[Descriptor::Compute::c_input].BaseShaderRegister = 4;
+	pd3dDescriptorRanges[Descriptor::Compute::c_input].BaseShaderRegister = 7;
 	pd3dDescriptorRanges[Descriptor::Compute::c_input].RegisterSpace = 0;
 	pd3dDescriptorRanges[Descriptor::Compute::c_input].OffsetInDescriptorsFromTableStart = 0;
 
@@ -396,19 +396,8 @@ void CScene::BuildUIObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList*
 	((CUIFactory*)_ui)->BuildObjects(pd3dDevice, m_pd3dGraphicsRootSignature, pd3dCommandList, m_pTerrain, m_pPlayer);
 }
 
-bool CScene::IsGameObject(string& name)
 {
-	if (!name.compare("cannon:")) return true;
-	if (!name.compare("Barricade_01:")) return true;
-	if (!name.compare("Barricade_02:")) return true;
-	if (!name.compare("house_1:")) return true;
-	if (!name.compare("house_2:")) return true;
-	if (!name.compare("house_3:")) return true;
-	if (!name.compare("house_4:")) return true;
-
-	return false;
 }
-
 
 void CScene::BuildCollisions(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
 {
@@ -763,7 +752,6 @@ void CScene::OnPrepareRender(ID3D12GraphicsCommandList* pd3dCommandList, CCamera
 void CScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
 {
 	pd3dCommandList->SetGraphicsRootSignature(m_pd3dGraphicsRootSignature);
-	if (m_pd3dCbvSrvUavDescriptorHeap) pd3dCommandList->SetDescriptorHeaps(1, &m_pd3dCbvSrvUavDescriptorHeap);
 	if (m_pd3dCbvSrvUavDescriptorHeap) pd3dCommandList->SetDescriptorHeaps(1, &m_pd3dCbvSrvUavDescriptorHeap);
 
 	pCamera->SetViewportsAndScissorRects(pd3dCommandList);
