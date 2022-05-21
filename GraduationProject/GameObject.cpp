@@ -1534,8 +1534,9 @@ CParticleObject::CParticleObject(ID3D12Device* pd3dDevice, ID3D12GraphicsCommand
 	pShader->CreateGraphicsPipelineState(pd3dDevice, pd3dGraphicsRootSignature, 0);
 	pShader->CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
-	CScene::CreateShaderResourceViews(pd3dDevice, pParticleTexture, Signature::Graphics::particle_texture,true);
-	CScene::CreateShaderResourceViews(pd3dDevice, m_pRandowmValueTexture, Signature::Graphics::particle_buffer,true);
+	// 
+	CScene::CreateShaderResourceViews(pd3dDevice, pParticleTexture, Signature::Graphics::particle_texture,false);
+	CScene::CreateShaderResourceViews(pd3dDevice, m_pRandowmValueTexture, Signature::Graphics::particle_buffer,false,true);
 
 	pMaterial->SetShader(pShader);
 	SetMaterial(0,pMaterial);
@@ -1545,8 +1546,8 @@ CParticleObject::~CParticleObject()
 {
 	if (m_pRandowmValueTexture) m_pRandowmValueTexture->Release();
 
-	if (m_pd3dCommandAllocator) m_pd3dCommandAllocator->Release();
-	if (m_pd3dCommandList) m_pd3dCommandList->Release();
+	//if (m_pd3dCommandAllocator) m_pd3dCommandAllocator->Release();
+	//if (m_pd3dCommandList) m_pd3dCommandList->Release();
 
 	if (m_pd3dFence) m_pd3dFence->Release();
 
