@@ -7,6 +7,7 @@ bool gbCollisionDebug = false;
 UINT gnCbvSrvUavDescriptorIncrementSize = 0;
 UINT gnRtvDescriptorIncrementSize = 0;
 UINT gnDsvDescriptorIncrementSize = 0;
+int gnCurrentParticles = 0;
 
 /*버퍼 리소스를 생성하는 함수이다. 
 버퍼의 힙 유형에 따라 버퍼 리소스를 생성하고

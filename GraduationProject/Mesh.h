@@ -341,6 +341,7 @@ public:
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 #define MAX_PARTICLES					999
+#define _WITH_QUERY_DATA_SO_STATISTICS
 
 class CParticleMesh : public CMesh
 {
@@ -359,7 +360,13 @@ public:
 	ID3D12Resource* m_pd3dUploadBufferFilledSize = NULL;
 	UINT64* m_pnUploadBufferFilledSize = NULL;
 
+#ifdef _WITH_QUERY_DATA_SO_STATISTICS
+	ID3D12QueryHeap* m_pd3dSOQueryHeap = NULL;
+	ID3D12Resource* m_pd3dSOQueryBuffer = NULL;
+	D3D12_QUERY_DATA_SO_STATISTICS* m_pd3dSOQueryDataStatistics = NULL;
+#else
 	ID3D12Resource* m_pd3dReadBackBufferFilledSize = NULL;
+#endif
 
 
 	D3D12_STREAM_OUTPUT_BUFFER_VIEW		m_d3dStreamOutputBufferView;
