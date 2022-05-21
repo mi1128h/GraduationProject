@@ -1735,7 +1735,8 @@ void CParticleMesh::Render(ID3D12GraphicsCommandList* pd3dCommandList, int nSubS
 		D3D12_STREAM_OUTPUT_BUFFER_VIEW pStreamOutputBufferViews[1] = { m_d3dStreamOutputBufferView };
 		pd3dCommandList->SOSetTargets(0, 1, pStreamOutputBufferViews);
 
-		CMesh::Render(pd3dCommandList, nSubSet);
+		Render(pd3dCommandList);
+		//CMesh::Render(pd3dCommandList, nSubSet);
 
 		::SynchronizeResourceTransition(pd3dCommandList, m_pd3dDefaultBufferFilledSize, D3D12_RESOURCE_STATE_STREAM_OUT, D3D12_RESOURCE_STATE_COPY_SOURCE);
 		::SynchronizeResourceTransition(pd3dCommandList, m_pd3dStreamOutputBuffer, D3D12_RESOURCE_STATE_STREAM_OUT, D3D12_RESOURCE_STATE_COPY_SOURCE);
@@ -1751,8 +1752,8 @@ void CParticleMesh::Render(ID3D12GraphicsCommandList* pd3dCommandList, int nSubS
 	else if (nPipelineState == 1)
 	{
 		pd3dCommandList->SOSetTargets(0, 1, NULL);
-
-		CMesh::Render(pd3dCommandList, nSubSet);
+		Render(pd3dCommandList);
+		//CMesh::Render(pd3dCommandList, nSubSet);
 	}
 }
 
@@ -1766,4 +1767,11 @@ void CParticleMesh::OnPostRender(ID3D12GraphicsCommandList* pd3dCommandList, voi
 		m_pd3dReadBackBufferFilledSize->Unmap(0, NULL);
 		if ((m_nVertices == 0) || (m_nVertices >= MAX_PARTICLES)) m_bStart = true;
 	}
+}
+
+void CParticleMesh::Render(ID3D12GraphicsCommandList* pd3dCommandList)
+{
+	pd3dCommandList->IASetPrimitiveTopology(m_d3dPrimitiveTopology);
+	pd3dCommandList->IASetVertexBuffers(m_nSlot, 1, &m_d3dPositionBufferView);
+	pd3dCommandList->DrawInstanced(m_nVertices, 1, m_nOffset, 0);
 }

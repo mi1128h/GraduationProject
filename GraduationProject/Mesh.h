@@ -369,5 +369,6 @@ public:
 
 	virtual void OnPreRender(ID3D12GraphicsCommandList* pd3dCommandList, void* pContext, int nPipelineState = 0);
 	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, int nSubSet, int nPipelineState = 0);
+	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList);
 	virtual void OnPostRender(ID3D12GraphicsCommandList* pd3dCommandList, void* pContext, int nPipelineState = 0);
 };
