@@ -354,7 +354,7 @@ void CScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* p
 	m_pd3dGraphicsRootSignature = CreateGraphicsRootSignature(pd3dDevice);
 	m_pd3dComputeRootSignature = CreateComputeRootSignature(pd3dDevice);
 
-	CreateCbvSrvUavDescriptorHeaps(pd3dDevice, 0, 30,1); //Gunship(2), Player:Mi24(1), Angrybot()
+	CreateCbvSrvUavDescriptorHeaps(pd3dDevice, 0, 300,1); //Gunship(2), Player:Mi24(1), Angrybot()
 	CMaterial::PrepareShaders(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 
 	BuildLightsAndMaterials();
