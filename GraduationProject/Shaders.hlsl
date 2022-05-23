@@ -664,19 +664,23 @@ void GetPositions(float3 position, float2 f2Size, out float3 pf3Positions[8])
 [maxvertexcount(9)]
 void GSParticleStreamOutput(point VS_PARTICLE_INPUT input[1], inout PointStream<VS_PARTICLE_INPUT> output)
 {
-	input[0].age.x += gfElapsedTime;
 	VS_PARTICLE_INPUT particle = input[0];
-	if (particle.type == PARTICLE_TYPE_EMITTER)
+
+	particle.age.x += gfElapsedTime;
+	if (particle.age.x <= particle.age.y)
 	{
-		particle.color = float3(1.0f, 0.0f, 0.0f);
-		output.Append(particle);
-
-		float4 f4Random = gRandomBuffer.Load(int(fmod(gfCurrentTime - floor(gfCurrentTime) * 1000.0f, 1000.0f)));
-
-		if (particle.age.x > 0.005f)
+		if (particle.type == PARTICLE_TYPE_EMITTER)
 		{
+			particle.color = float3(1.0f, 0.0f, 0.0f);
+			//			particle.age.x = 0.0f;
+
+			output.Append(particle);
+
+			//		float4 f4Random = gRandomBuffer.Load(uint(gfCurrentTime * 1000.0f) % 1000);
+			float4 f4Random = gRandomBuffer.Load(int(fmod(gfCurrentTime - floor(gfCurrentTime) * 1000.0f, 1000.0f)));
+
 			float3 pf3Positions[8];
-			GetPositions(particle.position, float2(5.5, 6.3f), pf3Positions);
+			GetPositions(particle.position, float2(particle.size.x * 1.25f, particle.size.x * 1.25f), pf3Positions);
 
 			particle.color = float3(0.0f, 0.0f, 1.0f);
 			particle.age.x = 0.0f;
@@ -685,14 +689,21 @@ void GSParticleStreamOutput(point VS_PARTICLE_INPUT input[1], inout PointStream<
 			{
 				particle.type = (j >= 4) ? PARTICLE_TYPE_EMITTER : PARTICLE_TYPE_FLARE;
 				particle.position = pf3Positions[j].xyz;
-				particle.age.y = (particle.type == PARTICLE_TYPE_EMITTER) ? 0.25f : 4.0f;
+				particle.velocity = float3(0.0f, particle.size.x * particle.age.y * 4.0f, 0.0f) * 2.0f;
+				particle.acceleration = float3(0.0f, 250.125f, 0.0f) * abs(f4Random.x);
+				particle.age.y = (particle.type == PARTICLE_TYPE_EMITTER) ? 0.25f : 1.5f + (abs(f4Random.w) * 0.75f * abs(j - 4));
+				//				particle.age.y = 7.5f;
+
 				output.Append(particle);
 			}
 		}
-	}
-	else
-	{
-		if (particle.age.x < particle.age.y) output.Append(particle);
+		else
+		{
+			particle.color = GetParticleColor(particle.age.x, particle.age.y);
+			particle.position += (0.5f * particle.acceleration * gfElapsedTime * gfElapsedTime) + (particle.velocity * gfElapsedTime);
+
+			output.Append(particle);
+		}
 	}
 }
 
@@ -708,6 +719,7 @@ struct GS_PARTICLE_OUTPUT
 	float2 uv : TEXCOORD;
 	float2 age : AGELIFETIME; //(Age, Lifetime)
 	uint type : PARTICLETYPE;
+	float fogFactor : FOG;
 };
 
 static float2 gf2QuadUVs[4] = { float2(0.0f,1.0f), float2(0.0f,0.0f), float2(1.0f,1.0f), float2(1.0f,0.0f) };
@@ -730,6 +742,9 @@ void GSParticleDraw(point VS_PARTICLE_INPUT input[1], inout TriangleStream<GS_PA
 
 		outputStream.Append(output);
 	}
+
+	float4 cameraPosition = mul(mul(float4(input[0].position, 1.0f), gmtxGameObject), gmtxView);
+	output.fogFactor = GetFogFactor(cameraPosition);
 }
 
 Texture2D<float4> gtxtParticleTexture : register(t13);
@@ -737,6 +752,7 @@ Texture2D<float4> gtxtParticleTexture : register(t13);
 PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSParticleDraw(GS_PARTICLE_OUTPUT input) : SV_TARGET
 {
 	float4 cColor = gtxtParticleTexture.Sample(gSamplerState, input.uv);
+	//cColor = input.fogFactor * cColor + (1.0f - input.fogFactor) * gcFogColor;
 
 	PS_MULTIPLE_RENDER_TARGETS_OUTPUT output;
 	output.f4Scene = output.f4Color = cColor;
