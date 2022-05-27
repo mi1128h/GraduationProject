@@ -387,32 +387,16 @@ void CScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* p
 
 	////////
 
-	float fxPitch = 800.0f * 3.5f;
-	float fzPitch = 800.0f * 3.5f;
-
-	float fTerrainWidth = m_pTerrain->GetWidth();
-	float fTerrainLength = m_pTerrain->GetLength();
-
-	int xObjects = int(fTerrainWidth / fxPitch);
-	int zObjects = int(fTerrainLength / fzPitch);
-	m_nParticleObjects = (xObjects * zObjects);
+	m_nParticleObjects = 1;
 
 	m_ppParticleObjects = new CParticleObject * [m_nParticleObjects];
 
 	XMFLOAT3 xmf3RotateAxis, xmf3SurfaceNormal;
 	CParticleObject* pRotatingObject = NULL;
-	for (int i = 0, x = 0; x < xObjects; x++)
-	{
-		for (int z = 0; z < zObjects; z++)
-		{
-			float xPosition = x * fxPitch;
-			float zPosition = z * fzPitch;
-			float fHeight = m_pTerrain->GetHeight(xPosition, zPosition);
-			pRotatingObject = new CParticleObject(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, XMFLOAT3(xPosition, fHeight, zPosition), XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(1.0f, 0.0f, 0.0f), XMFLOAT2(150.0f, 150.0f), 15.0f, MAX_PARTICLES);
-			m_ppParticleObjects[i++] = pRotatingObject;
-		}
-	}
-
+	float x = 974.0f, z = 1313.0f;
+	float fHeight = m_pTerrain->GetHeight(x * 10, z * 10);
+	pRotatingObject = new CParticleObject(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, XMFLOAT3(x*10, fHeight, z*10), XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(1.0f, 0.0f, 0.0f), XMFLOAT2(15.0f, 15.0f), 15.0f, MAX_PARTICLES);
+	m_ppParticleObjects[0] = pRotatingObject;
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 }
 

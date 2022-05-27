@@ -728,8 +728,8 @@ static float2 gf2QuadUVs[4] = { float2(0.0f,1.0f), float2(0.0f,0.0f), float2(1.0
 void GSParticleDraw(point VS_PARTICLE_INPUT input[1], inout TriangleStream<GS_PARTICLE_OUTPUT> outputStream)
 {
 	float4 pVertices[4];
-	//	GetBillboardCorners(input[0].position, input[0].size * 0.5f, pVertices);
-	GetBillboardCorners(mul(float4(input[0].position, 1.0f), gmtxGameObject).xyz, input[0].size * 0.5f, pVertices);
+	GetBillboardCorners(input[0].position, input[0].size * 0.5f, pVertices);
+	//GetBillboardCorners(mul(float4(input[0].position, 1.0f), gmtxGameObject).xyz, input[0].size * 0.5f, pVertices);
 
 	GS_PARTICLE_OUTPUT output = (GS_PARTICLE_OUTPUT)0;
 	output.color = input[0].color;
@@ -742,16 +742,15 @@ void GSParticleDraw(point VS_PARTICLE_INPUT input[1], inout TriangleStream<GS_PA
 
 		outputStream.Append(output);
 	}
-
-	float4 cameraPosition = mul(mul(float4(input[0].position, 1.0f), gmtxGameObject), gmtxView);
-	output.fogFactor = GetFogFactor(cameraPosition);
 }
 
 Texture2D<float4> gtxtParticleTexture : register(t13);
 
 PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSParticleDraw(GS_PARTICLE_OUTPUT input) : SV_TARGET
 {
-	float4 cColor = gtxtParticleTexture.Sample(gSamplerState, input.uv);
+	float4 cColor = float4(1.0f,0.0f,0.0f,1.0f);
+
+	//float4 cColor = gtxtParticleTexture.Sample(gSamplerState, input.uv);
 	//cColor = input.fogFactor * cColor + (1.0f - input.fogFactor) * gcFogColor;
 
 	PS_MULTIPLE_RENDER_TARGETS_OUTPUT output;
