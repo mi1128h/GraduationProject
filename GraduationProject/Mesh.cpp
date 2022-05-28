@@ -1650,7 +1650,7 @@ CNavMesh::CNavMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dComm
 		}
 	}
 
-	m_d3dPrimitiveTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP;
+	m_d3dPrimitiveTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 
 	m_xmf3Scale = xmf3Scale;
 
@@ -1660,7 +1660,8 @@ CNavMesh::CNavMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dComm
 	for (int i = 0; i < m_nVertices; ++i) {
 		meshInfo >> s >> x >> y >> z;
 		if (s.compare("v") != 0) break;
-		m_pxmf3Positions[i] = XMFLOAT3((x * m_xmf3Scale.x), (y * m_xmf3Scale.y), (z * m_xmf3Scale.z));
+		//m_pxmf3Positions[i] = XMFLOAT3((x * m_xmf3Scale.x), 100, (z * m_xmf3Scale.z));
+		m_pxmf3Positions[i] = XMFLOAT3(x, y, z);
 	}
 
 	m_pd3dPositionBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList, m_pxmf3Positions, sizeof(XMFLOAT3) * m_nVertices, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, &m_pd3dPositionUploadBuffer);
@@ -1688,12 +1689,12 @@ CNavMesh::CNavMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dComm
 		}
 	}
 
-	for (int i = 0; i < m_pnSubSetIndices[0]; ++i) {
+	for (int i = 0; i < m_pnSubSetIndices[0];) {
 		meshInfo >> s >> x >> y >> z;
 		if (s.compare("f") != 0) break;
-		m_ppnSubSetIndices[0][i] = x;
-		m_ppnSubSetIndices[0][i + 1] = y;
-		m_ppnSubSetIndices[0][i + 2] = z;
+		m_ppnSubSetIndices[0][i++] = x - 1;
+		m_ppnSubSetIndices[0][i++] = y - 1;
+		m_ppnSubSetIndices[0][i++] = z - 1;
 	}
 
 	m_ppd3dSubSetIndexBuffers[0] = ::CreateBufferResource(pd3dDevice, pd3dCommandList, m_ppnSubSetIndices[0], sizeof(UINT) * m_pnSubSetIndices[0], D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_INDEX_BUFFER, &m_ppd3dSubSetIndexUploadBuffers[0]);
