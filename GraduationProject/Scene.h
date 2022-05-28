@@ -128,6 +128,9 @@ public:
 	CPlayer* m_pPlayer = NULL;
 
 	CHeightMapTerrain* m_pTerrain = NULL;
+
+	CNavMesh* m_pNavMesh = NULL;
+
 	CShader** m_ppShaders = NULL;
 	int	m_nShaders = 0;
 

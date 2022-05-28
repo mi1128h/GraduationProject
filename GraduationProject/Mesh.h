@@ -336,3 +336,15 @@ public:
 	virtual void OnPreRender(ID3D12GraphicsCommandList* pd3dCommandList, void* pContext);
 	virtual void UpdateBoundingTransform(CCollision* pCollision, XMFLOAT4X4& xmf4x4World);
 };
+
+class CNavMesh : public CMesh
+{
+protected:
+	XMFLOAT3						m_xmf3Scale;
+
+public:
+	CNavMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, XMFLOAT3 xmf3Scale = XMFLOAT3(1.0f, 1.0f, 1.0f));
+	virtual ~CNavMesh();
+
+	XMFLOAT3 GetScale() { return(m_xmf3Scale); }
+};
