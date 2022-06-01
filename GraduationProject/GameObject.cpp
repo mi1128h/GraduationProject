@@ -1467,7 +1467,7 @@ bool CMonsterObject::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 
 CBossMonster::CBossMonster(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, void* pContext, int nMeshes)
 {
-	CLoadedModelInfo* pBossModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/DragonUsurperMesh.bin", NULL);
+	CLoadedModelInfo* pBossModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/Dragon.bin", NULL);
 	SetChild(pBossModel->m_pModelRootObject, true);
 
 	CTexture* pAnimationTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
@@ -1486,7 +1486,7 @@ CBossMonster::CBossMonster(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* 
 	m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, track_name::length, pBossModel);
 
 	m_pSkinnedAnimationController->SetCurrentTrackNum(track_name::idle01);
-	bool bTrackAnimType[track_name::length] = { false, false, false, false, false, false, false, false, false, false, false };
+	bool bTrackAnimType[track_name::length] = { true, true, true, true, true, true, true, true, true, true, true };
 	m_pSkinnedAnimationController->SetAnimationTracks(bTrackAnimType);
 
 	bool bAnimType[track_name::length] = { false, false, false, false, false, false, true, false, true, false, false };
