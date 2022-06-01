@@ -127,6 +127,8 @@ public:
 
 	CPlayer* m_pPlayer = NULL;
 
+	CBossMonster* m_pBoss = NULL;
+
 	CHeightMapTerrain* m_pTerrain = NULL;
 
 	CNavMesh* m_pNavMesh = NULL;

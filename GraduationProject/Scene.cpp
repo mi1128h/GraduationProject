@@ -354,6 +354,7 @@ void CScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* p
 	pMonster->SetObjectCollision(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 	_factory.emplace_back(pMonster);
 
+	m_pBoss = new CBossMonster(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, m_pTerrain);
 
 	//////
 	
@@ -745,6 +746,8 @@ void CScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera
 	if (m_pNavMesh) m_pNavMesh->Render(pd3dCommandList, 0);
 
 	for (auto& factory : _factory) factory->Render(pd3dCommandList, pCamera);
+
+	m_pBoss->Render(pd3dCommandList, pCamera);
 
 	for (int i = 0; i < m_nShaders; i++)
 	{

@@ -1464,3 +1464,38 @@ bool CMonsterObject::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 	}
 	return(false);
 }
+
+CBossMonster::CBossMonster(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, void* pContext, int nMeshes)
+{
+	CLoadedModelInfo* pBossModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/DragonUsurperMesh.bin", NULL);
+	SetChild(pBossModel->m_pModelRootObject, true);
+
+	CTexture* pAnimationTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
+	pAnimationTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Model/Texture/Dragon.dds", 0);
+	CScene::CreateShaderResourceViews(pd3dDevice, pAnimationTexture, Signature::Graphics::animation_diffuse, true);
+	m_pTexture = pAnimationTexture;
+
+	CreateShaderVariables(pd3dDevice, pd3dCommandList);
+
+	SetPosition(9800, 1, 29180);
+
+	CHeightMapTerrain* pTerrain = (CHeightMapTerrain*)pContext;
+	SetUpdatedContext(pTerrain);
+
+	//
+	m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, track_name::length, pBossModel);
+
+	m_pSkinnedAnimationController->SetCurrentTrackNum(track_name::idle01);
+	bool bTrackAnimType[track_name::length] = { false, false, false, false, false, false, false, false, false, false, false };
+	m_pSkinnedAnimationController->SetAnimationTracks(bTrackAnimType);
+
+	bool bAnimType[track_name::length] = { false, false, false, false, false, false, true, false, true, false, false };
+	m_pSkinnedAnimationController->SetAnimationTypes(bAnimType);
+	m_pSkinnedAnimationController->SetIdleNum(track_name::idle01);
+
+	if (pBossModel) delete pBossModel;
+}
+
+CBossMonster::~CBossMonster()
+{
+}

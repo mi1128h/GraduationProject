@@ -504,3 +504,26 @@ public:
 	void MonsterDead();
 	void DecreaseHp(float val);
 };
+
+class CBossMonster : public CMonsterObject
+{
+public:
+	enum track_name
+	{
+		attackFlame,
+		attackHand,
+		attackMouth,
+		Defend,
+		Die,
+		FlyFlame,
+		FlyIdle,
+		getHit,
+		idle01,
+		Land,
+		Scream,
+		length
+	};
+
+	CBossMonster(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, void* pContext, int nMeshes=1);
+	virtual ~CBossMonster();
+};
