@@ -651,14 +651,23 @@ void GetPositions(float3 position, float2 f2Size, out float3 pf3Positions[8])
 
 	float3 f3Extent = normalize(float3(1.0f, 1.0f, 1.0f));
 
-	pf3Positions[0] = position + float3(-f2Size.x / 0.8f, 0.0f, -f2Size.y);
-	pf3Positions[1] = position + float3(-f2Size.x, 0.0f, +f2Size.y);
-	pf3Positions[2] = position + float3(+f2Size.x, 0.0f, -f2Size.y / 0.7f);
-	pf3Positions[3] = position + float3(+f2Size.x, 0.0f, +f2Size.y);
-	pf3Positions[4] = position + float3(-f2Size.x, 0.0f, 0.0f);
-	pf3Positions[5] = position + float3(+f2Size.x / 0.9f, 0.0f, 0.0f);
-	pf3Positions[6] = position + float3(0.0f, 0.0f, +f2Size.y);
-	pf3Positions[7] = position + float3(0.0f, 0.0f, -f2Size.y);
+	//pf3Positions[0] = position + float3(-f2Size.x / 0.8f, 0.0f, -f2Size.y);
+	//pf3Positions[1] = position + float3(-f2Size.x, 0.0f, +f2Size.y);
+	//pf3Positions[2] = position + float3(+f2Size.x, 0.0f, -f2Size.y / 0.7f);
+	//pf3Positions[3] = position + float3(+f2Size.x, 0.0f, +f2Size.y);
+	//pf3Positions[4] = position + float3(-f2Size.x, 0.0f, 0.0f);
+	//pf3Positions[5] = position + float3(+f2Size.x / 0.9f, 0.0f, 0.0f);
+	//pf3Positions[6] = position + float3(0.0f, 0.0f, +f2Size.y);
+	//pf3Positions[7] = position + float3(0.0f, 0.0f, -f2Size.y);
+
+	pf3Positions[0] = position;
+	pf3Positions[1] = position;
+	pf3Positions[2] = position;
+	pf3Positions[3] = position;
+	pf3Positions[4] = position;
+	pf3Positions[5] = position;
+	pf3Positions[6] = position;
+	pf3Positions[7] = position;
 }
 
 [maxvertexcount(9)]
@@ -690,7 +699,7 @@ void GSParticleStreamOutput(point VS_PARTICLE_INPUT input[1], inout PointStream<
 				particle.type = (j >= 4) ? PARTICLE_TYPE_EMITTER : PARTICLE_TYPE_FLARE;
 				particle.position = pf3Positions[j].xyz;
 				particle.velocity = float3(0.0f, particle.size.x * particle.age.y * 4.0f, 0.0f) * 2.0f;
-				particle.acceleration = float3(0.0f, 250.125f, 0.0f) * abs(f4Random.x);
+				particle.acceleration = float3(0.0f, 250.0f, 0.0f) * abs(f4Random.x);
 				particle.age.y = (particle.type == PARTICLE_TYPE_EMITTER) ? 0.25f : 1.5f + (abs(f4Random.w) * 0.75f * abs(j - 4));
 				//				particle.age.y = 7.5f;
 
