@@ -653,9 +653,10 @@ void GetPositions(float3 position, float2 f2Size, out float3 pf3Positions[8])
 
 	for (int i = 0; i < 8; ++i)
 	{
-		//float4 f4Random = gRandomBuffer.Load(int(fmod(gfCurrentTime - floor(gfCurrentTime) * 1000.0f, 1000.0f)));
-		//pf3Positions[i] = position + float3(100.0f, 0.0f, 100.0f);
-		pf3Positions[i] = position;
+		float4 f4Random = gRandomBuffer.Load(uint(gfCurrentTime * 1000.0f) % 1000);
+		//pf3Positions[i] = position;
+		pf3Positions[i] = float3(gmtxGameObject._41, gmtxGameObject._42, gmtxGameObject._43);
+		pf3Positions[i] += f4Random.xyz;
 	}
 }
 
@@ -688,9 +689,12 @@ void GSParticleStreamOutput(point VS_PARTICLE_INPUT input[1], inout PointStream<
 			{
 				particle.type = (j >= 4) ? PARTICLE_TYPE_EMITTER : PARTICLE_TYPE_FLARE;
 				particle.position = pf3Positions[j].xyz;
+				//particle.velocity = float3(particle.size.x * particle.age.y * 4.0f
+				//	, particle.size.x * particle.age.y * 4.0f
+				//	, particle.size.x * particle.age.y * 4.0f) * 100.0f;
 				particle.velocity = float3(particle.size.x * particle.age.y * 4.0f
 					, particle.size.x * particle.age.y * 4.0f
-					, particle.size.x * particle.age.y * 4.0f) * 100.0f;
+					, particle.size.x * particle.age.y * 4.0f) * 0.0f;
 				particle.acceleration = float3(f4Random.x, f4Random.y, f4Random.z);
 				particle.age.y = (particle.type == PARTICLE_TYPE_EMITTER) ? 0.25f : 1.5f + (abs(f4Random.w) * 0.75f * abs(j - 4));
 				//particle.age.y = 7.5f;

@@ -1523,7 +1523,8 @@ CParticleObject::CParticleObject(ID3D12Device* pd3dDevice, ID3D12GraphicsCommand
 	srand((unsigned)time(NULL));
 
 	XMFLOAT4* pxmf4RandomValues = new XMFLOAT4[1000];
-	for (int i = 0; i < 1000; i++) pxmf4RandomValues[i] = XMFLOAT4(RandomValue(-1.0f, 1.0f), RandomValue(-1.0f, 1.0f), RandomValue(-1.0f, 1.0f), RandomValue(0.0f, 1.0f));
+	for (int i = 0; i < 1000; i++) pxmf4RandomValues[i] =
+		XMFLOAT4(RandomValue(-100.0f, 100.0f), RandomValue(-100.0f, 100.0f), RandomValue(-100.0f, 100.0f), RandomValue(0.0f, 1.0f));
 
 	m_pRandowmValueTexture = new CTexture(1, RESOURCE_BUFFER, 0, 1, 0, 0);
 	m_pRandowmValueTexture->CreateBuffer(pd3dDevice, pd3dCommandList, pxmf4RandomValues, 1000, sizeof(XMFLOAT4), DXGI_FORMAT_R32G32B32A32_FLOAT, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_GENERIC_READ, 0);
@@ -1534,12 +1535,13 @@ CParticleObject::CParticleObject(ID3D12Device* pd3dDevice, ID3D12GraphicsCommand
 	pShader->CreateGraphicsPipelineState(pd3dDevice, pd3dGraphicsRootSignature, 0);
 	pShader->CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
-	// 
 	CScene::CreateShaderResourceViews(pd3dDevice, pParticleTexture, Signature::Graphics::particle_texture,true);
 	CScene::CreateShaderResourceViews(pd3dDevice, m_pRandowmValueTexture, Signature::Graphics::particle_buffer,true,true);
 
 	pMaterial->SetShader(pShader);
 	SetMaterial(0,pMaterial);
+
+	SetPosition(xmf3Position);
 }
 
 CParticleObject::~CParticleObject()
@@ -1573,7 +1575,7 @@ void CParticleObject::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera
 		if (m_pRandowmValueTexture) m_pRandowmValueTexture->UpdateGraphicsShaderVariables(pd3dCommandList);
 	}
 
-	UpdateShaderVariables(pd3dCommandList);
+	UpdateShaderVariable(pd3dCommandList,&m_xmf4x4World);
 
 	m_pMesh->OnPreRender(pd3dCommandList,0, 0); //Stream Output
 	m_pMesh->Render(pd3dCommandList,0, 0); //Stream Output
