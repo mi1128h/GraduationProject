@@ -97,7 +97,7 @@ CAnimationSet::CAnimationSet(float fStartTime, float fEndTime, char* pstrName)
 	m_fEndTime = fEndTime;
 	m_fLength = fEndTime - fStartTime;
 
-	strcpy_s(m_pstrAnimationSetName, 64, pstrName);
+	strcpy_s(m_pstrAnimationSetName, 256, pstrName);
 }
 
 CAnimationSet::~CAnimationSet()

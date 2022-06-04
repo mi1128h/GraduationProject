@@ -66,7 +66,7 @@ public:
 	~CAnimationSet();
 
 public:
-	char							m_pstrAnimationSetName[64];
+	char							m_pstrAnimationSetName[256];
 
 	int								m_nAnimationLayers = 0;
 	CAnimationLayer* m_pAnimationLayers = NULL;
