@@ -704,13 +704,15 @@ void CScene::CreateUnorderedAccessView(ID3D12Device* pd3dDevice, CTexture* pText
 	}
 }
 
-void CScene::AnimateObjects(float fTimeElapsed, CCamera* pCamrea)
+void CScene::AnimateObjects(float fTimeElapsed, CCamera* pCamera)
 {
 	m_fElapsedTime = fTimeElapsed;
 
-	for (auto& factory :_factory) factory->AnimateObjects(fTimeElapsed, pCamrea);
+	for (auto& factory :_factory) factory->AnimateObjects(fTimeElapsed, pCamera);
 
-	for (int i = 0; i < m_nShaders; i++) m_ppShaders[i]->AnimateObjects(fTimeElapsed, pCamrea);
+	m_pBoss->Animate(fTimeElapsed, pCamera);
+
+	for (int i = 0; i < m_nShaders; i++) m_ppShaders[i]->AnimateObjects(fTimeElapsed, pCamera);
 	if (m_pLights) {}
 	
 	CheckMonsterFindTarget();

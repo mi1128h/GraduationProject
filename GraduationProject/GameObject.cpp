@@ -1486,10 +1486,10 @@ CBossMonster::CBossMonster(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* 
 	//
 	m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, track_name::length, pBossModel);
 
-	m_pSkinnedAnimationController->SetCurrentTrackNum(track_name::FlyIdle);
+	m_pSkinnedAnimationController->SetCurrentTrackNum(track_name::idle01);
 	bool bTrackAnimType[track_name::length] = { true, true, true, true, true, true, true, true, true, true, true };
 	m_pSkinnedAnimationController->SetAnimationTracks(bTrackAnimType);
-
+	
 	bool bAnimType[track_name::length] = { false, false, false, false, false, false, true, false, true, false, false };
 	m_pSkinnedAnimationController->SetAnimationTypes(bAnimType);
 	m_pSkinnedAnimationController->SetIdleNum(track_name::idle01);
