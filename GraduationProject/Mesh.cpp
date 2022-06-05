@@ -1802,7 +1802,12 @@ void CParticleMesh::OnPostRender(ID3D12GraphicsCommandList* pd3dCommandList, voi
 		_stprintf_s(pstrDebug, 256, _T("Stream Output Vertices = %d\n"), m_nVertices);
 		OutputDebugString(pstrDebug);
 #endif
-		if (m_nVertices == 0) m_bStart = true;
+		if (m_nVertices == 0) {
+			m_bStart = true;
+			::gnPatricleMode = 0x00;
+		}
+		if (m_nVertices >= MAX_PARTICLES) ::gnPatricleMode = 0x30;
+		//else ::gnPatricleMode = 0x00;
 		//if ((m_nVertices == 0) || (m_nVertices >= MAX_PARTICLES)) m_bStart = true;
 	}
 }
