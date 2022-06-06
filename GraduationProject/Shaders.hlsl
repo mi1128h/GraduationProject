@@ -661,9 +661,11 @@ void GetPositions(float3 position, float2 f2Size, out float3 pf3Positions[8])
 	}
 }
 
+
 [maxvertexcount(9)]
 void GSParticleStreamOutput(point VS_PARTICLE_INPUT input[1], inout PointStream<VS_PARTICLE_INPUT> output)
 {
+	static int index = 0;
 	VS_PARTICLE_INPUT particle = input[0];
 
 	if (gnParticleMode & PARTICLE_EXPLOSION) particle.age.x += gfElapsedTime;
@@ -675,13 +677,14 @@ void GSParticleStreamOutput(point VS_PARTICLE_INPUT input[1], inout PointStream<
 			particle.color = GetParticleColor(particle.age.x, particle.age.y);
 			particle.position += (0.5f * particle.acceleration * particle.velocity  * gfElapsedTime);
 
+			++index;
 			output.Append(particle);
 		}
 		else
 		{
 			particle.color = float3(1.0f, 0.0f, 0.0f);
 			//			particle.age.x = 0.0f;
-
+			++index;
 			output.Append(particle);
 
 			//float4 4fRandom = gRandomBuffer.Load(int(fmod(gfCurrentTime, 1000.0f)));
@@ -695,7 +698,9 @@ void GSParticleStreamOutput(point VS_PARTICLE_INPUT input[1], inout PointStream<
 
 			for (int j = 0; j < 8; j++)
 			{
-				float4 f4Random = gRandomBuffer.Load(uint(gfCurrentTime * (1000.0f) + j) % 1000 );
+				//float4 f4Random = gRandomBuffer.Load(uint(index* 10 * gfElapsedTime * 1000.0f) % 1000);
+
+				float4 f4Random = gRandomBuffer.Load(uint(index * gfCurrentTime * 1000.0f) % 1000 );
 				particle.type = (j >= 4) ? PARTICLE_TYPE_EMITTER : PARTICLE_TYPE_FLARE;
 				particle.position = pf3Positions[j].xyz;
 				particle.velocity = float3(
@@ -705,6 +710,8 @@ void GSParticleStreamOutput(point VS_PARTICLE_INPUT input[1], inout PointStream<
 				particle.acceleration = float3(f4Random.x, f4Random.y, f4Random.z);
 				//particle.age.y = (particle.type == PARTICLE_TYPE_EMITTER) ? 0.25f : .5f + 0.75f * abs(3);
 				particle.age.y = 3.5f;
+
+				++index;
 
 				output.Append(particle);
 			}
