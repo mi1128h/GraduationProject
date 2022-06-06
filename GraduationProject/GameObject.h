@@ -538,6 +538,13 @@ private:
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
+
+struct CB_PARTICLE_INFO
+{
+	float size_x;
+	float size_y;
+};
+
 class CParticleObject : public CGameObject
 {
 public:
@@ -549,6 +556,8 @@ public:
 	void ReleaseUploadBuffers();
 
 	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
+	virtual void CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList);
+	virtual void UpdateShaderVariable(ID3D12GraphicsCommandList* pd3dCommandList, XMFLOAT4X4* pxmf4x4World);
 
 	ID3D12CommandAllocator* m_pd3dCommandAllocator = NULL;
 	ID3D12GraphicsCommandList* m_pd3dCommandList = NULL;
@@ -556,4 +565,9 @@ public:
 	ID3D12Fence* m_pd3dFence = NULL;
 	UINT64							m_nFenceValue = 0;
 	HANDLE							m_hFenceEvent;
+	XMFLOAT2 m_size;
+
+private:
+	ID3D12Resource* m_pd3dcbParticleInfo = NULL;
+	CB_PARTICLE_INFO* m_pcbMappedParticleInfo = NULL;
 };

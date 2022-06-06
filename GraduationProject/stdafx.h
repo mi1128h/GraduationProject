@@ -113,6 +113,7 @@ namespace Signature {
 		animation_diffuse,
 		model_diffuse,
 		hp,
+		particle,
 		particle_texture,
 		particle_buffer,
 		length

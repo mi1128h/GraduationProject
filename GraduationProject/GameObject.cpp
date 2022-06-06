@@ -1531,6 +1531,9 @@ CParticleObject::CParticleObject(ID3D12Device* pd3dDevice, ID3D12GraphicsCommand
 	CParticleMesh* pMesh = new CParticleMesh(pd3dDevice, pd3dCommandList, xmf3Position, xmf3Velocity, xmf3Acceleration, xmf3Color, xmf2Size, fLifetime, nMaxParticles);
 	SetMesh(pMesh);
 
+	m_size.x = xmf2Size.x;
+	m_size.y = xmf2Size.y;
+
 	CTexture* pParticleTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
 	pParticleTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/flare0.dds", 0);
 
@@ -1605,4 +1608,25 @@ void CParticleObject::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera
 
 	m_pMesh->OnPreRender(pd3dCommandList,0, 1); //Draw
 	m_pMesh->Render(pd3dCommandList,0, 1); //Draw
+}
+
+void CParticleObject::CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
+{
+	CGameObject::CreateShaderVariables(pd3dDevice, pd3dCommandList);
+
+	UINT ncbElementBytes = ((sizeof(CB_HP_INFO) + 255) & ~255);
+	m_pd3dcbParticleInfo = ::CreateBufferResource(pd3dDevice, pd3dCommandList,
+		NULL, ncbElementBytes, D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
+	m_pd3dcbParticleInfo->Map(0, NULL, (void**)&m_pcbMappedParticleInfo);
+
+}
+
+void CParticleObject::UpdateShaderVariable(ID3D12GraphicsCommandList* pd3dCommandList, XMFLOAT4X4* pxmf4x4World)
+{
+	CGameObject::UpdateShaderVariable(pd3dCommandList, pxmf4x4World);
+
+	m_pcbMappedParticleInfo->size_x = m_size.x;
+	m_pcbMappedParticleInfo->size_y = m_size.y;
+	D3D12_GPU_VIRTUAL_ADDRESS d3dGpuVirtualAddress = m_pd3dcbParticleInfo->GetGPUVirtualAddress();
+	pd3dCommandList->SetGraphicsRootConstantBufferView(Signature::Graphics::particle, d3dGpuVirtualAddress);
 }

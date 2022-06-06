@@ -161,6 +161,11 @@ ID3D12RootSignature* CScene::CreateGraphicsRootSignature(ID3D12Device* pd3dDevic
 	pd3dRootParameters[Signature::Graphics::hp].Descriptor.RegisterSpace = 0;
 	pd3dRootParameters[Signature::Graphics::hp].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
+	pd3dRootParameters[Signature::Graphics::particle].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
+	pd3dRootParameters[Signature::Graphics::particle].Descriptor.ShaderRegister = 10; // particle
+	pd3dRootParameters[Signature::Graphics::particle].Descriptor.RegisterSpace = 0;
+	pd3dRootParameters[Signature::Graphics::particle].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+
 	pd3dRootParameters[Signature::Graphics::texture].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
 	pd3dRootParameters[Signature::Graphics::texture].DescriptorTable.NumDescriptorRanges = 1;
 	pd3dRootParameters[Signature::Graphics::texture].DescriptorTable.pDescriptorRanges = &pd3dDescriptorRanges[Descriptor::Graphics::texture];

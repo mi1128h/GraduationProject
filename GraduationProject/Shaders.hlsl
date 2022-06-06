@@ -609,6 +609,13 @@ struct VS_PARTICLE_INPUT
 	uint type : PARTICLETYPE;
 };
 
+
+cbuffer cbParticleInfo : register(b10)
+{
+	float size_x : packoffset(c0.x);
+	float size_y : packoffset(c0.y);
+};
+
 VS_PARTICLE_INPUT VSParticleStreamOutput(VS_PARTICLE_INPUT input)
 {
 	return(input);
@@ -675,14 +682,17 @@ void GSParticleStreamOutput(point VS_PARTICLE_INPUT input[1], inout PointStream<
 		if (gnParticleMode & PARTICLE_EXPLOSION)
 		{
 			particle.color = GetParticleColor(particle.age.x, particle.age.y);
-			particle.position += (0.5f * particle.acceleration * particle.velocity  * gfElapsedTime);
-
+			
+			if (particle.type == PARTICLE_TYPE_EMITTER) particle.size = float2(size_x * 10.0f, size_y * 10.0f );
+			else particle.position += (0.5f * particle.acceleration * particle.velocity  * gfElapsedTime);
+			
 			++index;
 			output.Append(particle);
 		}
 		else
 		{
 			particle.color = float3(1.0f, 0.0f, 0.0f);
+			particle.size = float2(size_x, size_y);
 			//			particle.age.x = 0.0f;
 			++index;
 			output.Append(particle);
@@ -700,15 +710,18 @@ void GSParticleStreamOutput(point VS_PARTICLE_INPUT input[1], inout PointStream<
 			{
 				//float4 f4Random = gRandomBuffer.Load(uint(index* 10 * gfElapsedTime * 1000.0f) % 1000);
 
-				float4 f4Random = gRandomBuffer.Load(uint(index * gfCurrentTime * 1000.0f) % 1000 );
-				particle.type = (j >= 4) ? PARTICLE_TYPE_EMITTER : PARTICLE_TYPE_FLARE;
+				float4 f4Random = gRandomBuffer.Load(uint(index * gfCurrentTime * 100.0f) % 1000 );
+				particle.type = (j == 0) ? PARTICLE_TYPE_EMITTER : PARTICLE_TYPE_FLARE;
 				particle.position = pf3Positions[j].xyz;
 				particle.velocity = float3(
 					  particle.size.x * particle.age.y * 4.0f
 					, particle.size.x * particle.age.y * 4.0f
 					, particle.size.x * particle.age.y * 4.0f);
 				particle.acceleration = float3(f4Random.x, f4Random.y, f4Random.z);
+				particle.size = float2(size_x, size_y);
+
 				//particle.age.y = (particle.type == PARTICLE_TYPE_EMITTER) ? 0.25f : .5f + 0.75f * abs(3);
+
 				particle.age.y = 3.5f;
 
 				++index;
