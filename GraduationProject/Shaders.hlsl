@@ -774,7 +774,8 @@ Texture2D<float4> gtxtParticleTexture : register(t13);
 
 PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSParticleDraw(GS_PARTICLE_OUTPUT input) : SV_TARGET
 {
-	float4 cColor = float4(1.0f,0.0f,0.0f,1.0f);
+	float4 cColor = gtxtParticleTexture.Sample(gSamplerState, input.uv);
+	//float4 cColor = float4(1.0f,0.0f,0.0f,1.0f);
 
 	//		cColor.a *= saturate(0.10f + (1.0f - (input.age.x / input.age.y)));
 		//	cColor.rgb *= input.color * (input.age.x / input.age.y);
@@ -785,7 +786,6 @@ PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSParticleDraw(GS_PARTICLE_OUTPUT input) : SV_
 			//	cColor.rgb = 1.0f;
 			//	cColor.b = (input.age.x / input.age.y);
 
-	//float4 cColor = gtxtParticleTexture.Sample(gSamplerState, input.uv);
 	//cColor = input.fogFactor * cColor + (1.0f - input.fogFactor) * gcFogColor;
 
 	PS_MULTIPLE_RENDER_TARGETS_OUTPUT output;
