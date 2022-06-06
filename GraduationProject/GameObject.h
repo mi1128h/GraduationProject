@@ -518,7 +518,7 @@ public:
 		FlyFlame,
 		FlyIdle,
 		getHit,
-		idle01,
+		Idle,
 		Land,
 		Scream,
 		length

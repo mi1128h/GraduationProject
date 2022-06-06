@@ -503,6 +503,7 @@ bool CScene::OnProcessingKeyboardMessage(
 				n++;
 				if (n == CBossMonster::track_name::length) n = 0;
 				m_pBoss->m_pSkinnedAnimationController->SwitchAnimationState(n);
+				m_pBoss->m_pSkinnedAnimationController->SetIdleNum(n);
 				break;
 		}
 		break;
