@@ -683,7 +683,14 @@ void GSParticleStreamOutput(point VS_PARTICLE_INPUT input[1], inout PointStream<
 		{
 			particle.color = GetParticleColor(particle.age.x, particle.age.y);
 			
-			if (particle.type == PARTICLE_TYPE_EMITTER) particle.size = float2(size_x * 10.0f, size_y * 10.0f );
+			if (particle.type == PARTICLE_TYPE_EMITTER)
+			{
+				if (particle.size.x  <= size_x * 10.0f)
+				{
+					float2 size = float2(size_x * 3.5f, size_y*3.5f);
+					particle.size += size  * gfElapsedTime;
+				}
+			}
 			else particle.position += (0.5f * particle.acceleration * particle.velocity  * gfElapsedTime);
 			
 			++index;
