@@ -711,6 +711,7 @@ void CScene::AnimateObjects(float fTimeElapsed, CCamera* pCamera)
 
 	for (auto& factory :_factory) factory->AnimateObjects(fTimeElapsed, pCamera);
 
+	m_pBoss->FindTarget(m_pPlayer);
 	m_pBoss->Animate(fTimeElapsed, pCamera);
 
 	for (int i = 0; i < m_nShaders; i++) m_ppShaders[i]->AnimateObjects(fTimeElapsed, pCamera);

@@ -1353,7 +1353,7 @@ void CMonsterObject::FindTarget(CGameObject* pObject)
 		m_pTargetObject = NULL;
 }
 
-void CMonsterObject::ChaseTarget(float fTimeElapsed)
+void CMonsterObject::ChaseTarget(float fTimeElapsed, bool bMove)
 {
 	if (m_pTargetObject == NULL) return;
 
@@ -1379,9 +1379,11 @@ void CMonsterObject::ChaseTarget(float fTimeElapsed)
 	Rotate(0.0f, fYaw, 0.0f);
 
 	// 전진
+	if (bMove) {
 	float distance = Vector3::Distance(monsterPosition, targetPosition);
 	if (distance > 200.0f)
 		MoveForward(50.0f * fTimeElapsed);
+	}
 }
 
 void CMonsterObject::AttackTarget()
@@ -1427,19 +1429,20 @@ void CMonsterObject::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera*
 
 void CMonsterObject::Animate(float fTimeElapsed, CCamera* pCamera)
 {
-	if (m_fHp > 0) {
-		if (m_pTargetObject != NULL) {
-			if (m_pSkinnedAnimationController->GetCurrentTrackNum() != track_name::attack1 &&
-				m_pSkinnedAnimationController->GetCurrentTrackNum() != track_name::attack2) {
+	int curTrackNum = m_pSkinnedAnimationController->GetCurrentTrackNum();
+	if (GetHp() > 0) {
+		if (GetTarget() != NULL) {
+			if (curTrackNum != track_name::attack1 &&
+				curTrackNum != track_name::attack2) {
 				ChaseTarget(fTimeElapsed);
 			}
-			if (m_pSkinnedAnimationController->GetCurrentTrackNum() == track_name::idle1 ||
-				m_pSkinnedAnimationController->GetCurrentTrackNum() == track_name::idle2) {
+			if (curTrackNum == track_name::idle1 ||
+				curTrackNum == track_name::idle2) {
 				m_pSkinnedAnimationController->SwitchAnimationState(track_name::walk);
 			}
 		}
 		else {
-			if (m_pSkinnedAnimationController->GetCurrentTrackNum() == track_name::walk) {
+			if (curTrackNum == track_name::walk) {
 				m_pSkinnedAnimationController->SwitchAnimationState(track_name::idle1);
 			}
 		}
@@ -1479,6 +1482,8 @@ CBossMonster::CBossMonster(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* 
 
 	SetPosition(9800, 300, 29180);
 	SetScale(0.01, 0.01, 0.01);
+	SetHp(1000);
+	SetDetectionRange(8000);
 
 	CHeightMapTerrain* pTerrain = (CHeightMapTerrain*)pContext;
 	SetUpdatedContext(pTerrain);
@@ -1499,4 +1504,18 @@ CBossMonster::CBossMonster(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* 
 
 CBossMonster::~CBossMonster()
 {
+}
+
+void CBossMonster::Animate(float fTimeElapsed, CCamera* pCamera)
+{
+	int curTrackNum = m_pSkinnedAnimationController->GetCurrentTrackNum();
+	if (GetHp() > 0) {
+		if (GetTarget() != NULL) {
+			ChaseTarget(fTimeElapsed, false);
+		}
+		else {
+			m_pSkinnedAnimationController->SwitchAnimationState(track_name::Idle);
+		}
+	}
+	CGameObject::Animate(fTimeElapsed, pCamera);
 }

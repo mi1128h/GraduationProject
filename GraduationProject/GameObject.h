@@ -487,15 +487,16 @@ public:
 	void SetUpdatedContext(LPVOID pContext) { m_pUpdatedContext = pContext; }
 
 	void FindTarget(CGameObject* pObject);
-	void ChaseTarget(float fTimeElapsed);
+	void ChaseTarget(float fTimeElapsed, bool bMove=true);
 	void AttackTarget();
 
 	void SetDetectionRange(float range) { m_fDetectionRange = range; }
 	void SetHp(float hp) { m_fHp = hp; }
 	void SetDamage(float damage) { m_fDamage = damage; }
 
-	float GetDamage(float val) { return m_fDamage; }
-	float GetHp(float val) { return m_fHp; }
+	float GetDamage() { return m_fDamage; }
+	float GetHp() { return m_fHp; }
+	CGameObject* GetTarget() { return m_pTargetObject; }
 
 	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
 	virtual void Animate(float fTimeElapsed, CCamera* pCamera = NULL);
@@ -524,6 +525,8 @@ public:
 		length
 	};
 
-	CBossMonster(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, void* pContext, int nMeshes=1);
+	CBossMonster(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, void* pContext, int nMeshes = 1);
 	virtual ~CBossMonster();
+
+	virtual void Animate(float fTimeElapsed, CCamera* pCamera = NULL);
 };
