@@ -529,4 +529,7 @@ public:
 	virtual ~CBossMonster();
 
 	virtual void Animate(float fTimeElapsed, CCamera* pCamera = NULL);
+
+private:
+	bool bNoticed = false;
 };

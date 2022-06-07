@@ -1511,7 +1511,13 @@ void CBossMonster::Animate(float fTimeElapsed, CCamera* pCamera)
 	int curTrackNum = m_pSkinnedAnimationController->GetCurrentTrackNum();
 	if (GetHp() > 0) {
 		if (GetTarget() != NULL) {
-			ChaseTarget(fTimeElapsed, false);
+			if (!bNoticed) {
+				bNoticed = true;
+				m_pSkinnedAnimationController->SwitchAnimationState(track_name::Scream);
+			}
+			else {
+				ChaseTarget(fTimeElapsed, false);
+			}
 		}
 		else {
 			m_pSkinnedAnimationController->SwitchAnimationState(track_name::Idle);
