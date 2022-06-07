@@ -32,7 +32,6 @@ cbuffer cbFrameworkInfo : register(b6)
 
 #define DEBUG_TESSELLATION			0x20
 #define DEBUG_BLURRING				0x21
-#define PARTICLE_EXPLOSION			0x30
 
 struct PS_MULTIPLE_RENDER_TARGETS_OUTPUT
 {
@@ -629,11 +628,11 @@ float3 GetParticleColor(float fAge, float fLifetime)
 
 	if (fAge == 0.0f) cColor = float3(0.0f, 1.0f, 0.0f);
 	else if (fLifetime == 0.0f)
-		cColor = float3(1.0f, 1.0f, 0.0f);
+		cColor = float3(0.0f, 0.0f, 0.0f);
 	else
 	{
 		float t = fAge / fLifetime;
-		cColor = lerp(float3(1.0f, 0.0f, 0.0f), float3(0.0f, 0.0f, 1.0f), t * 1.0f);
+		cColor = lerp(float3(1.0f, 0.0f, 0.0f), float3(1.0f, 0.9f, 0.8f), t * 1.0f);
 	}
 
 	return(cColor);
@@ -669,6 +668,9 @@ void GetPositions(float3 position, float2 f2Size, out float3 pf3Positions[8])
 }
 
 
+#define PARTICLE_EXPLOSION			0x30
+#define PARTICLE_FIRST				0x31
+
 [maxvertexcount(9)]
 void GSParticleStreamOutput(point VS_PARTICLE_INPUT input[1], inout PointStream<VS_PARTICLE_INPUT> output)
 {
@@ -685,27 +687,24 @@ void GSParticleStreamOutput(point VS_PARTICLE_INPUT input[1], inout PointStream<
 			
 			if (particle.type == PARTICLE_TYPE_EMITTER)
 			{
-				if (particle.size.x  <= size_x * 10.0f)
+				if (particle.size.x  <= size_x * 12.0f)
 				{
-					float2 size = float2(size_x * 3.5f, size_y*3.5f);
+					float2 size = float2(size_x * 3.5f, size_y*3.5f) * 3.0f;
 					particle.size += size  * gfElapsedTime;
 				}
 			}
 			else particle.position += (0.5f * particle.acceleration * particle.velocity  * gfElapsedTime);
 			
-			++index;
 			output.Append(particle);
 		}
 		else
 		{
 			particle.color = float3(1.0f, 0.0f, 0.0f);
 			particle.size = float2(size_x, size_y);
+			//particle.type = PARTICLE_TYPE_EMITTER;
 			//			particle.age.x = 0.0f;
-			++index;
 			output.Append(particle);
 
-			//float4 4fRandom = gRandomBuffer.Load(int(fmod(gfCurrentTime, 1000.0f)));
-			//float4 f4Random = gRandomBuffer.Load(int(fmod(gfCurrentTime - floor(gfCurrentTime) * 1000.0f, 1000.0f)));
 
 			float3 pf3Positions[8];
 			GetPositions(particle.position, float2(particle.size.x * 1.25f, particle.size.x * 1.25f), pf3Positions);
@@ -715,19 +714,16 @@ void GSParticleStreamOutput(point VS_PARTICLE_INPUT input[1], inout PointStream<
 
 			for (int j = 0; j < 8; j++)
 			{
-				//float4 f4Random = gRandomBuffer.Load(uint(index* 10 * gfElapsedTime * 1000.0f) % 1000);
-
+				//float4 f4Random = gRandomBuffer.Load(uint(index * gfElapsedTime * 10000.0f) % 1000);
 				float4 f4Random = gRandomBuffer.Load(uint(index * gfCurrentTime * 100.0f) % 1000 );
 				particle.type = (j == 0) ? PARTICLE_TYPE_EMITTER : PARTICLE_TYPE_FLARE;
 				particle.position = pf3Positions[j].xyz;
 				particle.velocity = float3(
 					  particle.size.x * particle.age.y * 4.0f
 					, particle.size.x * particle.age.y * 4.0f
-					, particle.size.x * particle.age.y * 4.0f);
+					, particle.size.x * particle.age.y * 4.0f) * 3.0f;
 				particle.acceleration = float3(f4Random.x, f4Random.y, f4Random.z);
 				particle.size = float2(size_x, size_y);
-
-				//particle.age.y = (particle.type == PARTICLE_TYPE_EMITTER) ? 0.25f : .5f + 0.75f * abs(3);
 
 				particle.age.y = 3.5f;
 
