@@ -58,6 +58,7 @@ public:
 	bool OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam);
 
 	void BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList);
+	void BuildUIObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList);
 	void BuildCollisions(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList);
 
 	bool IsGameObject(string& name);
@@ -68,6 +69,7 @@ public:
 	bool ProcessInput(UCHAR* pKeysBuffer);
 	void AnimateObjects(float fTimeElapsed,CCamera* AnimateObjects = NULL);
 	void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
+	void UIRender(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
 
 	bool CheckPlayerByObjectBB(XMFLOAT3 xmf3Shift);
 	bool CheckAABB(BoundingBox A, BoundingBox B, XMFLOAT3 xmf3Shift, bool intersect = false);
@@ -158,6 +160,7 @@ protected:
 	MATERIAL* m_pcbMappedMaterials = NULL;
 	vector<CCollision*> collisions;
 	vector<CFactory*> _factory;
+	CUIFactory* _ui;
 
 public:
 	static ID3D12DescriptorHeap* m_pd3dCbvSrvUavDescriptorHeap;
