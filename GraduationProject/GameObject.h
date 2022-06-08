@@ -531,10 +531,12 @@ public:
 		Idle,
 		Land,
 		Scream,
+		takeOff,
 		length
 	};
 
-	#define FLAME 10.0f
+	#define FLY 40.0f
+	#define FLAME 20.0f
 	#define DEFEND 10.0f
 
 	CBossMonster(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, void* pContext, int nMeshes = 1);
@@ -544,12 +546,15 @@ public:
 	void DoAttackFlame(int curTrackNum);
 	void DoAttackHand(int curTrackNum);
 	void DoAttackMouth(int curTrackNum);
+	void DoTakeOff(int curTrackNum);
 	void DoFlyFlame(int curTrackNum);
 	void DoLand(int curTrackNum);
 	void DoDefend(int curTrackNum);
 
 private:
 	bool bNoticed = false;
+	bool bFlyAttack = false;
+	float FlyCoolDown = FLY;
 	float FlameCoolDown = FLAME;
 	float DefendCoolDown = DEFEND;
 };
