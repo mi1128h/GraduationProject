@@ -42,6 +42,7 @@ public:
 	virtual void BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3dGraphicsRootSignature, ID3D12GraphicsCommandList* pd3dCommandList, void* pContext);
 	void ActiveCannon();
 	void RotateCannon(WPARAM wParam);
+	XMFLOAT3& GetCannonPosition();
 };
 
 class CMonsterFactory : public CFactory

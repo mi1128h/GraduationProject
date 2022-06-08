@@ -531,6 +531,8 @@ bool CScene::OnProcessingKeyboardMessage(
 				break;
 			case VK_SPACE:
 				dynamic_cast<CCannonFactory*>(_factory[1])->ActiveCannon();
+				m_ppParticleObjects[0]->SetActive(false);
+				::gnPatricleMode = 0x00;
 				break;
 			case 'W': case 'A': case 'S': case 'D':
 				dynamic_cast<CCannonFactory*>(_factory[1])->RotateCannon(wParam);
@@ -745,8 +747,10 @@ void CScene::AnimateObjects(float fTimeElapsed, CCamera* pCamrea)
 	m_fElapsedTime = fTimeElapsed;
 
 	for (auto& factory :_factory) factory->AnimateObjects(fTimeElapsed, pCamrea);
-	for (int i = 0; i < m_nParticleObjects; i++) m_ppParticleObjects[i]->Animate(fTimeElapsed, pCamrea);
-
+	for (int i = 0; i < m_nParticleObjects; i++) {
+		m_ppParticleObjects[i]->Animate(fTimeElapsed, pCamrea);
+		m_ppParticleObjects[0]->SetPosition(dynamic_cast<CCannonFactory*>(_factory[1])->GetCannonPosition());
+	}
 	for (int i = 0; i < m_nShaders; i++) m_ppShaders[i]->AnimateObjects(fTimeElapsed, pCamrea);
 	if (m_pLights) {}
 	_ui->AnimateObjects(fTimeElapsed, pCamrea);
