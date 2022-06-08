@@ -534,17 +534,24 @@ public:
 		length
 	};
 
-	#define FLYFLAME 5.0f
+	#define FLAME 10.0f
+	#define DEFEND 10.0f
 
 	CBossMonster(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, void* pContext, int nMeshes = 1);
 	virtual ~CBossMonster();
 
 	virtual void Animate(float fTimeElapsed, CCamera* pCamera = NULL);
-	void DoFlyFlame();
+	void DoAttackFlame(int curTrackNum);
+	void DoAttackHand(int curTrackNum);
+	void DoAttackMouth(int curTrackNum);
+	void DoFlyFlame(int curTrackNum);
+	void DoLand(int curTrackNum);
+	void DoDefend(int curTrackNum);
 
 private:
 	bool bNoticed = false;
-	float flyFlameCoolDown = FLYFLAME;
+	float FlameCoolDown = FLAME;
+	float DefendCoolDown = DEFEND;
 };
 
 struct CB_HP_INFO

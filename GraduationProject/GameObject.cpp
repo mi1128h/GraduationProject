@@ -1509,7 +1509,8 @@ CBossMonster::~CBossMonster()
 void CBossMonster::Animate(float fTimeElapsed, CCamera* pCamera)
 {
 	int curTrackNum = m_pSkinnedAnimationController->GetCurrentTrackNum();
-	flyFlameCoolDown -= fTimeElapsed;
+	FlameCoolDown -= fTimeElapsed;
+	DefendCoolDown -= fTimeElapsed;
 	if (GetHp() > 0) {
 		if (GetTarget() != NULL) {
 			if (!bNoticed) {
@@ -1518,7 +1519,29 @@ void CBossMonster::Animate(float fTimeElapsed, CCamera* pCamera)
 			}
 			else {
 				ChaseTarget(fTimeElapsed, false);
-				DoFlyFlame();
+				int n = rand() % 100;
+				if (curTrackNum == track_name::Idle || curTrackNum == track_name::FlyIdle) {
+					switch (n) {
+					case 0:
+						DoAttackFlame(curTrackNum);
+						break;
+					case 1:
+						DoAttackHand(curTrackNum);
+						break;
+					case 2:
+						DoAttackMouth(curTrackNum);
+						break;
+					case 3:
+						DoFlyFlame(curTrackNum);
+						break;
+					case 4:
+						DoLand(curTrackNum);
+						break;
+					case 5:
+						DoDefend(curTrackNum);
+						break;
+					}
+				}
 			}
 		}
 		else {
@@ -1528,18 +1551,66 @@ void CBossMonster::Animate(float fTimeElapsed, CCamera* pCamera)
 	CGameObject::Animate(fTimeElapsed, pCamera);
 }
 
-void CBossMonster::DoFlyFlame()
+void CBossMonster::DoAttackFlame(int curTrackNum)
 {
-	int curTrackNum = m_pSkinnedAnimationController->GetCurrentTrackNum();
+	if (curTrackNum != track_name::Idle) return;
 
-	if (flyFlameCoolDown > 0) {
+	if (FlameCoolDown > 0) {
+		if (curTrackNum != track_name::attackFlame) return;
+	}
+
+	if (curTrackNum != track_name::attackFlame)
+		m_pSkinnedAnimationController->SwitchAnimationState(track_name::attackFlame);
+	FlameCoolDown = FLAME;
+}
+
+void CBossMonster::DoAttackHand(int curTrackNum)
+{
+	if (curTrackNum != track_name::Idle) return;
+
+	if (curTrackNum != track_name::attackHand)
+		m_pSkinnedAnimationController->SwitchAnimationState(track_name::attackHand);
+}
+
+void CBossMonster::DoAttackMouth(int curTrackNum)
+{
+	if (curTrackNum != track_name::Idle) return;
+
+	if (curTrackNum != track_name::attackMouth)
+		m_pSkinnedAnimationController->SwitchAnimationState(track_name::attackMouth);
+}
+
+void CBossMonster::DoFlyFlame(int curTrackNum)
+{
+	if (FlameCoolDown > 0) {
 		if (curTrackNum != track_name::FlyFlame) return;
 	}
 
 	if (curTrackNum != track_name::FlyFlame)
 		m_pSkinnedAnimationController->SwitchAnimationState(track_name::FlyFlame);
 	m_pSkinnedAnimationController->SetIdleNum(track_name::FlyIdle);
-	flyFlameCoolDown = FLYFLAME;
+	FlameCoolDown = FLAME;
+}
+
+void CBossMonster::DoLand(int curTrackNum)
+{
+	if (curTrackNum != track_name::FlyIdle) return;
+
+	m_pSkinnedAnimationController->SwitchAnimationState(track_name::Land);
+	m_pSkinnedAnimationController->SetIdleNum(track_name::Idle);
+}
+
+void CBossMonster::DoDefend(int curTrackNum)
+{
+	if (curTrackNum != track_name::Idle) return;
+
+	if (DefendCoolDown > 0) {
+		if (curTrackNum != track_name::Defend) return;
+	}
+
+	if (curTrackNum != track_name::Defend)
+		m_pSkinnedAnimationController->SwitchAnimationState(track_name::Defend);
+	DefendCoolDown = DEFEND;
 }
 
 ///////////////////////
