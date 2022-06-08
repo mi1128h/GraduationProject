@@ -433,6 +433,12 @@ void CCannonFactory::RotateCannon(WPARAM wParam)
 	m_pInteractedCannon->RotateCannon(&xmf3RotateAxis, fAngle);
 }
 
+XMFLOAT3& CCannonFactory::GetCannonPosition()
+{
+	if (!m_pInteractedCannon) return XMFLOAT3(0.0f, 0.0f, 0.0f);
+	return m_pInteractedCannon->GetCannonball()->GetPosition();
+}
+
 ///
 
 void CMonsterFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3dGraphicsRootSignature, ID3D12GraphicsCommandList* pd3dCommandList, void* pContext)

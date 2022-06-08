@@ -4,6 +4,23 @@
 #include "Scene.h"
 #include "Collision.h"
 
+inline float RandF(float fMin, float fMax)
+{
+	return(fMin + ((float)rand() / (float)RAND_MAX) * (fMax - fMin));
+}
+
+XMVECTOR RandomUnitVectorOnSphere()
+{
+	XMVECTOR xmvOne = XMVectorSet(1.0f, 1.0f, 1.0f, 1.0f);
+	XMVECTOR xmvZero = XMVectorZero();
+
+	while (true)
+	{
+		XMVECTOR v = XMVectorSet(RandF(-1.0f, 1.0f), RandF(-1.0f, 1.0f), RandF(-1.0f, 1.0f), 0.0f);
+		if (!XMVector3Greater(XMVector3LengthSq(v), xmvOne)) return(XMVector3Normalize(v));
+	}
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 CTexture::CTexture(int nTextures, UINT nTextureType, int nSamplers, int nGraphicsSrvRootParameters, int nComputeUavRootParameters, int nComputeSrvRootParameters)
@@ -752,7 +769,7 @@ void CGameObject::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pC
 			{
 				if (m_ppMaterials[i])
 				{
-					if (m_ppMaterials[i]->m_pShader) m_ppMaterials[i]->m_pShader->Render(pd3dCommandList, pCamera);
+					if (m_ppMaterials[i]->m_pShader) m_ppMaterials[i]->m_pShader->Render(pd3dCommandList, pCamera,0);
 					m_ppMaterials[i]->UpdateShaderVariable(pd3dCommandList);
 				}
 				m_pMesh->Render(pd3dCommandList, i);
@@ -1673,4 +1690,111 @@ void CUIObject::UpdateHpRatio()
 	float maxhp = m_pTargetObject->GetMaxHp();
 
 	ratioHp = hp / maxhp;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+
+CParticleObject::CParticleObject(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, XMFLOAT3 xmf3Position, XMFLOAT3 xmf3Velocity, XMFLOAT3 xmf3Acceleration, XMFLOAT3 xmf3Color, XMFLOAT2 xmf2Size, float fLifetime, UINT nMaxParticles) : CGameObject(1)
+{
+	CParticleMesh* pMesh = new CParticleMesh(pd3dDevice, pd3dCommandList, xmf3Position, xmf3Velocity, xmf3Acceleration, xmf3Color, xmf2Size, fLifetime, nMaxParticles);
+	SetMesh(pMesh);
+
+	m_size.x = xmf2Size.x;
+	m_size.y = xmf2Size.y;
+
+	CTexture* pParticleTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
+	pParticleTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/Effect/DustEffect.dds", 0);
+
+	CMaterial* pMaterial = new CMaterial(1);
+	pMaterial->SetTexture(pParticleTexture);
+
+	srand((unsigned)time(NULL));
+
+	XMFLOAT4* pxmf4RandomValues = new XMFLOAT4[1000];
+	for (int i = 0; i < 1000; i++)
+	{
+		XMFLOAT3 accelations;
+		XMStoreFloat3(&accelations, ::RandomUnitVectorOnSphere());
+		pxmf4RandomValues[i] = XMFLOAT4(accelations.x, accelations.y, accelations.z, RandomValue(0.0f, 1.0f));
+	}
+	m_pRandowmValueTexture = new CTexture(1, RESOURCE_BUFFER, 0, 1, 0, 0);
+	m_pRandowmValueTexture->CreateBuffer(pd3dDevice, pd3dCommandList, pxmf4RandomValues, 1000, sizeof(XMFLOAT4), DXGI_FORMAT_R32G32B32A32_FLOAT, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_GENERIC_READ, 0);
+
+	CreateShaderVariables(pd3dDevice, pd3dCommandList);
+
+	CParticleShader* pShader = new CParticleShader();
+	pShader->CreateGraphicsPipelineState(pd3dDevice, pd3dGraphicsRootSignature, 0);
+	pShader->CreateShaderVariables(pd3dDevice, pd3dCommandList);
+
+	CScene::CreateShaderResourceViews(pd3dDevice, pParticleTexture, Signature::Graphics::particle_texture,true);
+	CScene::CreateShaderResourceViews(pd3dDevice, m_pRandowmValueTexture, Signature::Graphics::particle_buffer,true,true);
+
+	pMaterial->SetShader(pShader);
+	SetMaterial(0,pMaterial);
+
+	SetPosition(xmf3Position);
+}
+
+CParticleObject::~CParticleObject()
+{
+	if (m_pRandowmValueTexture) m_pRandowmValueTexture->Release();
+
+	//if (m_pd3dCommandAllocator) m_pd3dCommandAllocator->Release();
+	//if (m_pd3dCommandList) m_pd3dCommandList->Release();
+
+	if (m_pd3dFence) m_pd3dFence->Release();
+
+	::CloseHandle(m_hFenceEvent);
+}
+
+void CParticleObject::ReleaseUploadBuffers()
+{
+	if (m_pRandowmValueTexture) m_pRandowmValueTexture->ReleaseUploadBuffers();
+
+	CGameObject::ReleaseUploadBuffers();
+}
+
+void CParticleObject::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
+{
+	OnPrepareRender();
+
+	if (m_ppMaterials)
+	{
+		if (m_ppMaterials[0]->m_pShader) m_ppMaterials[0]->m_pShader->OnPrepareRender(pd3dCommandList, 0);
+		if (m_ppMaterials[0]->m_ppTextures) m_ppMaterials[0]->m_ppTextures[0]->UpdateGraphicsShaderVariables(pd3dCommandList);
+
+		if (m_pRandowmValueTexture) m_pRandowmValueTexture->UpdateGraphicsShaderVariables(pd3dCommandList);
+	}
+
+	UpdateShaderVariable(pd3dCommandList,&m_xmf4x4World);
+
+	m_pMesh->OnPreRender(pd3dCommandList,0, 0); //Stream Output
+	m_pMesh->Render(pd3dCommandList,0, 0); //Stream Output
+	m_pMesh->OnPostRender(pd3dCommandList,0, 0); //Stream Output
+
+	if (m_ppMaterials && m_ppMaterials[0]->m_pShader) m_ppMaterials[0]->m_pShader->OnPrepareRender(pd3dCommandList,1);
+
+	m_pMesh->OnPreRender(pd3dCommandList,0, 1); //Draw
+	m_pMesh->Render(pd3dCommandList,0, 1); //Draw
+}
+
+void CParticleObject::CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
+{
+	CGameObject::CreateShaderVariables(pd3dDevice, pd3dCommandList);
+
+	UINT ncbElementBytes = ((sizeof(CB_HP_INFO) + 255) & ~255);
+	m_pd3dcbParticleInfo = ::CreateBufferResource(pd3dDevice, pd3dCommandList,
+		NULL, ncbElementBytes, D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
+	m_pd3dcbParticleInfo->Map(0, NULL, (void**)&m_pcbMappedParticleInfo);
+
+}
+
+void CParticleObject::UpdateShaderVariable(ID3D12GraphicsCommandList* pd3dCommandList, XMFLOAT4X4* pxmf4x4World)
+{
+	CGameObject::UpdateShaderVariable(pd3dCommandList, pxmf4x4World);
+
+	m_pcbMappedParticleInfo->size_x = m_size.x;
+	m_pcbMappedParticleInfo->size_y = m_size.y;
+	D3D12_GPU_VIRTUAL_ADDRESS d3dGpuVirtualAddress = m_pd3dcbParticleInfo->GetGPUVirtualAddress();
+	pd3dCommandList->SetGraphicsRootConstantBufferView(Signature::Graphics::particle, d3dGpuVirtualAddress);
 }

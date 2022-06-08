@@ -377,6 +377,7 @@ void CGameFramework::UpdateShaderVariables()
 {
 	m_pcbMappedFrameworkInfo->m_fCurrentTime = m_GameTimer.GetTotalTime();
 	m_pcbMappedFrameworkInfo->m_fElapsedTime = m_GameTimer.GetTimeElapsed();
+	m_pcbMappedFrameworkInfo->m_nParticleMode = ::gnPatricleMode;
 
 	D3D12_GPU_VIRTUAL_ADDRESS d3dGpuVirtualAddress = m_pd3dcbFrameworkInfo->GetGPUVirtualAddress();
 	m_pd3dCommandList->SetGraphicsRootConstantBufferView(Signature::Graphics::gfw, d3dGpuVirtualAddress);
@@ -467,7 +468,6 @@ void CGameFramework::OnProcessingKeyboardMessage
 			ChangeSwapChainState();
 			break;
 		case 'R':
-			m_pcbMappedFrameworkInfo->m_nRenderMode = 0x00;
 			m_pcbMappedFrameworkInfo->m_nBlurMode = 0x00;
 			break;
 		case 'B':
@@ -485,6 +485,9 @@ void CGameFramework::OnProcessingKeyboardMessage
 		
 		case 'C':
 			::gbCollisionDebug = !::gbCollisionDebug;
+			break;
+		case 'F':
+			::gnPatricleMode = 0x30;
 			break;
 		default:
 			break;
@@ -661,8 +664,10 @@ void CGameFramework::FrameAdvance()
 #endif
 
 	if (m_pPlayer) m_pPlayer->Render(m_pd3dCommandList, m_pCamera);
+	m_pScene->RenderParticle(m_pd3dCommandList, m_pCamera);
 
 	m_pd3dCommandList->ClearDepthStencilView(m_d3dDsvDescriptorCPUHandle,D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, NULL);
+
 	m_pScene->UIRender(m_pd3dCommandList, m_pCamera);
 
 
