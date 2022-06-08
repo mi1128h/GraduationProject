@@ -10,7 +10,7 @@ CGameFramework::CGameFramework()
 		m_nFenceValues[i] = 0;
 
 
-	_tcscpy_s(m_pszFrameRate, _T("LabProject ("));
+	_tcscpy_s(m_pszFrameRate, _T("TheKnight  ("));
 }
 
 CGameFramework::~CGameFramework()
@@ -317,6 +317,8 @@ void CGameFramework::BuildObjects()
 
 	m_pScene->m_pPlayer = m_pPlayer = pPlayer;
 	m_pCamera = m_pPlayer->GetCamera();
+	
+	m_pScene->BuildUIObjects(m_pd3dDevice, m_pd3dCommandList);
 
 	CreateShaderVariables();
 
@@ -468,12 +470,11 @@ void CGameFramework::OnProcessingKeyboardMessage
 			m_pcbMappedFrameworkInfo->m_nRenderMode = 0x00;
 			m_pcbMappedFrameworkInfo->m_nBlurMode = 0x00;
 			break;
-		//case 'D':
-		//	::gbTerrainTessellationWireframe = !::gbTerrainTessellationWireframe;
-		//	m_pcbMappedFrameworkInfo->m_nRenderMode |= DEBUG_TESSELLATION;
-		//	break;
 		case 'B':
 			m_pcbMappedFrameworkInfo->m_nBlurMode = DEBUG_BLURRING;
+			break;
+		case 'G':
+			m_pPlayer->SetPosition(XMFLOAT3(9687.0f, 6.0f, 26238.0f));
 			break;
 		case 'Q':
 			m_fSpeedVal += 10.0f;
@@ -481,6 +482,9 @@ void CGameFramework::OnProcessingKeyboardMessage
 		//case 'W':
 		//	m_fSpeedVal -= 10.0f;
 		//	break;
+		
+		case 'C':
+			::gbCollisionDebug = !::gbCollisionDebug;
 			break;
 		default:
 			break;
@@ -533,13 +537,6 @@ void CGameFramework::ProcessInput()
 	if (!bProcessedByScene)
 	{
 		DWORD dwDirection = 0;
-		//if (pKeysBuffer[VK_UP] & 0xF0) dwDirection |= DIR_FORWARD;
-		//if (pKeysBuffer[VK_DOWN] & 0xF0) dwDirection |= DIR_BACKWARD;
-		//if (pKeysBuffer[VK_LEFT] & 0xF0) dwDirection |= DIR_LEFT;
-		//if (pKeysBuffer[VK_RIGHT] & 0xF0) dwDirection |= DIR_RIGHT;
-		//if (pKeysBuffer[VK_PRIOR] & 0xF0) dwDirection |= DIR_UP;
-		//if (pKeysBuffer[VK_NEXT] & 0xF0) dwDirection |= DIR_DOWN;
-		
 		if (pKeysBuffer['W'] & 0xF0) dwDirection |= DIR_FORWARD;
 		if (pKeysBuffer['S'] & 0xF0) dwDirection |= DIR_BACKWARD;
 		if (pKeysBuffer['A'] & 0xF0) dwDirection |= DIR_LEFT;
@@ -576,7 +573,7 @@ void CGameFramework::ProcessInput()
 
 void CGameFramework::UpdatePlayerMove(const DWORD& dwDirection)
 {
-	XMFLOAT3 xmf3Shift = m_pPlayer->SetMoveShift(dwDirection, 20.0f);
+	XMFLOAT3 xmf3Shift = m_pPlayer->SetMoveShift(dwDirection, 10.0f);
 	if (IsPlayerMove(dwDirection, xmf3Shift))
 	{
 		m_pPlayer->Move(xmf3Shift, false);
@@ -665,6 +662,10 @@ void CGameFramework::FrameAdvance()
 
 	if (m_pPlayer) m_pPlayer->Render(m_pd3dCommandList, m_pCamera);
 
+	m_pd3dCommandList->ClearDepthStencilView(m_d3dDsvDescriptorCPUHandle,D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, NULL);
+	m_pScene->UIRender(m_pd3dCommandList, m_pCamera);
+
+
 	m_pPostProcessingShader->OnPostRenderTarget(m_pd3dCommandList);
 
 	::SynchronizeResourceTransition(m_pd3dCommandList, (m_pPostProcessingShader->GetTexture())->GetTexture(3),
@@ -714,7 +715,6 @@ void CGameFramework::FrameAdvance()
 void CGameFramework::ChangeSwapChainState()
 {
 	WaitForGpuComplete();
-	//::WaitForGpuComplete(m_pd3dCommandQueue, m_pd3dFence, ++m_nFenceValues[m_nSwapChainBufferIndex], m_hFenceEvent);
 
 	BOOL bFullScreenState = FALSE;
 	m_pdxgiSwapChain->GetFullscreenState(&bFullScreenState, NULL);

@@ -53,8 +53,6 @@ protected:
 	CCamera *m_pCamera = NULL;
 
 	CCollisionManager* m_CollManager = nullptr;
-	float m_fHp;
-	float m_fDamage;
 
 public:
 	CPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, void* pContext = NULL, int nMeshes = 1);
@@ -66,10 +64,6 @@ public:
 	XMFLOAT3 GetLookVector() { return(m_xmf3Look); }
 	XMFLOAT3 GetUpVector() { return(m_xmf3Up); }
 	XMFLOAT3 GetRightVector() { return(m_xmf3Right); }
-	void SetDamage(float val) { m_fDamage = val; }
-	void SetHp(float val) { m_fHp = val; }
-	float GetDamage() { return m_fDamage; }
-	float GetHp() { return m_fHp; }
 
 	void SetVectors();
 

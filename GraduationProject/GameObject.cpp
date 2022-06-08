@@ -1412,7 +1412,7 @@ void CMonsterObject::MonsterDead()
 void CMonsterObject::DecreaseHp(float val)
 {
 	m_fHp -= val;
-	if (m_fHp < 0)
+	if (m_fHp <= 0)
 	{
 		MonsterDead();
 	}
@@ -1463,4 +1463,46 @@ bool CMonsterObject::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 		}
 	}
 	return(false);
+}
+
+///////////////////////
+
+CUIObject::CUIObject() : CGameObject(1)
+{
+	XMFLOAT3 m_xmf3RotationAxis = XMFLOAT3(0.0f, 1.0f, 0.0f);
+	CGameObject::Rotate(&m_xmf3RotationAxis, 180.0f);
+}
+
+CUIObject::~CUIObject()
+{
+}
+
+void CUIObject::CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
+{
+	CGameObject::CreateShaderVariables(pd3dDevice, pd3dCommandList);
+
+	UINT ncbElementBytes = ((sizeof(CB_HP_INFO) + 255) & ~255);
+	m_pd3dcbHpInfo = ::CreateBufferResource(pd3dDevice, pd3dCommandList,
+		NULL, ncbElementBytes, D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
+	m_pd3dcbHpInfo->Map(0, NULL, (void**)&m_pcbMappedHpInfo);
+
+}
+
+void CUIObject::UpdateShaderVariable(ID3D12GraphicsCommandList* pd3dCommandList, XMFLOAT4X4* pxmf4x4World)
+{
+	CGameObject::UpdateShaderVariable(pd3dCommandList, pxmf4x4World);
+	
+	UpdateHpRatio();
+	m_pcbMappedHpInfo->ratioHp = ratioHp;
+	D3D12_GPU_VIRTUAL_ADDRESS d3dGpuVirtualAddress = m_pd3dcbHpInfo->GetGPUVirtualAddress();
+	pd3dCommandList->SetGraphicsRootConstantBufferView(Signature::Graphics::hp, d3dGpuVirtualAddress);
+}
+
+void CUIObject::UpdateHpRatio()
+{
+	if (m_pTargetObject == NULL) return;
+	float hp = m_pTargetObject->GetHp();
+	float maxhp = m_pTargetObject->GetMaxHp();
+
+	ratioHp = hp / maxhp;
 }

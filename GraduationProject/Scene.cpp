@@ -56,7 +56,7 @@ ID3D12RootSignature* CScene::CreateGraphicsRootSignature(ID3D12Device* pd3dDevic
 
 	ID3D12RootSignature* pd3dGraphicsRootSignature = NULL;
 
-	D3D12_DESCRIPTOR_RANGE pd3dDescriptorRanges[7];
+	D3D12_DESCRIPTOR_RANGE pd3dDescriptorRanges[Descriptor::Graphics::length];
 
 	pd3dDescriptorRanges[Descriptor::Graphics::texture].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
 	pd3dDescriptorRanges[Descriptor::Graphics::texture].NumDescriptors = 1;
@@ -100,7 +100,7 @@ ID3D12RootSignature* CScene::CreateGraphicsRootSignature(ID3D12Device* pd3dDevic
 	pd3dDescriptorRanges[Descriptor::Graphics::model_diffuse].RegisterSpace = 0;
 	pd3dDescriptorRanges[Descriptor::Graphics::model_diffuse].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 
-	D3D12_ROOT_PARAMETER pd3dRootParameters[15];
+	D3D12_ROOT_PARAMETER pd3dRootParameters[Signature::Graphics::length];
 
 	pd3dRootParameters[Signature::Graphics::player].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
 	pd3dRootParameters[Signature::Graphics::player].Descriptor.ShaderRegister = 0; //Player
@@ -142,6 +142,11 @@ ID3D12RootSignature* CScene::CreateGraphicsRootSignature(ID3D12Device* pd3dDevic
 	pd3dRootParameters[Signature::Graphics::bone_trans].Descriptor.ShaderRegister = 8; //Skinned Bone Transforms
 	pd3dRootParameters[Signature::Graphics::bone_trans].Descriptor.RegisterSpace = 0;
 	pd3dRootParameters[Signature::Graphics::bone_trans].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
+
+	pd3dRootParameters[Signature::Graphics::hp].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
+	pd3dRootParameters[Signature::Graphics::hp].Descriptor.ShaderRegister = 9; // hp
+	pd3dRootParameters[Signature::Graphics::hp].Descriptor.RegisterSpace = 0;
+	pd3dRootParameters[Signature::Graphics::hp].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
 	pd3dRootParameters[Signature::Graphics::texture].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
 	pd3dRootParameters[Signature::Graphics::texture].DescriptorTable.NumDescriptorRanges = 1;
@@ -354,7 +359,6 @@ void CScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* p
 	pMonster->SetObjectCollision(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 	_factory.emplace_back(pMonster);
 
-
 	//////
 	
 	BuildCollisions(pd3dDevice, pd3dCommandList);
@@ -362,6 +366,12 @@ void CScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* p
 	////////
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
+}
+
+void CScene::BuildUIObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
+{
+	_ui = new CUIFactory();
+	((CUIFactory*)_ui)->BuildObjects(pd3dDevice, m_pd3dGraphicsRootSignature, pd3dCommandList, m_pTerrain, m_pPlayer);
 }
 
 bool CScene::IsGameObject(string& name)
@@ -706,11 +716,8 @@ void CScene::AnimateObjects(float fTimeElapsed, CCamera* pCamrea)
 
 	for (int i = 0; i < m_nShaders; i++) m_ppShaders[i]->AnimateObjects(fTimeElapsed, pCamrea);
 	if (m_pLights) {}
-	
-	CheckMonsterFindTarget();
-	CheckMonsterCollision();
-	CheckPlayerAttack();
-	CheckMonsterAttack();
+	_ui->AnimateObjects(fTimeElapsed, pCamrea);
+
 }
 
 void CScene::OnPrepareRender(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
@@ -753,6 +760,16 @@ void CScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera
 
 	for (CCollision* col : collisions)
 		col->Render(pd3dCommandList, pCamera);
+
+	CheckMonsterFindTarget();
+	CheckMonsterCollision();
+	CheckPlayerAttack();
+	CheckMonsterAttack();
+}
+
+void CScene::UIRender(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
+{
+	_ui->Render(pd3dCommandList, pCamera);
 }
 
 bool CScene::CheckPlayerByObjectBB(XMFLOAT3 xmf3Shift)
@@ -761,7 +778,7 @@ bool CScene::CheckPlayerByObjectBB(XMFLOAT3 xmf3Shift)
 
 	for (auto& fac : _factory)
 	{
-		if (dynamic_cast<CMonsterFactory*>(fac))continue;
+		//if (dynamic_cast<CMonsterFactory*>(fac))continue;
 		vector<CGameObject*> objects = fac->GetGameObjects();
 		for (int i = 0; i < objects.size(); ++i)
 		{
@@ -844,14 +861,17 @@ void CScene::CheckMonsterFindTarget()
 
 void CScene::CheckMonsterCollision()
 {
+	m_pPlayer->GetCollManager()->UpdateCollisions();
 	BoundingSphere playerBS = m_pPlayer->GetCollManager()->GetBoundingSphere();
 	vector<CGameObject*> monsters = _factory[2]->GetGameObjects();
 
 	for (auto& monster : monsters)
 	{
+		monster->GetCollisionManager()->UpdateCollisions();
 		BoundingSphere BS = monster->GetCollisionManager()->GetBoundingSphere();
 		if (BS.Contains(playerBS)) {
 			((CMonsterObject*)monster)->AttackTarget();
+			_ui->SetTargetMonster(monster);
 		}
 	}
 }
@@ -867,9 +887,12 @@ void CScene::CheckMonsterAttack()
 		if (!Enable) continue;
 
 		BoundingBox AttackBB = object->GetCollisionManager()->GetBoundingBox(true);
+		CCollisionManager* col = object->GetCollisionManager();
+		col->UpdateCollisions();
+
 		if (playerBB.Contains(AttackBB))
 		{
-			m_pPlayer->DecreaseHp(m_pPlayer->GetDamage());
+			m_pPlayer->DecreaseHp(object->GetDamage());
 			object->SetAttackEnable(false);
 		}
 	}
@@ -880,15 +903,19 @@ void CScene::CheckPlayerAttack()
 	bool Enable = (m_pPlayer->m_pSkinnedAnimationController) ? m_pPlayer->m_pSkinnedAnimationController->GetAttackEnable() : false;
 	if (!Enable) return;
 
+	m_pPlayer->GetCollManager()->UpdateCollisions();
 	BoundingBox AttackBB = m_pPlayer->GetCollManager()->GetBoundingBox(true);
 	vector<CGameObject*> objects = _factory[2]->GetGameObjects();
 	for (auto& object : objects)
 	{
+		CCollisionManager* col = object->GetCollisionManager();
+		col->UpdateCollisions();
 		BoundingBox BB = object->GetCollisionManager()->GetBoundingBox();
 
 		if (BB.Contains(AttackBB))
 		{
 			((CMonsterObject*)object)->DecreaseHp(m_pPlayer->GetDamage());
+			_ui->SetTargetMonster(object);
 			m_pPlayer->SetAttackEnable(false);
 		}
 	}
