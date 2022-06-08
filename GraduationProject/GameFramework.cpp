@@ -377,7 +377,7 @@ void CGameFramework::UpdateShaderVariables()
 {
 	m_pcbMappedFrameworkInfo->m_fCurrentTime = m_GameTimer.GetTotalTime();
 	m_pcbMappedFrameworkInfo->m_fElapsedTime = m_GameTimer.GetTimeElapsed();
-	//m_pcbMappedFrameworkInfo->m_nParticleMode = ::gnPatricleMode;
+	m_pcbMappedFrameworkInfo->m_nParticleMode = ::gnPatricleMode;
 
 	D3D12_GPU_VIRTUAL_ADDRESS d3dGpuVirtualAddress = m_pd3dcbFrameworkInfo->GetGPUVirtualAddress();
 	m_pd3dCommandList->SetGraphicsRootConstantBufferView(Signature::Graphics::gfw, d3dGpuVirtualAddress);
@@ -487,7 +487,7 @@ void CGameFramework::OnProcessingKeyboardMessage
 			::gbCollisionDebug = !::gbCollisionDebug;
 			break;
 		case 'F':
-			m_pcbMappedFrameworkInfo->m_nParticleMode = 0x30;
+			::gnPatricleMode = 0x30;
 			break;
 		default:
 			break;
