@@ -473,7 +473,7 @@ void CGameFramework::OnProcessingKeyboardMessage
 		//	m_pcbMappedFrameworkInfo->m_nRenderMode |= DEBUG_TESSELLATION;
 		//	break;
 		case 'B':
-			m_pcbMappedFrameworkInfo->m_nBlurMode = DEBUG_BLURRING;
+			//m_pcbMappedFrameworkInfo->m_nBlurMode = DEBUG_BLURRING;
 			break;
 		case 'Q':
 			m_fSpeedVal += 10.0f;
