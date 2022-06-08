@@ -1509,6 +1509,7 @@ CBossMonster::~CBossMonster()
 void CBossMonster::Animate(float fTimeElapsed, CCamera* pCamera)
 {
 	int curTrackNum = m_pSkinnedAnimationController->GetCurrentTrackNum();
+	flyFlameCoolDown -= fTimeElapsed;
 	if (GetHp() > 0) {
 		if (GetTarget() != NULL) {
 			if (!bNoticed) {
@@ -1517,6 +1518,7 @@ void CBossMonster::Animate(float fTimeElapsed, CCamera* pCamera)
 			}
 			else {
 				ChaseTarget(fTimeElapsed, false);
+				DoFlyFlame();
 			}
 		}
 		else {
@@ -1525,3 +1527,18 @@ void CBossMonster::Animate(float fTimeElapsed, CCamera* pCamera)
 	}
 	CGameObject::Animate(fTimeElapsed, pCamera);
 }
+
+void CBossMonster::DoFlyFlame()
+{
+	int curTrackNum = m_pSkinnedAnimationController->GetCurrentTrackNum();
+
+	if (flyFlameCoolDown > 0) {
+		if (curTrackNum != track_name::FlyFlame) return;
+	}
+
+	if (curTrackNum != track_name::FlyFlame)
+		m_pSkinnedAnimationController->SwitchAnimationState(track_name::FlyFlame);
+	m_pSkinnedAnimationController->SetIdleNum(track_name::FlyIdle);
+	flyFlameCoolDown = FLYFLAME;
+}
+

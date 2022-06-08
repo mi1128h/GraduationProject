@@ -525,11 +525,15 @@ public:
 		length
 	};
 
+	#define FLYFLAME 5.0f
+
 	CBossMonster(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, void* pContext, int nMeshes = 1);
 	virtual ~CBossMonster();
 
 	virtual void Animate(float fTimeElapsed, CCamera* pCamera = NULL);
+	void DoFlyFlame();
 
 private:
 	bool bNoticed = false;
+	float flyFlameCoolDown = FLYFLAME;
 };
