@@ -684,9 +684,9 @@ void GSParticleStreamOutput(point VS_PARTICLE_INPUT input[1], inout PointStream<
 
 			if (particle.type == PARTICLE_TYPE_EMITTER)
 			{
-				if (particle.size.x <= size_x * 12.0f)
+				if (particle.size.x <= size_x * 20.0f)
 				{
-					float2 size = float2(size_x * 3.5f, size_y * 3.5f) * 3.0f;
+					float2 size = float2(size_x * 3.5f, size_y * 3.5f) * 4.0f;
 					particle.size += size * gfElapsedTime;
 				}
 			}
