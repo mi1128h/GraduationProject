@@ -1660,8 +1660,8 @@ CNavMesh::CNavMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dComm
 	for (int i = 0; i < m_nVertices; ++i) {
 		meshInfo >> s >> x >> y >> z;
 		if (s.compare("v") != 0) break;
-		//m_pxmf3Positions[i] = XMFLOAT3((x * m_xmf3Scale.x), 100, (z * m_xmf3Scale.z));
-		m_pxmf3Positions[i] = XMFLOAT3(x, y, z);
+		m_pxmf3Positions[i] = XMFLOAT3((x * m_xmf3Scale.x * 220.0f / 150.0f) + 1000.0f, 100, (z * m_xmf3Scale.z * 220.0f / 150.0f) + 1000.0f);
+		//m_pxmf3Positions[i] = XMFLOAT3(x, y, z);
 	}
 
 	m_pd3dPositionBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList, m_pxmf3Positions, sizeof(XMFLOAT3) * m_nVertices, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, &m_pd3dPositionUploadBuffer);
