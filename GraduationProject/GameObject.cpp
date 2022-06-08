@@ -1795,6 +1795,13 @@ void CParticleObject::UpdateShaderVariable(ID3D12GraphicsCommandList* pd3dComman
 
 	m_pcbMappedParticleInfo->size_x = m_size.x;
 	m_pcbMappedParticleInfo->size_y = m_size.y;
+	::memcpy(&m_pcbMappedParticleInfo->vec3, &m_xmf3vec, sizeof(XMFLOAT3));
+
 	D3D12_GPU_VIRTUAL_ADDRESS d3dGpuVirtualAddress = m_pd3dcbParticleInfo->GetGPUVirtualAddress();
 	pd3dCommandList->SetGraphicsRootConstantBufferView(Signature::Graphics::particle, d3dGpuVirtualAddress);
+}
+
+void CParticleObject::SetVector(XMFLOAT3& vec)
+{
+	m_xmf3vec = vec;
 }

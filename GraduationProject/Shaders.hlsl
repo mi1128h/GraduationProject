@@ -613,6 +613,7 @@ cbuffer cbParticleInfo : register(b10)
 {
 	float size_x : packoffset(c0.x);
 	float size_y : packoffset(c0.y);
+	float3 vec3 : packoffset(c1);
 };
 
 VS_PARTICLE_INPUT VSParticleStreamOutput(VS_PARTICLE_INPUT input)
@@ -692,10 +693,10 @@ void GSParticleStreamOutput(point VS_PARTICLE_INPUT input[1], inout PointStream<
 
 				//float4 f4Random = gRandomBuffer.Load(uint(index * gfElapsedTime * 10000.0f) % 1000);
 				float4 f4Random = gRandomBuffer.Load(uint(index * gfCurrentTime * 100.0f) % 1000);
-				particle.acceleration = float3(f4Random.x, f4Random.y, f4Random.z);
 				particle.type = PARTICLE_TYPE_FLARE;
 				particle.position = float3(gmtxGameObject._41, gmtxGameObject._42, gmtxGameObject._43);
 				particle.velocity = float3(3.7f, 0.0f, 0.0f) * 10000.0f;
+				particle.acceleration = float3(vec3.x, vec3.y, vec3.z);
 				particle.size = float2(size_x, size_y);
 				particle.age.y = 1.8f;
 
