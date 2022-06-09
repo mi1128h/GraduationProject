@@ -1819,9 +1819,6 @@ CExplosionObject::CExplosionObject(ID3D12Device* pd3dDevice, ID3D12GraphicsComma
 	CTexture* pParticleTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
 	pParticleTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/Effect/DustEffect.dds", 0);
 
-	CScene::CreateShaderResourceViews(pd3dDevice, pParticleTexture, Signature::Graphics::particle_texture, true);
-	CScene::CreateShaderResourceViews(pd3dDevice, m_pRandowmValueTexture, Signature::Graphics::particle_buffer, true, true);
-
 	CMaterial* pMaterial = new CMaterial(1);
 	pMaterial->SetTexture(pParticleTexture);
 
@@ -1838,6 +1835,10 @@ CExplosionObject::CExplosionObject(ID3D12Device* pd3dDevice, ID3D12GraphicsComma
 	m_pRandowmValueTexture->CreateBuffer(pd3dDevice, pd3dCommandList, pxmf4RandomValues, 1000, sizeof(XMFLOAT4), DXGI_FORMAT_R32G32B32A32_FLOAT, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_GENERIC_READ, 0);
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
+
+
+	CScene::CreateShaderResourceViews(pd3dDevice, pParticleTexture, Signature::Graphics::particle_texture, true);
+	CScene::CreateShaderResourceViews(pd3dDevice, m_pRandowmValueTexture, Signature::Graphics::particle_buffer, true, true);
 
 	CExplosionParticleShader* pShader = new CExplosionParticleShader();
 	pShader->CreateGraphicsPipelineState(pd3dDevice, pd3dGraphicsRootSignature, 0);
