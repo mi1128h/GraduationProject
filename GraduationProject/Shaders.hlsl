@@ -688,6 +688,12 @@ void GSParticleStreamOutput(point VS_PARTICLE_INPUT input[1], inout PointStream<
 
 			for (int j = 0; j < 8; j++)
 			{
+				if (gnParticleMode & PARTICLE_EXPLOSION)
+				{
+					output.Append(input[0]);
+					continue;
+				}
+
 				particle.color = float3(1.0f, 0.0f, 0.0f);
 
 				//float4 f4Random = gRandomBuffer.Load(uint(index * gfElapsedTime * 10000.0f) % 1000);
