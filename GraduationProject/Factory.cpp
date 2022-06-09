@@ -414,19 +414,19 @@ void CCannonFactory::RotateCannon(WPARAM wParam)
 	switch (wParam) {
 	case 'W':
 		xmf3RotateAxis = XMFLOAT3(1, 0, 0);
-		fAngle = +10.0f;
+		fAngle = +2.0f;
 		break;
 	case 'A':
 		xmf3RotateAxis = XMFLOAT3(0, 0, 1);
-		fAngle = -10.0f;
+		fAngle = -2.0f;
 		break;
 	case 'S':
 		xmf3RotateAxis = XMFLOAT3(1, 0, 0);
-		fAngle = -10.0f;
+		fAngle = -2.0f;
 		break;
 	case 'D':
 		xmf3RotateAxis = XMFLOAT3(0, 0, 1);
-		fAngle = +10.0f;
+		fAngle = +2.0f;
 		break;
 	}
 
