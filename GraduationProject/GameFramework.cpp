@@ -568,8 +568,8 @@ void CGameFramework::ProcessInput()
 					m_pPlayer->Rotate(cyDelta, cxDelta, 0.0f);
 			}
 
-			UpdatePlayerMove(dwDirection);
 		}
+		UpdatePlayerMove(dwDirection);
 	}
 	m_pPlayer->Update(m_GameTimer.GetTimeElapsed());
 }
@@ -582,10 +582,28 @@ void CGameFramework::UpdatePlayerMove(const DWORD& dwDirection)
 		m_pPlayer->Move(xmf3Shift, false);
 	}
 
-	if (dwDirection & DIR_LEFT) m_pPlayer->m_pSkinnedAnimationController->SwitchAnimationState(track_name::walk_left);
-	if (dwDirection & DIR_RIGHT) m_pPlayer->m_pSkinnedAnimationController->SwitchAnimationState(track_name::walk_right);
-	if (dwDirection & DIR_BACKWARD) m_pPlayer->m_pSkinnedAnimationController->SwitchAnimationState(track_name::walk_back);
-	if (dwDirection & DIR_FORWARD) m_pPlayer->m_pSkinnedAnimationController->SwitchAnimationState(track_name::run);
+	int curTrackNum = m_pPlayer->m_pSkinnedAnimationController->GetCurrentTrackNum();
+
+	if (dwDirection == DIR_FORWARD) {
+		if (curTrackNum != track_name::run)
+			m_pPlayer->m_pSkinnedAnimationController->SwitchAnimationState(track_name::run);
+	}
+	else if (dwDirection == DIR_BACKWARD) {
+		if (curTrackNum != track_name::walk_back)
+			m_pPlayer->m_pSkinnedAnimationController->SwitchAnimationState(track_name::walk_back);
+	}
+	else if (dwDirection == DIR_LEFT) {
+		if (curTrackNum != track_name::walk_left)
+			m_pPlayer->m_pSkinnedAnimationController->SwitchAnimationState(track_name::walk_left);
+	}
+	else if (dwDirection == DIR_RIGHT) {
+		if (curTrackNum != track_name::walk_right)
+			m_pPlayer->m_pSkinnedAnimationController->SwitchAnimationState(track_name::walk_right);
+	}
+	else if (dwDirection == 0) {
+		if (curTrackNum != track_name::idle)
+			m_pPlayer->m_pSkinnedAnimationController->SwitchAnimationState(track_name::idle);
+	}
 }
 
 bool CGameFramework::IsPlayerMove(const DWORD& dwDirection, const DirectX::XMFLOAT3& xmf3Shift)

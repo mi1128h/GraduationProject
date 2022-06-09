@@ -209,7 +209,6 @@ bool CAnimPlayer::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM
 				case 'S':
 				case 'A':
 				case 'D':
-					m_pSkinnedAnimationController->SwitchAnimationState(track_name::idle);
 					break;
 			}
 			break;
