@@ -613,6 +613,7 @@ cbuffer cbParticleInfo : register(b10)
 {
 	float size_x : packoffset(c0.x);
 	float size_y : packoffset(c0.y);
+	float3 vec3 : packoffset(c1);
 };
 
 VS_PARTICLE_INPUT VSParticleStreamOutput(VS_PARTICLE_INPUT input)
@@ -626,8 +627,7 @@ float3 GetParticleColor(float fAge, float fLifetime)
 {
 	float3 cColor = float3(1.0f, 1.0f, 1.0f);
 
-	if (fAge == 0.0f) cColor = float3(0.0f, 1.0f, 0.0f);
-	else if (fLifetime == 0.0f)
+	if (fLifetime == 0.0f)
 		cColor = float3(0.0f, 0.0f, 0.0f);
 	else
 	{
@@ -666,68 +666,68 @@ void GetPositions(float3 position, float2 f2Size, out float3 pf3Positions[8])
 
 
 #define PARTICLE_EXPLOSION			0x30
-#define PARTICLE_FIRST				0x31
+#define PARTICLE_LINE				0x31
 
 [maxvertexcount(9)]
 void GSParticleStreamOutput(point VS_PARTICLE_INPUT input[1], inout PointStream<VS_PARTICLE_INPUT> output)
 {
 	static int index = 0;
+	static float max_elpased = 0.0f;
 	VS_PARTICLE_INPUT particle = input[0];
 
-	if (gnParticleMode & PARTICLE_EXPLOSION) particle.age.x += gfElapsedTime;
 	if (particle.age.x <= particle.age.y)
 	{
-		//if (particle.type == PARTICLE_TYPE_EMITTER)
-		if (gnParticleMode & PARTICLE_EXPLOSION)
+		if (particle.type == PARTICLE_TYPE_EMITTER)
 		{
-			particle.color = GetParticleColor(particle.age.x, particle.age.y);
-
-			if (particle.type == PARTICLE_TYPE_EMITTER)
-			{
-				if (particle.size.x <= size_x * 20.0f)
-				{
-					float2 size = float2(size_x * 3.5f, size_y * 3.5f) * 4.0f;
-					particle.size += size * gfElapsedTime;
-				}
-			}
-			else particle.position += (0.5f * particle.acceleration * particle.velocity * gfElapsedTime);
-
-			output.Append(particle);
-		}
-		else
-		{
-			particle.color = float3(1.0f, 0.0f, 0.0f);
-			particle.size = float2(size_x, size_y);
-			//particle.type = PARTICLE_TYPE_EMITTER;
-			//			particle.age.x = 0.0f;
+			particle.color = float3(1.0f, 1.0f, 0.0f);
+			//particle.age.y = 0.25f;
+			particle.position = float3(gmtxGameObject._41, gmtxGameObject._42, gmtxGameObject._43);
 			output.Append(particle);
 
-
-			float3 pf3Positions[8];
-			GetPositions(particle.position, float2(particle.size.x * 1.25f, particle.size.x * 1.25f), pf3Positions);
-
-			particle.color = float3(0.0f, 0.0f, 1.0f);
 			particle.age.x = 0.0f;
 
 			for (int j = 0; j < 8; j++)
 			{
+				if (gnParticleMode & PARTICLE_EXPLOSION)
+				{
+					output.Append(input[0]);
+					continue;
+				}
+
+				particle.color = float3(1.0f, 0.0f, 0.0f);
+
 				//float4 f4Random = gRandomBuffer.Load(uint(index * gfElapsedTime * 10000.0f) % 1000);
 				float4 f4Random = gRandomBuffer.Load(uint(index * gfCurrentTime * 100.0f) % 1000);
-				particle.type = (j == 0) ? PARTICLE_TYPE_EMITTER : PARTICLE_TYPE_FLARE;
-				particle.position = pf3Positions[j].xyz;
-				particle.velocity = float3(
-					particle.size.x * particle.age.y * 4.0f
-					, particle.size.x * particle.age.y * 4.0f
-					, particle.size.x * particle.age.y * 4.0f) * 3.0f;
-				particle.acceleration = float3(f4Random.x, f4Random.y, f4Random.z);
+				particle.type = PARTICLE_TYPE_FLARE;
+				particle.position = float3(gmtxGameObject._41, gmtxGameObject._42, gmtxGameObject._43);
+				particle.velocity = float3(3.7f, 0.0f, 0.0f) * 10000.0f;
+				particle.acceleration = float3(vec3.x, vec3.y, vec3.z);
 				particle.size = float2(size_x, size_y);
+				particle.age.y = 1.8f;
 
-				particle.age.y = 3.5f;
+				//particle.age.y = (particle.type == PARTICLE_TYPE_EMITTER) ? 0.25f : 1.5f + 0.75f * abs(j-4);
+				//particle.age.y = (particle.type == PARTICLE_TYPE_EMITTER) ? 0.25f : 1.5f + (abs(f4Random.w) * 0.75f * abs(j - 1));
+				//particle.age.y = 2.5f;
 
 				++index;
 
 				output.Append(particle);
 			}
+
+		}
+		else
+		{
+			particle.age.x += gfElapsedTime;
+			if (max_elpased <= gfElapsedTime) max_elpased = gfElapsedTime;
+
+			if (particle.size.x <= size_x * 3.0f)
+			{
+				float2 size = float2(size_x * 3.5f, size_y * 3.5f) * 1.5f;
+				particle.size += size * gfElapsedTime;
+			}
+			particle.color = GetParticleColor(particle.age.x, particle.age.y);
+			particle.position += (0.5f * particle.acceleration * particle.velocity * gfElapsedTime * gfElapsedTime);
+			output.Append(particle);
 		}
 
 	}
@@ -783,4 +783,71 @@ PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSParticleDraw(GS_PARTICLE_OUTPUT input) : SV_
 	output.fDepth = 1.0f - input.position.z;
 
 	return(output);
+}
+
+///** explosion particle ** //
+
+[maxvertexcount(9)]
+void GSParticleExStreamOutput(point VS_PARTICLE_INPUT input[1], inout PointStream<VS_PARTICLE_INPUT> output)
+{
+	static int index = 0;
+	VS_PARTICLE_INPUT particle = input[0];
+
+	if (gnParticleMode & PARTICLE_EXPLOSION) particle.age.x += gfElapsedTime;
+	if (particle.age.x <= particle.age.y)
+	{
+		//if (particle.type == PARTICLE_TYPE_EMITTER)
+		if (gnParticleMode & PARTICLE_EXPLOSION)
+		{
+			particle.color = GetParticleColor(particle.age.x, particle.age.y);
+
+			if (particle.type == PARTICLE_TYPE_EMITTER)
+			{
+				if (particle.size.x <= size_x * 50.0f)
+				{
+					float2 size = float2(size_x * 3.5f, size_y * 3.5f) * 8.5f;
+					particle.size += size * gfElapsedTime;
+				}
+			}
+			else particle.position += (0.5f * particle.acceleration * particle.velocity * gfElapsedTime);
+
+			output.Append(particle);
+		}
+		else
+		{
+			particle.color = float3(1.0f, 0.0f, 0.0f);
+			particle.size = float2(size_x, size_y);
+			//particle.type = PARTICLE_TYPE_EMITTER;
+			//			particle.age.x = 0.0f;
+			output.Append(particle);
+
+
+			float3 pf3Positions[8];
+			GetPositions(particle.position, float2(particle.size.x * 1.25f, particle.size.x * 1.25f), pf3Positions);
+
+			particle.color = float3(0.0f, 0.0f, 1.0f);
+			particle.age.x = 0.0f;
+
+			for (int j = 0; j < 8; j++)
+			{
+				//float4 f4Random = gRandomBuffer.Load(uint(index * gfElapsedTime * 10000.0f) % 1000);
+				float4 f4Random = gRandomBuffer.Load(uint(index * gfCurrentTime * 100.0f) % 1000);
+				particle.type = (j == 0) ? PARTICLE_TYPE_EMITTER : PARTICLE_TYPE_FLARE;
+				particle.position = pf3Positions[j].xyz;
+				particle.velocity = float3(
+					particle.size.x * particle.age.y * 4.0f
+					, particle.size.x * particle.age.y * 4.0f
+					, particle.size.x * particle.age.y * 4.0f) * 3.0f;
+				particle.acceleration = float3(f4Random.x, f4Random.y, f4Random.z);
+				particle.size = float2(size_x*3.5f, size_y*3.5f);
+
+				particle.age.y = 3.5f;
+
+				++index;
+
+				output.Append(particle);
+			}
+		}
+
+	}
 }

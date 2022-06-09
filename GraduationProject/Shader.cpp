@@ -1624,3 +1624,20 @@ void CParticleShader::CreateGraphicsPipelineState(ID3D12Device* pd3dDevice, ID3D
 	CShader::CreateGraphicsPipelineState(pd3dDevice, pd3dGraphicsRootSignature, 1); //Draw Pipeline State
 }
 
+/////
+
+CExplosionParticleShader::CExplosionParticleShader()
+{
+}
+
+CExplosionParticleShader::~CExplosionParticleShader()
+{
+}
+
+D3D12_SHADER_BYTECODE CExplosionParticleShader::CreateGeometryShader(ID3DBlob** ppd3dShaderBlob, int nPipelineState)
+{
+	if (nPipelineState == 0)
+		return(CShader::CompileShaderFromFile(L"Shaders.hlsl", "GSParticleExStreamOutput", "gs_5_1", ppd3dShaderBlob));
+	else
+		return(CShader::CompileShaderFromFile(L"Shaders.hlsl", "GSParticleDraw", "gs_5_1", ppd3dShaderBlob));
+}

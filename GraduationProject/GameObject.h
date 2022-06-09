@@ -593,12 +593,14 @@ struct CB_PARTICLE_INFO
 {
 	float size_x;
 	float size_y;
+	XMFLOAT3 vec3;
 };
 
 class CParticleObject : public CGameObject
 {
 public:
 	CParticleObject(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, XMFLOAT3 xmf3Position, XMFLOAT3 xmf3Velocity, XMFLOAT3 xmf3Acceleration, XMFLOAT3 xmf3Color, XMFLOAT2 xmf2Size, float fLifetime, UINT nMaxParticles);
+	CParticleObject() : CGameObject(1) {};
 	virtual ~CParticleObject();
 
 	CTexture* m_pRandowmValueTexture = NULL;
@@ -609,6 +611,8 @@ public:
 	virtual void CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList);
 	virtual void UpdateShaderVariable(ID3D12GraphicsCommandList* pd3dCommandList, XMFLOAT4X4* pxmf4x4World);
 
+	void SetVector(XMFLOAT3& vec);
+
 	ID3D12CommandAllocator* m_pd3dCommandAllocator = NULL;
 	ID3D12GraphicsCommandList* m_pd3dCommandList = NULL;
 
@@ -616,8 +620,16 @@ public:
 	UINT64							m_nFenceValue = 0;
 	HANDLE							m_hFenceEvent;
 	XMFLOAT2 m_size;
+	XMFLOAT3 m_xmf3vec;
 
-private:
+protected:
 	ID3D12Resource* m_pd3dcbParticleInfo = NULL;
 	CB_PARTICLE_INFO* m_pcbMappedParticleInfo = NULL;
+};
+
+class CExplosionObject : public CParticleObject
+{
+public:
+	CExplosionObject(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, XMFLOAT3 xmf3Position, XMFLOAT3 xmf3Velocity, XMFLOAT3 xmf3Acceleration, XMFLOAT3 xmf3Color, XMFLOAT2 xmf2Size, float fLifetime, UINT nMaxParticles);
+	virtual ~CExplosionObject();
 };
