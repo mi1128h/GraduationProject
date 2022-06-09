@@ -1274,10 +1274,11 @@ CCannonballObject::~CCannonballObject()
 void CCannonballObject::Animate(float fTimeElapsed, CCamera* pCamera)
 {
 	if (m_bIsFired) {
-		XMFLOAT3 xmf3Gravity = XMFLOAT3(0.0f, -10.0f, 0.0f);
-		m_xmf3Velocity = Vector3::Add(m_xmf3Velocity, Vector3::ScalarProduct(xmf3Gravity, fTimeElapsed * 0.1f, false));
-
-		SetPosition(Vector3::Add(GetPosition(), m_xmf3Velocity));
+		XMFLOAT3 xmf3Gravity = XMFLOAT3(0.0f, -10.0f * fTimeElapsed * 0.5, 0.0f);
+		m_xmf3Velocity = Vector3::Add(m_xmf3Velocity, xmf3Gravity);
+		//m_xmf3Velocity = Vector3::Add(m_xmf3Velocity, Vector3::ScalarProduct(xmf3Gravity, fTimeElapsed * 0.5, false));
+		XMFLOAT3 xmf3Velocity = Vector3::ScalarProduct(m_xmf3Velocity, fTimeElapsed * 100, false);
+		SetPosition(Vector3::Add(GetPosition(), xmf3Velocity));
 	}
 
 	// 포탄이 바닥에 충돌, 없어지면
