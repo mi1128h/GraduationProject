@@ -402,7 +402,7 @@ void CScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* p
 
 	XMFLOAT3 xmf3RotateAxis, xmf3SurfaceNormal;
 	CParticleObject* pRotatingObject = NULL;
-	float x = 974.0f, z = 1313.0f;
+	float x = 0, z = 0;
 	float fHeight = m_pTerrain->GetHeight(x * 10, z * 10);
 	pRotatingObject = new CParticleObject(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, XMFLOAT3(x*10, fHeight, z*10), XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(1.0f, 0.0f, 0.0f), XMFLOAT2(15.0f, 15.0f), 15.0f, MAX_PARTICLES);
 	m_ppParticleObjects[0] = pRotatingObject;

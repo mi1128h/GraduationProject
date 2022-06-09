@@ -591,8 +591,8 @@ void CGameFramework::UpdatePlayerMove(const DWORD& dwDirection)
 bool CGameFramework::IsPlayerMove(const DWORD& dwDirection, const DirectX::XMFLOAT3& xmf3Shift)
 {
 	if (!dwDirection) return false;
-	//if (!m_pScene->CheckPlayerByObjectBB(xmf3Shift)) return false;
-	//if (!m_pScene->CheckPlayerInScene(xmf3Shift)) return false;
+	if (!m_pScene->CheckPlayerByObjectBB(xmf3Shift)) return false;
+	if (!m_pScene->CheckPlayerInScene(xmf3Shift)) return false;
 	return true;
 }
 
