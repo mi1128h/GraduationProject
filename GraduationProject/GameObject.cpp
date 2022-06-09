@@ -1805,3 +1805,50 @@ void CParticleObject::SetVector(XMFLOAT3& vec)
 {
 	m_xmf3vec = vec;
 }
+
+/////////////
+
+CExplosionObject::CExplosionObject(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, XMFLOAT3 xmf3Position, XMFLOAT3 xmf3Velocity, XMFLOAT3 xmf3Acceleration, XMFLOAT3 xmf3Color, XMFLOAT2 xmf2Size, float fLifetime, UINT nMaxParticles)
+{
+	CParticleMesh* pMesh = new CParticleMesh(pd3dDevice, pd3dCommandList, xmf3Position, xmf3Velocity, xmf3Acceleration, xmf3Color, xmf2Size, fLifetime, nMaxParticles);
+	SetMesh(pMesh);
+
+	m_size.x = xmf2Size.x;
+	m_size.y = xmf2Size.y;
+
+	CTexture* pParticleTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
+	pParticleTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/Effect/DustEffect.dds", 0);
+
+	CScene::CreateShaderResourceViews(pd3dDevice, pParticleTexture, Signature::Graphics::particle_texture, true);
+	CScene::CreateShaderResourceViews(pd3dDevice, m_pRandowmValueTexture, Signature::Graphics::particle_buffer, true, true);
+
+	CMaterial* pMaterial = new CMaterial(1);
+	pMaterial->SetTexture(pParticleTexture);
+
+	srand((unsigned)time(NULL));
+
+	XMFLOAT4* pxmf4RandomValues = new XMFLOAT4[1000];
+	for (int i = 0; i < 1000; i++)
+	{
+		XMFLOAT3 accelations;
+		XMStoreFloat3(&accelations, ::RandomUnitVectorOnSphere());
+		pxmf4RandomValues[i] = XMFLOAT4(accelations.x, accelations.y, accelations.z, RandomValue(0.0f, 1.0f));
+	}
+	m_pRandowmValueTexture = new CTexture(1, RESOURCE_BUFFER, 0, 1, 0, 0);
+	m_pRandowmValueTexture->CreateBuffer(pd3dDevice, pd3dCommandList, pxmf4RandomValues, 1000, sizeof(XMFLOAT4), DXGI_FORMAT_R32G32B32A32_FLOAT, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_GENERIC_READ, 0);
+
+	CreateShaderVariables(pd3dDevice, pd3dCommandList);
+
+	CExplosionParticleShader* pShader = new CExplosionParticleShader();
+	pShader->CreateGraphicsPipelineState(pd3dDevice, pd3dGraphicsRootSignature, 0);
+	pShader->CreateShaderVariables(pd3dDevice, pd3dCommandList);
+
+	pMaterial->SetShader(pShader);
+	SetMaterial(0, pMaterial);
+
+	SetPosition(xmf3Position);
+}
+
+CExplosionObject::~CExplosionObject()
+{
+}

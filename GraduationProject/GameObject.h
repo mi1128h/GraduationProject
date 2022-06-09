@@ -600,6 +600,7 @@ class CParticleObject : public CGameObject
 {
 public:
 	CParticleObject(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, XMFLOAT3 xmf3Position, XMFLOAT3 xmf3Velocity, XMFLOAT3 xmf3Acceleration, XMFLOAT3 xmf3Color, XMFLOAT2 xmf2Size, float fLifetime, UINT nMaxParticles);
+	CParticleObject() : CGameObject(1) {};
 	virtual ~CParticleObject();
 
 	CTexture* m_pRandowmValueTexture = NULL;
@@ -621,7 +622,14 @@ public:
 	XMFLOAT2 m_size;
 	XMFLOAT3 m_xmf3vec;
 
-private:
+protected:
 	ID3D12Resource* m_pd3dcbParticleInfo = NULL;
 	CB_PARTICLE_INFO* m_pcbMappedParticleInfo = NULL;
+};
+
+class CExplosionObject : public CParticleObject
+{
+public:
+	CExplosionObject(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, XMFLOAT3 xmf3Position, XMFLOAT3 xmf3Velocity, XMFLOAT3 xmf3Acceleration, XMFLOAT3 xmf3Color, XMFLOAT2 xmf2Size, float fLifetime, UINT nMaxParticles);
+	virtual ~CExplosionObject();
 };
