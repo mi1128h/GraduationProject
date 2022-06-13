@@ -1694,9 +1694,9 @@ void CUIObject::UpdateHpRatio()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 
-CParticleObject::CParticleObject(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, XMFLOAT3 xmf3Position, XMFLOAT3 xmf3Velocity, XMFLOAT3 xmf3Acceleration, XMFLOAT3 xmf3Color, XMFLOAT2 xmf2Size, float fLifetime, UINT nMaxParticles) : CGameObject(1)
+CStreamParticleObject::CStreamParticleObject(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, XMFLOAT3 xmf3Position, XMFLOAT3 xmf3Velocity, XMFLOAT3 xmf3Acceleration, XMFLOAT3 xmf3Color, XMFLOAT2 xmf2Size, float fLifetime, UINT nMaxParticles) : CGameObject(1)
 {
-	CParticleMesh* pMesh = new CParticleMesh(pd3dDevice, pd3dCommandList, xmf3Position, xmf3Velocity, xmf3Acceleration, xmf3Color, xmf2Size, fLifetime, nMaxParticles);
+	CStreamParticleMesh* pMesh = new CStreamParticleMesh(pd3dDevice, pd3dCommandList, xmf3Position, xmf3Velocity, xmf3Acceleration, xmf3Color, xmf2Size, fLifetime, nMaxParticles);
 	SetMesh(pMesh);
 
 	m_size.x = xmf2Size.x;
@@ -1735,7 +1735,7 @@ CParticleObject::CParticleObject(ID3D12Device* pd3dDevice, ID3D12GraphicsCommand
 	SetPosition(xmf3Position);
 }
 
-CParticleObject::~CParticleObject()
+CStreamParticleObject::~CStreamParticleObject()
 {
 	if (m_pRandowmValueTexture) m_pRandowmValueTexture->Release();
 
@@ -1747,14 +1747,14 @@ CParticleObject::~CParticleObject()
 	::CloseHandle(m_hFenceEvent);
 }
 
-void CParticleObject::ReleaseUploadBuffers()
+void CStreamParticleObject::ReleaseUploadBuffers()
 {
 	if (m_pRandowmValueTexture) m_pRandowmValueTexture->ReleaseUploadBuffers();
 
 	CGameObject::ReleaseUploadBuffers();
 }
 
-void CParticleObject::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
+void CStreamParticleObject::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
 {
 	OnPrepareRender();
 
@@ -1778,7 +1778,7 @@ void CParticleObject::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera
 	m_pMesh->Render(pd3dCommandList,0, 1); //Draw
 }
 
-void CParticleObject::CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
+void CStreamParticleObject::CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
 {
 	CGameObject::CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
@@ -1789,7 +1789,7 @@ void CParticleObject::CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12Grap
 
 }
 
-void CParticleObject::UpdateShaderVariable(ID3D12GraphicsCommandList* pd3dCommandList, XMFLOAT4X4* pxmf4x4World)
+void CStreamParticleObject::UpdateShaderVariable(ID3D12GraphicsCommandList* pd3dCommandList, XMFLOAT4X4* pxmf4x4World)
 {
 	CGameObject::UpdateShaderVariable(pd3dCommandList, pxmf4x4World);
 
@@ -1801,16 +1801,16 @@ void CParticleObject::UpdateShaderVariable(ID3D12GraphicsCommandList* pd3dComman
 	pd3dCommandList->SetGraphicsRootConstantBufferView(Signature::Graphics::particle, d3dGpuVirtualAddress);
 }
 
-void CParticleObject::SetVector(XMFLOAT3& vec)
+void CStreamParticleObject::SetVector(XMFLOAT3& vec)
 {
 	m_xmf3vec = vec;
 }
 
 /////////////
 
-CExplosionObject::CExplosionObject(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, XMFLOAT3 xmf3Position, XMFLOAT3 xmf3Velocity, XMFLOAT3 xmf3Acceleration, XMFLOAT3 xmf3Color, XMFLOAT2 xmf2Size, float fLifetime, UINT nMaxParticles)
+CStreamExplosionObject::CStreamExplosionObject(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, XMFLOAT3 xmf3Position, XMFLOAT3 xmf3Velocity, XMFLOAT3 xmf3Acceleration, XMFLOAT3 xmf3Color, XMFLOAT2 xmf2Size, float fLifetime, UINT nMaxParticles)
 {
-	CParticleMesh* pMesh = new CParticleMesh(pd3dDevice, pd3dCommandList, xmf3Position, xmf3Velocity, xmf3Acceleration, xmf3Color, xmf2Size, fLifetime, nMaxParticles);
+	CStreamParticleMesh* pMesh = new CStreamParticleMesh(pd3dDevice, pd3dCommandList, xmf3Position, xmf3Velocity, xmf3Acceleration, xmf3Color, xmf2Size, fLifetime, nMaxParticles);
 	SetMesh(pMesh);
 
 	m_size.x = xmf2Size.x;
@@ -1850,6 +1850,6 @@ CExplosionObject::CExplosionObject(ID3D12Device* pd3dDevice, ID3D12GraphicsComma
 	SetPosition(xmf3Position);
 }
 
-CExplosionObject::~CExplosionObject()
+CStreamExplosionObject::~CStreamExplosionObject()
 {
 }

@@ -355,11 +355,11 @@ public:
 #define MAX_PARTICLES					999
 #define _WITH_QUERY_DATA_SO_STATISTICS
 
-class CParticleMesh : public CMesh
+class CStreamParticleMesh : public CMesh
 {
 public:
-	CParticleMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, XMFLOAT3 xmf3Position, XMFLOAT3 xmf3Velocity, XMFLOAT3 xmf3Acceleration, XMFLOAT3 xmf3Color, XMFLOAT2 xmf2Size, float fLifetime, UINT nMaxParticles);
-	virtual ~CParticleMesh();
+	CStreamParticleMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, XMFLOAT3 xmf3Position, XMFLOAT3 xmf3Velocity, XMFLOAT3 xmf3Acceleration, XMFLOAT3 xmf3Color, XMFLOAT2 xmf2Size, float fLifetime, UINT nMaxParticles);
+	virtual ~CStreamParticleMesh();
 
 	bool								m_bStart = true;
 

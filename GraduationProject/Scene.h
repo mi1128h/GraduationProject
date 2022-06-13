@@ -126,7 +126,7 @@ public:
 
 	int									m_nGameObjects = 0;
 	CGameObject** m_ppGameObjects = NULL;
-	CParticleObject** m_ppParticleObjects = NULL;
+	CStreamParticleObject** m_ppParticleObjects = NULL;
 	int	m_nParticleObjects = 0;
 
 	CPlayer* m_pPlayer = NULL;
