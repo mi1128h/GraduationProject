@@ -1,0 +1,57 @@
+#pragma once
+#include "GameObject.h"
+
+struct VS_VB_PARTICLE_INFO
+{
+	XMFLOAT3 m_xmf3Position;
+};
+
+struct particle_info
+{
+	XMFLOAT3 m_xmf3Position;
+	bool m_bActive = true;
+	float m_fVelocity;
+	XMFLOAT3 m_xmf3Vectors;
+	float m_fParticleLife = 0.0f;
+};
+
+#define EMIT_MODE 0xff
+class CParticleSystem : public CGameObject
+{
+public:
+	CParticleSystem() {}
+	CParticleSystem(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList,
+		XMFLOAT3 xmf3Position, XMFLOAT3 xmf3Range, int nParticles, float fEmitTime = 100000.0f);
+	virtual ~CParticleSystem();
+
+	virtual void Animate(float fElapsedTime, CCamera* pCamrea = NULL);
+	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
+	virtual void UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList);
+	virtual void CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList);
+
+	virtual void KillParticles();
+	virtual void EmitParticles(float fElapsedTime);
+	virtual void UpdateParticles(float fElapsedTime);
+	virtual void InitParticleSystem(XMFLOAT3 xmf3Position, XMFLOAT3 xmf3Range, float fEmitTime);
+
+	virtual void CreateParticles();
+public:
+	vector<particle_info> m_pParticles;
+	int m_nParticles;
+	int m_nDeadParticles;
+	float m_fLifeTime = 0.0f;
+	float m_fEmitTime = 500.0f;
+	float m_fParticleVelocity = 5.0f;
+	float m_fParticleVelocityVariation = 5.0f;
+	XMFLOAT3 m_xmf3ParticleRange;
+	XMFLOAT3 m_xmf3MaxRange;
+
+protected:
+	ID3D12Resource* m_pd3dInstancesBuffer = NULL;
+	D3D12_VERTEX_BUFFER_VIEW		m_d3dInstancingBufferView;
+
+	ID3D12Resource* m_pd3dcbParticles = NULL;
+	VS_VB_PARTICLE_INFO* m_pcbMappedParticles = NULL;
+};
+
+bool compare(particle_info& p1, particle_info& p2);
