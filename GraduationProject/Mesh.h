@@ -77,6 +77,7 @@ public:
 	void LoadMeshFromFile(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, FILE* pInFile);
 	void SetBoundingBoxValues(DirectX::XMFLOAT3& max, DirectX::XMFLOAT3& min);
 	virtual void UpdateBoundingTransform(CCollision* pCollision, XMFLOAT4X4& xmf4x4World);
+	D3D12_VERTEX_BUFFER_VIEW GetPositionBufferView() { return(m_d3dPositionBufferView); }
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -391,3 +392,13 @@ public:
 	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList);
 	virtual void OnPostRender(ID3D12GraphicsCommandList* pd3dCommandList, void* pContext, int nPipelineState = 0);
 };
+
+/////
+
+class CParticleMesh : public CMesh
+{
+public:
+	CParticleMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, XMFLOAT3 xmf3Position, XMFLOAT2 xmf2Size);
+	virtual ~CParticleMesh();
+};
+
