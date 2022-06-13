@@ -700,7 +700,7 @@ void GSParticleStreamOutput(point VS_PARTICLE_INPUT input[1], inout PointStream<
 				float4 f4Random = gRandomBuffer.Load(uint(index * gfCurrentTime * 100.0f) % 1000);
 				particle.type = PARTICLE_TYPE_FLARE;
 				particle.position = float3(gmtxGameObject._41, gmtxGameObject._42, gmtxGameObject._43);
-				particle.velocity = float3(3.7f, 0.0f, 0.0f) * 10000.0f;
+				particle.velocity = float3(10.0f, 0.0f, 0.0f) * 10000.0f;
 				particle.acceleration = float3(vec3.x, vec3.y, vec3.z);
 				particle.size = float2(size_x, size_y);
 				particle.age.y = 1.8f;
@@ -851,3 +851,71 @@ void GSParticleExStreamOutput(point VS_PARTICLE_INPUT input[1], inout PointStrea
 
 	}
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+struct VS_BILLBOARD_OUT {
+	float3 centerW:POSITION;
+	float2 sizeW:SIZE;
+};
+
+struct VS_BILLBOARD_IN {
+	float3 posW:POSITION;
+	float2 sizeW:SIZE;
+	float3 instancePosition : INSTANCEPOSITION;
+};
+
+struct GS_BILLBOARD_OUT {
+	float4 posH:SV_POSITION;
+	float3 posW:POSITION;
+	float3 normalW : NORMAL;
+	float2 uv: TEXCOORD;
+	uint primID:SV_PrimitiveID;
+};
+
+VS_BILLBOARD_OUT VSBillboard(VS_BILLBOARD_IN input)
+{
+	VS_BILLBOARD_OUT output;
+	output.centerW = input.instancePosition;
+	output.sizeW = input.sizeW;
+	return(output);
+}
+
+[maxvertexcount(4)]
+void GSBillboard(point VS_BILLBOARD_OUT input[1], uint primID:SV_PrimitiveID, inout TriangleStream<GS_BILLBOARD_OUT> outStream)
+{
+	float3 vUp = float3(0.0f, 1.0f, 0.0f);
+	float3 vLook = gvCameraPosition.xyz - input[0].centerW;
+	vLook = normalize(vLook);
+	float3 vRight = cross(vUp, vLook);
+	float fHalfW = input[0].sizeW.x * 0.5f;
+	float fHalfH = input[0].sizeW.y * 0.5f;
+
+	float4 pVertices[4];
+	pVertices[0] = float4(input[0].centerW + fHalfW * vRight - fHalfH * vUp, 1.0f);
+	pVertices[1] = float4(input[0].centerW + fHalfW * vRight + fHalfH * vUp, 1.0f);
+	pVertices[2] = float4(input[0].centerW - fHalfW * vRight - fHalfH * vUp, 1.0f);
+	pVertices[3] = float4(input[0].centerW - fHalfW * vRight + fHalfH * vUp, 1.0f);
+
+	float2 pUVs[4] = { float2(0.0f,1.0f),float2(0.0f,0.0f),float2(1.0f,1.0f),float2(1.0f,0.0f) };
+	GS_BILLBOARD_OUT output;
+	for (int i = 0; i < 4; ++i) {
+		output.posW = pVertices[i].xyz;
+		output.posH = mul(mul(pVertices[i], gmtxView), gmtxProjection);
+		output.normalW = vLook;
+		output.uv = pUVs[i];
+		output.primID = primID;
+		outStream.Append(output);
+	}
+}
+
+PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSBillboard(GS_BILLBOARD_OUT input) : SV_TARGET
+{
+	float4 cColor = gtxtParticleTexture.Sample(gSamplerState, input.uv);
+
+	PS_MULTIPLE_RENDER_TARGETS_OUTPUT output;
+	output.f4Scene = output.f4Color = cColor;
+	output.fDepth = 1.0f - input.posH.z;
+
+	return(output);
+}
+
