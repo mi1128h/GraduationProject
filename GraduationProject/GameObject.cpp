@@ -3,6 +3,7 @@
 #include "Shader.h"
 #include "Scene.h"
 #include "Collision.h"
+#include "ParticleShader.h"
 
 inline float RandF(float fMin, float fMax)
 {

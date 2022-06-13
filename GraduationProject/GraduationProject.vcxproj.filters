@@ -120,6 +120,9 @@
     <ClInclude Include="Factory.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="ParticleShader.h">
+      <Filter>헤더 파일\Shader</Filter>
+    </ClInclude>
     <ClInclude Include="ParticleSystem.h">
       <Filter>헤더 파일\Object</Filter>
     </ClInclude>
@@ -178,6 +181,9 @@
     </ClCompile>
     <ClCompile Include="Factory.cpp">
       <Filter>소스 파일\Factory</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleShader.cpp">
+      <Filter>소스 파일\Shader</Filter>
     </ClCompile>
     <ClCompile Include="ParticleSystem.cpp">
       <Filter>소스 파일\Object</Filter>
