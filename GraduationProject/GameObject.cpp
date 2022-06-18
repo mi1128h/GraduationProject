@@ -1371,9 +1371,9 @@ void CMonsterObject::FindTarget(CGameObject* pObject)
 		m_pTargetObject = NULL;
 }
 
-void CMonsterObject::ChaseTarget(float fTimeElapsed, bool bMove)
+float CMonsterObject::ChaseTarget(float fTimeElapsed, bool bMove)
 {
-	if (m_pTargetObject == NULL) return;
+	if (m_pTargetObject == NULL) return 0;
 
 	XMFLOAT3 targetPosition = m_pTargetObject->GetPosition();
 	XMFLOAT3 monsterPosition = GetPosition();
@@ -1397,11 +1397,13 @@ void CMonsterObject::ChaseTarget(float fTimeElapsed, bool bMove)
 	Rotate(0.0f, fYaw, 0.0f);
 
 	// 전진
-	if (bMove) {
 	float distance = Vector3::Distance(monsterPosition, targetPosition);
+	if (bMove) {
 	if (distance > 200.0f)
 		MoveForward(50.0f * fTimeElapsed);
 	}
+
+	return distance;
 }
 
 void CMonsterObject::AttackTarget()
@@ -1537,30 +1539,45 @@ void CBossMonster::Animate(float fTimeElapsed, CCamera* pCamera)
 				m_pSkinnedAnimationController->SwitchAnimationState(track_name::Scream);
 			}
 			else {
-				ChaseTarget(fTimeElapsed, false);
+				float distance = ChaseTarget(fTimeElapsed, false);
 				int n = rand() % 100;
+				while (n >= 0 || n <= 3) {
+					if (distance > 1600) {
+						if (n == 2 || n == 3) {
+							n = rand() % 100;
+						}
+						else break;
+					}
+					else {
+						if (n == 0 || n == 1) {
+							n = rand() % 100;
+						}
+						else break;
+					}
+				}
+
 				if (curTrackNum == track_name::Idle || curTrackNum == track_name::FlyIdle) {
 					switch (n) {
 					case 0:
-						DoAttackFlame(curTrackNum);
+						DoAttackHand(curTrackNum);
 						break;
 					case 1:
-						DoAttackHand(curTrackNum);
+						DoAttackFlame(curTrackNum);
 						break;
 					case 2:
 						DoAttackMouth(curTrackNum);
 						break;
 					case 3:
-						DoTakeOff(curTrackNum);
+						DoDefend(curTrackNum);
 						break;
 					case 4:
-						DoFlyFlame(curTrackNum);
+						DoTakeOff(curTrackNum);
 						break;
 					case 5:
-						DoLand(curTrackNum);
+						DoFlyFlame(curTrackNum);
 						break;
 					case 6:
-						DoDefend(curTrackNum);
+						DoLand(curTrackNum);
 					}
 				}
 			}
