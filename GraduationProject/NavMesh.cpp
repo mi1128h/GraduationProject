@@ -42,22 +42,35 @@ CNavMesh::CNavMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dComm
 	m_ppd3dSubSetIndexUploadBuffers = new ID3D12Resource * [m_nSubMeshes];
 	m_pd3dSubSetIndexBufferViews = new D3D12_INDEX_BUFFER_VIEW[m_nSubMeshes];
 
+	CCell* cells = NULL;
+
 	while (meshInfo >> s) {
 		if (s.compare("fCount") == 0) {
 			meshInfo >> m_pnSubSetIndices[0];
+			cells = new CCell[m_pnSubSetIndices[0]];
 			m_pnSubSetIndices[0] *= 3;
 			m_ppnSubSetIndices[0] = new UINT[m_pnSubSetIndices[0]];
 			break;
 		}
 	}
 
+	int k = 0;
 	for (int i = 0; i < m_pnSubSetIndices[0];) {
 		meshInfo >> s >> x >> y >> z;
 		if (s.compare("f") != 0) break;
 		m_ppnSubSetIndices[0][i++] = x - 1;
 		m_ppnSubSetIndices[0][i++] = y - 1;
 		m_ppnSubSetIndices[0][i++] = z - 1;
+		cells[k].lines[0].startIndex = x - 1;
+		cells[k].lines[0].endIndex = y - 1;
+		cells[k].lines[1].startIndex = y - 1;
+		cells[k].lines[1].endIndex = z - 1;
+		cells[k].lines[2].startIndex = z - 1;
+		cells[k].lines[2].endIndex = x - 1;
+		k++;
 	}
+
+	MakeLink(cells, k);
 
 	m_ppd3dSubSetIndexBuffers[0] = ::CreateBufferResource(pd3dDevice, pd3dCommandList, m_ppnSubSetIndices[0], sizeof(UINT) * m_pnSubSetIndices[0], D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_INDEX_BUFFER, &m_ppd3dSubSetIndexUploadBuffers[0]);
 
@@ -68,4 +81,9 @@ CNavMesh::CNavMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dComm
 
 CNavMesh::~CNavMesh()
 {
+}
+
+void CNavMesh::MakeLink(CCell* cells, int n)
+{
+
 }

@@ -4,6 +4,7 @@
 #include "Collision.h"
 #include "CollisionManager.h"
 #include "Factory.h"
+#include "NavMesh.h"
 
 struct LIGHT
 {

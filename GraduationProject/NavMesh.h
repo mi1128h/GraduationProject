@@ -6,16 +6,23 @@ class CLine
 public:
 	XMFLOAT3 start;
 	XMFLOAT3 end;
+
+	int startIndex, endIndex;
 	
 	bool Compare(CLine other) {
-		if (Vector3::Distance(start, other.start) == 0) {
-			if (Vector3::Distance(end, other.end) == 0)
+		if (Vector3::Distance(start, other.start) <= 0) {
+			if (Vector3::Distance(end, other.end) <= 0)
 				return true;
 		}
-		else if (Vector3::Distance(end, other.start) == 0) {
-			if (Vector3::Distance(start, other.end) == 0)
+		else if (Vector3::Distance(end, other.start) <= 0) {
+			if (Vector3::Distance(start, other.end) <= 0)
 				return true;
 		}
+	}
+
+	bool CompareByIndex(CLine other) {
+		if ((startIndex == other.startIndex) && (endIndex == other.endIndex)) return true;
+		else if ((startIndex == other.endIndex) && (endIndex == other.startIndex)) return true;
 	}
 };
 
@@ -28,7 +35,7 @@ public:
 	bool Compare(CCell* other) {
 		for (int i = 0; i < 3; ++i) {
 			for (int j = 0; j < 3; ++j) {
-				if (lines[i].Compare(other->lines[j]))
+				if (lines[i].CompareByIndex(other->lines[j]))
 					return true;
 			}
 		}
@@ -47,4 +54,5 @@ public:
 	virtual ~CNavMesh();
 
 	XMFLOAT3 GetScale() { return(m_xmf3Scale); }
+	void MakeLink(CCell* cells, int n);
 };
