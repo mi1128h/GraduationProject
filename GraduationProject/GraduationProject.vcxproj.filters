@@ -118,7 +118,10 @@
       <Filter>헤더 파일\Object</Filter>
     </ClInclude>
     <ClInclude Include="Factory.h">
-      <Filter>헤더 파일\Factory</Filter>
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="NavMesh.h">
+      <Filter>헤더 파일\Mesh</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -175,6 +178,9 @@
     </ClCompile>
     <ClCompile Include="Factory.cpp">
       <Filter>소스 파일\Factory</Filter>
+    </ClCompile>
+    <ClCompile Include="NavMesh.cpp">
+      <Filter>소스 파일\Mesh</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

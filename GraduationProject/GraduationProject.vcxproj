@@ -152,6 +152,7 @@
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GraduationProject.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="NavMesh.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="Scene.h" />
@@ -175,6 +176,7 @@
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GraduationProject.cpp" />
     <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="NavMesh.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="Shader.cpp" />
