@@ -1,5 +1,38 @@
 #include "NavMesh.h"
 
+
+bool CCell::Compare(CCell other)
+{
+	for (int i = 0; i < 3; ++i) {
+		for (int j = 0; j < 3; ++j) {
+			if (lines[i].CompareByIndex(other.lines[j]))
+				return true;
+		}
+	}
+	return false;
+}
+
+bool CLine::Compare(CLine other)
+{
+	if (Vector3::Distance(start, other.start) <= 0) {
+		if (Vector3::Distance(end, other.end) <= 0)
+			return true;
+	}
+	else if (Vector3::Distance(end, other.start) <= 0) {
+		if (Vector3::Distance(start, other.end) <= 0)
+			return true;
+	}
+	return false;
+}
+
+bool CLine::CompareByIndex(CLine other)
+{
+	if ((startIndex == other.startIndex) && (endIndex == other.endIndex)) return true;
+	else if ((startIndex == other.endIndex) && (endIndex == other.startIndex)) return true;
+	return false;
+}
+
+
 CNavMesh::CNavMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, XMFLOAT3 xmf3Scale) : CMesh(pd3dDevice, pd3dCommandList)
 {
 	ifstream meshInfo("../Assets/Image/Terrain/SampleScene Exported NavMesh.txt");
@@ -85,5 +118,12 @@ CNavMesh::~CNavMesh()
 
 void CNavMesh::MakeLink(CCell* cells, int n)
 {
-
+	for (int i = 0; i < n; ++i) {
+		for (int j = 0; j < n; ++j) {
+			if (cells[i].Compare(cells[j])) {
+				cells[i].link[cells[i].nLink++] = &cells[j];
+				cells[j].link[cells[j].nLink++] = &cells[i];
+			}
+		}
+	}
 }

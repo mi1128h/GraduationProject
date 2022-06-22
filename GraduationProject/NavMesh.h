@@ -9,38 +9,18 @@ public:
 
 	int startIndex, endIndex;
 	
-	bool Compare(CLine other) {
-		if (Vector3::Distance(start, other.start) <= 0) {
-			if (Vector3::Distance(end, other.end) <= 0)
-				return true;
-		}
-		else if (Vector3::Distance(end, other.start) <= 0) {
-			if (Vector3::Distance(start, other.end) <= 0)
-				return true;
-		}
-	}
-
-	bool CompareByIndex(CLine other) {
-		if ((startIndex == other.startIndex) && (endIndex == other.endIndex)) return true;
-		else if ((startIndex == other.endIndex) && (endIndex == other.startIndex)) return true;
-	}
+	bool Compare(CLine other);
+	bool CompareByIndex(CLine other);
 };
 
 class CCell
 {
 public:
 	CLine lines[3];
-	CCell* link[3];
+	CCell* link[3]{ NULL };
+	int nLink = 0;
 
-	bool Compare(CCell* other) {
-		for (int i = 0; i < 3; ++i) {
-			for (int j = 0; j < 3; ++j) {
-				if (lines[i].CompareByIndex(other->lines[j]))
-					return true;
-			}
-		}
-		return false;
-	}
+	bool Compare(CCell other);
 };
 
 class CNavMesh : public CMesh
