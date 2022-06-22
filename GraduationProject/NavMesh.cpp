@@ -1,17 +1,6 @@
 #include "NavMesh.h"
 
 
-bool CCell::Compare(CCell other)
-{
-	for (int i = 0; i < 3; ++i) {
-		for (int j = 0; j < 3; ++j) {
-			if (lines[i].CompareByIndex(other.lines[j]))
-				return true;
-		}
-	}
-	return false;
-}
-
 bool CLine::Compare(CLine other)
 {
 	if (Vector3::Distance(start, other.start) <= 0) {
@@ -32,6 +21,26 @@ bool CLine::CompareByIndex(CLine other)
 	return false;
 }
 
+bool CCell::IsLinked(CCell* other)
+{
+	if (this == other) return true;
+	for (int i = 0; i < 3; ++i) {
+		if (link[i] == other)
+			return true;
+	}
+	return false;
+}
+
+bool CCell::Compare(CCell other)
+{
+	for (int i = 0; i < 3; ++i) {
+		for (int j = 0; j < 3; ++j) {
+			if (lines[i].Compare(other.lines[j]))
+				return true;
+		}
+	}
+	return false;
+}
 
 CNavMesh::CNavMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, XMFLOAT3 xmf3Scale) : CMesh(pd3dDevice, pd3dCommandList)
 {
@@ -52,11 +61,11 @@ CNavMesh::CNavMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dComm
 
 	float fHeight = 0.0f, fMinHeight = +FLT_MAX, fMaxHeight = -FLT_MAX;
 
-	float x, y, z;
+	float fx, fy, fz;
 	for (int i = 0; i < m_nVertices; ++i) {
-		meshInfo >> s >> x >> y >> z;
+		meshInfo >> s >> fx >> fy >> fz;
 		if (s.compare("v") != 0) break;
-		m_pxmf3Positions[i] = XMFLOAT3((x * m_xmf3Scale.x * 220.0f / 150.0f) + 1000.0f, 100, (z * m_xmf3Scale.z * 220.0f / 150.0f) + 1000.0f);
+		m_pxmf3Positions[i] = XMFLOAT3((fx * m_xmf3Scale.x * 220.0f / 150.0f) + 1000.0f, 100, (fz * m_xmf3Scale.z * 220.0f / 150.0f) + 1000.0f);
 		//m_pxmf3Positions[i] = XMFLOAT3(x, y, z);
 	}
 
@@ -80,7 +89,7 @@ CNavMesh::CNavMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dComm
 	while (meshInfo >> s) {
 		if (s.compare("fCount") == 0) {
 			meshInfo >> m_pnSubSetIndices[0];
-			cells = new CCell[m_pnSubSetIndices[0]];
+			cells = new CCell[m_pnSubSetIndices[0]]{};
 			m_pnSubSetIndices[0] *= 3;
 			m_ppnSubSetIndices[0] = new UINT[m_pnSubSetIndices[0]];
 			break;
@@ -88,18 +97,19 @@ CNavMesh::CNavMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dComm
 	}
 
 	int k = 0;
+	int idx1, idx2, idx3;
 	for (int i = 0; i < m_pnSubSetIndices[0];) {
-		meshInfo >> s >> x >> y >> z;
+		meshInfo >> s >> idx1 >> idx2 >> idx3;
 		if (s.compare("f") != 0) break;
-		m_ppnSubSetIndices[0][i++] = x - 1;
-		m_ppnSubSetIndices[0][i++] = y - 1;
-		m_ppnSubSetIndices[0][i++] = z - 1;
-		cells[k].lines[0].startIndex = x - 1;
-		cells[k].lines[0].endIndex = y - 1;
-		cells[k].lines[1].startIndex = y - 1;
-		cells[k].lines[1].endIndex = z - 1;
-		cells[k].lines[2].startIndex = z - 1;
-		cells[k].lines[2].endIndex = x - 1;
+		m_ppnSubSetIndices[0][i++] = idx1 - 1;
+		m_ppnSubSetIndices[0][i++] = idx2 - 1;
+		m_ppnSubSetIndices[0][i++] = idx3 - 1;
+		cells[k].lines[0].start = m_pxmf3Positions[idx1 - 1];
+		cells[k].lines[0].end = m_pxmf3Positions[idx2 - 1];
+		cells[k].lines[1].start = m_pxmf3Positions[idx2 - 1];
+		cells[k].lines[1].end = m_pxmf3Positions[idx3 - 1];
+		cells[k].lines[2].start = m_pxmf3Positions[idx3 - 1];
+		cells[k].lines[2].end = m_pxmf3Positions[idx1 - 1];
 		k++;
 	}
 
@@ -120,10 +130,16 @@ void CNavMesh::MakeLink(CCell* cells, int n)
 {
 	for (int i = 0; i < n; ++i) {
 		for (int j = 0; j < n; ++j) {
-			if (cells[i].Compare(cells[j])) {
-				cells[i].link[cells[i].nLink++] = &cells[j];
-				cells[j].link[cells[j].nLink++] = &cells[i];
+			if (i != j) {
+				if (!cells[i].IsLinked(&cells[j])) {
+					if (cells[i].Compare(cells[j])) {
+						cells[i].link[cells[i].nLink++] = &cells[j];
+						cells[j].link[cells[j].nLink++] = &cells[i];
+					}
+				}
 			}
 		}
 	}
+
+	m_NavCells = cells;
 }

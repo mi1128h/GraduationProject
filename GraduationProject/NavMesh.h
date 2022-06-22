@@ -16,10 +16,11 @@ public:
 class CCell
 {
 public:
-	CLine lines[3];
+	CLine lines[3]{};
 	CCell* link[3]{ NULL };
 	int nLink = 0;
 
+	bool IsLinked(CCell* other);
 	bool Compare(CCell other);
 };
 
@@ -27,7 +28,7 @@ class CNavMesh : public CMesh
 {
 protected:
 	XMFLOAT3						m_xmf3Scale;
-	CCell** m_NavCells = NULL;
+	CCell* m_NavCells = NULL;
 
 public:
 	CNavMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, XMFLOAT3 xmf3Scale = XMFLOAT3(1.0f, 1.0f, 1.0f));
