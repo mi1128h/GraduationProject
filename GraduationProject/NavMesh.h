@@ -21,19 +21,22 @@ public:
 	int nLink = 0;
 
 	bool IsLinked(CCell* other);
-	bool Compare(CCell other);
+	bool IsConnected(CCell other);
+	bool IsSame(CCell other);
 };
 
 class CNavMesh : public CMesh
 {
 protected:
 	XMFLOAT3						m_xmf3Scale;
-	CCell* m_NavCells = NULL;
+	vector<CCell> m_NavCells;
 
 public:
 	CNavMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, XMFLOAT3 xmf3Scale = XMFLOAT3(1.0f, 1.0f, 1.0f));
 	virtual ~CNavMesh();
 
 	XMFLOAT3 GetScale() { return(m_xmf3Scale); }
-	void MakeLink(CCell* cells, int n);
+
+	vector<CCell> CheckCells(CCell* cell, int n);
+	void MakeLink(vector<CCell> cells);
 };

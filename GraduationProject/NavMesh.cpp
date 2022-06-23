@@ -3,12 +3,12 @@
 
 bool CLine::Compare(CLine other)
 {
-	if (Vector3::Distance(start, other.start) <= 0) {
-		if (Vector3::Distance(end, other.end) <= 0)
+	if (Vector3::Distance(start, other.start) <= 0.0001) {
+		if (Vector3::Distance(end, other.end) <= 0.0001)
 			return true;
 	}
-	else if (Vector3::Distance(end, other.start) <= 0) {
-		if (Vector3::Distance(start, other.end) <= 0)
+	else if (Vector3::Distance(end, other.start) <= 0.0001) {
+		if (Vector3::Distance(start, other.end) <= 0.0001)
 			return true;
 	}
 	return false;
@@ -31,7 +31,7 @@ bool CCell::IsLinked(CCell* other)
 	return false;
 }
 
-bool CCell::Compare(CCell other)
+bool CCell::IsConnected(CCell other)
 {
 	for (int i = 0; i < 3; ++i) {
 		for (int j = 0; j < 3; ++j) {
@@ -40,6 +40,21 @@ bool CCell::Compare(CCell other)
 		}
 	}
 	return false;
+}
+
+bool CCell::IsSame(CCell other)
+{
+	int n = 0;
+	for (int i = 0; i < 3; ++i) {
+		for (int j = 0; j < 3; ++j) {
+			if (lines[i].Compare(other.lines[j])) {
+				n++;
+				break;
+			}
+		}
+	}
+	if (n == 3) return true;
+	else return false;
 }
 
 CNavMesh::CNavMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, XMFLOAT3 xmf3Scale) : CMesh(pd3dDevice, pd3dCommandList)
@@ -113,7 +128,8 @@ CNavMesh::CNavMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dComm
 		k++;
 	}
 
-	MakeLink(cells, k);
+	vector<CCell> vCells = CheckCells(cells, k);
+	MakeLink(vCells);
 
 	m_ppd3dSubSetIndexBuffers[0] = ::CreateBufferResource(pd3dDevice, pd3dCommandList, m_ppnSubSetIndices[0], sizeof(UINT) * m_pnSubSetIndices[0], D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_INDEX_BUFFER, &m_ppd3dSubSetIndexUploadBuffers[0]);
 
@@ -126,25 +142,40 @@ CNavMesh::~CNavMesh()
 {
 }
 
-void CNavMesh::MakeLink(CCell* cells, int n)
+vector<CCell> CNavMesh::CheckCells(CCell* cell, int n)
 {
+	vector<CCell> result;
+	result.push_back(cell[0]);
+
 	for (int i = 0; i < n; ++i) {
-		for (int j = 0; j < n; ++j) {
+		bool same = true;
+		for (int j = 0; j < result.size(); ++j) {
+			same = result[j].IsSame(cell[i]);
+			if (same)
+				break;
+		}
+		if (!same) result.push_back(cell[i]);
+	}
+
+	return result;
+}
+
+void CNavMesh::MakeLink(vector<CCell> vCells)
+{
+	for (int i = 0; i < vCells.size(); ++i) {
+		for (int j = 0; j < vCells.size(); ++j) {
 			if (i != j) {
-				if (!cells[i].IsLinked(&cells[j])) {
-					if (cells[i].Compare(cells[j])) {
-						if (cells[i].nLink >= 3 || cells[j].nLink >= 3) {
-							printf(">=3");
-						}
-						cells[i].link.push_back(&cells[j]);
-						cells[j].link.push_back(&cells[i]);
-						cells[i].nLink++;
-						cells[j].nLink++;
+				if (!vCells[i].IsLinked(&vCells[j])) {
+					if (vCells[i].IsConnected(vCells[j])) {
+						vCells[i].link.push_back(&vCells[j]);
+						vCells[j].link.push_back(&vCells[i]);
+						vCells[i].nLink++;
+						vCells[j].nLink++;
 					}
 				}
 			}
 		}
 	}
 
-	m_NavCells = cells;
+	m_NavCells = vCells;
 }
