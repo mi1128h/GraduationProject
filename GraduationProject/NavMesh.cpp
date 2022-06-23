@@ -130,12 +130,15 @@ CNavMesh::CNavMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dComm
 
 	vector<CCell> vCells = CheckCells(cells, k);
 	MakeLink(vCells);
+	SaveCells(vCells);
 
 	m_ppd3dSubSetIndexBuffers[0] = ::CreateBufferResource(pd3dDevice, pd3dCommandList, m_ppnSubSetIndices[0], sizeof(UINT) * m_pnSubSetIndices[0], D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_INDEX_BUFFER, &m_ppd3dSubSetIndexUploadBuffers[0]);
 
 	m_pd3dSubSetIndexBufferViews[0].BufferLocation = m_ppd3dSubSetIndexBuffers[0]->GetGPUVirtualAddress();
 	m_pd3dSubSetIndexBufferViews[0].Format = DXGI_FORMAT_R32_UINT;
 	m_pd3dSubSetIndexBufferViews[0].SizeInBytes = sizeof(UINT) * m_pnSubSetIndices[0];
+
+	delete[] cells;
 }
 
 CNavMesh::~CNavMesh()
@@ -178,4 +181,16 @@ void CNavMesh::MakeLink(vector<CCell> vCells)
 	}
 
 	m_NavCells = vCells;
+}
+
+void CNavMesh::SaveCells(vector<CCell> cells)
+{
+	ofstream out("LinkedNavMesh.txt");
+	out << "total Cells: " << cells.size() << endl;
+	for (int i = 0; i < cells.size(); ++i) {
+		out << "(" << cells[i].lines[0].start.x << ", " << cells[i].lines[0].start.y << ", " << cells[i].lines[0].start.z << "),"
+			<< "(" << cells[i].lines[1].start.x << ", " << cells[i].lines[1].start.y << ", " << cells[i].lines[1].start.z << "),"
+			<< "(" << cells[i].lines[2].start.x << ", " << cells[i].lines[2].start.y << ", " << cells[i].lines[2].start.z << ")"
+			<< endl;
+	}
 }

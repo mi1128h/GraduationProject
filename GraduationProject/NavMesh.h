@@ -39,4 +39,5 @@ public:
 
 	vector<CCell> CheckCells(CCell* cell, int n);
 	void MakeLink(vector<CCell> cells);
+	void SaveCells(vector<CCell> cells);
 };
