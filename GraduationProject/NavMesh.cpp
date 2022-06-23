@@ -24,7 +24,7 @@ bool CLine::CompareByIndex(CLine other)
 bool CCell::IsLinked(CCell* other)
 {
 	if (this == other) return true;
-	for (int i = 0; i < 3; ++i) {
+	for (int i = 0; i < nLink; ++i) {
 		if (link[i] == other)
 			return true;
 	}
@@ -133,8 +133,13 @@ void CNavMesh::MakeLink(CCell* cells, int n)
 			if (i != j) {
 				if (!cells[i].IsLinked(&cells[j])) {
 					if (cells[i].Compare(cells[j])) {
-						cells[i].link[cells[i].nLink++] = &cells[j];
-						cells[j].link[cells[j].nLink++] = &cells[i];
+						if (cells[i].nLink >= 3 || cells[j].nLink >= 3) {
+							printf(">=3");
+						}
+						cells[i].link.push_back(&cells[j]);
+						cells[j].link.push_back(&cells[i]);
+						cells[i].nLink++;
+						cells[j].nLink++;
 					}
 				}
 			}

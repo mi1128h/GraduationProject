@@ -17,7 +17,7 @@ class CCell
 {
 public:
 	CLine lines[3]{};
-	CCell* link[3]{ NULL };
+	vector<CCell*> link;
 	int nLink = 0;
 
 	bool IsLinked(CCell* other);
