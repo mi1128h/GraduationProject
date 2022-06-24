@@ -57,16 +57,33 @@ bool CCell::IsSame(CCell other)
 	else return false;
 }
 
-CNavMesh::CNavMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, XMFLOAT3 xmf3Scale) : CMesh(pd3dDevice, pd3dCommandList)
+CNavMesh::CNavMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, XMFLOAT3 xmf3Scale, bool uniqued) : CMesh(pd3dDevice, pd3dCommandList)
 {
-	ifstream meshInfo("../Assets/Image/Terrain/SampleScene Exported NavMesh.txt");
+	ifstream meshInfo;
+	if (uniqued)
+		meshInfo.open("../Assets/Image/Terrain/UniquedNavMeshCells.txt");
+	else
+		meshInfo.open("../Assets/Image/Terrain/SampleScene Exported NavMesh.txt");
 
 	string s;
-	while (meshInfo >> s) {
-		if (s.compare("vCount") == 0) {
-			meshInfo >> m_nVertices;
-			m_pxmf3Positions = new XMFLOAT3[m_nVertices];
-			break;
+	if (uniqued) {
+		while (meshInfo >> s) {
+			if (s.compare("total:") == 0) {
+				int nCell;
+				meshInfo >> nCell;
+				m_nVertices = nCell * 3;
+				m_pxmf3Positions = new XMFLOAT3[m_nVertices];
+				break;
+			}
+		}
+	}
+	else {
+		while (meshInfo >> s) {
+			if (s.compare("vCount") == 0) {
+				meshInfo >> m_nVertices;
+				m_pxmf3Positions = new XMFLOAT3[m_nVertices];
+				break;
+			}
 		}
 	}
 
@@ -76,12 +93,24 @@ CNavMesh::CNavMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dComm
 
 	float fHeight = 0.0f, fMinHeight = +FLT_MAX, fMaxHeight = -FLT_MAX;
 
-	float fx, fy, fz;
-	for (int i = 0; i < m_nVertices; ++i) {
-		meshInfo >> s >> fx >> fy >> fz;
-		if (s.compare("v") != 0) break;
-		m_pxmf3Positions[i] = XMFLOAT3((fx * m_xmf3Scale.x * 220.0f / 150.0f) + 1000.0f, 100, (fz * m_xmf3Scale.z * 220.0f / 150.0f) + 1000.0f);
-		//m_pxmf3Positions[i] = XMFLOAT3(x, y, z);
+	if (uniqued) {
+		float fx1, fy1, fz1, fx2, fy2, fz2, fx3, fy3, fz3;
+		for (int i = 0; i < m_nVertices;) {
+			meshInfo >> s >> fx1 >> fy1 >> fz1 >> fx2 >> fy2 >> fz2 >> fx3 >> fy3 >> fz3;
+			if (s.compare("cell") != 0) break;
+			m_pxmf3Positions[i++] = XMFLOAT3(fx1, fy1, fz1);
+			m_pxmf3Positions[i++] = XMFLOAT3(fx2, fy2, fz2);
+			m_pxmf3Positions[i++] = XMFLOAT3(fx3, fy3, fz3);
+		}
+	}
+	else {
+		float fx, fy, fz;
+		for (int i = 0; i < m_nVertices; ++i) {
+			meshInfo >> s >> fx >> fy >> fz;
+			if (s.compare("v") != 0) break;
+			m_pxmf3Positions[i] = XMFLOAT3((fx * m_xmf3Scale.x * 220.0f / 150.0f) + 1000.0f, 50, (fz * m_xmf3Scale.z * 220.0f / 150.0f) + 1000.0f);
+			//m_pxmf3Positions[i] = XMFLOAT3(x, y, z);
+		}
 	}
 
 	m_pd3dPositionBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList, m_pxmf3Positions, sizeof(XMFLOAT3) * m_nVertices, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, &m_pd3dPositionUploadBuffer);
@@ -90,7 +119,7 @@ CNavMesh::CNavMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dComm
 	m_d3dPositionBufferView.StrideInBytes = sizeof(XMFLOAT3);
 	m_d3dPositionBufferView.SizeInBytes = sizeof(XMFLOAT3) * m_nVertices;
 
-
+	if (uniqued) return;
 	m_nSubMeshes = 1;
 	m_pnSubSetIndices = new int[m_nSubMeshes];
 	m_ppnSubSetIndices = new UINT * [m_nSubMeshes];
@@ -116,15 +145,15 @@ CNavMesh::CNavMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dComm
 	for (int i = 0; i < m_pnSubSetIndices[0];) {
 		meshInfo >> s >> idx1 >> idx2 >> idx3;
 		if (s.compare("f") != 0) break;
-		m_ppnSubSetIndices[0][i++] = idx1 - 1;
-		m_ppnSubSetIndices[0][i++] = idx2 - 1;
-		m_ppnSubSetIndices[0][i++] = idx3 - 1;
-		cells[k].lines[0].start = m_pxmf3Positions[idx1 - 1];
-		cells[k].lines[0].end = m_pxmf3Positions[idx2 - 1];
-		cells[k].lines[1].start = m_pxmf3Positions[idx2 - 1];
-		cells[k].lines[1].end = m_pxmf3Positions[idx3 - 1];
-		cells[k].lines[2].start = m_pxmf3Positions[idx3 - 1];
-		cells[k].lines[2].end = m_pxmf3Positions[idx1 - 1];
+		m_ppnSubSetIndices[0][i++] = idx1;
+		m_ppnSubSetIndices[0][i++] = idx2;
+		m_ppnSubSetIndices[0][i++] = idx3;
+		cells[k].lines[0].start = m_pxmf3Positions[idx1];
+		cells[k].lines[0].end = m_pxmf3Positions[idx2];
+		cells[k].lines[1].start = m_pxmf3Positions[idx2];
+		cells[k].lines[1].end = m_pxmf3Positions[idx3];
+		cells[k].lines[2].start = m_pxmf3Positions[idx3];
+		cells[k].lines[2].end = m_pxmf3Positions[idx1];
 		k++;
 	}
 
@@ -185,12 +214,17 @@ void CNavMesh::MakeLink(vector<CCell> vCells)
 
 void CNavMesh::SaveCells(vector<CCell> cells)
 {
-	ofstream out("LinkedNavMesh.txt");
-	out << "total Cells: " << cells.size() << endl;
+	ofstream out("../Assets/Image/Terrain/UniquedNavMeshCells.txt");
+	out << "total: " << cells.size() << endl;
 	for (int i = 0; i < cells.size(); ++i) {
-		out << "(" << cells[i].lines[0].start.x << ", " << cells[i].lines[0].start.y << ", " << cells[i].lines[0].start.z << "),"
-			<< "(" << cells[i].lines[1].start.x << ", " << cells[i].lines[1].start.y << ", " << cells[i].lines[1].start.z << "),"
-			<< "(" << cells[i].lines[2].start.x << ", " << cells[i].lines[2].start.y << ", " << cells[i].lines[2].start.z << ")"
+		//out << "(" << cells[i].lines[0].start.x << ", " << cells[i].lines[0].start.y << ", " << cells[i].lines[0].start.z << "),"
+		//	<< "(" << cells[i].lines[1].start.x << ", " << cells[i].lines[1].start.y << ", " << cells[i].lines[1].start.z << "),"
+		//	<< "(" << cells[i].lines[2].start.x << ", " << cells[i].lines[2].start.y << ", " << cells[i].lines[2].start.z << ")"
+		//	<< endl;
+		out << "cell ";
+		out << cells[i].lines[0].start.x << " " << cells[i].lines[0].start.y << " " << cells[i].lines[0].start.z << " "
+			<< cells[i].lines[1].start.x << " " << cells[i].lines[1].start.y << " " << cells[i].lines[1].start.z << " "
+			<< cells[i].lines[2].start.x << " " << cells[i].lines[2].start.y << " " << cells[i].lines[2].start.z << " "
 			<< endl;
 	}
 }

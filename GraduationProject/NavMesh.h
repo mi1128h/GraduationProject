@@ -32,7 +32,7 @@ protected:
 	vector<CCell> m_NavCells;
 
 public:
-	CNavMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, XMFLOAT3 xmf3Scale = XMFLOAT3(1.0f, 1.0f, 1.0f));
+	CNavMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, XMFLOAT3 xmf3Scale = XMFLOAT3(1.0f, 1.0f, 1.0f), bool uniqued = false);
 	virtual ~CNavMesh();
 
 	XMFLOAT3 GetScale() { return(m_xmf3Scale); }
