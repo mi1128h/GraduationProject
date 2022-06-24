@@ -16,6 +16,7 @@ public:
 class CCell
 {
 public:
+	int id;
 	CLine lines[3]{};
 	vector<CCell*> link;
 	int nLink = 0;
@@ -39,5 +40,5 @@ public:
 
 	vector<CCell> CheckCells(CCell* cell, int n);
 	void MakeLink(vector<CCell> cells);
-	void SaveCells(vector<CCell> cells);
+	void SaveCells();
 };
