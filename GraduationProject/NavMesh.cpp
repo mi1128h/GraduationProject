@@ -119,55 +119,75 @@ CNavMesh::CNavMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dComm
 	m_d3dPositionBufferView.StrideInBytes = sizeof(XMFLOAT3);
 	m_d3dPositionBufferView.SizeInBytes = sizeof(XMFLOAT3) * m_nVertices;
 
-	if (uniqued) return;
-	m_nSubMeshes = 1;
-	m_pnSubSetIndices = new int[m_nSubMeshes];
-	m_ppnSubSetIndices = new UINT * [m_nSubMeshes];
+	if (uniqued) {
+		vector<CCell> vCells;
 
-	m_ppd3dSubSetIndexBuffers = new ID3D12Resource * [m_nSubMeshes];
-	m_ppd3dSubSetIndexUploadBuffers = new ID3D12Resource * [m_nSubMeshes];
-	m_pd3dSubSetIndexBufferViews = new D3D12_INDEX_BUFFER_VIEW[m_nSubMeshes];
+		int idx1, idx2, idx3;
+		for (int i = 0; i < m_nVertices;) {
+			CCell cell;
+			cell.lines[0].start = m_pxmf3Positions[i];
+			cell.lines[0].end = m_pxmf3Positions[i + 1];
+			cell.lines[1].start = m_pxmf3Positions[i + 1];
+			cell.lines[1].end = m_pxmf3Positions[i + 2];
+			cell.lines[2].start = m_pxmf3Positions[i + 2];
+			cell.lines[2].end = m_pxmf3Positions[i];
 
-	CCell* cells = NULL;
-
-	while (meshInfo >> s) {
-		if (s.compare("fCount") == 0) {
-			meshInfo >> m_pnSubSetIndices[0];
-			cells = new CCell[m_pnSubSetIndices[0]]{};
-			m_pnSubSetIndices[0] *= 3;
-			m_ppnSubSetIndices[0] = new UINT[m_pnSubSetIndices[0]];
-			break;
+			vCells.push_back(cell);
+			i += 3;
 		}
+
+		MakeLink(vCells);
 	}
+	else {
+		m_nSubMeshes = 1;
+		m_pnSubSetIndices = new int[m_nSubMeshes];
+		m_ppnSubSetIndices = new UINT * [m_nSubMeshes];
 
-	int k = 0;
-	int idx1, idx2, idx3;
-	for (int i = 0; i < m_pnSubSetIndices[0];) {
-		meshInfo >> s >> idx1 >> idx2 >> idx3;
-		if (s.compare("f") != 0) break;
-		m_ppnSubSetIndices[0][i++] = idx1;
-		m_ppnSubSetIndices[0][i++] = idx2;
-		m_ppnSubSetIndices[0][i++] = idx3;
-		cells[k].lines[0].start = m_pxmf3Positions[idx1];
-		cells[k].lines[0].end = m_pxmf3Positions[idx2];
-		cells[k].lines[1].start = m_pxmf3Positions[idx2];
-		cells[k].lines[1].end = m_pxmf3Positions[idx3];
-		cells[k].lines[2].start = m_pxmf3Positions[idx3];
-		cells[k].lines[2].end = m_pxmf3Positions[idx1];
-		k++;
+		m_ppd3dSubSetIndexBuffers = new ID3D12Resource * [m_nSubMeshes];
+		m_ppd3dSubSetIndexUploadBuffers = new ID3D12Resource * [m_nSubMeshes];
+		m_pd3dSubSetIndexBufferViews = new D3D12_INDEX_BUFFER_VIEW[m_nSubMeshes];
+
+		CCell* cells = NULL;
+
+		while (meshInfo >> s) {
+			if (s.compare("fCount") == 0) {
+				meshInfo >> m_pnSubSetIndices[0];
+				cells = new CCell[m_pnSubSetIndices[0]]{};
+				m_pnSubSetIndices[0] *= 3;
+				m_ppnSubSetIndices[0] = new UINT[m_pnSubSetIndices[0]];
+				break;
+			}
+		}
+
+		int k = 0;
+		int idx1, idx2, idx3;
+		for (int i = 0; i < m_pnSubSetIndices[0];) {
+			meshInfo >> s >> idx1 >> idx2 >> idx3;
+			if (s.compare("f") != 0) break;
+			m_ppnSubSetIndices[0][i++] = idx1;
+			m_ppnSubSetIndices[0][i++] = idx2;
+			m_ppnSubSetIndices[0][i++] = idx3;
+			cells[k].lines[0].start = m_pxmf3Positions[idx1];
+			cells[k].lines[0].end = m_pxmf3Positions[idx2];
+			cells[k].lines[1].start = m_pxmf3Positions[idx2];
+			cells[k].lines[1].end = m_pxmf3Positions[idx3];
+			cells[k].lines[2].start = m_pxmf3Positions[idx3];
+			cells[k].lines[2].end = m_pxmf3Positions[idx1];
+			k++;
+		}
+
+		vector<CCell> vCells = CheckCells(cells, k);
+		MakeLink(vCells);
+		SaveCells(vCells);
+
+		m_ppd3dSubSetIndexBuffers[0] = ::CreateBufferResource(pd3dDevice, pd3dCommandList, m_ppnSubSetIndices[0], sizeof(UINT) * m_pnSubSetIndices[0], D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_INDEX_BUFFER, &m_ppd3dSubSetIndexUploadBuffers[0]);
+
+		m_pd3dSubSetIndexBufferViews[0].BufferLocation = m_ppd3dSubSetIndexBuffers[0]->GetGPUVirtualAddress();
+		m_pd3dSubSetIndexBufferViews[0].Format = DXGI_FORMAT_R32_UINT;
+		m_pd3dSubSetIndexBufferViews[0].SizeInBytes = sizeof(UINT) * m_pnSubSetIndices[0];
+
+		delete[] cells;
 	}
-
-	vector<CCell> vCells = CheckCells(cells, k);
-	MakeLink(vCells);
-	SaveCells(vCells);
-
-	m_ppd3dSubSetIndexBuffers[0] = ::CreateBufferResource(pd3dDevice, pd3dCommandList, m_ppnSubSetIndices[0], sizeof(UINT) * m_pnSubSetIndices[0], D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_INDEX_BUFFER, &m_ppd3dSubSetIndexUploadBuffers[0]);
-
-	m_pd3dSubSetIndexBufferViews[0].BufferLocation = m_ppd3dSubSetIndexBuffers[0]->GetGPUVirtualAddress();
-	m_pd3dSubSetIndexBufferViews[0].Format = DXGI_FORMAT_R32_UINT;
-	m_pd3dSubSetIndexBufferViews[0].SizeInBytes = sizeof(UINT) * m_pnSubSetIndices[0];
-
-	delete[] cells;
 }
 
 CNavMesh::~CNavMesh()
