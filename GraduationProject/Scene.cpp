@@ -394,6 +394,18 @@ void CScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* p
 	
 	BuildCollisions(pd3dDevice, pd3dCommandList);
 
+
+	////
+	 
+	m_nShaders = 1;
+	m_ppShaders = new CShader * [m_nShaders];
+
+	CParticleShader* pObjectShader = new CParticleShader();
+	DXGI_FORMAT pdxgiRtvFormats[3] = { DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM };
+	pObjectShader->CreateShader(pd3dDevice, m_pd3dGraphicsRootSignature, 3, pdxgiRtvFormats, DXGI_FORMAT_D32_FLOAT);
+	pObjectShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pTerrain);
+	m_ppShaders[0] = pObjectShader;
+
 	////////
 
 	m_nParticleObjects = 2;
@@ -774,7 +786,6 @@ void CScene::AnimateObjects(float fTimeElapsed, CCamera* pCamera)
 	}
 	for (int i = 0; i < m_nShaders; i++) m_ppShaders[i]->AnimateObjects(fTimeElapsed, pCamera);
 
-	for (int i = 0; i < m_nShaders; i++) m_ppShaders[i]->AnimateObjects(fTimeElapsed, pCamera);
 	if (m_pLights) {}
 	_ui->AnimateObjects(fTimeElapsed, pCamera);
 

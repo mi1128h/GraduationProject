@@ -273,14 +273,11 @@ D3D12_INPUT_LAYOUT_DESC CParticleShader::CreateInputLayout()
 void CParticleShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, void* pContext)
 {
 	CHeightMapTerrain* pTerrain = (CHeightMapTerrain*)pContext;
-	CRawFormatImage* pRawFormatImage = new CRawFormatImage(L"../Assets/Image/Objects/ObjectsMap03.raw", 257, 257, true);
 
-	CTexture* pTexture = new CTexture(3, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
-	pTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/Effect/Fire0.dds", RESOURCE_TEXTURE2D, 0);
-	pTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/Effect/Fire1.dds", RESOURCE_TEXTURE2D, 1);
-	pTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/Effect/Noise1.dds", RESOURCE_TEXTURE2D, 2);
+	CTexture* pTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
+	pTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/Effect/Fire0.dds", 0);
 
-	//CScene::CreateShaderResourceViews(pd3dDevice, pTexture, 0, 9);
+	CScene::CreateShaderResourceViews(pd3dDevice, pTexture, Signature::Graphics::particle_texture, true);
 
 	CMaterial* pMaterial = new CMaterial(1);
 	pMaterial->SetTexture(pTexture);
@@ -288,8 +285,8 @@ void CParticleShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComma
 	XMFLOAT2 xmf2Size = { 1.0f,1.0f };
 	CParticleMesh* ParticleMesh = new CParticleMesh(pd3dDevice, pd3dCommandList, xmf3Position, xmf2Size);
 
-	float fxPitch = 150.0f * 3.5f;
-	float fzPitch = 150.0f * 3.5f;
+	float fxPitch = 1500.0f * 3.5f;
+	float fzPitch = 1500.0f * 3.5f;
 
 	float fTerrainWidth = pTerrain->GetWidth();
 	float fTerrainLength = pTerrain->GetLength();
@@ -310,19 +307,11 @@ void CParticleShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComma
 			float zPosition = z * fzPitch;
 			float fHeight = pTerrain->GetHeight(xPosition, zPosition);
 
-			XMFLOAT3 xmfRange(50.0f, 50.0f, 50.0f);
+			XMFLOAT3 xmfRange(500.0f, 500.0f, 500.0f);
 
-			switch (z % 2)
-			{
-			case 0:
-				//XMFLOAT3 xmf3Position(xPosition, fHeight + 30.0f, zPosition);
-				//pRotatingObject = new CExplosiveParticle(pd3dDevice, pd3dCommandList, xmf3Position, xmfRange, 500);
-				break;
-			case 1:
-				xmf3Position = XMFLOAT3(xPosition, fHeight + 5.0f, zPosition);
-				pRotatingObject = new CParticleSystem(pd3dDevice, pd3dCommandList, xmf3Position, xmfRange, 500);
-				break;
-			}
+			xmf3Position = XMFLOAT3(xPosition, fHeight + 5.0f, zPosition);
+			pRotatingObject = new CParticleSystem(pd3dDevice, pd3dCommandList, xmf3Position, xmfRange, 1500);
+
 			pRotatingObject->SetMesh(ParticleMesh);
 			pRotatingObject->SetMaterial(0,pMaterial);
 
