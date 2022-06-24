@@ -1,5 +1,7 @@
+#include "stdafx.h"
 #include "ParticleShader.h"
 #include "ParticleSystem.h"
+#include "Scene.h"
 
 //////////////////////////////////////////////////////////////////////////////////
 
@@ -177,15 +179,15 @@ void CStreamParticleShader::CreateGraphicsPipelineState(ID3D12Device* pd3dDevice
 
 /////
 
-CExplosionParticleShader::CExplosionParticleShader()
+CExplosionStreamParticleShader::CExplosionStreamParticleShader()
 {
 }
 
-CExplosionParticleShader::~CExplosionParticleShader()
+CExplosionStreamParticleShader::~CExplosionStreamParticleShader()
 {
 }
 
-D3D12_SHADER_BYTECODE CExplosionParticleShader::CreateGeometryShader(ID3DBlob** ppd3dShaderBlob, int nPipelineState)
+D3D12_SHADER_BYTECODE CExplosionStreamParticleShader::CreateGeometryShader(ID3DBlob** ppd3dShaderBlob, int nPipelineState)
 {
 	if (nPipelineState == 0)
 		return(CShader::CompileShaderFromFile(L"Shaders.hlsl", "GSParticleExStreamOutput", "gs_5_1", ppd3dShaderBlob));

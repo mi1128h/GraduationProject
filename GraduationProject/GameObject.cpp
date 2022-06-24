@@ -1723,7 +1723,7 @@ CStreamParticleObject::CStreamParticleObject(ID3D12Device* pd3dDevice, ID3D12Gra
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
-	CParticleShader* pShader = new CParticleShader();
+	CStreamParticleShader* pShader = new CStreamParticleShader();
 	pShader->CreateGraphicsPipelineState(pd3dDevice, pd3dGraphicsRootSignature, 0);
 	pShader->CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
@@ -1841,7 +1841,7 @@ CStreamExplosionObject::CStreamExplosionObject(ID3D12Device* pd3dDevice, ID3D12G
 	CScene::CreateShaderResourceViews(pd3dDevice, pParticleTexture, Signature::Graphics::particle_texture, true);
 	CScene::CreateShaderResourceViews(pd3dDevice, m_pRandowmValueTexture, Signature::Graphics::particle_buffer, true, true);
 
-	CExplosionParticleShader* pShader = new CExplosionParticleShader();
+	CExplosionStreamParticleShader* pShader = new CExplosionStreamParticleShader();
 	pShader->CreateGraphicsPipelineState(pd3dDevice, pd3dGraphicsRootSignature, 0);
 	pShader->CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
