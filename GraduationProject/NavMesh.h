@@ -17,7 +17,11 @@ class CCell
 {
 public:
 	int id;
+
+	XMFLOAT3 center;
 	CLine lines[3]{};
+	float fArrivCost[3];
+	
 	vector<CCell*> link;
 	int nLink = 0;
 
@@ -41,4 +45,7 @@ public:
 	vector<CCell> CheckCells(CCell* cell, int n);
 	void MakeLink(vector<CCell> cells);
 	void SaveCells();
+
+	void CalculateCells();
+
 };

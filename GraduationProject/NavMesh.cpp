@@ -196,6 +196,8 @@ CNavMesh::CNavMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dComm
 
 		delete[] cells;
 	}
+
+	CalculateCells();
 }
 
 CNavMesh::~CNavMesh()
@@ -265,5 +267,28 @@ void CNavMesh::SaveCells()
 			out << cell->id << " ";
 		}
 		out << endl;
+	}
+}
+
+void CNavMesh::CalculateCells()
+{
+	for (int i = 0; i < m_NavCells.size(); ++i) {
+		m_NavCells[i].center.x = (m_NavCells[i].lines[0].start.x + m_NavCells[i].lines[1].start.x + m_NavCells[i].lines[2].start.x) / 3;
+		m_NavCells[i].center.y = (m_NavCells[i].lines[0].start.y + m_NavCells[i].lines[1].start.y + m_NavCells[i].lines[2].start.y) / 3;
+		m_NavCells[i].center.z = (m_NavCells[i].lines[0].start.z + m_NavCells[i].lines[1].start.z + m_NavCells[i].lines[2].start.z) / 3;
+
+		XMFLOAT3 mid1, mid2, mid3;
+		mid1 = Vector3::Add(m_NavCells[i].lines[0].start, m_NavCells[i].lines[0].end);
+		mid1.x /= 2; mid1.y /= 2; mid1.z /= 2;
+
+		mid2 = Vector3::Add(m_NavCells[i].lines[1].start, m_NavCells[i].lines[1].end);
+		mid2.x /= 2; mid2.y /= 2; mid2.z /= 2;
+
+		mid3 = Vector3::Add(m_NavCells[i].lines[2].start, m_NavCells[i].lines[2].end);
+		mid3.x /= 2; mid3.y /= 2; mid3.z /= 2;
+
+		m_NavCells[i].fArrivCost[0] = Vector3::Distance(m_NavCells[i].center, mid1);
+		m_NavCells[i].fArrivCost[1] = Vector3::Distance(m_NavCells[i].center, mid2);
+		m_NavCells[i].fArrivCost[2] = Vector3::Distance(m_NavCells[i].center, mid3);
 	}
 }
