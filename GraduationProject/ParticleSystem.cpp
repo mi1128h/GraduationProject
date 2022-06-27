@@ -59,7 +59,9 @@ void CParticleSystem::UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dComma
 	for (int i = 0; i < m_nParticles; ++i)
 	{
 		XMFLOAT3 xmf3Position = m_pParticles[i].m_xmf3Position;
+		XMFLOAT2 age(m_pParticles[i].m_fParticleLife, 1000.0f / m_fEmitTime);
 		::memcpy(&m_pcbMappedParticles[i].m_xmf3Position, &xmf3Position, sizeof(XMFLOAT3));
+		::memcpy(&m_pcbMappedParticles[i].m_xmfAge, &age, sizeof(XMFLOAT2));
 	}
 }
 

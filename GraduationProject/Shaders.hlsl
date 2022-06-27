@@ -856,12 +856,14 @@ void GSParticleExStreamOutput(point VS_PARTICLE_INPUT input[1], inout PointStrea
 struct VS_BILLBOARD_OUT {
 	float3 centerW:POSITION;
 	float2 sizeW:SIZE;
+	float2 age : AGE;
 };
 
 struct VS_BILLBOARD_IN {
 	float3 posW:POSITION;
 	float2 sizeW:SIZE;
 	float3 instancePosition : INSTANCEPOSITION;
+	float2 instanceAge : INSTANCEAGE;
 };
 
 struct GS_BILLBOARD_OUT {
@@ -869,6 +871,7 @@ struct GS_BILLBOARD_OUT {
 	float3 posW:POSITION;
 	float3 normalW : NORMAL;
 	float2 uv: TEXCOORD;
+	float2 age : AGE;
 	uint primID:SV_PrimitiveID;
 };
 
@@ -877,6 +880,7 @@ VS_BILLBOARD_OUT VSBillboard(VS_BILLBOARD_IN input)
 	VS_BILLBOARD_OUT output;
 	output.centerW = input.instancePosition;
 	output.sizeW = input.sizeW;
+	output.age = input.instanceAge;
 	return(output);
 }
 
@@ -904,6 +908,7 @@ void GSBillboard(point VS_BILLBOARD_OUT input[1], uint primID:SV_PrimitiveID, in
 		output.normalW = vLook;
 		output.uv = pUVs[i];
 		output.primID = primID;
+		output.age = input[0].age;
 		outStream.Append(output);
 	}
 }
@@ -911,6 +916,8 @@ void GSBillboard(point VS_BILLBOARD_OUT input[1], uint primID:SV_PrimitiveID, in
 PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSBillboard(GS_BILLBOARD_OUT input) : SV_TARGET
 {
 	float4 cColor = gtxtParticleTexture.Sample(gSamplerState, input.uv);
+	cColor.rgb *= GetParticleColor(input.age.x, input.age.y);
+
 
 	PS_MULTIPLE_RENDER_TARGETS_OUTPUT output;
 	output.f4Scene = output.f4Color = cColor;

@@ -4,12 +4,13 @@
 struct VS_VB_PARTICLE_INFO
 {
 	XMFLOAT3 m_xmf3Position;
+	XMFLOAT2 m_xmfAge;
 };
 
 struct particle_info
 {
-	XMFLOAT3 m_xmf3Position;
 	bool m_bActive = true;
+	XMFLOAT3 m_xmf3Position;
 	float m_fVelocity;
 	XMFLOAT3 m_xmf3Vectors;
 	float m_fParticleLife = 0.0f;
