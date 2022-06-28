@@ -311,8 +311,8 @@ void CParticleShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComma
 
 			XMFLOAT3 xmfRange(500.0f, 500.0f, 500.0f);
 
-			xmf3Position = XMFLOAT3(xPosition, fHeight + 5.0f, zPosition);
-			pRotatingObject = new CParticleSystem(pd3dDevice, pd3dCommandList, xmf3Position, xmfRange, 1500);
+			XMFLOAT3 xmf3Position(xPosition, fHeight + 30.0f, zPosition);
+			pRotatingObject = new CExplosiveParticle(pd3dDevice, pd3dCommandList, xmf3Position, xmfRange, 500);
 
 			pRotatingObject->SetMesh(ParticleMesh);
 			pRotatingObject->SetMaterial(0,pMaterial);
