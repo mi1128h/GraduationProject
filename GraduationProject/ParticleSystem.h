@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "GameObject.h"
 
 struct VS_VB_PARTICLE_INFO
@@ -56,3 +56,19 @@ protected:
 };
 
 bool compare(particle_info& p1, particle_info& p2);
+
+///
+
+class CExplosiveParticle : public CParticleSystem
+{
+public:
+	CExplosiveParticle(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList,
+		XMFLOAT3 xmf3Position, XMFLOAT3 xmf3Range, int nParticles, float fEmitTime = 200.0f);
+	virtual ~CExplosiveParticle();
+
+	virtual void CreateParticles();
+	virtual void KillParticles();
+	virtual void EmitParticles(float fElapsedTime);
+public:
+	float m_fMaxLife = 5.0f;
+};

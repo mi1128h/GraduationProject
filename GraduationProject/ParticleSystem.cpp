@@ -1,6 +1,23 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "ParticleSystem.h"
 #include "ParticleShader.h"
+
+inline float RandF(float fMin, float fMax)
+{
+	return(fMin + ((float)rand() / (float)RAND_MAX) * (fMax - fMin));
+}
+
+XMVECTOR RandomUnitVectorOnSphere()
+{
+	XMVECTOR xmvOne = XMVectorSet(1.0f, 1.0f, 1.0f, 1.0f);
+	XMVECTOR xmvZero = XMVectorZero();
+
+	while (true)
+	{
+		XMVECTOR v = XMVectorSet(RandF(-1.0f, 1.0f), RandF(-1.0f, 1.0f), RandF(-1.0f, 1.0f), 0.0f);
+		if (!XMVector3Greater(XMVector3LengthSq(v), xmvOne)) return(XMVector3Normalize(v));
+	}
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 CParticleSystem::CParticleSystem(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList,
@@ -23,7 +40,7 @@ void CParticleSystem::CreateParticles()
 		XMFLOAT3 xmf3Pos = GetPosition();
 		particle_info parts;
 
-		// �Ϲ� ��ƼŬ
+		// 일반 파티클
 		parts.m_bActive = true;
 		parts.m_xmf3Position.x = xmf3Pos.x + (((float)rand() - (float)rand()) / float(RAND_MAX)) * m_xmf3ParticleRange.x;
 		parts.m_xmf3Position.z = xmf3Pos.z + (((float)rand() - (float)rand()) / float(RAND_MAX)) * m_xmf3ParticleRange.z;
@@ -186,4 +203,62 @@ void CParticleSystem::InitParticleSystem(XMFLOAT3 xmf3Position, XMFLOAT3 xmf3Ran
 	m_fEmitTime = fEmitTime;
 	m_xmf3MaxRange = Vector3::Add(GetPosition(), m_xmf3ParticleRange);
 	m_nDeadParticles = 0;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+CExplosiveParticle::CExplosiveParticle(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList,
+ XMFLOAT3 xmf3Position, XMFLOAT3 xmf3Range, int nParticles, float fEmitTime)
+	: CParticleSystem()
+{
+	m_nParticles = nParticles;
+	InitParticleSystem(xmf3Position, xmf3Range, fEmitTime);
+	CreateParticles();
+	CreateShaderVariables(pd3dDevice, pd3dCommandList);
+}
+
+CExplosiveParticle::~CExplosiveParticle()
+{
+}
+
+void CExplosiveParticle::CreateParticles()
+{
+	for (int i = 0; i < m_nParticles; ++i)
+	{
+		XMFLOAT3 xmf3Pos = GetPosition();
+		particle_info parts;
+
+		// 폭죽 파티클
+		parts.m_bActive = true;
+		parts.m_xmf3Position.x = xmf3Pos.x;
+		parts.m_xmf3Position.z = xmf3Pos.z;
+		parts.m_xmf3Position.y = xmf3Pos.y;
+		XMStoreFloat3(&parts.m_xmf3Vectors, ::RandomUnitVectorOnSphere());
+
+		parts.m_fVelocity = m_fParticleVelocity + (((float)rand() - (float)rand()) / RAND_MAX) * m_fParticleVelocityVariation;
+		m_pParticles.push_back(parts);
+	}
+}
+
+void CExplosiveParticle::KillParticles()
+{
+	// 삭제와 동시에 모든 파티클이 재생성
+	for (int i = 0; i < m_pParticles.size(); ++i)
+	{
+		if ((m_pParticles[i].m_xmf3Position.y >= m_xmf3MaxRange.y)
+			|| (m_pParticles[i].m_xmf3Position.x >= m_xmf3MaxRange.x)
+			|| (m_pParticles[i].m_xmf3Position.z >= m_xmf3MaxRange.z)
+			|| m_pParticles[i].m_fParticleLife >= m_fMaxLife)
+		{
+			XMFLOAT3 xmf3Pos = GetPosition();
+			m_pParticles[i].m_xmf3Position = xmf3Pos;
+			m_pParticles[i].m_fParticleLife = 0.0f;
+			XMStoreFloat3(&m_pParticles[i].m_xmf3Vectors, ::RandomUnitVectorOnSphere());
+		}
+	}
+}
+
+void CExplosiveParticle::EmitParticles(float fElapsedTime)
+{
+
 }
