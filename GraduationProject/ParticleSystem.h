@@ -20,7 +20,7 @@ struct particle_info
 class CParticleSystem : public CGameObject
 {
 public:
-	CParticleSystem() {}
+	CParticleSystem() :CGameObject(1) {}
 	CParticleSystem(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList,
 		XMFLOAT3 xmf3Position, XMFLOAT3 xmf3Range, int nParticles, float fEmitTime = 100000.0f);
 	virtual ~CParticleSystem();
