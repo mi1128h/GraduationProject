@@ -292,3 +292,48 @@ void CNavMesh::CalculateCells()
 		m_NavCells[i].fArrivCost[2] = Vector3::Distance(m_NavCells[i].center, mid3);
 	}
 }
+
+CCell* CNavMesh::FindCell(XMFLOAT3 xmf3Position)
+{
+	for (int i = 0; i < m_NavCells.size(); ++i) {
+		if (PointInCell(&m_NavCells[i], xmf3Position)) {
+			return &m_NavCells[i];
+		}
+	}
+	return nullptr;
+}
+
+bool CNavMesh::PointInCell(CCell* cell, XMFLOAT3 xmf3Position)
+{
+	XMFLOAT3 a = cell->lines[0].start;
+	XMFLOAT3 b = cell->lines[1].start;
+	XMFLOAT3 c = cell->lines[2].start;
+
+	float result;
+
+	// check a
+	XMFLOAT3 ab = Vector3::Subtract(b, a);
+	XMFLOAT3 ac = Vector3::Subtract(c, a);
+	XMFLOAT3 at = Vector3::Subtract(xmf3Position, a);
+
+	result = Vector3::DotProduct(Vector3::CrossProduct(ab, at), Vector3::CrossProduct(at, ac));
+	if (result < 0) return false;
+
+	// check b
+	XMFLOAT3 ba = Vector3::Subtract(a, b);
+	XMFLOAT3 bc = Vector3::Subtract(c, b);
+	XMFLOAT3 bt = Vector3::Subtract(xmf3Position, b);
+
+	result = Vector3::DotProduct(Vector3::CrossProduct(bc, bt), Vector3::CrossProduct(bt, ba));
+	if (result < 0) return false;
+
+	// check c
+	XMFLOAT3 ca = Vector3::Subtract(a, c);
+	XMFLOAT3 cb = Vector3::Subtract(b, c);
+	XMFLOAT3 ct = Vector3::Subtract(xmf3Position, c);
+
+	result = Vector3::DotProduct(Vector3::CrossProduct(ca, ct), Vector3::CrossProduct(ct, cb));
+	if (result < 0) return false;
+
+	return true;
+}

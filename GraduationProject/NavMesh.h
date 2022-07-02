@@ -48,4 +48,6 @@ public:
 
 	void CalculateCells();
 
+	CCell* FindCell(XMFLOAT3 xmf3Position);
+	bool PointInCell(CCell* cell, XMFLOAT3 xmf3Position);
 };
