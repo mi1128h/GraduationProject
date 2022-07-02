@@ -357,6 +357,7 @@ void CScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* p
 	CMonsterFactory* pMonster = new CMonsterFactory();
 	pMonster->BuildObjects(pd3dDevice, m_pd3dGraphicsRootSignature, pd3dCommandList, m_pTerrain);
 	pMonster->SetObjectCollision(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+	pMonster->SetNavMesh(m_pNavMesh);
 	_factory.emplace_back(pMonster);
 
 	//////

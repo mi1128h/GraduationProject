@@ -566,6 +566,14 @@ void CMonsterFactory::FindTarget(CGameObject* pObject)
 	}
 }
 
+void CMonsterFactory::SetNavMesh(CNavMesh* pNavMesh)
+{
+	for (auto& monster : _gameObjects)
+	{
+		dynamic_cast<CMonsterObject*>(monster)->SetNavMesh(pNavMesh);
+	}
+}
+
 /////////////////////////
 
 void CUIFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3dGraphicsRootSignature, ID3D12GraphicsCommandList* pd3dCommandList, void* pContext,CPlayer* pPlayer)

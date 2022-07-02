@@ -1384,6 +1384,13 @@ void CMonsterObject::ChaseTarget(float fTimeElapsed)
 		MoveForward(50.0f * fTimeElapsed);
 }
 
+void CMonsterObject::MakePath()
+{
+	CCell* curCell = m_pNavMesh->FindCell(GetPosition());
+
+	m_pNavMesh->MakePath(m_vPath, curCell, m_pTargetObject->GetPosition());
+}
+
 void CMonsterObject::AttackTarget()
 {
 	if (m_fHp <= 0) return;

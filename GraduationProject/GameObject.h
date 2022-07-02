@@ -3,6 +3,7 @@
 #include "Camera.h"
 #include "Animation.h"
 #include "CollisionManager.h"
+#include "NavMesh.h"
 
 #define RESOURCE_TEXTURE2D			0x01
 #define RESOURCE_TEXTURE2D_ARRAY	0x02	//[]
@@ -491,11 +492,18 @@ private:
 	CGameObject* m_pTargetObject = NULL;
 	float m_fDetectionRange = 2000.0f;
 
+	CNavMesh* m_pNavMesh = NULL;
+	vector<CCell*> m_vPath;
+
 public:
 	void SetUpdatedContext(LPVOID pContext) { m_pUpdatedContext = pContext; }
 
 	void FindTarget(CGameObject* pObject);
 	void ChaseTarget(float fTimeElapsed);
+
+	void SetNavMesh(CNavMesh* pNavMesh) { m_pNavMesh = pNavMesh; }
+	void MakePath();
+
 	void AttackTarget();
 
 	void SetDetectionRange(float range) { m_fDetectionRange = range; }
