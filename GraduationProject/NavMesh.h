@@ -50,4 +50,6 @@ public:
 
 	CCell* FindCell(XMFLOAT3 xmf3Position);
 	bool PointInCell(CCell* cell, XMFLOAT3 xmf3Position);
+
+	void MakePath(vector<CCell*> path, CCell* curCell, XMFLOAT3 xmf3Position);
 };

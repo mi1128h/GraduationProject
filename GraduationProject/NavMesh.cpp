@@ -337,3 +337,34 @@ bool CNavMesh::PointInCell(CCell* cell, XMFLOAT3 xmf3Position)
 
 	return true;
 }
+
+void CNavMesh::MakePath(vector<CCell*> path, CCell* curCell, XMFLOAT3 xmf3Position)
+{
+	if (PointInCell(curCell, xmf3Position)) return;
+
+	float deltax = xmf3Position.x - curCell->center.x;
+	float deltay = xmf3Position.y - curCell->center.y;
+	float deltaz = xmf3Position.z - curCell->center.z;
+
+	float heuristic = max(max(deltax, deltay), deltaz);
+
+	float cost[3];
+	cost[0] = heuristic + curCell->fArrivCost[0];
+	cost[1] = heuristic + curCell->fArrivCost[1];
+	cost[2] = heuristic + curCell->fArrivCost[2];
+
+	float min = min(min(cost[0], cost[1]), cost[2]);
+
+	CCell* nextCell = NULL;
+	for (int i = 0; i < curCell->nLink; ++i) {
+		if (min == cost[i]) {
+			nextCell = curCell->link[i];
+			break;
+		}
+	}
+
+	if (nextCell != NULL) {
+		path.push_back(nextCell);
+		MakePath(path, nextCell, xmf3Position);
+	}
+}
