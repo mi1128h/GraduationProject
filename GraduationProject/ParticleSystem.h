@@ -42,13 +42,12 @@ public:
 	int m_nDeadParticles;
 	float m_fLifeTime = 0.0f;
 	float m_fEmitTime = 500.0f;
-	float m_fParticleVelocity = 5.0f;
+	float m_fParticleVelocity = 15.0f;
 	float m_fParticleVelocityVariation = 500.0f;
 	XMFLOAT3 m_xmf3ParticleRange;
 	XMFLOAT3 m_xmf3MaxRange;
 
 protected:
-	float _sinValue = 0.0f;
 
 	ID3D12Resource* m_pd3dInstancesBuffer = NULL;
 	D3D12_VERTEX_BUFFER_VIEW		m_d3dInstancingBufferView;
@@ -73,4 +72,21 @@ public:
 	virtual void EmitParticles(float fElapsedTime);
 public:
 	float m_fMaxLife = 5.0f;
+};
+
+
+class CBreathParticle : public CParticleSystem
+{
+public:
+	CBreathParticle(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList,
+		XMFLOAT3 xmf3Position, XMFLOAT3 xmf3Range, int nParticles, float fEmitTime = 2000.0f);
+	virtual ~CBreathParticle();
+
+	virtual void CreateParticles();
+	virtual void EmitParticles(float fElapsedTime);
+	virtual void UpdateParticles(float fElapsedTime);
+	virtual void KillParticles();
+
+protected:
+	float _sinValue = 0.0f;
 };

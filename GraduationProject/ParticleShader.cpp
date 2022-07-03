@@ -312,7 +312,7 @@ void CParticleShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComma
 			XMFLOAT3 xmfRange(10.0f,10.0f, 10.0f);
 
 			XMFLOAT3 xmf3Position(xPosition, fHeight + 30.0f, zPosition);
-			pRotatingObject = new CParticleSystem(pd3dDevice, pd3dCommandList, xmf3Position, xmfRange, 500);
+			pRotatingObject = new CBreathParticle(pd3dDevice, pd3dCommandList, xmf3Position, xmfRange, 500);
 
 			pRotatingObject->SetMesh(ParticleMesh);
 			pRotatingObject->SetMaterial(0,pMaterial);
