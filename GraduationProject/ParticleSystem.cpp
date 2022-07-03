@@ -189,6 +189,10 @@ void CParticleSystem::UpdateParticles(float fElapsedTime)
 #ifdef EMIT_MODE
 		if (!m_pParticles[i].m_bActive) continue;
 #endif
+		_sinValue += fElapsedTime * 100.0f;
+		m_pParticles[i].m_xmf3Vectors.x = sin(3.141592 * 2 * _sinValue);
+		m_pParticles[i].m_xmf3Vectors.z = cos(3.141592 * 2 * _sinValue);
+
 		m_pParticles[i].m_xmf3Position.y += fElapsedTime * m_pParticles[i].m_fVelocity * m_pParticles[i].m_xmf3Vectors.y;
 		m_pParticles[i].m_xmf3Position.x += fElapsedTime * m_pParticles[i].m_fVelocity * m_pParticles[i].m_xmf3Vectors.x;
 		m_pParticles[i].m_xmf3Position.z += fElapsedTime * m_pParticles[i].m_fVelocity * m_pParticles[i].m_xmf3Vectors.z;

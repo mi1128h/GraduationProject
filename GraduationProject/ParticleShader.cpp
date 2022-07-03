@@ -284,7 +284,7 @@ void CParticleShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComma
 	CMaterial* pMaterial = new CMaterial(1);
 	pMaterial->SetTexture(pTexture);
 	XMFLOAT3 xmf3Position = { 0.0f,0.0f,0.0f };
-	XMFLOAT2 xmf2Size = { 1.0f,1.0f };
+	XMFLOAT2 xmf2Size = { 10.0f,10.0f };
 	CParticleMesh* ParticleMesh = new CParticleMesh(pd3dDevice, pd3dCommandList, xmf3Position, xmf2Size);
 
 	float fxPitch = 1500.0f * 3.5f;
@@ -309,10 +309,10 @@ void CParticleShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComma
 			float zPosition = z * fzPitch;
 			float fHeight = pTerrain->GetHeight(xPosition, zPosition);
 
-			XMFLOAT3 xmfRange(500.0f, 500.0f, 500.0f);
+			XMFLOAT3 xmfRange(10.0f,10.0f, 10.0f);
 
 			XMFLOAT3 xmf3Position(xPosition, fHeight + 30.0f, zPosition);
-			pRotatingObject = new CExplosiveParticle(pd3dDevice, pd3dCommandList, xmf3Position, xmfRange, 500);
+			pRotatingObject = new CParticleSystem(pd3dDevice, pd3dCommandList, xmf3Position, xmfRange, 500);
 
 			pRotatingObject->SetMesh(ParticleMesh);
 			pRotatingObject->SetMaterial(0,pMaterial);
