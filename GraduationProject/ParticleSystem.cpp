@@ -344,6 +344,8 @@ void CBreathParticle::KillParticles()
 {
 	for (int i = 0; i < m_pParticles.size(); ++i)
 	{
+		if (m_pParticles[i].m_fParticleLife < m_fMaxLife) continue;
+
 		m_pParticles[i].m_bActive = false;
 		XMFLOAT3 xmf3Pos = GetPosition();
 

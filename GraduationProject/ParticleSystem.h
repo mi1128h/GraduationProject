@@ -48,6 +48,7 @@ public:
 	XMFLOAT3 m_xmf3MaxRange;
 
 protected:
+	float m_fMaxLife = 15.0f;
 
 	ID3D12Resource* m_pd3dInstancesBuffer = NULL;
 	D3D12_VERTEX_BUFFER_VIEW		m_d3dInstancingBufferView;
@@ -70,8 +71,6 @@ public:
 	virtual void CreateParticles();
 	virtual void KillParticles();
 	virtual void EmitParticles(float fElapsedTime);
-public:
-	float m_fMaxLife = 5.0f;
 };
 
 
