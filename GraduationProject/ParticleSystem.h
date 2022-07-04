@@ -43,7 +43,7 @@ public:
 	float m_fLifeTime = 0.0f;
 	float m_fEmitTime = 500.0f;
 	float m_fParticleVelocity = 15.0f;
-	float m_fParticleVelocityVariation = 500.0f;
+	float m_fParticleVelocityVariation = 100.0f;
 	XMFLOAT3 m_xmf3ParticleRange;
 	XMFLOAT3 m_xmf3MaxRange;
 

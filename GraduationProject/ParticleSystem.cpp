@@ -315,7 +315,7 @@ void CBreathParticle::EmitParticles(float fElapsedTime)
 			{
 				m_pParticles[i].m_bActive = true;
 				m_pParticles[i].m_xmf3Position = xmf3OnePos;
-				m_pParticles[i].m_fVelocity = m_fParticleVelocity + (((float)rand() - (float)rand()) / RAND_MAX) * m_fParticleVelocityVariation;
+				m_pParticles[i].m_fVelocity = m_fParticleVelocity + RandF(0.5f,1.0f) * m_fParticleVelocityVariation;
 				m_pParticles[i].m_fParticleLife = 0.0f;
 				m_pParticles[i].m_xmf3Vectors = XMFLOAT3(0.0f, 1.0f, 0.0f);
 				break;
