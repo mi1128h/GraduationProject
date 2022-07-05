@@ -8,7 +8,7 @@ public:
 	XMFLOAT3 end;
 
 	int startIndex, endIndex;
-	
+
 	bool Compare(CLine other);
 	bool CompareByIndex(CLine other);
 };
@@ -37,7 +37,7 @@ protected:
 	vector<CCell> m_NavCells;
 
 public:
-	CNavMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, XMFLOAT3 xmf3Scale = XMFLOAT3(1.0f, 1.0f, 1.0f), bool uniqued = false);
+	CNavMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, XMFLOAT3 xmf3Scale = XMFLOAT3(1.0f, 1.0f, 1.0f), void* pContext = NULL, bool uniqued = false);
 	virtual ~CNavMesh();
 
 	XMFLOAT3 GetScale() { return(m_xmf3Scale); }

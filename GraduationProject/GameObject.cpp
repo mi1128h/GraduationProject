@@ -1351,13 +1351,29 @@ void CMonsterObject::FindTarget(CGameObject* pObject)
 		m_pTargetObject = pObject;
 	else
 		m_pTargetObject = NULL;
+
+	if (m_pTargetObject) {
+		MakePath();
+	}
 }
 
 void CMonsterObject::ChaseTarget(float fTimeElapsed)
 {
 	if (m_pTargetObject == NULL) return;
 
-	XMFLOAT3 targetPosition = m_pTargetObject->GetPosition();
+	CCell* pTargetCell = NULL;
+	if (m_vPath.size() > 0) {
+		pTargetCell = m_vPath.front();
+	}
+
+	XMFLOAT3 targetPosition;
+
+	if (pTargetCell) {
+		targetPosition = pTargetCell->center;
+	}
+	else {
+		targetPosition = m_pTargetObject->GetPosition();
+	}
 	XMFLOAT3 monsterPosition = GetPosition();
 
 	targetPosition.y = 0;
@@ -1387,7 +1403,9 @@ void CMonsterObject::ChaseTarget(float fTimeElapsed)
 void CMonsterObject::MakePath()
 {
 	CCell* curCell = m_pNavMesh->FindCell(GetPosition());
+	if (!curCell) return;
 
+	m_vPath.clear();
 	m_pNavMesh->MakePath(m_vPath, curCell, m_pTargetObject->GetPosition());
 }
 

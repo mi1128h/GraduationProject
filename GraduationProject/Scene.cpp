@@ -340,7 +340,7 @@ void CScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* p
 	m_pTerrain = new CHeightMapTerrain(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, _T("../Assets/Image/Terrain/terrain.raw"), 257, 514, xmf3Scale, xmf4Color);
 	m_pRawFormatImage = new CRawFormatImage(L"../Assets/Image/Objects/ObjectsMap03.raw", 257, 257, true);
 
-	m_pNavMesh = new CNavMesh(pd3dDevice, pd3dCommandList, xmf3Scale, true);
+	m_pNavMesh = new CNavMesh(pd3dDevice, pd3dCommandList, xmf3Scale, m_pTerrain, true);
 
 	m_pSkyBox = new CSkyBox(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 
@@ -750,7 +750,7 @@ void CScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera
 
 	//if (m_pSkyBox) m_pSkyBox->Render(pd3dCommandList, pCamera);
 	if (m_pTerrain) m_pTerrain->Render(pd3dCommandList, pCamera);
-	if (m_pNavMesh) m_pNavMesh->Render(pd3dCommandList, 0);
+	//if (m_pNavMesh) m_pNavMesh->Render(pd3dCommandList, 0);
 
 	for (auto& factory : _factory) factory->Render(pd3dCommandList, pCamera);
 

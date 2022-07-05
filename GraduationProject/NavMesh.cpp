@@ -1,4 +1,5 @@
 #include "NavMesh.h"
+#include "GameObject.h"
 
 
 bool CLine::Compare(CLine other)
@@ -57,8 +58,9 @@ bool CCell::IsSame(CCell other)
 	else return false;
 }
 
-CNavMesh::CNavMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, XMFLOAT3 xmf3Scale, bool uniqued) : CMesh(pd3dDevice, pd3dCommandList)
+CNavMesh::CNavMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, XMFLOAT3 xmf3Scale, void* pContext, bool uniqued) : CMesh(pd3dDevice, pd3dCommandList)
 {
+	CHeightMapTerrain* pTerrain = (CHeightMapTerrain*)pContext;
 	if (uniqued) {
 		ifstream meshInfo("../Assets/Image/Terrain/LinkedNavMeshCells.txt");
 
@@ -137,7 +139,10 @@ CNavMesh::CNavMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dComm
 		for (int i = 0; i < m_nVertices; ++i) {
 			meshInfo >> s >> fx >> fy >> fz;
 			if (s.compare("v") != 0) break;
-			m_pxmf3Positions[i] = XMFLOAT3((fx * m_xmf3Scale.x * 220.0f / 150.0f) + 1000.0f, 50, (fz * m_xmf3Scale.z * 220.0f / 150.0f) + 1000.0f);
+			float px = (fx * m_xmf3Scale.x * 220.0f / 150.0f) + 1000.0f;
+			float pz = (fz * m_xmf3Scale.z * 220.0f / 150.0f) + 1000.0f;
+			float py = pTerrain->GetHeight(px, pz);
+			m_pxmf3Positions[i] = XMFLOAT3(px, py, pz);
 		}
 
 		m_pd3dPositionBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList, m_pxmf3Positions, sizeof(XMFLOAT3) * m_nVertices, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, &m_pd3dPositionUploadBuffer);
