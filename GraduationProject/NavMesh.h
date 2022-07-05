@@ -20,9 +20,9 @@ public:
 
 	XMFLOAT3 center;
 	CLine lines[3]{};
-	float fArrivCost[3];
+	XMFLOAT3 fArrivCost[3];
 	
-	vector<CCell*> link;
+	vector<int> linkIdx;
 	int nLink = 0;
 
 	bool IsLinked(CCell* other);
@@ -51,5 +51,7 @@ public:
 	CCell* FindCell(XMFLOAT3 xmf3Position);
 	bool PointInCell(CCell* cell, XMFLOAT3 xmf3Position);
 
-	void MakePath(vector<CCell*> path, CCell* curCell, XMFLOAT3 xmf3Position);
+	void MakePath(vector<int> path, CCell* curCell, XMFLOAT3 xmf3Position);
+
+	CCell GetCell(int n) { return m_NavCells[n]; }
 };

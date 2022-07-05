@@ -1361,15 +1361,15 @@ void CMonsterObject::ChaseTarget(float fTimeElapsed)
 {
 	if (m_pTargetObject == NULL) return;
 
-	CCell* pTargetCell = NULL;
+	int TargetCellIdx = -1;
 	if (m_vPath.size() > 0) {
-		pTargetCell = m_vPath.front();
+		TargetCellIdx = m_vPath.front();
 	}
 
 	XMFLOAT3 targetPosition;
 
-	if (pTargetCell) {
-		targetPosition = pTargetCell->center;
+	if (TargetCellIdx != -1) {
+		targetPosition = m_pNavMesh->GetCell(TargetCellIdx).center;
 	}
 	else {
 		targetPosition = m_pTargetObject->GetPosition();

@@ -493,7 +493,7 @@ private:
 	float m_fDetectionRange = 20000.0f;
 
 	CNavMesh* m_pNavMesh = NULL;
-	vector<CCell*> m_vPath;
+	vector<int> m_vPath;
 
 public:
 	void SetUpdatedContext(LPVOID pContext) { m_pUpdatedContext = pContext; }
