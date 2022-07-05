@@ -51,7 +51,7 @@ public:
 	CCell* FindCell(XMFLOAT3 xmf3Position);
 	bool PointInCell(CCell* cell, XMFLOAT3 xmf3Position);
 
-	void MakePath(vector<int> path, CCell* curCell, XMFLOAT3 xmf3Position);
+	void MakePath(CCell* curCell, XMFLOAT3 xmf3Position);
 
 	CCell GetCell(int n) { return m_NavCells[n]; }
 };

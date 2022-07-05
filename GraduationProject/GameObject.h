@@ -490,7 +490,7 @@ private:
 	LPVOID m_pUpdatedContext;
 
 	CGameObject* m_pTargetObject = NULL;
-	float m_fDetectionRange = 20000.0f;
+	float m_fDetectionRange = 2000.0f;
 
 	CNavMesh* m_pNavMesh = NULL;
 	vector<int> m_vPath;

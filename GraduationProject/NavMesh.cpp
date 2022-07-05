@@ -343,7 +343,7 @@ bool CNavMesh::PointInCell(CCell* cell, XMFLOAT3 xmf3Position)
 	return true;
 }
 
-void CNavMesh::MakePath(vector<int> path, CCell* curCell, XMFLOAT3 xmf3Position)
+void CNavMesh::MakePath(CCell* curCell, XMFLOAT3 xmf3Position)
 {
 	if (PointInCell(curCell, xmf3Position)) return;
 
@@ -354,7 +354,10 @@ void CNavMesh::MakePath(vector<int> path, CCell* curCell, XMFLOAT3 xmf3Position)
 	cost[1] = Vector3::Length(Vector3::Subtract(xmf3Center2Pos, curCell->fArrivCost[1]));
 	cost[2] = Vector3::Length(Vector3::Subtract(xmf3Center2Pos, curCell->fArrivCost[2]));
 
-	float min = min(min(cost[0], cost[1]), cost[2]);
+	float min = cost[0];
+	for (int i = 1; i < curCell->nLink; ++i) {
+		if (min > cost[i]) min = cost[i];
+	}
 
 	int nextCellIdx = -1;
 	for (int i = 0; i < curCell->nLink; ++i) {
@@ -364,8 +367,11 @@ void CNavMesh::MakePath(vector<int> path, CCell* curCell, XMFLOAT3 xmf3Position)
 		}
 	}
 
-	if (nextCellIdx != -1) {
-		path.push_back(nextCellIdx);
-		MakePath(path, &m_NavCells[nextCellIdx], xmf3Position);
-	}
+	//if (nextCellIdx != -1) {
+	//	for (int i = 0; i < path.size(); ++i) {
+	//		if (path[i] == nextCellIdx) return;
+	//	}
+	//	path.push_back(nextCellIdx);
+	//	MakePath(path, &m_NavCells[nextCellIdx], xmf3Position);
+	//}
 }

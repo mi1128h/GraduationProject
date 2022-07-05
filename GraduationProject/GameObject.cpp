@@ -1372,7 +1372,11 @@ void CMonsterObject::ChaseTarget(float fTimeElapsed)
 		targetPosition = m_pNavMesh->GetCell(TargetCellIdx).center;
 	}
 	else {
-		targetPosition = m_pTargetObject->GetPosition();
+		CCell* curCell = m_pNavMesh->FindCell(GetPosition());
+		CCell* tarCell = m_pNavMesh->FindCell(m_pTargetObject->GetPosition());
+		if (curCell == tarCell)
+			targetPosition = m_pTargetObject->GetPosition();
+		else return;
 	}
 	XMFLOAT3 monsterPosition = GetPosition();
 
@@ -1403,10 +1407,12 @@ void CMonsterObject::ChaseTarget(float fTimeElapsed)
 void CMonsterObject::MakePath()
 {
 	CCell* curCell = m_pNavMesh->FindCell(GetPosition());
+	CCell* tarCell = m_pNavMesh->FindCell(m_pTargetObject->GetPosition());
 	if (!curCell) return;
+	if (curCell == tarCell) return;
 
 	m_vPath.clear();
-	m_pNavMesh->MakePath(m_vPath, curCell, m_pTargetObject->GetPosition());
+	m_pNavMesh->MakePath(curCell, m_pTargetObject->GetPosition());
 }
 
 void CMonsterObject::AttackTarget()
