@@ -303,6 +303,7 @@ CCell* CNavMesh::FindCell(XMFLOAT3 xmf3Position)
 
 bool CNavMesh::PointInCell(CCell* cell, XMFLOAT3 xmf3Position)
 {
+	if (!cell) return false;
 	XMFLOAT3 a = cell->lines[0].start;
 	XMFLOAT3 b = cell->lines[1].start;
 	XMFLOAT3 c = cell->lines[2].start;
@@ -343,6 +344,7 @@ list<int> CNavMesh::MakePath(CCell* startCell, XMFLOAT3 xmf3Position)
 	list<int> result;
 	result.clear();
 	int cnt = 0;
+	if(!startCell) return result;
 
 	CCell* curCell;
 	if (PointInCell(startCell, xmf3Position)) return result;

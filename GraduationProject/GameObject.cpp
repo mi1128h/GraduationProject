@@ -1353,15 +1353,18 @@ void CMonsterObject::FindTarget(CGameObject* pObject)
 		m_pTargetObject = NULL;
 
 	if (m_pTargetObject) {
-		if (m_lPath.size() == 0) {
-			if (!m_curCell || !m_pNavMesh->PointInCell(m_curCell, GetPosition())) {
-				m_curCell = m_pNavMesh->FindCell(GetPosition());
-			}
+		if (!m_curCell || !m_pNavMesh->PointInCell(m_curCell, GetPosition())) {
+			m_curCell = m_pNavMesh->FindCell(GetPosition());
+		}
 
-			CCell* tarCell = m_pTargetObject->GetCurCell();
-			if (!tarCell || !m_pNavMesh->PointInCell(tarCell, m_pTargetObject->GetPosition())) {
-				m_pTargetObject->SetCurCell(m_pNavMesh->FindCell(m_pTargetObject->GetPosition()));
-			}
+		CCell* tarCell = m_pTargetObject->GetCurCell();
+		if (!tarCell || !m_pNavMesh->PointInCell(tarCell, m_pTargetObject->GetPosition())) {
+			m_pTargetObject->SetCurCell(m_pNavMesh->FindCell(m_pTargetObject->GetPosition()));
+			if (m_curCell && tarCell)
+				MakePath();
+		}
+
+		if (m_lPath.size() == 0) {
 			if (!m_curCell) return;
 			if (!tarCell) return;
 			if (m_curCell == tarCell) return;
