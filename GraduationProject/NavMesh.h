@@ -41,8 +41,8 @@ protected:
 	XMFLOAT3						m_xmf3Scale;
 	vector<CCell> m_NavCells;
 
-	list<CCell> closed;
-	list<CCell> open;
+	list<CCell*> closed;
+	list<CCell*> open;
 
 public:
 	CNavMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, XMFLOAT3 xmf3Scale = XMFLOAT3(1.0f, 1.0f, 1.0f), void* pContext = NULL, bool uniqued = false);

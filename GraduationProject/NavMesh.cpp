@@ -344,56 +344,53 @@ list<int> CNavMesh::MakePath(CCell* startCell, XMFLOAT3 xmf3Position)
 	result.clear();
 	int cnt = 0;
 
-	CCell curCell;
+	CCell* curCell;
 	if (PointInCell(startCell, xmf3Position)) return result;
 	startCell->parentId = -1;
 	startCell->fCost = 0;
 	startCell->gCost = 0;
 	startCell->hCost = 0;
-	open.push_back(*startCell);
+	open.push_back(startCell);
 
 	while (true) {
 		if (cnt++ > 500) break;
 		if (open.size() == 0) break;
 
-		open.sort([](CCell a, CCell b) {
-			return a.fCost < b.fCost;
+		open.sort([](CCell* a, CCell* b) {
+			return a->fCost < b->fCost;
 			});
 		curCell = open.front();
 		open.pop_front();
 		closed.push_back(curCell);
 
-		if (PointInCell(&curCell, xmf3Position)) break;
+		if (PointInCell(curCell, xmf3Position)) break;
 
-		for (int i = 0; i < curCell.nLink; ++i) {
-			int LinkIdx = curCell.linkIdx[i];
-			auto p = find_if(closed.begin(), closed.end(), [LinkIdx](CCell c) {
-				return c.id == LinkIdx;
+		for (int i = 0; i < curCell->nLink; ++i) {
+			int LinkIdx = curCell->linkIdx[i];
+			auto p = find_if(closed.begin(), closed.end(), [LinkIdx](CCell* c) {
+				return c->id == LinkIdx;
 				});
 			if (p != closed.end()) continue;
 
-			CCell nextCell = m_NavCells[curCell.linkIdx[i]];
-			nextCell.parentId = curCell.id;
+			CCell* nextCell = &m_NavCells[curCell->linkIdx[i]];
+			nextCell->parentId = curCell->id;
 
 			// cost °è»ê
-			nextCell.hCost = Vector3::Distance(xmf3Position, nextCell.center);
+			nextCell->hCost = Vector3::Distance(xmf3Position, nextCell->center);
 
-			nextCell.gCost = curCell.C2CCost[i];
-			if (nextCell.parentId != -1) {
-				nextCell.gCost += m_NavCells[nextCell.parentId].gCost;
-			}
-
-			nextCell.fCost = nextCell.hCost + nextCell.gCost;
+			nextCell->gCost = curCell->C2CCost[i] + m_NavCells[nextCell->parentId].gCost;
+			
+			nextCell->fCost = nextCell->hCost + nextCell->gCost;
 
 			open.push_back(nextCell);
 		}
 	}
 
-	CCell dest = closed.back();
+	CCell* dest = closed.back();
 	while (true) {
-		if (dest.parentId == -1) break;
-		result.push_front(dest.id);
-		dest = m_NavCells[dest.parentId];
+		if (dest->parentId == -1) break;
+		result.push_front(dest->id);
+		dest = &m_NavCells[dest->parentId];
 	}
 
 	return result;
