@@ -273,6 +273,10 @@ CBreathParticle::CBreathParticle(ID3D12Device* pd3dDevice, ID3D12GraphicsCommand
 	InitParticleSystem(xmf3Position, xmf3Range, fEmitTime);
 	CreateParticles();
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
+
+	m_fParticleVelocity = 15.0f;
+	m_fParticleVelocityVariation = 100.0f;
+	m_fMaxLife = 5.0f;
 }
 
 CBreathParticle::~CBreathParticle()
@@ -298,7 +302,7 @@ void CBreathParticle::EmitParticles(float fElapsedTime)
 	m_fLifeTime += fElapsedTime;
 	bool bCheckEmit = false;
 
-	if (m_fLifeTime > (1000.0f / m_fEmitTime))
+	if (m_fLifeTime > (10.0f / m_fEmitTime))
 	{
 		m_fLifeTime = 0.0f;
 		bCheckEmit = true;
@@ -358,6 +362,7 @@ void CBreathParticle::KillParticles()
 #endif
 		m_pParticles[i].m_fParticleLife = 0.0f;
 		m_pParticles[i].m_xmf3Vectors = XMFLOAT3(0.0f, 1.0f, 0.0f);
+		_sinValue = 0.0f;
 
 		++m_nDeadParticles;
 	}

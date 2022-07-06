@@ -41,14 +41,14 @@ public:
 	int m_nParticles;
 	int m_nDeadParticles;
 	float m_fLifeTime = 0.0f;
-	float m_fEmitTime = 500.0f;
+	float m_fEmitTime = 10.0f;
 	float m_fParticleVelocity = 15.0f;
 	float m_fParticleVelocityVariation = 100.0f;
 	XMFLOAT3 m_xmf3ParticleRange;
 	XMFLOAT3 m_xmf3MaxRange;
 
 protected:
-	float m_fMaxLife = 15.0f;
+	float m_fMaxLife = 5.0f;
 
 	ID3D12Resource* m_pd3dInstancesBuffer = NULL;
 	D3D12_VERTEX_BUFFER_VIEW		m_d3dInstancingBufferView;
