@@ -1,5 +1,6 @@
 #pragma once
 #include "Mesh.h"
+#include <set>
 
 class CLine
 {
@@ -20,8 +21,12 @@ public:
 
 	XMFLOAT3 center;
 	CLine lines[3]{};
-	XMFLOAT3 fArrivCost[3];
-	
+	vector<float> C2CCost;
+	float gCost;
+	float hCost;
+	float fCost;
+	int parentId = -1;
+
 	vector<int> linkIdx;
 	int nLink = 0;
 
@@ -35,6 +40,9 @@ class CNavMesh : public CMesh
 protected:
 	XMFLOAT3						m_xmf3Scale;
 	vector<CCell> m_NavCells;
+
+	list<CCell> closed;
+	list<CCell> open;
 
 public:
 	CNavMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, XMFLOAT3 xmf3Scale = XMFLOAT3(1.0f, 1.0f, 1.0f), void* pContext = NULL, bool uniqued = false);
@@ -51,7 +59,7 @@ public:
 	CCell* FindCell(XMFLOAT3 xmf3Position);
 	bool PointInCell(CCell* cell, XMFLOAT3 xmf3Position);
 
-	void MakePath(CCell* curCell, XMFLOAT3 xmf3Position);
+	list<int> MakePath(CCell* curCell, XMFLOAT3 xmf3Position);
 
 	CCell GetCell(int n) { return m_NavCells[n]; }
 };

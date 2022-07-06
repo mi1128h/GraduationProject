@@ -1353,7 +1353,21 @@ void CMonsterObject::FindTarget(CGameObject* pObject)
 		m_pTargetObject = NULL;
 
 	if (m_pTargetObject) {
-		MakePath();
+		if (m_lPath.size() == 0) {
+			if (!m_curCell || !m_pNavMesh->PointInCell(m_curCell, GetPosition())) {
+				m_curCell = m_pNavMesh->FindCell(GetPosition());
+			}
+
+			CCell* tarCell = m_pTargetObject->GetCurCell();
+			if (!tarCell || !m_pNavMesh->PointInCell(tarCell, m_pTargetObject->GetPosition())) {
+				m_pTargetObject->SetCurCell(m_pNavMesh->FindCell(m_pTargetObject->GetPosition()));
+			}
+			if (!m_curCell) return;
+			if (!tarCell) return;
+			if (m_curCell == tarCell) return;
+
+			MakePath();
+		}
 	}
 }
 
@@ -1362,8 +1376,9 @@ void CMonsterObject::ChaseTarget(float fTimeElapsed)
 	if (m_pTargetObject == NULL) return;
 
 	int TargetCellIdx = -1;
-	if (m_vPath.size() > 0) {
-		TargetCellIdx = m_vPath.front();
+	if (m_lPath.size() > 0) {
+		TargetCellIdx = m_lPath.front();
+		m_lPath.pop_front();
 	}
 
 	XMFLOAT3 targetPosition;
@@ -1371,13 +1386,11 @@ void CMonsterObject::ChaseTarget(float fTimeElapsed)
 	if (TargetCellIdx != -1) {
 		targetPosition = m_pNavMesh->GetCell(TargetCellIdx).center;
 	}
-	else {
-		CCell* curCell = m_pNavMesh->FindCell(GetPosition());
-		CCell* tarCell = m_pNavMesh->FindCell(m_pTargetObject->GetPosition());
-		if (curCell == tarCell)
-			targetPosition = m_pTargetObject->GetPosition();
-		else return;
-	}
+
+	CCell* tarCell = m_pTargetObject->GetCurCell();
+	if (m_curCell == tarCell)
+		targetPosition = m_pTargetObject->GetPosition();
+	
 	XMFLOAT3 monsterPosition = GetPosition();
 
 	targetPosition.y = 0;
@@ -1394,25 +1407,20 @@ void CMonsterObject::ChaseTarget(float fTimeElapsed)
 	nSign = fScalarTriple < 0.0f ? 1.0f : -1.0f;
 	fAngle = Vector3::Angle(xmf3Direction, monsterLook) * nSign;
 
-	fYaw = fAngle * fTimeElapsed;
+	fYaw = fAngle * fTimeElapsed * 3;
 	
 	Rotate(0.0f, fYaw, 0.0f);
 
 	// 전진
 	float distance = Vector3::Distance(monsterPosition, targetPosition);
 	if (distance > 200.0f)
-		MoveForward(50.0f * fTimeElapsed);
+		MoveForward(100.0f * fTimeElapsed);
 }
 
 void CMonsterObject::MakePath()
 {
-	CCell* curCell = m_pNavMesh->FindCell(GetPosition());
-	CCell* tarCell = m_pNavMesh->FindCell(m_pTargetObject->GetPosition());
-	if (!curCell) return;
-	if (curCell == tarCell) return;
-
-	m_vPath.clear();
-	m_pNavMesh->MakePath(curCell, m_pTargetObject->GetPosition());
+	m_lPath.clear();
+	m_lPath = m_pNavMesh->MakePath(m_curCell, m_pTargetObject->GetPosition());
 }
 
 void CMonsterObject::AttackTarget()

@@ -215,6 +215,8 @@ protected:
 	float m_fHp;
 	float m_fDamage;
 
+	CCell* m_curCell = NULL;
+
 public:
 	void SetMesh(CMesh* pMesh);
 	void SetShader(CShader* pShader);
@@ -297,6 +299,9 @@ public:
 	float GetDamage() { return m_fDamage; }
 	float GetHp() { return m_fHp; }
 	float GetMaxHp() { return m_fMaxHp; }
+
+	CCell* GetCurCell() { return m_curCell; }
+	void SetCurCell(CCell* cell) { m_curCell = cell; }
 };
 
 class CRotatingObject : public CGameObject
@@ -493,7 +498,7 @@ private:
 	float m_fDetectionRange = 2000.0f;
 
 	CNavMesh* m_pNavMesh = NULL;
-	vector<int> m_vPath;
+	list<int> m_lPath;
 
 public:
 	void SetUpdatedContext(LPVOID pContext) { m_pUpdatedContext = pContext; }

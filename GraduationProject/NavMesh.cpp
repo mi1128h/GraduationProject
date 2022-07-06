@@ -281,20 +281,13 @@ void CNavMesh::CalculateCells()
 		m_NavCells[i].center.x = (m_NavCells[i].lines[0].start.x + m_NavCells[i].lines[1].start.x + m_NavCells[i].lines[2].start.x) / 3;
 		m_NavCells[i].center.y = (m_NavCells[i].lines[0].start.y + m_NavCells[i].lines[1].start.y + m_NavCells[i].lines[2].start.y) / 3;
 		m_NavCells[i].center.z = (m_NavCells[i].lines[0].start.z + m_NavCells[i].lines[1].start.z + m_NavCells[i].lines[2].start.z) / 3;
+	}
 
-		XMFLOAT3 mid1, mid2, mid3;
-		mid1 = Vector3::Add(m_NavCells[i].lines[0].start, m_NavCells[i].lines[0].end);
-		mid1.x /= 2; mid1.y /= 2; mid1.z /= 2;
-
-		mid2 = Vector3::Add(m_NavCells[i].lines[1].start, m_NavCells[i].lines[1].end);
-		mid2.x /= 2; mid2.y /= 2; mid2.z /= 2;
-
-		mid3 = Vector3::Add(m_NavCells[i].lines[2].start, m_NavCells[i].lines[2].end);
-		mid3.x /= 2; mid3.y /= 2; mid3.z /= 2;
-
-		m_NavCells[i].fArrivCost[0] = Vector3::Subtract(mid1, m_NavCells[i].center);
-		m_NavCells[i].fArrivCost[1] = Vector3::Subtract(mid2, m_NavCells[i].center);
-		m_NavCells[i].fArrivCost[2] = Vector3::Subtract(mid3, m_NavCells[i].center);
+	for (int i = 0; i < m_NavCells.size(); ++i) {
+		for (int j = 0; j < m_NavCells[i].nLink; ++j) {
+			m_NavCells[i].C2CCost.push_back(
+				Vector3::Distance(m_NavCells[i].center, m_NavCells[m_NavCells[i].linkIdx[j]].center));
+		}
 	}
 }
 
@@ -343,35 +336,65 @@ bool CNavMesh::PointInCell(CCell* cell, XMFLOAT3 xmf3Position)
 	return true;
 }
 
-void CNavMesh::MakePath(CCell* curCell, XMFLOAT3 xmf3Position)
+list<int> CNavMesh::MakePath(CCell* startCell, XMFLOAT3 xmf3Position)
 {
-	if (PointInCell(curCell, xmf3Position)) return;
+	open.clear();
+	closed.clear();
+	list<int> result;
+	result.clear();
+	int cnt = 0;
 
-	XMFLOAT3 xmf3Center2Pos = Vector3::Subtract(xmf3Position, curCell->center);
+	CCell curCell;
+	if (PointInCell(startCell, xmf3Position)) return result;
+	startCell->parentId = -1;
+	startCell->fCost = 0;
+	startCell->gCost = 0;
+	startCell->hCost = 0;
+	open.push_back(*startCell);
 
-	float cost[3];
-	cost[0] = Vector3::Length(Vector3::Subtract(xmf3Center2Pos, curCell->fArrivCost[0]));
-	cost[1] = Vector3::Length(Vector3::Subtract(xmf3Center2Pos, curCell->fArrivCost[1]));
-	cost[2] = Vector3::Length(Vector3::Subtract(xmf3Center2Pos, curCell->fArrivCost[2]));
+	while (true) {
+		if (cnt++ > 500) break;
+		if (open.size() == 0) break;
 
-	float min = cost[0];
-	for (int i = 1; i < curCell->nLink; ++i) {
-		if (min > cost[i]) min = cost[i];
-	}
+		open.sort([](CCell a, CCell b) {
+			return a.fCost < b.fCost;
+			});
+		curCell = open.front();
+		open.pop_front();
+		closed.push_back(curCell);
 
-	int nextCellIdx = -1;
-	for (int i = 0; i < curCell->nLink; ++i) {
-		if (min == cost[i]) {
-			nextCellIdx = curCell->linkIdx[i];
-			break;
+		if (PointInCell(&curCell, xmf3Position)) break;
+
+		for (int i = 0; i < curCell.nLink; ++i) {
+			int LinkIdx = curCell.linkIdx[i];
+			auto p = find_if(closed.begin(), closed.end(), [LinkIdx](CCell c) {
+				return c.id == LinkIdx;
+				});
+			if (p != closed.end()) continue;
+
+			CCell nextCell = m_NavCells[curCell.linkIdx[i]];
+			nextCell.parentId = curCell.id;
+
+			// cost °è»ê
+			nextCell.hCost = Vector3::Distance(xmf3Position, nextCell.center);
+
+			nextCell.gCost = curCell.C2CCost[i];
+			if (nextCell.parentId != -1) {
+				nextCell.gCost += m_NavCells[nextCell.parentId].gCost;
+			}
+
+			nextCell.fCost = nextCell.hCost + nextCell.gCost;
+
+			open.push_back(nextCell);
 		}
 	}
 
-	//if (nextCellIdx != -1) {
-	//	for (int i = 0; i < path.size(); ++i) {
-	//		if (path[i] == nextCellIdx) return;
-	//	}
-	//	path.push_back(nextCellIdx);
-	//	MakePath(path, &m_NavCells[nextCellIdx], xmf3Position);
-	//}
+	CCell dest = closed.back();
+	while (true) {
+		if (dest.parentId == -1) break;
+		result.push_front(dest.id);
+		dest = m_NavCells[dest.parentId];
+	}
+
+	return result;
 }
