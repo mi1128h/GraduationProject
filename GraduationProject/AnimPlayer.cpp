@@ -35,7 +35,8 @@ CAnimPlayer::CAnimPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 void CAnimPlayer::InitPlayerMatrics(void* pContext)
 {
 	CHeightMapTerrain* pTerrain = (CHeightMapTerrain*)pContext;
-	float x = 974.0f, z = 1313.0f;
+
+	float x = 980.0f, z = 590.0f;;
 	SetPosition(XMFLOAT3(x * 10, pTerrain->GetHeight(x * 10, z * 10), z * 10));
 	SetScale(XMFLOAT3(1, 1, 1));
 	Rotate(0.0f, 0.0f, 90.0f);
@@ -208,7 +209,6 @@ bool CAnimPlayer::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM
 				case 'S':
 				case 'A':
 				case 'D':
-					m_pSkinnedAnimationController->SwitchAnimationState(track_name::idle);
 					break;
 			}
 			break;

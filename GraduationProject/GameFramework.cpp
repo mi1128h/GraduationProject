@@ -377,6 +377,7 @@ void CGameFramework::UpdateShaderVariables()
 {
 	m_pcbMappedFrameworkInfo->m_fCurrentTime = m_GameTimer.GetTotalTime();
 	m_pcbMappedFrameworkInfo->m_fElapsedTime = m_GameTimer.GetTimeElapsed();
+	m_pcbMappedFrameworkInfo->m_nParticleMode = ::gnPatricleMode;
 
 	D3D12_GPU_VIRTUAL_ADDRESS d3dGpuVirtualAddress = m_pd3dcbFrameworkInfo->GetGPUVirtualAddress();
 	m_pd3dCommandList->SetGraphicsRootConstantBufferView(Signature::Graphics::gfw, d3dGpuVirtualAddress);
@@ -467,11 +468,10 @@ void CGameFramework::OnProcessingKeyboardMessage
 			ChangeSwapChainState();
 			break;
 		case 'R':
-			m_pcbMappedFrameworkInfo->m_nRenderMode = 0x00;
 			m_pcbMappedFrameworkInfo->m_nBlurMode = 0x00;
 			break;
 		case 'B':
-			m_pcbMappedFrameworkInfo->m_nBlurMode = DEBUG_BLURRING;
+			//m_pcbMappedFrameworkInfo->m_nBlurMode = DEBUG_BLURRING;
 			break;
 		case 'G':
 			m_pPlayer->SetPosition(XMFLOAT3(9687.0f, 6.0f, 26238.0f));
@@ -485,6 +485,9 @@ void CGameFramework::OnProcessingKeyboardMessage
 		
 		case 'C':
 			::gbCollisionDebug = !::gbCollisionDebug;
+			break;
+		case 'F':
+			::gnPatricleMode = 0x30;
 			break;
 		default:
 			break;
@@ -565,31 +568,49 @@ void CGameFramework::ProcessInput()
 					m_pPlayer->Rotate(cyDelta, cxDelta, 0.0f);
 			}
 
-			UpdatePlayerMove(dwDirection);
 		}
+		UpdatePlayerMove(dwDirection);
 	}
 	m_pPlayer->Update(m_GameTimer.GetTimeElapsed());
 }
 
 void CGameFramework::UpdatePlayerMove(const DWORD& dwDirection)
 {
-	XMFLOAT3 xmf3Shift = m_pPlayer->SetMoveShift(dwDirection, 10.0f);
+	XMFLOAT3 xmf3Shift = m_pPlayer->SetMoveShift(dwDirection, 800.0f * m_GameTimer.GetTimeElapsed());
 	if (IsPlayerMove(dwDirection, xmf3Shift))
 	{
 		m_pPlayer->Move(xmf3Shift, false);
 	}
 
-	if (dwDirection & DIR_LEFT) m_pPlayer->m_pSkinnedAnimationController->SwitchAnimationState(track_name::walk_left);
-	if (dwDirection & DIR_RIGHT) m_pPlayer->m_pSkinnedAnimationController->SwitchAnimationState(track_name::walk_right);
-	if (dwDirection & DIR_BACKWARD) m_pPlayer->m_pSkinnedAnimationController->SwitchAnimationState(track_name::walk_back);
-	if (dwDirection & DIR_FORWARD) m_pPlayer->m_pSkinnedAnimationController->SwitchAnimationState(track_name::run);
+	int curTrackNum = m_pPlayer->m_pSkinnedAnimationController->GetCurrentTrackNum();
+
+	if (dwDirection == DIR_FORWARD) {
+		if (curTrackNum != track_name::run)
+			m_pPlayer->m_pSkinnedAnimationController->SwitchAnimationState(track_name::run);
+	}
+	else if (dwDirection == DIR_BACKWARD) {
+		if (curTrackNum != track_name::walk_back)
+			m_pPlayer->m_pSkinnedAnimationController->SwitchAnimationState(track_name::walk_back);
+	}
+	else if (dwDirection == DIR_LEFT) {
+		if (curTrackNum != track_name::walk_left)
+			m_pPlayer->m_pSkinnedAnimationController->SwitchAnimationState(track_name::walk_left);
+	}
+	else if (dwDirection == DIR_RIGHT) {
+		if (curTrackNum != track_name::walk_right)
+			m_pPlayer->m_pSkinnedAnimationController->SwitchAnimationState(track_name::walk_right);
+	}
+	else if (dwDirection == 0) {
+		if (curTrackNum != track_name::idle)
+			m_pPlayer->m_pSkinnedAnimationController->SwitchAnimationState(track_name::idle);
+	}
 }
 
 bool CGameFramework::IsPlayerMove(const DWORD& dwDirection, const DirectX::XMFLOAT3& xmf3Shift)
 {
 	if (!dwDirection) return false;
-	//if (!m_pScene->CheckPlayerByObjectBB(xmf3Shift)) return false;
-	//if (!m_pScene->CheckPlayerInScene(xmf3Shift)) return false;
+	if (!m_pScene->CheckPlayerByObjectBB(xmf3Shift)) return false;
+	if (!m_pScene->CheckPlayerInScene(xmf3Shift)) return false;
 	return true;
 }
 
@@ -661,8 +682,10 @@ void CGameFramework::FrameAdvance()
 #endif
 
 	if (m_pPlayer) m_pPlayer->Render(m_pd3dCommandList, m_pCamera);
+	m_pScene->RenderParticle(m_pd3dCommandList, m_pCamera);
 
 	m_pd3dCommandList->ClearDepthStencilView(m_d3dDsvDescriptorCPUHandle,D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, NULL);
+
 	m_pScene->UIRender(m_pd3dCommandList, m_pCamera);
 
 

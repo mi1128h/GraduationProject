@@ -344,10 +344,11 @@ void CThirdPersonCamera::Update(XMFLOAT3& xmf3LookAt, float fTimeElapsed)
 void CThirdPersonCamera::SetLookAt(XMFLOAT3& xmf3LookAt)
 {
 	XMFLOAT3 xmf3PlayerUp = m_pPlayer->GetUpVector();
+	XMFLOAT3 xmf3Position = XMFLOAT3(m_xmf3Position.x, m_xmf3Position.y - 150.0f, m_xmf3Position.z);
 #ifdef _WITH_LEFT_HAND_COORDINATES
-	XMFLOAT4X4 mtxLookAt = Matrix4x4::LookAtLH(m_xmf3Position, xmf3LookAt, xmf3PlayerUp);
+	XMFLOAT4X4 mtxLookAt = Matrix4x4::LookAtLH(xmf3Position, xmf3LookAt, xmf3PlayerUp);
 #else
-	XMFLOAT4X4 mtxLookAt = Matrix4x4::LookAtRH(m_xmf3Position, xmf3LookAt, xmf3PlayerUp);
+	XMFLOAT4X4 mtxLookAt = Matrix4x4::LookAtRH(xmf3Position, xmf3LookAt, xmf3PlayerUp);
 #endif
 	m_xmf3Right = XMFLOAT3(mtxLookAt._11, mtxLookAt._21, mtxLookAt._31);
 	m_xmf3Up = XMFLOAT3(mtxLookAt._12, mtxLookAt._22, mtxLookAt._32);

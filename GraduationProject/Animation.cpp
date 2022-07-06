@@ -159,6 +159,8 @@ void CAnimationSet::Animate(float fElapsedTime, float fTrackWeight, float fTrack
 {
 	float fPosition = SetPosition(fElapsedTime, fTrackStartTime, fTrackEndTime);
 
+	if (m_bLoopEnd) return;
+
 	for (int i = 0; i < m_nAnimationLayers; i++)
 	{
 		for (int j = 0; j < m_pAnimationLayers[i].m_nAnimatedBoneFrames; j++)
@@ -351,6 +353,20 @@ void CAnimationController::AdvanceTime(float fTimeElapsed, CGameObject* pRootGam
 			if (m_pAnimationTracks[i].m_bEnable)
 			{
 				CAnimationSet* pAnimationSet = m_pAnimationSets->m_ppAnimationSets[m_pAnimationTracks[i].m_nAnimationSet];
+				if (pAnimationSet->IsOnceLoopEnd())
+				{
+					SwitchAnimationState(m_idleNum);
+					pAnimationSet->m_bLoopEnd = false;
+					isAttack = false;
+				}
+			}
+		}
+
+		for (int i = 0; i < m_nAnimationTracks; i++)
+		{
+			if (m_pAnimationTracks[i].m_bEnable)
+			{
+				CAnimationSet* pAnimationSet = m_pAnimationSets->m_ppAnimationSets[m_pAnimationTracks[i].m_nAnimationSet];
 				pAnimationSet->Animate(fTimeElapsed * m_pAnimationTracks[i].m_fSpeed, m_pAnimationTracks[i].m_fWeight, m_pAnimationTracks[i].m_fStartTime, m_pAnimationTracks[i].m_fEndTime);
 			}
 		}
@@ -360,20 +376,6 @@ void CAnimationController::AdvanceTime(float fTimeElapsed, CGameObject* pRootGam
 		for (int k = 0; k < m_nAnimationTracks; k++)
 		{
 			if (m_pAnimationTracks[k].m_bEnable) m_pAnimationSets->m_ppAnimationSets[m_pAnimationTracks[k].m_nAnimationSet]->HandleCallback();
-		}
-
-		for (int i = 0; i < m_nAnimationTracks; i++)
-		{
-			if (m_pAnimationTracks[i].m_bEnable)
-			{
-				CAnimationSet* pAnimationSet = m_pAnimationSets->m_ppAnimationSets[m_pAnimationTracks[i].m_nAnimationSet];
-				if (pAnimationSet->IsOnceLoopEnd())
-				{
-					SwitchAnimationState(m_idleNum);
-					pAnimationSet->m_bLoopEnd = false;
-					isAttack = false;
-				}
-			}
 		}
 	}
 }

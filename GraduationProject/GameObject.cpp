@@ -4,6 +4,23 @@
 #include "Scene.h"
 #include "Collision.h"
 
+inline float RandF(float fMin, float fMax)
+{
+	return(fMin + ((float)rand() / (float)RAND_MAX) * (fMax - fMin));
+}
+
+XMVECTOR RandomUnitVectorOnSphere()
+{
+	XMVECTOR xmvOne = XMVectorSet(1.0f, 1.0f, 1.0f, 1.0f);
+	XMVECTOR xmvZero = XMVectorZero();
+
+	while (true)
+	{
+		XMVECTOR v = XMVectorSet(RandF(-1.0f, 1.0f), RandF(-1.0f, 1.0f), RandF(-1.0f, 1.0f), 0.0f);
+		if (!XMVector3Greater(XMVector3LengthSq(v), xmvOne)) return(XMVector3Normalize(v));
+	}
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 CTexture::CTexture(int nTextures, UINT nTextureType, int nSamplers, int nGraphicsSrvRootParameters, int nComputeUavRootParameters, int nComputeSrvRootParameters)
@@ -752,7 +769,7 @@ void CGameObject::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pC
 			{
 				if (m_ppMaterials[i])
 				{
-					if (m_ppMaterials[i]->m_pShader) m_ppMaterials[i]->m_pShader->Render(pd3dCommandList, pCamera);
+					if (m_ppMaterials[i]->m_pShader) m_ppMaterials[i]->m_pShader->Render(pd3dCommandList, pCamera,0);
 					m_ppMaterials[i]->UpdateShaderVariable(pd3dCommandList);
 				}
 				m_pMesh->Render(pd3dCommandList, i);
@@ -1257,10 +1274,11 @@ CCannonballObject::~CCannonballObject()
 void CCannonballObject::Animate(float fTimeElapsed, CCamera* pCamera)
 {
 	if (m_bIsFired) {
-		XMFLOAT3 xmf3Gravity = XMFLOAT3(0.0f, -10.0f, 0.0f);
-		m_xmf3Velocity = Vector3::Add(m_xmf3Velocity, Vector3::ScalarProduct(xmf3Gravity, fTimeElapsed * 0.1f, false));
-
-		SetPosition(Vector3::Add(GetPosition(), m_xmf3Velocity));
+		XMFLOAT3 xmf3Gravity = XMFLOAT3(0.0f, -10.0f * fTimeElapsed * 0.5, 0.0f);
+		m_xmf3Velocity = Vector3::Add(m_xmf3Velocity, xmf3Gravity);
+		//m_xmf3Velocity = Vector3::Add(m_xmf3Velocity, Vector3::ScalarProduct(xmf3Gravity, fTimeElapsed * 0.5, false));
+		XMFLOAT3 xmf3Velocity = Vector3::ScalarProduct(m_xmf3Velocity, fTimeElapsed * 100, false);
+		SetPosition(Vector3::Add(GetPosition(), xmf3Velocity));
 	}
 
 	// 포탄이 바닥에 충돌, 없어지면
@@ -1374,9 +1392,9 @@ void CMonsterObject::FindTarget(CGameObject* pObject)
 	}
 }
 
-void CMonsterObject::ChaseTarget(float fTimeElapsed)
+float CMonsterObject::ChaseTarget(float fTimeElapsed, bool bMove)
 {
-	if (m_pTargetObject == NULL) return;
+	if (m_pTargetObject == NULL) return 0;
 
 	int TargetCellIdx = -1;
 	if (m_lPath.size() > 0) {
@@ -1410,14 +1428,17 @@ void CMonsterObject::ChaseTarget(float fTimeElapsed)
 	nSign = fScalarTriple < 0.0f ? 1.0f : -1.0f;
 	fAngle = Vector3::Angle(xmf3Direction, monsterLook) * nSign;
 
-	fYaw = fAngle * fTimeElapsed * 3;
+	fYaw = fAngle * fTimeElapsed;
 	
 	Rotate(0.0f, fYaw, 0.0f);
 
 	// 전진
 	float distance = Vector3::Distance(monsterPosition, targetPosition);
-	if (distance > 200.0f)
-		MoveForward(100.0f * fTimeElapsed);
+	if (bMove) {
+		if (distance > 200.0f)
+			MoveForward(100.0f * fTimeElapsed);
+	}
+	return distance;
 }
 
 void CMonsterObject::MakePath()
@@ -1469,19 +1490,20 @@ void CMonsterObject::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera*
 
 void CMonsterObject::Animate(float fTimeElapsed, CCamera* pCamera)
 {
-	if (m_fHp > 0) {
-		if (m_pTargetObject != NULL) {
-			if (m_pSkinnedAnimationController->GetCurrentTrackNum() != track_name::attack1 &&
-				m_pSkinnedAnimationController->GetCurrentTrackNum() != track_name::attack2) {
+	int curTrackNum = m_pSkinnedAnimationController->GetCurrentTrackNum();
+	if (GetHp() > 0) {
+		if (GetTarget() != NULL) {
+			if (curTrackNum != track_name::attack1 &&
+				curTrackNum != track_name::attack2) {
 				ChaseTarget(fTimeElapsed);
 			}
-			if (m_pSkinnedAnimationController->GetCurrentTrackNum() == track_name::idle1 ||
-				m_pSkinnedAnimationController->GetCurrentTrackNum() == track_name::idle2) {
+			if (curTrackNum == track_name::idle1 ||
+				curTrackNum == track_name::idle2) {
 				m_pSkinnedAnimationController->SwitchAnimationState(track_name::walk);
 			}
 		}
 		else {
-			if (m_pSkinnedAnimationController->GetCurrentTrackNum() == track_name::walk) {
+			if (curTrackNum == track_name::walk) {
 				m_pSkinnedAnimationController->SwitchAnimationState(track_name::idle1);
 			}
 		}
@@ -1505,6 +1527,186 @@ bool CMonsterObject::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 		}
 	}
 	return(false);
+}
+
+CBossMonster::CBossMonster(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, void* pContext, int nMeshes)
+{
+	CLoadedModelInfo* pBossModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/new Dragon_new Anim.bin", NULL);
+	SetChild(pBossModel->m_pModelRootObject, true);
+
+	CTexture* pAnimationTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
+	pAnimationTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Model/Texture/Dragon.dds", 0);
+	CScene::CreateShaderResourceViews(pd3dDevice, pAnimationTexture, Signature::Graphics::animation_diffuse, true);
+	m_pTexture = pAnimationTexture;
+
+	CreateShaderVariables(pd3dDevice, pd3dCommandList);
+
+	SetPosition(9800, 300, 29180);
+	SetScale(0.01, 0.01, 0.01);
+	SetHp(1000);
+	SetDetectionRange(8000);
+
+	CHeightMapTerrain* pTerrain = (CHeightMapTerrain*)pContext;
+	SetUpdatedContext(pTerrain);
+
+	//
+	m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, track_name::length, pBossModel);
+
+	m_pSkinnedAnimationController->SetCurrentTrackNum(track_name::Idle);
+	bool bTrackAnimType[track_name::length] = { true, true, true, true, true, true, true, true, true, true, true, true };
+	m_pSkinnedAnimationController->SetAnimationTracks(bTrackAnimType);
+	
+	bool bAnimType[track_name::length] = { false, false, false, false, false, false, true, false, true, false, false, false };
+	m_pSkinnedAnimationController->SetAnimationTypes(bAnimType);
+	m_pSkinnedAnimationController->SetIdleNum(track_name::Idle);
+
+	if (pBossModel) delete pBossModel;
+}
+
+CBossMonster::~CBossMonster()
+{
+}
+
+void CBossMonster::Animate(float fTimeElapsed, CCamera* pCamera)
+{
+	int curTrackNum = m_pSkinnedAnimationController->GetCurrentTrackNum();
+	FlyCoolDown -= fTimeElapsed;
+	FlameCoolDown -= fTimeElapsed;
+	DefendCoolDown -= fTimeElapsed;
+	if (GetHp() > 0) {
+		if (GetTarget() != NULL) {
+			if (!bNoticed) {
+				bNoticed = true;
+				m_pSkinnedAnimationController->SwitchAnimationState(track_name::Scream);
+			}
+			else {
+				float distance = ChaseTarget(fTimeElapsed, false);
+				int n = rand() % 100;
+				while (n >= 0 || n <= 3) {
+					if (distance > 1600) {
+						if (n == 2 || n == 3) {
+							n = rand() % 100;
+						}
+						else break;
+					}
+					else {
+						if (n == 0 || n == 1) {
+							n = rand() % 100;
+						}
+						else break;
+					}
+				}
+
+				if (curTrackNum == track_name::Idle || curTrackNum == track_name::FlyIdle) {
+					switch (n) {
+					case 0:
+						DoAttackHand(curTrackNum);
+						break;
+					case 1:
+						DoAttackFlame(curTrackNum);
+						break;
+					case 2:
+						DoAttackMouth(curTrackNum);
+						break;
+					case 3:
+						DoDefend(curTrackNum);
+						break;
+					case 4:
+						DoTakeOff(curTrackNum);
+						break;
+					case 5:
+						DoFlyFlame(curTrackNum);
+						break;
+					case 6:
+						DoLand(curTrackNum);
+					}
+				}
+			}
+		}
+		else {
+			m_pSkinnedAnimationController->SwitchAnimationState(track_name::Idle);
+		}
+	}
+	CGameObject::Animate(fTimeElapsed, pCamera);
+}
+
+void CBossMonster::DoAttackFlame(int curTrackNum)
+{
+	if (curTrackNum != track_name::Idle) return;
+
+	if (FlameCoolDown > 0) {
+		if (curTrackNum != track_name::attackFlame) return;
+	}
+
+	if (curTrackNum != track_name::attackFlame)
+		m_pSkinnedAnimationController->SwitchAnimationState(track_name::attackFlame);
+	FlameCoolDown = FLAME;
+}
+
+void CBossMonster::DoAttackHand(int curTrackNum)
+{
+	if (curTrackNum != track_name::Idle) return;
+
+	if (curTrackNum != track_name::attackHand)
+		m_pSkinnedAnimationController->SwitchAnimationState(track_name::attackHand);
+}
+
+void CBossMonster::DoAttackMouth(int curTrackNum)
+{
+	if (curTrackNum != track_name::Idle) return;
+
+	if (curTrackNum != track_name::attackMouth)
+		m_pSkinnedAnimationController->SwitchAnimationState(track_name::attackMouth);
+}
+
+void CBossMonster::DoTakeOff(int curTrackNum)
+{
+	if (curTrackNum != track_name::Idle) return;
+
+	if (FlyCoolDown > 0) {
+		if (curTrackNum != track_name::takeOff) return;
+	}
+
+	m_pSkinnedAnimationController->SwitchAnimationState(track_name::takeOff);
+	m_pSkinnedAnimationController->SetIdleNum(track_name::FlyIdle);
+	FlyCoolDown = FLY;
+	bFlyAttack = false;
+}
+
+void CBossMonster::DoFlyFlame(int curTrackNum)
+{
+	if (curTrackNum != track_name::FlyIdle) return;
+
+	if (FlameCoolDown > 0) {
+		if (curTrackNum != track_name::FlyFlame) return;
+	}
+
+	if (curTrackNum != track_name::FlyFlame)
+		m_pSkinnedAnimationController->SwitchAnimationState(track_name::FlyFlame);
+	FlameCoolDown = FLAME;
+	bFlyAttack = true;
+}
+
+void CBossMonster::DoLand(int curTrackNum)
+{
+	if (curTrackNum != track_name::FlyIdle) return;
+	if (!bFlyAttack) return;	// fly 상태에서 공격 한 번은 하고 착지하도록
+
+	m_pSkinnedAnimationController->SwitchAnimationState(track_name::Land);
+	m_pSkinnedAnimationController->SetIdleNum(track_name::Idle);
+}
+
+void CBossMonster::DoDefend(int curTrackNum)
+{
+	if (curTrackNum != track_name::Idle) return;
+
+	if (DefendCoolDown > 0) {
+		if (curTrackNum != track_name::Defend) return;
+	}
+
+	if (curTrackNum != track_name::Defend)
+		m_pSkinnedAnimationController->SwitchAnimationState(track_name::Defend);
+	DefendCoolDown = DEFEND;
 }
 
 ///////////////////////
@@ -1547,4 +1749,166 @@ void CUIObject::UpdateHpRatio()
 	float maxhp = m_pTargetObject->GetMaxHp();
 
 	ratioHp = hp / maxhp;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+
+CParticleObject::CParticleObject(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, XMFLOAT3 xmf3Position, XMFLOAT3 xmf3Velocity, XMFLOAT3 xmf3Acceleration, XMFLOAT3 xmf3Color, XMFLOAT2 xmf2Size, float fLifetime, UINT nMaxParticles) : CGameObject(1)
+{
+	CParticleMesh* pMesh = new CParticleMesh(pd3dDevice, pd3dCommandList, xmf3Position, xmf3Velocity, xmf3Acceleration, xmf3Color, xmf2Size, fLifetime, nMaxParticles);
+	SetMesh(pMesh);
+
+	m_size.x = xmf2Size.x;
+	m_size.y = xmf2Size.y;
+
+	CTexture* pParticleTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
+	pParticleTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/Effect/DustEffect.dds", 0);
+
+	CMaterial* pMaterial = new CMaterial(1);
+	pMaterial->SetTexture(pParticleTexture);
+
+	srand((unsigned)time(NULL));
+
+	XMFLOAT4* pxmf4RandomValues = new XMFLOAT4[1000];
+	for (int i = 0; i < 1000; i++)
+	{
+		XMFLOAT3 accelations;
+		XMStoreFloat3(&accelations, ::RandomUnitVectorOnSphere());
+		pxmf4RandomValues[i] = XMFLOAT4(accelations.x, accelations.y, accelations.z, RandomValue(0.0f, 1.0f));
+	}
+	m_pRandowmValueTexture = new CTexture(1, RESOURCE_BUFFER, 0, 1, 0, 0);
+	m_pRandowmValueTexture->CreateBuffer(pd3dDevice, pd3dCommandList, pxmf4RandomValues, 1000, sizeof(XMFLOAT4), DXGI_FORMAT_R32G32B32A32_FLOAT, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_GENERIC_READ, 0);
+
+	CreateShaderVariables(pd3dDevice, pd3dCommandList);
+
+	CParticleShader* pShader = new CParticleShader();
+	pShader->CreateGraphicsPipelineState(pd3dDevice, pd3dGraphicsRootSignature, 0);
+	pShader->CreateShaderVariables(pd3dDevice, pd3dCommandList);
+
+	CScene::CreateShaderResourceViews(pd3dDevice, pParticleTexture, Signature::Graphics::particle_texture,true);
+	CScene::CreateShaderResourceViews(pd3dDevice, m_pRandowmValueTexture, Signature::Graphics::particle_buffer,true,true);
+
+	pMaterial->SetShader(pShader);
+	SetMaterial(0,pMaterial);
+
+	SetPosition(xmf3Position);
+}
+
+CParticleObject::~CParticleObject()
+{
+	if (m_pRandowmValueTexture) m_pRandowmValueTexture->Release();
+
+	//if (m_pd3dCommandAllocator) m_pd3dCommandAllocator->Release();
+	//if (m_pd3dCommandList) m_pd3dCommandList->Release();
+
+	if (m_pd3dFence) m_pd3dFence->Release();
+
+	::CloseHandle(m_hFenceEvent);
+}
+
+void CParticleObject::ReleaseUploadBuffers()
+{
+	if (m_pRandowmValueTexture) m_pRandowmValueTexture->ReleaseUploadBuffers();
+
+	CGameObject::ReleaseUploadBuffers();
+}
+
+void CParticleObject::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
+{
+	OnPrepareRender();
+
+	if (m_ppMaterials)
+	{
+		if (m_ppMaterials[0]->m_pShader) m_ppMaterials[0]->m_pShader->OnPrepareRender(pd3dCommandList, 0);
+		if (m_ppMaterials[0]->m_ppTextures) m_ppMaterials[0]->m_ppTextures[0]->UpdateGraphicsShaderVariables(pd3dCommandList);
+
+		if (m_pRandowmValueTexture) m_pRandowmValueTexture->UpdateGraphicsShaderVariables(pd3dCommandList);
+	}
+
+	UpdateShaderVariable(pd3dCommandList,&m_xmf4x4World);
+
+	m_pMesh->OnPreRender(pd3dCommandList,0, 0); //Stream Output
+	m_pMesh->Render(pd3dCommandList,0, 0); //Stream Output
+	m_pMesh->OnPostRender(pd3dCommandList,0, 0); //Stream Output
+
+	if (m_ppMaterials && m_ppMaterials[0]->m_pShader) m_ppMaterials[0]->m_pShader->OnPrepareRender(pd3dCommandList,1);
+
+	m_pMesh->OnPreRender(pd3dCommandList,0, 1); //Draw
+	m_pMesh->Render(pd3dCommandList,0, 1); //Draw
+}
+
+void CParticleObject::CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
+{
+	CGameObject::CreateShaderVariables(pd3dDevice, pd3dCommandList);
+
+	UINT ncbElementBytes = ((sizeof(CB_HP_INFO) + 255) & ~255);
+	m_pd3dcbParticleInfo = ::CreateBufferResource(pd3dDevice, pd3dCommandList,
+		NULL, ncbElementBytes, D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
+	m_pd3dcbParticleInfo->Map(0, NULL, (void**)&m_pcbMappedParticleInfo);
+
+}
+
+void CParticleObject::UpdateShaderVariable(ID3D12GraphicsCommandList* pd3dCommandList, XMFLOAT4X4* pxmf4x4World)
+{
+	CGameObject::UpdateShaderVariable(pd3dCommandList, pxmf4x4World);
+
+	m_pcbMappedParticleInfo->size_x = m_size.x;
+	m_pcbMappedParticleInfo->size_y = m_size.y;
+	::memcpy(&m_pcbMappedParticleInfo->vec3, &m_xmf3vec, sizeof(XMFLOAT3));
+
+	D3D12_GPU_VIRTUAL_ADDRESS d3dGpuVirtualAddress = m_pd3dcbParticleInfo->GetGPUVirtualAddress();
+	pd3dCommandList->SetGraphicsRootConstantBufferView(Signature::Graphics::particle, d3dGpuVirtualAddress);
+}
+
+void CParticleObject::SetVector(XMFLOAT3& vec)
+{
+	m_xmf3vec = vec;
+}
+
+/////////////
+
+CExplosionObject::CExplosionObject(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, XMFLOAT3 xmf3Position, XMFLOAT3 xmf3Velocity, XMFLOAT3 xmf3Acceleration, XMFLOAT3 xmf3Color, XMFLOAT2 xmf2Size, float fLifetime, UINT nMaxParticles)
+{
+	CParticleMesh* pMesh = new CParticleMesh(pd3dDevice, pd3dCommandList, xmf3Position, xmf3Velocity, xmf3Acceleration, xmf3Color, xmf2Size, fLifetime, nMaxParticles);
+	SetMesh(pMesh);
+
+	m_size.x = xmf2Size.x;
+	m_size.y = xmf2Size.y;
+
+	CTexture* pParticleTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
+	pParticleTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/Effect/DustEffect.dds", 0);
+
+	CMaterial* pMaterial = new CMaterial(1);
+	pMaterial->SetTexture(pParticleTexture);
+
+	srand((unsigned)time(NULL));
+
+	XMFLOAT4* pxmf4RandomValues = new XMFLOAT4[1000];
+	for (int i = 0; i < 1000; i++)
+	{
+		XMFLOAT3 accelations;
+		XMStoreFloat3(&accelations, ::RandomUnitVectorOnSphere());
+		pxmf4RandomValues[i] = XMFLOAT4(accelations.x, accelations.y, accelations.z, RandomValue(0.0f, 1.0f));
+	}
+	m_pRandowmValueTexture = new CTexture(1, RESOURCE_BUFFER, 0, 1, 0, 0);
+	m_pRandowmValueTexture->CreateBuffer(pd3dDevice, pd3dCommandList, pxmf4RandomValues, 1000, sizeof(XMFLOAT4), DXGI_FORMAT_R32G32B32A32_FLOAT, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_GENERIC_READ, 0);
+
+	CreateShaderVariables(pd3dDevice, pd3dCommandList);
+
+
+	CScene::CreateShaderResourceViews(pd3dDevice, pParticleTexture, Signature::Graphics::particle_texture, true);
+	CScene::CreateShaderResourceViews(pd3dDevice, m_pRandowmValueTexture, Signature::Graphics::particle_buffer, true, true);
+
+	CExplosionParticleShader* pShader = new CExplosionParticleShader();
+	pShader->CreateGraphicsPipelineState(pd3dDevice, pd3dGraphicsRootSignature, 0);
+	pShader->CreateShaderVariables(pd3dDevice, pd3dCommandList);
+
+	pMaterial->SetShader(pShader);
+	SetMaterial(0, pMaterial);
+
+	SetPosition(xmf3Position);
+}
+
+CExplosionObject::~CExplosionObject()
+{
 }

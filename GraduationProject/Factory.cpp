@@ -399,7 +399,7 @@ void CCannonFactory::ActiveCannon()
 	XMFLOAT3 origin = pBarrel->GetPosition();
 	XMFLOAT3 offset = Vector3::ScalarProduct(pBarrel->GetUp(), 100.0f * m_pInteractedCannon->m_xmf3Scale.y);
 	origin = Vector3::Add(origin, offset);
-	XMFLOAT3 velocity = Vector3::ScalarProduct(pBarrel->GetUp(), 5.0f);
+	XMFLOAT3 velocity = Vector3::ScalarProduct(pBarrel->GetUp(), 20.0f);
 
 	m_pInteractedCannon->FireCannonBall(origin, velocity);
 }
@@ -414,23 +414,29 @@ void CCannonFactory::RotateCannon(WPARAM wParam)
 	switch (wParam) {
 	case 'W':
 		xmf3RotateAxis = XMFLOAT3(1, 0, 0);
-		fAngle = +10.0f;
+		fAngle = +2.0f;
 		break;
 	case 'A':
 		xmf3RotateAxis = XMFLOAT3(0, 0, 1);
-		fAngle = -10.0f;
+		fAngle = -2.0f;
 		break;
 	case 'S':
 		xmf3RotateAxis = XMFLOAT3(1, 0, 0);
-		fAngle = -10.0f;
+		fAngle = -2.0f;
 		break;
 	case 'D':
 		xmf3RotateAxis = XMFLOAT3(0, 0, 1);
-		fAngle = +10.0f;
+		fAngle = +2.0f;
 		break;
 	}
 
 	m_pInteractedCannon->RotateCannon(&xmf3RotateAxis, fAngle);
+}
+
+XMFLOAT3& CCannonFactory::GetCannonPosition()
+{
+	if (!m_pInteractedCannon) return XMFLOAT3(0.0f, 0.0f, 0.0f);
+	return m_pInteractedCannon->GetCannonball()->GetPosition();
 }
 
 ///
