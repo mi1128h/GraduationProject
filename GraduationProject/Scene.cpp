@@ -408,20 +408,11 @@ void CScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* p
 
 	////////
 
-	m_nParticleObjects = 2;
+	//float fHeight = m_pTerrain->GetHeight(x * 10, z * 10);
+	//pRotatingObject = new CStreamParticleObject(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, XMFLOAT3(x*10, fHeight, z*10), XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(1.0f, 0.0f, 0.0f), XMFLOAT2(15.0f, 15.0f), 15.0f, MAX_PARTICLES);
 
-	m_ppParticleObjects = new CStreamParticleObject * [m_nParticleObjects];
-
-	XMFLOAT3 xmf3RotateAxis, xmf3SurfaceNormal;
-	CStreamParticleObject* pRotatingObject = NULL;
-	float x = 0, z = 0;
-	float fHeight = m_pTerrain->GetHeight(x * 10, z * 10);
-	pRotatingObject = new CStreamParticleObject(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, XMFLOAT3(x*10, fHeight, z*10), XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(1.0f, 0.0f, 0.0f), XMFLOAT2(15.0f, 15.0f), 15.0f, MAX_PARTICLES);
-	m_ppParticleObjects[0] = pRotatingObject;
-
-	CStreamExplosionObject* emptyObject = NULL;
-	emptyObject = new CStreamExplosionObject(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, XMFLOAT3(x * 10, fHeight, z * 10), XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(1.0f, 0.0f, 0.0f), XMFLOAT2(15.0f, 15.0f), 15.0f, MAX_PARTICLES);
-	m_ppParticleObjects[1] = emptyObject;
+	//CStreamExplosionObject* emptyObject = NULL;
+	//emptyObject = new CStreamExplosionObject(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, XMFLOAT3(x * 10, fHeight, z * 10), XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(1.0f, 0.0f, 0.0f), XMFLOAT2(15.0f, 15.0f), 15.0f, MAX_PARTICLES);
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 }
 
@@ -433,7 +424,7 @@ void CScene::BuildUIObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList*
 
 void CScene::RenderParticle(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
 {
-	for (int i = 0; i < m_nParticleObjects; i++) m_ppParticleObjects[i]->Render(pd3dCommandList, pCamera);
+	//for (int i = 0; i < m_nParticleObjects; i++) m_ppParticleObjects[i]->Render(pd3dCommandList, pCamera);
 }
 
 void CScene::BuildCollisions(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
@@ -551,7 +542,7 @@ bool CScene::OnProcessingKeyboardMessage(
 				break;
 			case VK_SPACE:
 				dynamic_cast<CCannonFactory*>(_factory[1])->ActiveCannon();
-				m_ppParticleObjects[0]->SetActive(false);
+				//m_ppParticleObjects[0]->SetActive(false);
 				::gnPatricleMode = 0x00;
 				break;
 			case 'W': case 'A': case 'S': case 'D':
@@ -777,13 +768,13 @@ void CScene::AnimateObjects(float fTimeElapsed, CCamera* pCamera)
 	m_pBoss->FindTarget(m_pPlayer);
 	m_pBoss->Animate(fTimeElapsed, pCamera);
 
-	for (int i = 0; i < m_nParticleObjects; i++) {
-		m_ppParticleObjects[i]->Animate(fTimeElapsed, pCamera);
+	//for (int i = 0; i < m_nParticleObjects; i++) {
+	//	m_ppParticleObjects[i]->Animate(fTimeElapsed, pCamera);
 
-		if (i > 1) continue;
-		m_ppParticleObjects[i]->SetVector(XMFLOAT3(1.0f,0.0f,0.0f));
-		m_ppParticleObjects[i]->SetPosition(dynamic_cast<CCannonFactory*>(_factory[1])->GetCannonPosition());
-	}
+	//	if (i > 1) continue;
+	//	m_ppParticleObjects[i]->SetVector(XMFLOAT3(1.0f,0.0f,0.0f));
+	//	m_ppParticleObjects[i]->SetPosition(dynamic_cast<CCannonFactory*>(_factory[1])->GetCannonPosition());
+	//}
 	for (int i = 0; i < m_nShaders; i++) m_ppShaders[i]->AnimateObjects(fTimeElapsed, pCamera);
 
 	if (m_pLights) {}
