@@ -388,23 +388,15 @@ void CScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* p
 	pMonster->SetObjectCollision(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 	_factory.emplace_back(pMonster);
 
+	_particles = new CParticleFactory();
+	_particles->BuildObjects(pd3dDevice, m_pd3dGraphicsRootSignature, pd3dCommandList, m_pTerrain);
+
 	m_pBoss = new CBossMonster(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, m_pTerrain);
 
 	//////
 	
 	BuildCollisions(pd3dDevice, pd3dCommandList);
 
-
-	////
-	 
-	m_nShaders = 1;
-	m_ppShaders = new CShader * [m_nShaders];
-
-	CParticleShader* pObjectShader = new CParticleShader();
-	DXGI_FORMAT pdxgiRtvFormats[3] = { DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM };
-	pObjectShader->CreateShader(pd3dDevice, m_pd3dGraphicsRootSignature, 3, pdxgiRtvFormats, DXGI_FORMAT_D32_FLOAT);
-	pObjectShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pTerrain);
-	m_ppShaders[0] = pObjectShader;
 
 	////////
 
@@ -424,7 +416,7 @@ void CScene::BuildUIObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList*
 
 void CScene::RenderParticle(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
 {
-	//for (int i = 0; i < m_nParticleObjects; i++) m_ppParticleObjects[i]->Render(pd3dCommandList, pCamera);
+	//_particles->Render(pd3dCommandList, pCamera);
 }
 
 void CScene::BuildCollisions(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
@@ -776,6 +768,7 @@ void CScene::AnimateObjects(float fTimeElapsed, CCamera* pCamera)
 	//	m_ppParticleObjects[i]->SetPosition(dynamic_cast<CCannonFactory*>(_factory[1])->GetCannonPosition());
 	//}
 	for (int i = 0; i < m_nShaders; i++) m_ppShaders[i]->AnimateObjects(fTimeElapsed, pCamera);
+	_particles->AnimateObjects(fTimeElapsed, pCamera);
 
 	if (m_pLights) {}
 	_ui->AnimateObjects(fTimeElapsed, pCamera);
@@ -815,6 +808,8 @@ void CScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera
 	for (auto& factory : _factory) factory->Render(pd3dCommandList, pCamera);
 
 	m_pBoss->Render(pd3dCommandList, pCamera);
+
+	_particles->Render(pd3dCommandList, pCamera);
 
 	for (int i = 0; i < m_nShaders; i++)
 	{

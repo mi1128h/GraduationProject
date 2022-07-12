@@ -2,6 +2,8 @@
 #include "stdafx.h"
 #include "Camera.h"
 #include "GameObject.h"
+#include "ParticleSystem.h"
+#include "ParticleShader.h"
 
 class CFactory
 {

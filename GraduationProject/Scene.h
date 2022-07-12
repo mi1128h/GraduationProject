@@ -161,6 +161,7 @@ protected:
 	MATERIAL* m_pcbMappedMaterials = NULL;
 	vector<CCollision*> collisions;
 	vector<CFactory*> _factory;
+	CParticleFactory* _particles;
 	CUIFactory* _ui;
 
 public:
