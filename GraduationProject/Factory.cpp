@@ -649,3 +649,9 @@ void CUIFactory::SetTargetMonster(CGameObject* pObject)
 	dynamic_cast<CUIObject*>(_gameObjects[1])->SetTarget(pObject);
 }
 
+///////////////////////////////
+
+void CParticleFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3dGraphicsRootSignature, ID3D12GraphicsCommandList* pd3dCommandList, void* pContext)
+{
+
+}
