@@ -51,22 +51,12 @@ public:
 	D3D12_SHADER_BYTECODE CreatePixelShader(ID3DBlob** ppd3dShaderBlob);
 	D3D12_SHADER_BYTECODE CreateGeometryShader(ID3DBlob** ppd3dShaderBlob);
 
-	virtual void BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, void* pContext);
-	void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
-	void ReleaseUploadBuffers();
-	void AnimateObjects(float fTimeElapsed, CCamera* pCamrea);
-	void ReleaseObjects();
-
 	virtual D3D12_INPUT_LAYOUT_DESC CreateInputLayout();
 	virtual D3D12_BLEND_DESC CreateBlendState();
 
 	virtual void CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList);
 	virtual void UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList);
 	virtual void ReleaseShaderVariables();
-
-public:
-	CParticleSystem** m_ppSystems = NULL;
-	int m_nSystems = 0;
 };
 
 ///////////////////////////////////
