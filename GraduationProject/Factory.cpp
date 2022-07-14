@@ -71,10 +71,6 @@ void CObjectFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 	CTexture* pHouse4Texture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
 	pHouse4Texture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Model/Texture/house_4_Diffuse.dds", 0);
 	CScene::CreateShaderResourceViews(pd3dDevice, pHouse4Texture, Signature::Graphics::model_diffuse, true);
-	float houseOffsetX = 30.0f;
-	float houseOffsetX_ = 1500.0f;
-	float houseOffsetZ = 20.0f;
-	float houseOffsetZ_ = 18000.0f;
 
 	// floor_segment
 	CTexture* pFloorTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
