@@ -824,6 +824,7 @@ void CScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera
 		col->Render(pd3dCommandList, pCamera);
 
 	CheckMonsterFindTarget();
+	CheckMonsterStraightToTarget();
 	CheckMonsterCollision();
 	CheckPlayerAttack();
 	CheckMonsterAttack();
@@ -922,6 +923,15 @@ void CScene::CheckMonsterFindTarget()
 		{
 			pMonsterFactory->FindTarget(m_pPlayer);
 		}
+	}
+}
+
+void CScene::CheckMonsterStraightToTarget()
+{
+	vector<CGameObject*> monsters = _factory[2]->GetGameObjects();
+	vector<CGameObject*> objects = _factory[0]->GetGameObjects();
+	for (auto& monster : monsters) {
+		((CMonsterObject*)monster)->CheckStraightToTarget(objects);
 	}
 }
 

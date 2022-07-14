@@ -1363,7 +1363,10 @@ CMonsterObject::~CMonsterObject()
 
 void CMonsterObject::FindTarget(CGameObject* pObject)
 {
-	float distance = Vector3::Distance(GetPosition(), pObject->GetPosition());
+	XMFLOAT3 xmf3Position = GetPosition();
+	XMFLOAT3 xmf3TargetPosition = pObject->GetPosition();
+
+	float distance = Vector3::Distance(xmf3Position, xmf3TargetPosition);
 
 	if (distance < m_fDetectionRange)
 		m_pTargetObject = pObject;
@@ -1371,13 +1374,15 @@ void CMonsterObject::FindTarget(CGameObject* pObject)
 		m_pTargetObject = NULL;
 
 	if (m_pTargetObject) {
-		if (!m_curCell || !m_pNavMesh->PointInCell(m_curCell, GetPosition())) {
-			m_curCell = m_pNavMesh->FindCell(GetPosition());
+		if (m_bStraight) return;
+
+		if (!m_curCell || !m_pNavMesh->PointInCell(m_curCell, xmf3Position)) {
+			m_curCell = m_pNavMesh->FindCell(xmf3Position);
 		}
 
 		CCell* tarCell = m_pTargetObject->GetCurCell();
-		if (!tarCell || !m_pNavMesh->PointInCell(tarCell, m_pTargetObject->GetPosition())) {
-			m_pTargetObject->SetCurCell(m_pNavMesh->FindCell(m_pTargetObject->GetPosition()));
+		if (!tarCell || !m_pNavMesh->PointInCell(tarCell, xmf3TargetPosition)) {
+			m_pTargetObject->SetCurCell(m_pNavMesh->FindCell(xmf3TargetPosition));
 			if (m_curCell && tarCell)
 				MakePath();
 		}
@@ -1388,6 +1393,29 @@ void CMonsterObject::FindTarget(CGameObject* pObject)
 			if (m_curCell == tarCell) return;
 
 			MakePath();
+		}
+	}
+}
+
+void CMonsterObject::CheckStraightToTarget(vector<CGameObject*> pObjects)
+{
+	if (!m_pTargetObject) return;
+	m_bStraight = true;
+	XMFLOAT3 TPos = m_pTargetObject->GetPosition();
+	XMFLOAT3 MPos = GetPosition();
+
+	for (auto& obj : pObjects) {
+		CCollisionManager* col = obj->GetCollisionManager();
+		col->UpdateCollisions();
+		BoundingBox ObjBox = col->GetBoundingBox();
+		bool result = false;
+
+		// ObjBox와 선분 MPos부터 TPos까지 충돌
+		
+
+		if (result) {
+			m_bStraight = false;
+			break;
 		}
 	}
 }

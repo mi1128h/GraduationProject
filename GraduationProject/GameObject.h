@@ -499,11 +499,13 @@ private:
 
 	CNavMesh* m_pNavMesh = NULL;
 	list<int> m_lPath;
+	bool m_bStraight = false;
 
 public:
 	void SetUpdatedContext(LPVOID pContext) { m_pUpdatedContext = pContext; }
 
 	void FindTarget(CGameObject* pObject);
+	void CheckStraightToTarget(vector<CGameObject*> pObjects);
 
 	void SetNavMesh(CNavMesh* pNavMesh) { m_pNavMesh = pNavMesh; }
 	void MakePath();

@@ -76,6 +76,7 @@ public:
 	bool CheckPlayerInScene(XMFLOAT3 XMF3Shift);
 	void CheckInteraction();
 	void CheckMonsterFindTarget();
+	void CheckMonsterStraightToTarget();
 	void CheckMonsterCollision();
 	void CheckMonsterAttack();
 	void CheckPlayerAttack();
