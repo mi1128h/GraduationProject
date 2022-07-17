@@ -506,6 +506,9 @@ public:
 
 	void FindTarget(CGameObject* pObject);
 	void CheckStraightToTarget(vector<CGameObject*> pObjects);
+	bool CheckLineBox(XMFLOAT3 B1, XMFLOAT3 B2, XMFLOAT3 L1, XMFLOAT3 L2, XMFLOAT3& Hit);
+	bool GetIntersection(float fDst1, float fDst2, XMFLOAT3 P1, XMFLOAT3 P2, XMFLOAT3& Hit);
+	bool InBox(XMFLOAT3& Hit, XMFLOAT3 B1, XMFLOAT3 B2, int Axis);
 
 	void SetNavMesh(CNavMesh* pNavMesh) { m_pNavMesh = pNavMesh; }
 	void MakePath();

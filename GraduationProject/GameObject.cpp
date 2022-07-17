@@ -1374,8 +1374,6 @@ void CMonsterObject::FindTarget(CGameObject* pObject)
 		m_pTargetObject = NULL;
 
 	if (m_pTargetObject) {
-		if (m_bStraight) return;
-
 		if (!m_curCell || !m_pNavMesh->PointInCell(m_curCell, xmf3Position)) {
 			m_curCell = m_pNavMesh->FindCell(xmf3Position);
 		}
@@ -1384,17 +1382,61 @@ void CMonsterObject::FindTarget(CGameObject* pObject)
 		if (!tarCell || !m_pNavMesh->PointInCell(tarCell, xmf3TargetPosition)) {
 			m_pTargetObject->SetCurCell(m_pNavMesh->FindCell(xmf3TargetPosition));
 			if (m_curCell && tarCell)
-				MakePath();
+				if (!m_bStraight)
+					MakePath();
 		}
 
 		if (m_lPath.size() == 0) {
 			if (!m_curCell) return;
 			if (!tarCell) return;
 			if (m_curCell == tarCell) return;
-
-			MakePath();
+			if (!m_bStraight)
+				MakePath();
 		}
 	}
+}
+
+bool CMonsterObject::CheckLineBox(XMFLOAT3 B1, XMFLOAT3 B2, XMFLOAT3 L1, XMFLOAT3 L2, XMFLOAT3& Hit)
+{
+	if (L2.x < B1.x && L1.x < B1.x) return false;
+	if (L2.x > B2.x && L1.x > B2.x) return false;
+	if (L2.y < B1.y && L1.y < B1.y) return false;
+	if (L2.y > B2.y && L1.y > B2.y) return false;
+	if (L2.z < B1.z && L1.z < B1.z) return false;
+	if (L2.z > B2.z && L1.z > B2.z) return false;
+	if (L1.x > B1.x && L1.x < B2.x &&
+		L1.y > B1.y && L1.y < B2.y &&
+		L1.z > B1.z && L1.z < B2.z)
+	{
+		Hit = L1;
+		return true;
+	}
+	if ((GetIntersection(L1.x - B1.x, L2.x - B1.x, L1, L2, Hit) && InBox(Hit, B1, B2, 1))
+		|| (GetIntersection(L1.y - B1.y, L2.y - B1.y, L1, L2, Hit) && InBox(Hit, B1, B2, 2))
+		|| (GetIntersection(L1.z - B1.z, L2.z - B1.z, L1, L2, Hit) && InBox(Hit, B1, B2, 3))
+		|| (GetIntersection(L1.x - B2.x, L2.x - B2.x, L1, L2, Hit) && InBox(Hit, B1, B2, 1))
+		|| (GetIntersection(L1.y - B2.y, L2.y - B2.y, L1, L2, Hit) && InBox(Hit, B1, B2, 2))
+		|| (GetIntersection(L1.z - B2.z, L2.z - B2.z, L1, L2, Hit) && InBox(Hit, B1, B2, 3)))
+		return true;
+
+	return false;
+}
+
+bool CMonsterObject::GetIntersection(float fDst1, float fDst2, XMFLOAT3 P1, XMFLOAT3 P2, XMFLOAT3& Hit)
+{
+	if ((fDst1 * fDst2) >= 0.0f) return false;
+	if (fDst1 == fDst2) return false;
+	XMFLOAT3 subtract = Vector3::Subtract(P2, P1);
+	Hit = Vector3::Add(P1, Vector3::ScalarProduct(subtract, (-fDst1 / (fDst2 - fDst1))));
+	return true;
+}
+
+bool CMonsterObject::InBox(XMFLOAT3& Hit, XMFLOAT3 B1, XMFLOAT3 B2, int Axis)
+{
+	if (Axis == 1 && Hit.z > B1.z && Hit.z < B2.z && Hit.y > B1.y && Hit.y < B2.y) return true;
+	if (Axis == 2 && Hit.z > B1.z && Hit.z < B2.z && Hit.x > B1.x && Hit.x < B2.x) return true;
+	if (Axis == 3 && Hit.x > B1.x && Hit.x < B2.x && Hit.y > B1.y && Hit.y < B2.y) return true;
+	return false;
 }
 
 void CMonsterObject::CheckStraightToTarget(vector<CGameObject*> pObjects)
@@ -1410,8 +1452,12 @@ void CMonsterObject::CheckStraightToTarget(vector<CGameObject*> pObjects)
 		BoundingBox ObjBox = col->GetBoundingBox();
 		bool result = false;
 
+		XMFLOAT3 corners[8];
+		ObjBox.GetCorners(corners);
+		XMFLOAT3 hit;
+
 		// ObjBox와 선분 MPos부터 TPos까지 충돌
-		
+		result = CheckLineBox(corners[4], corners[2], MPos, TPos, hit);
 
 		if (result) {
 			m_bStraight = false;
@@ -1432,13 +1478,18 @@ float CMonsterObject::ChaseTarget(float fTimeElapsed, bool bMove)
 
 	XMFLOAT3 targetPosition;
 
-	if (TargetCellIdx != -1) {
-		targetPosition = m_pNavMesh->GetCell(TargetCellIdx).center;
-	}
-
-	CCell* tarCell = m_pTargetObject->GetCurCell();
-	if (m_curCell == tarCell)
+	if (m_bStraight) {
 		targetPosition = m_pTargetObject->GetPosition();
+	}
+	else {
+		if (TargetCellIdx != -1) {
+			targetPosition = m_pNavMesh->GetCell(TargetCellIdx).center;
+		}
+
+		CCell* tarCell = m_pTargetObject->GetCurCell();
+		if (m_curCell == tarCell)
+			targetPosition = m_pTargetObject->GetPosition();
+	}
 	
 	XMFLOAT3 monsterPosition = GetPosition();
 
