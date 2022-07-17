@@ -286,6 +286,8 @@ public:
 
 	static CLoadedModelInfo* LoadGeometryAndAnimationFromFile(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, char* pstrFileName, CShader* pShader);
 
+	void SetObjectCollision(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature);
+
 	static void PrintFrameInfo(CGameObject* pGameObject, CGameObject* pParent);
 	void SetAttackEnable(bool value){m_pSkinnedAnimationController->SetAttackEnable(value);}
 

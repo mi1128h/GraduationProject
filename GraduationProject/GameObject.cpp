@@ -1042,6 +1042,18 @@ CLoadedModelInfo* CGameObject::LoadGeometryAndAnimationFromFile(ID3D12Device* pd
 	return(pLoadedModel);
 }
 
+void CGameObject::SetObjectCollision(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature)
+{
+	string root = "../Assets/Model/Bounding/";
+	string tail = ".txt";
+
+	string tag = GetTag();
+	string filename = "../Assets/Model/Bounding/" + tag + ".txt";
+	CCollisionManager* manager = new CCollisionManager(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, this , filename);
+	SetCollisionManager(manager);
+	UpdateTransform(nullptr);
+}
+
 
 /////////////////////////////////////////////////////////////////////////////////
 
