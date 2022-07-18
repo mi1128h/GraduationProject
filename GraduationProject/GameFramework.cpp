@@ -617,6 +617,14 @@ bool CGameFramework::IsPlayerMove(const DWORD& dwDirection, const DirectX::XMFLO
 	if (!dwDirection) return false;
 	if (!m_pScene->CheckPlayerByObjectBB(xmf3Shift)) return false;
 	if (!m_pScene->CheckPlayerInScene(xmf3Shift)) return false;
+
+	int curTrackNum = m_pPlayer->m_pSkinnedAnimationController->GetCurrentTrackNum();
+	if (curTrackNum == track_name::attack ||
+		curTrackNum == track_name::attack_combo ||
+		curTrackNum == track_name::attack_magic ||
+		curTrackNum == track_name::attack_magic2 ||
+		curTrackNum == track_name::attack_object) return false;
+
 	return true;
 }
 
