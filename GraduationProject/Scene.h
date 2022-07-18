@@ -182,5 +182,9 @@ protected:
 	static D3D12_CPU_DESCRIPTOR_HANDLE	m_d3dUavCPUDescriptorNextHandle;
 	static D3D12_GPU_DESCRIPTOR_HANDLE	m_d3dUavGPUDescriptorNextHandle;
 
+	enum factory_num {
+		object,cannon,monster
+	};
+
 };
 
