@@ -529,7 +529,7 @@ void CMonsterFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature
 		XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
 		pObject->Rotate(&xmf4Rotation);
 
-		int TrackNum = CMonsterObject::track_name::idle1;
+		int TrackNum = rand() % 2 ? CMonsterObject::track_name::idle1 : CMonsterObject::track_name::idle2;
 
 		pObject->m_pSkinnedAnimationController->SetCurrentTrackNum(TrackNum);
 		bool bTrackAnimType[CMonsterObject::track_name::length] = { false,false,false,false,false,false,false };
