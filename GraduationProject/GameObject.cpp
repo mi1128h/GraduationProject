@@ -1396,55 +1396,15 @@ void CMonsterObject::FindTarget(CGameObject* pObject)
 	}
 }
 
-bool CMonsterObject::CheckLineBox(XMFLOAT3 B1, XMFLOAT3 B2, XMFLOAT3 L1, XMFLOAT3 L2, XMFLOAT3& Hit)
-{
-	if (L2.x < B1.x && L1.x < B1.x) return false;
-	if (L2.x > B2.x && L1.x > B2.x) return false;
-	if (L2.y < B1.y && L1.y < B1.y) return false;
-	if (L2.y > B2.y && L1.y > B2.y) return false;
-	if (L2.z < B1.z && L1.z < B1.z) return false;
-	if (L2.z > B2.z && L1.z > B2.z) return false;
-	if (L1.x > B1.x && L1.x < B2.x &&
-		L1.y > B1.y && L1.y < B2.y &&
-		L1.z > B1.z && L1.z < B2.z)
-	{
-		Hit = L1;
-		return true;
-	}
-	if ((GetIntersection(L1.x - B1.x, L2.x - B1.x, L1, L2, Hit) && InBox(Hit, B1, B2, 1))
-		|| (GetIntersection(L1.y - B1.y, L2.y - B1.y, L1, L2, Hit) && InBox(Hit, B1, B2, 2))
-		|| (GetIntersection(L1.z - B1.z, L2.z - B1.z, L1, L2, Hit) && InBox(Hit, B1, B2, 3))
-		|| (GetIntersection(L1.x - B2.x, L2.x - B2.x, L1, L2, Hit) && InBox(Hit, B1, B2, 1))
-		|| (GetIntersection(L1.y - B2.y, L2.y - B2.y, L1, L2, Hit) && InBox(Hit, B1, B2, 2))
-		|| (GetIntersection(L1.z - B2.z, L2.z - B2.z, L1, L2, Hit) && InBox(Hit, B1, B2, 3)))
-		return true;
-
-	return false;
-}
-
-bool CMonsterObject::GetIntersection(float fDst1, float fDst2, XMFLOAT3 P1, XMFLOAT3 P2, XMFLOAT3& Hit)
-{
-	if ((fDst1 * fDst2) >= 0.0f) return false;
-	if (fDst1 == fDst2) return false;
-	XMFLOAT3 subtract = Vector3::Subtract(P2, P1);
-	Hit = Vector3::Add(P1, Vector3::ScalarProduct(subtract, (-fDst1 / (fDst2 - fDst1))));
-	return true;
-}
-
-bool CMonsterObject::InBox(XMFLOAT3& Hit, XMFLOAT3 B1, XMFLOAT3 B2, int Axis)
-{
-	if (Axis == 1 && Hit.z > B1.z && Hit.z < B2.z && Hit.y > B1.y && Hit.y < B2.y) return true;
-	if (Axis == 2 && Hit.z > B1.z && Hit.z < B2.z && Hit.x > B1.x && Hit.x < B2.x) return true;
-	if (Axis == 3 && Hit.x > B1.x && Hit.x < B2.x && Hit.y > B1.y && Hit.y < B2.y) return true;
-	return false;
-}
-
 void CMonsterObject::CheckStraightToTarget(vector<CGameObject*> pObjects)
 {
 	if (!m_pTargetObject) return;
 	m_bStraight = true;
 	XMFLOAT3 TPos = m_pTargetObject->GetPosition();
 	XMFLOAT3 MPos = GetPosition();
+	XMFLOAT3 dir = Vector3::Subtract(TPos, MPos);
+	dir = Vector3::Normalize(dir);
+	float dist = Vector3::Length(dir);
 
 	for (auto& obj : pObjects) {
 		CCollisionManager* col = obj->GetCollisionManager();
@@ -1452,12 +1412,10 @@ void CMonsterObject::CheckStraightToTarget(vector<CGameObject*> pObjects)
 		BoundingBox ObjBox = col->GetBoundingBox();
 		bool result = false;
 
-		XMFLOAT3 corners[8];
-		ObjBox.GetCorners(corners);
-		XMFLOAT3 hit;
-
 		// ObjBox와 선분 MPos부터 TPos까지 충돌
-		result = CheckLineBox(corners[4], corners[2], MPos, TPos, hit);
+		XMVECTOR origin = XMLoadFloat3(&MPos);
+		XMVECTOR direction = XMLoadFloat3(&dir);
+		result = ObjBox.Intersects(origin, direction, dist);
 
 		if (result) {
 			m_bStraight = false;
