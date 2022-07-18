@@ -392,6 +392,7 @@ void CScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* p
 	_particles->BuildObjects(pd3dDevice, m_pd3dGraphicsRootSignature, pd3dCommandList, m_pTerrain);
 
 	m_pBoss = new CBossMonster(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, m_pTerrain);
+	dynamic_cast<CParticleFactory*>(_particles)->SetBreathPosition(&m_pBoss->FindFrame("Head")->m_xmf4x4World);
 
 	//////
 	

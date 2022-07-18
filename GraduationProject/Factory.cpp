@@ -685,4 +685,8 @@ void CParticleFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignatur
 }
 
 
+void CParticleFactory::SetBreathPosition(XMFLOAT4X4* pos)
+{
+	m_xmf4x4BreathWorld = pos;
+	//_gameObjects[0]->SetPosition(pos);
 }
