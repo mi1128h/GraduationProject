@@ -684,6 +684,11 @@ void CParticleFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignatur
 	////
 }
 
+void CParticleFactory::AnimateObjects(float fTimeElapsed, CCamera* pCamrea)
+{
+	CFactory::AnimateObjects(fTimeElapsed, pCamrea);
+	_gameObjects[0]->m_xmf4x4World = *m_xmf4x4BreathWorld;
+}
 
 void CParticleFactory::SetBreathPosition(XMFLOAT4X4* pos)
 {
