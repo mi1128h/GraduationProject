@@ -584,25 +584,31 @@ void CGameFramework::UpdatePlayerMove(const DWORD& dwDirection)
 
 	int curTrackNum = m_pPlayer->m_pSkinnedAnimationController->GetCurrentTrackNum();
 
-	if (dwDirection == DIR_FORWARD) {
-		if (curTrackNum != track_name::run)
-			m_pPlayer->m_pSkinnedAnimationController->SwitchAnimationState(track_name::run);
-	}
-	else if (dwDirection == DIR_BACKWARD) {
-		if (curTrackNum != track_name::walk_back)
-			m_pPlayer->m_pSkinnedAnimationController->SwitchAnimationState(track_name::walk_back);
-	}
-	else if (dwDirection == DIR_LEFT) {
-		if (curTrackNum != track_name::walk_left)
-			m_pPlayer->m_pSkinnedAnimationController->SwitchAnimationState(track_name::walk_left);
-	}
-	else if (dwDirection == DIR_RIGHT) {
-		if (curTrackNum != track_name::walk_right)
-			m_pPlayer->m_pSkinnedAnimationController->SwitchAnimationState(track_name::walk_right);
-	}
-	else if (dwDirection == 0) {
-		if (curTrackNum != track_name::idle)
-			m_pPlayer->m_pSkinnedAnimationController->SwitchAnimationState(track_name::idle);
+	if (curTrackNum == track_name::run ||
+		curTrackNum == track_name::walk_back ||
+		curTrackNum == track_name::walk_left ||
+		curTrackNum == track_name::walk_right ||
+		curTrackNum == track_name::idle) {
+		if (dwDirection == DIR_FORWARD) {
+			if (curTrackNum != track_name::run)
+				m_pPlayer->m_pSkinnedAnimationController->SwitchAnimationState(track_name::run);
+		}
+		else if (dwDirection == DIR_BACKWARD) {
+			if (curTrackNum != track_name::walk_back)
+				m_pPlayer->m_pSkinnedAnimationController->SwitchAnimationState(track_name::walk_back);
+		}
+		else if (dwDirection == DIR_LEFT) {
+			if (curTrackNum != track_name::walk_left)
+				m_pPlayer->m_pSkinnedAnimationController->SwitchAnimationState(track_name::walk_left);
+		}
+		else if (dwDirection == DIR_RIGHT) {
+			if (curTrackNum != track_name::walk_right)
+				m_pPlayer->m_pSkinnedAnimationController->SwitchAnimationState(track_name::walk_right);
+		}
+		else if (dwDirection == 0) {
+			if (curTrackNum != track_name::idle)
+				m_pPlayer->m_pSkinnedAnimationController->SwitchAnimationState(track_name::idle);
+		}
 	}
 }
 
