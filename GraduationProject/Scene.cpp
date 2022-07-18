@@ -845,10 +845,13 @@ bool CScene::CheckPlayerByObjectBB(XMFLOAT3 xmf3Shift)
 
 	for (auto& fac : _factory)
 	{
-		//if (dynamic_cast<CMonsterFactory*>(fac))continue;
 		vector<CGameObject*> objects = fac->GetGameObjects();
 		for (int i = 0; i < objects.size(); ++i)
 		{
+			auto p = dynamic_cast<CMonsterObject*>(objects[i]);
+			if (p) {
+				if (p->GetHp() <= 0) continue;
+			}
 			CCollisionManager* col = objects[i]->GetCollisionManager();
 			col->UpdateCollisions();
 			BoundingBox BB = col->GetBoundingBox();
