@@ -355,9 +355,11 @@ void CAnimationController::AdvanceTime(float fTimeElapsed, CGameObject* pRootGam
 				CAnimationSet* pAnimationSet = m_pAnimationSets->m_ppAnimationSets[m_pAnimationTracks[i].m_nAnimationSet];
 				if (pAnimationSet->IsOnceLoopEnd())
 				{
-					SwitchAnimationState(m_idleNum);
-					pAnimationSet->m_bLoopEnd = false;
 					isAttack = false;
+					if (i != m_deadNum) {
+						SwitchAnimationState(m_idleNum);
+						pAnimationSet->m_bLoopEnd = false;
+					}
 				}
 			}
 		}

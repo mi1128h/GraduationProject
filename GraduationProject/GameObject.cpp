@@ -1505,7 +1505,7 @@ void CMonsterObject::MonsterDead()
 
 	if (curNum == track_name::death1 || curNum == track_name::death2) return;
 
-	m_pSkinnedAnimationController->SwitchAnimationState(track_name::death2);
+	m_pSkinnedAnimationController->SwitchAnimationState(m_pSkinnedAnimationController->GetDeadNum());
 	m_pSkinnedAnimationController->SetAttackEnable(false);
 }
 

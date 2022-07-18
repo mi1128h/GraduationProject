@@ -206,6 +206,7 @@ public:
 	void SetCurrentTrackNum(int index) { m_nCurrentTracks = index; }
 	void SetIdleNum(int num) { m_idleNum = num; }
 	void SetDeadNum(int num) { m_deadNum = num; }
+	int GetDeadNum() { return m_deadNum; }
 	void InitAnimationTime();
 
 	void UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList);
