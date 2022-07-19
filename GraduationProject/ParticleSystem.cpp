@@ -109,6 +109,8 @@ void CParticleSystem::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera
 
 void CParticleSystem::Animate(float fElapsedTime, CCamera* pCamera)
 {
+	m_xmf3MaxRange = Vector3::Add(GetPosition(), m_xmf3ParticleRange);
+
 	KillParticles();
 	EmitParticles(fElapsedTime);
 	UpdateParticles(fElapsedTime);
