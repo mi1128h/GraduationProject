@@ -682,6 +682,24 @@ void CParticleFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignatur
 	_gameObjects.emplace_back(pRotatingObject);
 
 	////
+
+	CMaterial* pM2 = new CMaterial(1);
+	pM2->SetTexture(pTexture);
+	XMFLOAT3 xmf3Position = { 0.0f,0.0f,0.0f };
+	XMFLOAT2 xmf2Size = { 10.0f, 10.0f };
+	CParticleMesh* ParticleMesh = new CParticleMesh(pd3dDevice, pd3dCommandList, xmf3Position, xmf2Size);
+
+	CParticleShader* pObjectShader2 = new CParticleShader();
+	pObjectShader2->CreateShader(pd3dDevice, pd3dGraphicsRootSignature, 3, pdxgiRtvFormats, DXGI_FORMAT_D32_FLOAT);
+	pM2->SetShader(pObjectShader2);
+
+	CParticleSystem* pBombObject = NULL;
+	XMFLOAT3 xmfRange2(500.0f, 500.0f, 500.0f);
+	pBombObject = new CExplosiveParticle(pd3dDevice, pd3dCommandList, xmf3Position, xmfRange2, 1500);
+	pBombObject->SetMesh(ParticleMesh);
+	pBombObject->SetMaterial(0, pM2);
+
+	_gameObjects.emplace_back(pBombObject);
 }
 
 void CParticleFactory::AnimateObjects(float fTimeElapsed, CCamera* pCamrea)
