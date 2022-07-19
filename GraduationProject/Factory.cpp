@@ -713,3 +713,8 @@ void CParticleFactory::SetBreathPosition(XMFLOAT4X4* pos)
 	m_xmf4x4BreathWorld = pos;
 	//_gameObjects[0]->SetPosition(pos);
 }
+
+void CParticleFactory::SetBombParticlePosition(XMFLOAT3& pos)
+{
+	_gameObjects[1]->SetPosition(pos);
+}

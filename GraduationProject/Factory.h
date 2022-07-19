@@ -86,7 +86,7 @@ public:
 	virtual void AnimateObjects(float fTimeElapsed, CCamera* pCamrea = NULL);
 	
 	void SetBreathPosition(XMFLOAT4X4* pos);
-
+	void SetBombParticlePosition(XMFLOAT3& pos);
 
 protected:
 	XMFLOAT4X4* m_xmf4x4BreathWorld;

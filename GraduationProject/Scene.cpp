@@ -768,7 +768,9 @@ void CScene::AnimateObjects(float fTimeElapsed, CCamera* pCamera)
 	//	m_ppParticleObjects[i]->SetVector(XMFLOAT3(1.0f,0.0f,0.0f));
 	//	m_ppParticleObjects[i]->SetPosition(dynamic_cast<CCannonFactory*>(_factory[1])->GetCannonPosition());
 	//}
+	
 	for (int i = 0; i < m_nShaders; i++) m_ppShaders[i]->AnimateObjects(fTimeElapsed, pCamera);
+	_particles->SetBombParticlePosition(dynamic_cast<CCannonFactory*>(_factory[factory_num::cannon])->GetCannonPosition());
 	_particles->AnimateObjects(fTimeElapsed, pCamera);
 
 	if (m_pLights) {}
