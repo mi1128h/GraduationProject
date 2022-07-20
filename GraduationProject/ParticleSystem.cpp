@@ -191,7 +191,6 @@ void CParticleSystem::UpdateParticles(float fElapsedTime)
 #ifdef EMIT_MODE
 		if (!m_pParticles[i].m_bActive) continue;
 #endif
-
 		m_pParticles[i].m_xmf3Position.y += fElapsedTime * m_pParticles[i].m_fVelocity * m_pParticles[i].m_xmf3Vectors.y;
 		m_pParticles[i].m_xmf3Position.x += fElapsedTime * m_pParticles[i].m_fVelocity * m_pParticles[i].m_xmf3Vectors.x;
 		m_pParticles[i].m_xmf3Position.z += fElapsedTime * m_pParticles[i].m_fVelocity * m_pParticles[i].m_xmf3Vectors.z;
@@ -315,6 +314,7 @@ void CBreathParticle::EmitParticles(float fElapsedTime)
 		--m_nDeadParticles;
 
 		XMFLOAT3 xmf3OnePos = GetPosition();
+		XMFLOAT3 xmf3Accel = GetLook();
 
 		for (int i = 0; i < m_pParticles.size(); ++i) {
 			if (!m_pParticles[i].m_bActive)
@@ -322,6 +322,7 @@ void CBreathParticle::EmitParticles(float fElapsedTime)
 				m_pParticles[i].m_bActive = true;
 				m_pParticles[i].m_xmf3Position = xmf3OnePos;
 				m_pParticles[i].m_fVelocity = m_fParticleVelocity + RandF(0.5f,1.0f) * m_fParticleVelocityVariation;
+				m_pParticles[i].m_xmf3Accel = xmf3Accel;
 				m_pParticles[i].m_fParticleLife = 0.0f;
 				m_pParticles[i].m_xmf3Vectors = XMFLOAT3(0.0f, 1.0f, 0.0f);
 				break;
@@ -340,6 +341,10 @@ void CBreathParticle::UpdateParticles(float fElapsedTime)
 		_sinValue += fElapsedTime * 100.0f;
 		m_pParticles[i].m_xmf3Vectors.x = sin(3.141592 * 2 * _sinValue);
 		m_pParticles[i].m_xmf3Vectors.z = cos(3.141592 * 2 * _sinValue);
+
+		m_pParticles[i].m_xmf3Position.x += m_pParticles[i].m_xmf3Accel.x * 10;
+		m_pParticles[i].m_xmf3Position.y += m_pParticles[i].m_xmf3Accel.y * 10;
+		m_pParticles[i].m_xmf3Position.z += m_pParticles[i].m_xmf3Accel.z * 10;
 
 	}
 

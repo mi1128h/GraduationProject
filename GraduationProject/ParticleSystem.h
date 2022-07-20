@@ -12,6 +12,7 @@ struct particle_info
 	bool m_bActive = true;
 	XMFLOAT3 m_xmf3Position;
 	float m_fVelocity;
+	XMFLOAT3 m_xmf3Accel;
 	XMFLOAT3 m_xmf3Vectors;
 	float m_fParticleLife = 0.0f;
 };
