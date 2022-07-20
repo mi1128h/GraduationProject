@@ -1582,7 +1582,7 @@ CBossMonster::CBossMonster(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* 
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
-	SetPosition(9800, 300, 29180);
+	SetPosition(9470, 300, 27980);
 	SetScale(0.01, 0.01, 0.01);
 	SetHp(1000);
 	SetDetectionRange(8000);
