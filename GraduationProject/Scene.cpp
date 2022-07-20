@@ -832,8 +832,8 @@ void CScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera
 	CheckMonsterAttack();
 
 	XMFLOAT3 cannon_pos = dynamic_cast<CCannonFactory*>(_factory[factory_num::cannon])->GetCannonPosition();
-	if (m_pTerrain->GetHeight(cannon_pos.x,cannon_pos.z) > cannon_pos.y)
-		::gnPatricleMode = 0x30;
+	if (m_pTerrain->GetHeight(cannon_pos.x, cannon_pos.z) > cannon_pos.y)
+		_particles->BombParticleController();
 }
 
 void CScene::UIRender(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)

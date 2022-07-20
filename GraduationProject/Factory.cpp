@@ -721,3 +721,18 @@ void CParticleFactory::SetBombParticlePosition(XMFLOAT3& pos)
 {
 	_gameObjects[1]->SetPosition(pos);
 }
+
+void CParticleFactory::BombParticleController(int index)
+{
+	switch (index)
+	{
+		case 0:
+			_gameObjects[1]->SetActive(true);
+			dynamic_cast<CExplosiveParticle*>(_gameObjects[1])->CreateParticles();
+			break;
+
+		case 1:
+			_gameObjects[1]->SetActive(false);
+			break;
+	}
+}

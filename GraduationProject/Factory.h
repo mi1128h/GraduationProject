@@ -88,6 +88,7 @@ public:
 	
 	void SetBreathPosition(XMFLOAT4X4* pos);
 	void SetBombParticlePosition(XMFLOAT3& pos);
+	void BombParticleController(int index = 0);
 
 protected:
 	XMFLOAT4X4* m_xmf4x4BreathWorld;
