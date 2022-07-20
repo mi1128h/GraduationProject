@@ -104,7 +104,8 @@ void CParticleSystem::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera
 	D3D12_VERTEX_BUFFER_VIEW pVertexBufferViews[] = { m_pMesh->GetPositionBufferView(), m_d3dInstancingBufferView };
 	pd3dCommandList->IASetVertexBuffers(0, _countof(pVertexBufferViews), pVertexBufferViews);
 	pd3dCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_POINTLIST);
-	pd3dCommandList->DrawInstanced(1, m_nParticles, 0, 0);
+	if(m_nParticles - m_nDeadParticles > 0)
+		pd3dCommandList->DrawInstanced(1, m_nParticles - m_nDeadParticles, 0, 0);
 }
 
 void CParticleSystem::Animate(float fElapsedTime, CCamera* pCamera)
@@ -145,7 +146,8 @@ void CParticleSystem::KillParticles()
 
 bool compare(particle_info& p1, particle_info& p2)
 {
-	return p1.m_xmf3Position.z < p2.m_xmf3Position.z;
+	//return p1.m_xmf3Position.z < p2.m_xmf3Position.z;
+	return p1.m_bActive > p2.m_bActive;
 }
 
 void CParticleSystem::EmitParticles(float fElapsedTime)
