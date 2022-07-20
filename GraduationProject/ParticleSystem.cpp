@@ -300,6 +300,12 @@ void CBreathParticle::CreateParticles()
 
 void CBreathParticle::EmitParticles(float fElapsedTime)
 {
+	if (!m_pBoss) return;
+	else {
+		int n = m_pBoss->m_pSkinnedAnimationController->GetCurrentTrackNum();
+		if (n != CBossMonster::track_name::attackFlame && n != CBossMonster::track_name::FlyFlame) return;
+	}
+
 	m_fLifeTime += fElapsedTime;
 	bool bCheckEmit = false;
 

@@ -89,4 +89,8 @@ public:
 
 protected:
 	float _sinValue = 0.0f;
+	CBossMonster* m_pBoss = NULL;
+
+public:
+	void SetBoss(CBossMonster* pBoss) { m_pBoss = pBoss; }
 };
