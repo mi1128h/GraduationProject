@@ -56,6 +56,7 @@ public:
 	virtual void BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3dGraphicsRootSignature, ID3D12GraphicsCommandList* pd3dCommandList, void* pContext);
 	virtual void SetObjectCollision(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature);
 	void FindTarget(CGameObject* pObject);
+	void SetNavMesh(CNavMesh* pNavMesh);
 };
 
 class CUIFactory : public CFactory

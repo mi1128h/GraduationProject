@@ -1270,10 +1270,11 @@ CCannonballObject::~CCannonballObject()
 void CCannonballObject::Animate(float fTimeElapsed, CCamera* pCamera)
 {
 	if (m_bIsFired) {
-		XMFLOAT3 xmf3Gravity = XMFLOAT3(0.0f, -10.0f, 0.0f);
-		m_xmf3Velocity = Vector3::Add(m_xmf3Velocity, Vector3::ScalarProduct(xmf3Gravity, fTimeElapsed * 0.1f, false));
-
-		SetPosition(Vector3::Add(GetPosition(), m_xmf3Velocity));
+		XMFLOAT3 xmf3Gravity = XMFLOAT3(0.0f, -10.0f * fTimeElapsed * 0.5, 0.0f);
+		m_xmf3Velocity = Vector3::Add(m_xmf3Velocity, xmf3Gravity);
+		//m_xmf3Velocity = Vector3::Add(m_xmf3Velocity, Vector3::ScalarProduct(xmf3Gravity, fTimeElapsed * 0.5, false));
+		XMFLOAT3 xmf3Velocity = Vector3::ScalarProduct(m_xmf3Velocity, fTimeElapsed * 100, false);
+		SetPosition(Vector3::Add(GetPosition(), xmf3Velocity));
 	}
 
 	// 포탄이 바닥에 충돌, 없어지면
@@ -1358,19 +1359,92 @@ CMonsterObject::~CMonsterObject()
 
 void CMonsterObject::FindTarget(CGameObject* pObject)
 {
-	float distance = Vector3::Distance(GetPosition(), pObject->GetPosition());
+	XMFLOAT3 xmf3Position = GetPosition();
+	XMFLOAT3 xmf3TargetPosition = pObject->GetPosition();
+
+	float distance = Vector3::Distance(xmf3Position, xmf3TargetPosition);
 
 	if (distance < m_fDetectionRange)
 		m_pTargetObject = pObject;
 	else
 		m_pTargetObject = NULL;
+
+	if (m_pTargetObject) {
+		if (!m_curCell || !m_pNavMesh->PointInCell(m_curCell, xmf3Position)) {
+			m_curCell = m_pNavMesh->FindCell(xmf3Position);
+		}
+
+		CCell* tarCell = m_pTargetObject->GetCurCell();
+		if (!tarCell || !m_pNavMesh->PointInCell(tarCell, xmf3TargetPosition)) {
+			m_pTargetObject->SetCurCell(m_pNavMesh->FindCell(xmf3TargetPosition));
+			if (m_curCell && tarCell)
+				if (!m_bStraight)
+					MakePath();
+		}
+
+		if (m_lPath.size() == 0) {
+			if (!m_curCell) return;
+			if (!tarCell) return;
+			if (m_curCell == tarCell) return;
+			if (!m_bStraight)
+				MakePath();
+		}
+	}
 }
 
-void CMonsterObject::ChaseTarget(float fTimeElapsed, bool bMove)
+void CMonsterObject::CheckStraightToTarget(vector<CGameObject*> pObjects)
 {
-	if (m_pTargetObject == NULL) return;
+	if (!m_pTargetObject) return;
+	m_bStraight = true;
+	XMFLOAT3 TPos = m_pTargetObject->GetPosition();
+	XMFLOAT3 MPos = GetPosition();
+	XMFLOAT3 dir = Vector3::Subtract(TPos, MPos);
+	dir = Vector3::Normalize(dir);
+	float dist = Vector3::Length(dir);
 
-	XMFLOAT3 targetPosition = m_pTargetObject->GetPosition();
+	for (auto& obj : pObjects) {
+		CCollisionManager* col = obj->GetCollisionManager();
+		col->UpdateCollisions();
+		BoundingBox ObjBox = col->GetBoundingBox();
+		bool result = false;
+
+		// ObjBox와 선분 MPos부터 TPos까지 충돌
+		XMVECTOR origin = XMLoadFloat3(&MPos);
+		XMVECTOR direction = XMLoadFloat3(&dir);
+		result = ObjBox.Intersects(origin, direction, dist);
+
+		if (result) {
+			m_bStraight = false;
+			break;
+		}
+	}
+}
+
+float CMonsterObject::ChaseTarget(float fTimeElapsed, bool bMove)
+{
+	if (m_pTargetObject == NULL) return 0;
+
+	int TargetCellIdx = -1;
+	if (m_lPath.size() > 0) {
+		TargetCellIdx = m_lPath.front();
+		m_lPath.pop_front();
+	}
+
+	XMFLOAT3 targetPosition;
+
+	if (m_bStraight) {
+		targetPosition = m_pTargetObject->GetPosition();
+	}
+	else {
+		if (TargetCellIdx != -1) {
+			targetPosition = m_pNavMesh->GetCell(TargetCellIdx).center;
+		}
+
+		CCell* tarCell = m_pTargetObject->GetCurCell();
+		if (m_curCell == tarCell)
+			targetPosition = m_pTargetObject->GetPosition();
+	}
+	
 	XMFLOAT3 monsterPosition = GetPosition();
 
 	targetPosition.y = 0;
@@ -1392,11 +1466,18 @@ void CMonsterObject::ChaseTarget(float fTimeElapsed, bool bMove)
 	Rotate(0.0f, fYaw, 0.0f);
 
 	// 전진
-	if (bMove) {
 	float distance = Vector3::Distance(monsterPosition, targetPosition);
-	if (distance > 200.0f)
-		MoveForward(50.0f * fTimeElapsed);
+	if (bMove) {
+		if (distance > 200.0f)
+			MoveForward(100.0f * fTimeElapsed);
 	}
+	return distance;
+}
+
+void CMonsterObject::MakePath()
+{
+	m_lPath.clear();
+	m_lPath = m_pNavMesh->MakePath(m_curCell, m_pTargetObject->GetPosition());
 }
 
 void CMonsterObject::AttackTarget()
@@ -1420,7 +1501,7 @@ void CMonsterObject::MonsterDead()
 
 	if (curNum == track_name::death1 || curNum == track_name::death2) return;
 
-	m_pSkinnedAnimationController->SwitchAnimationState(track_name::death2);
+	m_pSkinnedAnimationController->SwitchAnimationState(m_pSkinnedAnimationController->GetDeadNum());
 	m_pSkinnedAnimationController->SetAttackEnable(false);
 }
 
@@ -1537,30 +1618,45 @@ void CBossMonster::Animate(float fTimeElapsed, CCamera* pCamera)
 				m_pSkinnedAnimationController->SwitchAnimationState(track_name::Scream);
 			}
 			else {
-				ChaseTarget(fTimeElapsed, false);
+				float distance = ChaseTarget(fTimeElapsed, false);
 				int n = rand() % 100;
+				while (n >= 0 || n <= 3) {
+					if (distance > 1600) {
+						if (n == 2 || n == 3) {
+							n = rand() % 100;
+						}
+						else break;
+					}
+					else {
+						if (n == 0 || n == 1) {
+							n = rand() % 100;
+						}
+						else break;
+					}
+				}
+
 				if (curTrackNum == track_name::Idle || curTrackNum == track_name::FlyIdle) {
 					switch (n) {
 					case 0:
-						DoAttackFlame(curTrackNum);
+						DoAttackHand(curTrackNum);
 						break;
 					case 1:
-						DoAttackHand(curTrackNum);
+						DoAttackFlame(curTrackNum);
 						break;
 					case 2:
 						DoAttackMouth(curTrackNum);
 						break;
 					case 3:
-						DoTakeOff(curTrackNum);
+						DoDefend(curTrackNum);
 						break;
 					case 4:
-						DoFlyFlame(curTrackNum);
+						DoTakeOff(curTrackNum);
 						break;
 					case 5:
-						DoLand(curTrackNum);
+						DoFlyFlame(curTrackNum);
 						break;
 					case 6:
-						DoDefend(curTrackNum);
+						DoLand(curTrackNum);
 					}
 				}
 			}

@@ -369,7 +369,7 @@ void CScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* p
 	m_pTerrain = new CHeightMapTerrain(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, _T("../Assets/Image/Terrain/terrain.raw"), 257, 514, xmf3Scale, xmf4Color);
 	m_pRawFormatImage = new CRawFormatImage(L"../Assets/Image/Objects/ObjectsMap03.raw", 257, 257, true);
 
-	m_pNavMesh = new CNavMesh(pd3dDevice, pd3dCommandList, xmf3Scale);
+	m_pNavMesh = new CNavMesh(pd3dDevice, pd3dCommandList, xmf3Scale, m_pTerrain, true);
 
 	m_pSkyBox = new CSkyBox(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 
@@ -386,6 +386,7 @@ void CScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* p
 	CMonsterFactory* pMonster = new CMonsterFactory();
 	pMonster->BuildObjects(pd3dDevice, m_pd3dGraphicsRootSignature, pd3dCommandList, m_pTerrain);
 	pMonster->SetObjectCollision(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+	pMonster->SetNavMesh(m_pNavMesh);
 	_factory.emplace_back(pMonster);
 
 	_particles = new CParticleFactory();
@@ -808,7 +809,7 @@ void CScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera
 
 	//if (m_pSkyBox) m_pSkyBox->Render(pd3dCommandList, pCamera);
 	if (m_pTerrain) m_pTerrain->Render(pd3dCommandList, pCamera);
-	if (m_pNavMesh) m_pNavMesh->Render(pd3dCommandList, 0);
+	//if (m_pNavMesh) m_pNavMesh->Render(pd3dCommandList, 0);
 
 	for (auto& factory : _factory) factory->Render(pd3dCommandList, pCamera);
 
@@ -825,6 +826,7 @@ void CScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera
 		col->Render(pd3dCommandList, pCamera);
 
 	CheckMonsterFindTarget();
+	CheckMonsterStraightToTarget();
 	CheckMonsterCollision();
 	CheckPlayerAttack();
 	CheckMonsterAttack();
@@ -845,10 +847,13 @@ bool CScene::CheckPlayerByObjectBB(XMFLOAT3 xmf3Shift)
 
 	for (auto& fac : _factory)
 	{
-		//if (dynamic_cast<CMonsterFactory*>(fac))continue;
 		vector<CGameObject*> objects = fac->GetGameObjects();
 		for (int i = 0; i < objects.size(); ++i)
 		{
+			auto p = dynamic_cast<CMonsterObject*>(objects[i]);
+			if (p) {
+				if (p->GetHp() <= 0) continue;
+			}
 			CCollisionManager* col = objects[i]->GetCollisionManager();
 			col->UpdateCollisions();
 			BoundingBox BB = col->GetBoundingBox();
@@ -923,6 +928,15 @@ void CScene::CheckMonsterFindTarget()
 		{
 			pMonsterFactory->FindTarget(m_pPlayer);
 		}
+	}
+}
+
+void CScene::CheckMonsterStraightToTarget()
+{
+	vector<CGameObject*> monsters = _factory[2]->GetGameObjects();
+	vector<CGameObject*> objects = _factory[0]->GetGameObjects();
+	for (auto& monster : monsters) {
+		((CMonsterObject*)monster)->CheckStraightToTarget(objects);
 	}
 }
 

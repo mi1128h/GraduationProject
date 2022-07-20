@@ -3,6 +3,7 @@
 #include "Camera.h"
 #include "Animation.h"
 #include "CollisionManager.h"
+#include "NavMesh.h"
 
 #define RESOURCE_TEXTURE2D			0x01
 #define RESOURCE_TEXTURE2D_ARRAY	0x02	//[]
@@ -214,6 +215,8 @@ protected:
 	float m_fHp;
 	float m_fDamage;
 
+	CCell* m_curCell = NULL;
+
 public:
 	void SetMesh(CMesh* pMesh);
 	void SetShader(CShader* pShader);
@@ -298,6 +301,9 @@ public:
 	float GetDamage() { return m_fDamage; }
 	float GetHp() { return m_fHp; }
 	float GetMaxHp() { return m_fMaxHp; }
+
+	CCell* GetCurCell() { return m_curCell; }
+	void SetCurCell(CCell* cell) { m_curCell = cell; }
 };
 
 class CRotatingObject : public CGameObject
@@ -493,11 +499,21 @@ private:
 	CGameObject* m_pTargetObject = NULL;
 	float m_fDetectionRange = 2000.0f;
 
+	CNavMesh* m_pNavMesh = NULL;
+	list<int> m_lPath;
+	bool m_bStraight = false;
+
 public:
 	void SetUpdatedContext(LPVOID pContext) { m_pUpdatedContext = pContext; }
 
 	void FindTarget(CGameObject* pObject);
-	void ChaseTarget(float fTimeElapsed, bool bMove=true);
+	void CheckStraightToTarget(vector<CGameObject*> pObjects);
+
+	void SetNavMesh(CNavMesh* pNavMesh) { m_pNavMesh = pNavMesh; }
+	void MakePath();
+
+	float ChaseTarget(float fTimeElapsed, bool bMove=true);
+
 	void AttackTarget();
 
 	void SetDetectionRange(float range) { m_fDetectionRange = range; }

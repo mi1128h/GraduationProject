@@ -71,10 +71,6 @@ void CObjectFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 	CTexture* pHouse4Texture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
 	pHouse4Texture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Model/Texture/house_4_Diffuse.dds", 0);
 	CScene::CreateShaderResourceViews(pd3dDevice, pHouse4Texture, Signature::Graphics::model_diffuse, true);
-	float houseOffsetX = 30.0f;
-	float houseOffsetX_ = 1500.0f;
-	float houseOffsetZ = 20.0f;
-	float houseOffsetZ_ = 18000.0f;
 
 	// floor_segment
 	CTexture* pFloorTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
@@ -399,7 +395,7 @@ void CCannonFactory::ActiveCannon()
 	XMFLOAT3 origin = pBarrel->GetPosition();
 	XMFLOAT3 offset = Vector3::ScalarProduct(pBarrel->GetUp(), 100.0f * m_pInteractedCannon->m_xmf3Scale.y);
 	origin = Vector3::Add(origin, offset);
-	XMFLOAT3 velocity = Vector3::ScalarProduct(pBarrel->GetUp(), 5.0f);
+	XMFLOAT3 velocity = Vector3::ScalarProduct(pBarrel->GetUp(), 20.0f);
 
 	m_pInteractedCannon->FireCannonBall(origin, velocity);
 }
@@ -414,19 +410,19 @@ void CCannonFactory::RotateCannon(WPARAM wParam)
 	switch (wParam) {
 	case 'W':
 		xmf3RotateAxis = XMFLOAT3(1, 0, 0);
-		fAngle = +10.0f;
+		fAngle = +2.0f;
 		break;
 	case 'A':
 		xmf3RotateAxis = XMFLOAT3(0, 0, 1);
-		fAngle = -10.0f;
+		fAngle = -2.0f;
 		break;
 	case 'S':
 		xmf3RotateAxis = XMFLOAT3(1, 0, 0);
-		fAngle = -10.0f;
+		fAngle = -2.0f;
 		break;
 	case 'D':
 		xmf3RotateAxis = XMFLOAT3(0, 0, 1);
-		fAngle = +10.0f;
+		fAngle = +2.0f;
 		break;
 	}
 
@@ -533,16 +529,18 @@ void CMonsterFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature
 		XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
 		pObject->Rotate(&xmf4Rotation);
 
-		int TrackNum = CMonsterObject::track_name::idle1;
+		int IdleTrackNum = rand() % 2 ? CMonsterObject::track_name::idle1 : CMonsterObject::track_name::idle2;
+		int DeadTrackNum = rand() % 2 ? CMonsterObject::track_name::death1 : CMonsterObject::track_name::death2;
 
-		pObject->m_pSkinnedAnimationController->SetCurrentTrackNum(TrackNum);
+		pObject->m_pSkinnedAnimationController->SetCurrentTrackNum(IdleTrackNum);
 		bool bTrackAnimType[CMonsterObject::track_name::length] = { false,false,false,false,false,false,false };
 
 		pObject->m_pSkinnedAnimationController->SetAnimationTracks(bTrackAnimType);
 
 		bool bAnimType[CMonsterObject::track_name::length] = { false, false, false, false, true, true, true };
 		pObject->m_pSkinnedAnimationController->SetAnimationTypes(bAnimType);
-		pObject->m_pSkinnedAnimationController->SetIdleNum(CMonsterObject::track_name::idle1);
+		pObject->m_pSkinnedAnimationController->SetIdleNum(IdleTrackNum);
+		pObject->m_pSkinnedAnimationController->SetDeadNum(DeadTrackNum);
 
 		pObject->SetTag("Monster");
 
@@ -569,6 +567,14 @@ void CMonsterFactory::FindTarget(CGameObject* pObject)
 	for (auto& monster : _gameObjects)
 	{
 		dynamic_cast<CMonsterObject*>(monster)->FindTarget(pObject);
+	}
+}
+
+void CMonsterFactory::SetNavMesh(CNavMesh* pNavMesh)
+{
+	for (auto& monster : _gameObjects)
+	{
+		dynamic_cast<CMonsterObject*>(monster)->SetNavMesh(pNavMesh);
 	}
 }
 
