@@ -152,6 +152,7 @@
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GraduationProject.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="NavMesh.h" />
     <ClInclude Include="ParticleShader.h" />
     <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="Player.h" />
@@ -177,6 +178,7 @@
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GraduationProject.cpp" />
     <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="NavMesh.cpp" />
     <ClCompile Include="ParticleShader.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="Player.cpp" />
