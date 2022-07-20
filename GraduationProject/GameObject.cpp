@@ -1373,7 +1373,7 @@ void CMonsterObject::FindTarget(CGameObject* pObject)
 	else
 		m_pTargetObject = NULL;
 
-	if (m_pTargetObject) {
+	if (m_pTargetObject && m_pNavMesh) {
 		if (!m_curCell || !m_pNavMesh->PointInCell(m_curCell, xmf3Position)) {
 			m_curCell = m_pNavMesh->FindCell(xmf3Position);
 		}
@@ -1428,27 +1428,31 @@ float CMonsterObject::ChaseTarget(float fTimeElapsed, bool bMove)
 {
 	if (m_pTargetObject == NULL) return 0;
 
-	int TargetCellIdx = -1;
-	if (m_lPath.size() > 0) {
-		TargetCellIdx = m_lPath.front();
-		m_lPath.pop_front();
-	}
+	XMFLOAT3 targetPosition = m_pTargetObject->GetPosition();
 
-	XMFLOAT3 targetPosition;
-
-	if (m_bStraight) {
-		targetPosition = m_pTargetObject->GetPosition();
-	}
-	else {
-		if (TargetCellIdx != -1) {
-			targetPosition = m_pNavMesh->GetCell(TargetCellIdx).center;
+	if (bMove && m_pNavMesh) {
+		int TargetCellIdx = -1;
+		if (m_lPath.size() > 0) {
+			TargetCellIdx = m_lPath.front();
+			m_lPath.pop_front();
 		}
 
-		CCell* tarCell = m_pTargetObject->GetCurCell();
-		if (m_curCell == tarCell)
+		if (m_bStraight) {
 			targetPosition = m_pTargetObject->GetPosition();
+		}
+		else {
+			if (TargetCellIdx != -1) {
+				if (m_pNavMesh) {
+					targetPosition = m_pNavMesh->GetCell(TargetCellIdx).center;
+				}
+			}
+
+			CCell* tarCell = m_pTargetObject->GetCurCell();
+			if (m_curCell == tarCell)
+				targetPosition = m_pTargetObject->GetPosition();
+		}
 	}
-	
+
 	XMFLOAT3 monsterPosition = GetPosition();
 
 	targetPosition.y = 0;
