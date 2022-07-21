@@ -662,14 +662,14 @@ void CParticleFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignatur
 	CHeightMapTerrain* pTerrain = (CHeightMapTerrain*)pContext;
 
 	CTexture* pTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
-	pTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/Effect/Fire0.dds", 0);
+	pTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/Effect/f2.dds", 0);
 
 	CScene::CreateShaderResourceViews(pd3dDevice, pTexture, Signature::Graphics::particle_texture, true);
 
 	CMaterial* pMaterial = new CMaterial(1);
 	pMaterial->SetTexture(pTexture);
 	XMFLOAT3 xmf3Position = { 0.0f,0.0f,0.0f };
-	XMFLOAT2 xmf2Size = { 10.0f, 10.0f };
+	XMFLOAT2 xmf2Size = { 50.0f, 50.0f };
 	CParticleMesh* ParticleMesh = new CParticleMesh(pd3dDevice, pd3dCommandList, xmf3Position, xmf2Size);
 
 	/// breath
@@ -726,12 +726,13 @@ void CParticleFactory::BombParticleController(int index)
 {
 	switch (index)
 	{
-		case 0:
-			_gameObjects[1]->SetActive(true);
-			dynamic_cast<CExplosiveParticle*>(_gameObjects[1])->InitParticles();
-			break;
+	case 0:
+		_gameObjects[1]->SetActive(true);
+		dynamic_cast<CExplosiveParticle*>(_gameObjects[1])->InitParticles();
+		break;
 
-		case 1:
-			_gameObjects[1]->SetActive(false);
-			break;
+	case 1:
+		_gameObjects[1]->SetActive(false);
+		break;
 	}
+}
