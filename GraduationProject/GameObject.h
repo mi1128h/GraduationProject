@@ -553,8 +553,8 @@ public:
 		length
 	};
 
-	#define FLY 40.0f
-	#define FLAME 20.0f
+	#define FLY 4.0f
+	#define FLAME 2.0f
 	#define DEFEND 10.0f
 
 	CBossMonster(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, void* pContext, int nMeshes = 1);

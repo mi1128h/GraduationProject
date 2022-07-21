@@ -1596,6 +1596,7 @@ CBossMonster::CBossMonster(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* 
 	bool bAnimType[track_name::length] = { false, false, false, false, false, false, true, false, true, false, false, false };
 	m_pSkinnedAnimationController->SetAnimationTypes(bAnimType);
 	m_pSkinnedAnimationController->SetIdleNum(track_name::Idle);
+	m_pSkinnedAnimationController->SetDeadNum(track_name::Die);
 	
 	//
 
