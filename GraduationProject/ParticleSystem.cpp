@@ -264,6 +264,7 @@ void CExplosiveParticle::KillParticles()
 			m_pParticles[i].m_xmf3Position = xmf3Pos;
 			m_pParticles[i].m_fParticleLife = 0.0f;
 			XMStoreFloat3(&m_pParticles[i].m_xmf3Vectors, ::RandomUnitVectorOnSphere());
+			SetActive(false);
 		}
 	}
 }
