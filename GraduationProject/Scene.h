@@ -165,6 +165,7 @@ protected:
 	vector<CFactory*> _factory;
 	CParticleFactory* _particles;
 	CUIFactory* _ui;
+	bool _isExplosionReady = false;
 
 public:
 	static ID3D12DescriptorHeap* m_pd3dCbvSrvUavDescriptorHeap;

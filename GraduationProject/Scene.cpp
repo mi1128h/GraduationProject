@@ -538,10 +538,9 @@ bool CScene::OnProcessingKeyboardMessage(
 				break;
 			case VK_SPACE:
 				dynamic_cast<CCannonFactory*>(_factory[1])->ActiveCannon();
-				//m_ppParticleObjects[0]->SetActive(false);
 				_particles->BombParticleController(1);
-				_particles->BombParticleController(2);
 				::gnPatricleMode = 0x00;
+				_isExplosionReady = true;
 
 				break;
 			case 'W': case 'A': case 'S': case 'D':
@@ -835,8 +834,11 @@ void CScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera
 	CheckMonsterAttack();
 
 	XMFLOAT3 cannon_pos = dynamic_cast<CCannonFactory*>(_factory[factory_num::cannon])->GetCannonPosition();
-	if (m_pTerrain->GetHeight(cannon_pos.x, cannon_pos.z) > cannon_pos.y)
+	if ((m_pTerrain->GetHeight(cannon_pos.x, cannon_pos.z) > cannon_pos.y) && _isExplosionReady)
+	{
 		_particles->BombParticleController();
+		_isExplosionReady = false;
+	}
 }
 
 void CScene::UIRender(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
