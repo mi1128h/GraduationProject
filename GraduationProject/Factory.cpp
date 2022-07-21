@@ -735,3 +735,4 @@ void CParticleFactory::BombParticleController(int index)
 			_gameObjects[1]->SetActive(false);
 			break;
 	}
+}
