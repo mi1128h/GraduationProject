@@ -669,7 +669,7 @@ void CParticleFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignatur
 	CMaterial* pMaterial = new CMaterial(1);
 	pMaterial->SetTexture(pTexture);
 	XMFLOAT3 xmf3Position = { 0.0f,0.0f,0.0f };
-	XMFLOAT2 xmf2Size = { 50.0f, 50.0f };
+	XMFLOAT2 xmf2Size = { 100.0f, 100.0f };
 	CParticleMesh* ParticleMesh = new CParticleMesh(pd3dDevice, pd3dCommandList, xmf3Position, xmf2Size);
 
 	/// breath

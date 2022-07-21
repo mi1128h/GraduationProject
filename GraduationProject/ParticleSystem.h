@@ -4,7 +4,7 @@
 struct VS_VB_PARTICLE_INFO
 {
 	XMFLOAT3 m_xmf3Position;
-	XMFLOAT2 m_xmfAge;
+	XMFLOAT2 m_xmf2Age;
 };
 
 struct particle_info
@@ -14,7 +14,8 @@ struct particle_info
 	float m_fVelocity;
 	XMFLOAT3 m_xmf3Accel;
 	XMFLOAT3 m_xmf3Vectors;
-	float m_fParticleLife = 0.0f;
+	float m_fParticleAge = 0.0f;
+	float m_fLifeTime = 0.0f;
 };
 
 #define EMIT_MODE 0xff
@@ -42,8 +43,6 @@ public:
 	vector<particle_info> m_pParticles;
 	int m_nParticles;
 	int m_nDeadParticles;
-	float m_fLifeTime = 0.0f;
-	float m_fEmitTime = 10.0f;
 	float m_fParticleVelocity = 15.0f;
 	float m_fParticleVelocityVariation = 100.0f;
 	XMFLOAT3 m_xmf3ParticleRange;
