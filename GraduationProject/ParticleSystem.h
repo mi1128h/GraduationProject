@@ -37,6 +37,7 @@ public:
 	virtual void InitParticleSystem(XMFLOAT3 xmf3Position, XMFLOAT3 xmf3Range, float fEmitTime);
 
 	virtual void CreateParticles();
+	virtual void InitParticles();
 public:
 	vector<particle_info> m_pParticles;
 	int m_nParticles;
@@ -72,6 +73,7 @@ public:
 	virtual void CreateParticles();
 	virtual void KillParticles();
 	virtual void EmitParticles(float fElapsedTime);
+	virtual void InitParticles();
 };
 
 

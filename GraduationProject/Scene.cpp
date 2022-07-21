@@ -539,7 +539,10 @@ bool CScene::OnProcessingKeyboardMessage(
 			case VK_SPACE:
 				dynamic_cast<CCannonFactory*>(_factory[1])->ActiveCannon();
 				//m_ppParticleObjects[0]->SetActive(false);
+				_particles->BombParticleController(1);
+				_particles->BombParticleController(2);
 				::gnPatricleMode = 0x00;
+
 				break;
 			case 'W': case 'A': case 'S': case 'D':
 				dynamic_cast<CCannonFactory*>(_factory[1])->RotateCannon(wParam);

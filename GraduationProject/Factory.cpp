@@ -728,11 +728,14 @@ void CParticleFactory::BombParticleController(int index)
 	{
 		case 0:
 			_gameObjects[1]->SetActive(true);
-			//dynamic_cast<CExplosiveParticle*>(_gameObjects[1])->CreateParticles();
 			break;
 
 		case 1:
 			_gameObjects[1]->SetActive(false);
+			break;
+
+		case 2:
+			dynamic_cast<CExplosiveParticle*>(_gameObjects[1])->InitParticles();
 			break;
 	}
 }

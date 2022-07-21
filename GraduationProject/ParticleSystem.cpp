@@ -52,6 +52,10 @@ void CParticleSystem::CreateParticles()
 	}
 }
 
+void CParticleSystem::InitParticles()
+{
+}
+
 void CParticleSystem::CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
 {
 	VS_VB_PARTICLE_INFO* pParticles = new VS_VB_PARTICLE_INFO[m_pParticles.size()];
@@ -265,6 +269,17 @@ void CExplosiveParticle::KillParticles()
 void CExplosiveParticle::EmitParticles(float fElapsedTime)
 {
 
+}
+
+void CExplosiveParticle::InitParticles()
+{
+	XMFLOAT3 xmf3Pos = GetPosition();
+	for (int i = 0; i < m_pParticles.size(); ++i)
+	{
+		m_pParticles[i].m_xmf3Position = xmf3Pos;
+		m_pParticles[i].m_fParticleLife = 0.0f;
+		XMStoreFloat3(&m_pParticles[i].m_xmf3Vectors, ::RandomUnitVectorOnSphere());
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////////////////
