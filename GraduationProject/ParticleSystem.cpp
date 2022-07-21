@@ -88,6 +88,8 @@ void CParticleSystem::UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dComma
 
 void CParticleSystem::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
 {
+	if (m_bActive == false) return;
+
 	OnPrepareRender();
 
 	UpdateShaderVariables(pd3dCommandList);
