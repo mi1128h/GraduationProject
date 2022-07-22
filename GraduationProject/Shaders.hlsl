@@ -923,7 +923,6 @@ PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSBillboard(GS_BILLBOARD_OUT input) : SV_TARGE
 	float fractional = frac(temp);
 	
 	cColor *= 1 - fractional;
-	cColor = temp;
 
 	PS_MULTIPLE_RENDER_TARGETS_OUTPUT output;
 	output.f4Scene = output.f4Color = cColor;

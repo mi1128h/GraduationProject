@@ -93,6 +93,9 @@ void CParticleSystem::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera
 
 	UpdateShaderVariables(pd3dCommandList);
 
+	D3D12_VERTEX_BUFFER_VIEW pVertexBufferViews[] = { m_pMesh->GetPositionBufferView(), m_d3dInstancingBufferView };
+	pd3dCommandList->IASetVertexBuffers(0, _countof(pVertexBufferViews), pVertexBufferViews);
+
 	if (m_nMaterials > 0)
 	{
 		for (int i = 0; i < m_nMaterials; ++i)
@@ -106,8 +109,6 @@ void CParticleSystem::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera
 		}
 	}
 
-	D3D12_VERTEX_BUFFER_VIEW pVertexBufferViews[] = { m_pMesh->GetPositionBufferView(), m_d3dInstancingBufferView };
-	pd3dCommandList->IASetVertexBuffers(0, _countof(pVertexBufferViews), pVertexBufferViews);
 	pd3dCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_POINTLIST);
 	if(m_nParticles - m_nDeadParticles > 0)
 		pd3dCommandList->DrawInstanced(1, m_nParticles - m_nDeadParticles, 0, 0);
