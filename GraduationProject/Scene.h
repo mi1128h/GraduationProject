@@ -81,6 +81,7 @@ public:
 	void CheckMonsterCollision();
 	void CheckMonsterAttack();
 	void CheckPlayerAttack();
+	bool CheckCannonAttackOnBoss();
 
 	void ReleaseUploadBuffers();
 

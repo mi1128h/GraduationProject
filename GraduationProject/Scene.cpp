@@ -1006,3 +1006,27 @@ void CScene::CheckPlayerAttack()
 		}
 	}
 }
+
+bool CScene::CheckCannonAttackOnBoss()
+{
+	CGameObject* pCannon = dynamic_cast<CCannonFactory*>(_factory[1])->GetCannonBall();
+	if (pCannon == nullptr) return false;
+	
+	m_pBoss->GetCollisionManager()->UpdateCollisions();
+	BoundingBox BossBB = m_pBoss->GetCollisionManager()->GetBoundingBox(true);
+
+	CCollisionManager* col = pCannon->GetCollisionManager();
+	col->UpdateCollisions();
+	BoundingBox BB = pCannon->GetCollisionManager()->GetBoundingBox();
+
+	if (BB.Contains(BossBB))
+	{
+		((CMonsterObject*)m_pBoss)->DecreaseHp(pCannon->GetDamage());
+		_ui->SetTargetMonster(m_pBoss);
+
+		return true;
+	}
+
+	return false;
+}
+
