@@ -833,8 +833,7 @@ void CScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera
 	CheckPlayerAttack();
 	CheckMonsterAttack();
 
-	XMFLOAT3 cannon_pos = dynamic_cast<CCannonFactory*>(_factory[factory_num::cannon])->GetCannonPosition();
-	if ((m_pTerrain->GetHeight(cannon_pos.x, cannon_pos.z) > cannon_pos.y) && _isExplosionReady)
+	if (IsCannonBallCollision())
 	{
 		_particles->BombParticleController();
 		_isExplosionReady = false;
@@ -1030,3 +1029,14 @@ bool CScene::CheckCannonAttackOnBoss()
 	return false;
 }
 
+bool CScene::IsCannonBallCollision()
+{
+
+	if (_isExplosionReady == false) return false;
+
+	XMFLOAT3 cannon_pos = dynamic_cast<CCannonFactory*>(_factory[factory_num::cannon])->GetCannonPosition();
+	if (m_pTerrain->GetHeight(cannon_pos.x, cannon_pos.z) > cannon_pos.y) return true;
+	if (CheckCannonAttackOnBoss()) return true;
+
+	return false;
+}
