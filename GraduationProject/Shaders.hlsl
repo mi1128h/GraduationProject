@@ -916,8 +916,13 @@ void GSBillboard(point VS_BILLBOARD_OUT input[1], uint primID:SV_PrimitiveID, in
 PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSBillboard(GS_BILLBOARD_OUT input) : SV_TARGET
 {
 	float4 cColor = gtxtParticleTexture.Sample(gSamplerState, input.uv);
-	cColor.rgb *= GetParticleColor(input.age.x, input.age.y);
+	//cColor.rgb *= GetParticleColor(input.age.x, input.age.y);
+	input.age.x = max(input.age.x, input.age.y);
 
+	float temp = input.age.x / input.age.y;
+	float fractional = frac(temp);
+	
+	cColor *= 1 - fractional;
 
 	PS_MULTIPLE_RENDER_TARGETS_OUTPUT output;
 	output.f4Scene = output.f4Color = cColor;
