@@ -58,11 +58,12 @@ void CParticleSystem::InitParticles()
 
 void CParticleSystem::CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
 {
-	VS_VB_PARTICLE_INFO* pParticles = new VS_VB_PARTICLE_INFO[m_pParticles.size()];
+	VS_VB_PARTICLE_INFO* pParticles = new VS_VB_PARTICLE_INFO[m_nParticles];
 
 	for (int i = 0; i < m_nParticles; ++i)
 	{
 		pParticles[i].m_xmf3Position = m_pParticles[i].m_xmf3Position;
+		pParticles[i].m_xmf2Age = XMFLOAT2(m_pParticles[i].m_fParticleAge, m_fMaxLife);
 	}
 
 	m_pd3dInstancesBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList, pParticles,
