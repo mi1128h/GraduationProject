@@ -45,6 +45,7 @@ public:
 	void ActiveCannon();
 	void RotateCannon(WPARAM wParam);
 	XMFLOAT3& GetCannonPosition();
+	CGameObject* GetCannonBall();
 };
 
 class CMonsterFactory : public CFactory
