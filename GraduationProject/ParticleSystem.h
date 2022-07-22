@@ -15,7 +15,6 @@ struct particle_info
 	XMFLOAT3 m_xmf3Accel;
 	XMFLOAT3 m_xmf3Vectors;
 	float m_fParticleAge = 0.0f;
-	float m_fLifeTime = 0.0f;
 };
 
 #define EMIT_MODE 0xff

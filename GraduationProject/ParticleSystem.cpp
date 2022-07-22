@@ -80,7 +80,7 @@ void CParticleSystem::UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dComma
 	for (int i = 0; i < m_nParticles; ++i)
 	{
 		XMFLOAT3 xmf3Position = m_pParticles[i].m_xmf3Position;
-		XMFLOAT2 age(m_pParticles[i].m_fParticleAge, m_pParticles[i].m_fLifeTime);
+		XMFLOAT2 age(m_pParticles[i].m_fParticleAge, m_fMaxLife);
 		::memcpy(&m_pcbMappedParticles[i].m_xmf3Position, &xmf3Position, sizeof(XMFLOAT3));
 		::memcpy(&m_pcbMappedParticles[i].m_xmf2Age, &age, sizeof(XMFLOAT2));
 	}
@@ -359,7 +359,6 @@ void CBreathParticle::EmitParticles(float fElapsedTime)
 				}
 				m_pParticles[i].m_xmf3Accel = xmf3Accel;
 				m_pParticles[i].m_fParticleAge = 0.0f;
-				m_pParticles[i].m_fLifeTime = m_fMaxLife;
 				m_pParticles[i].m_xmf3Vectors = XMFLOAT3(0.0f, 1.0f, 0.0f);
 				break;
 			}
@@ -387,7 +386,7 @@ void CBreathParticle::UpdateParticles(float fElapsedTime)
 	CParticleSystem::UpdateParticles(fElapsedTime);
 
 	TCHAR pstrDebug[256] = { 0 };
-	_stprintf_s(pstrDebug, 256, _T("Particle[%d] Age / Life = %f\n"), 0, m_pParticles[0].m_fParticleAge / m_pParticles[0].m_fLifeTime);
+	_stprintf_s(pstrDebug, 256, _T("Particle[%d] Age / Life = %f\n"), 0, m_pParticles[0].m_fParticleAge / m_fMaxLife);
 	OutputDebugString(pstrDebug);
 }
 
