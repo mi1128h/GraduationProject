@@ -151,7 +151,8 @@ void CParticleSystem::KillParticles()
 bool compare(particle_info& p1, particle_info& p2)
 {
 	//return p1.m_xmf3Position.z < p2.m_xmf3Position.z;
-	return p1.m_bActive > p2.m_bActive;
+	//return p1.m_bActive > p2.m_bActive;
+	return p1.m_fParticleAge > p2.m_fParticleAge;
 }
 
 void CParticleSystem::EmitParticles(float fElapsedTime)
@@ -384,6 +385,10 @@ void CBreathParticle::UpdateParticles(float fElapsedTime)
 	}
 
 	CParticleSystem::UpdateParticles(fElapsedTime);
+
+	TCHAR pstrDebug[256] = { 0 };
+	_stprintf_s(pstrDebug, 256, _T("Particle[%d] Age / Life = %f\n"), 0, m_pParticles[0].m_fParticleAge / m_pParticles[0].m_fLifeTime);
+	OutputDebugString(pstrDebug);
 }
 
 void CBreathParticle::KillParticles()
