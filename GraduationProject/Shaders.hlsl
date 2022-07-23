@@ -917,7 +917,7 @@ PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSBillboard(GS_BILLBOARD_OUT input) : SV_TARGE
 {
 	float4 cColor = gtxtParticleTexture.Sample(gSamplerState, input.uv);
 	//cColor.rgb *= GetParticleColor(input.age.x, input.age.y);
-	input.age.x = min(input.age.x, input.age.y);
+	input.age.x = min(input.age.x, input.age.y - 0.01);
 
 	float temp = input.age.x / input.age.y;
 	float fractional = frac(temp);
