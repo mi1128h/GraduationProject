@@ -89,6 +89,8 @@ void CParticleSystem::UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dComma
 
 void CParticleSystem::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
 {
+	if (m_bActive == false) return;
+
 	OnPrepareRender();
 
 	UpdateShaderVariables(pd3dCommandList);
@@ -267,6 +269,7 @@ void CExplosiveParticle::KillParticles()
 			m_pParticles[i].m_xmf3Position = xmf3Pos;
 			m_pParticles[i].m_fParticleAge = 0.0f;
 			XMStoreFloat3(&m_pParticles[i].m_xmf3Vectors, ::RandomUnitVectorOnSphere());
+			SetActive(false);
 		}
 	}
 }
