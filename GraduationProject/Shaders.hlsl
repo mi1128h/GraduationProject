@@ -919,6 +919,9 @@ PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSBillboard(GS_BILLBOARD_OUT input) : SV_TARGE
 	//cColor.rgb *= GetParticleColor(input.age.x, input.age.y);
 	input.age.x = min(input.age.x, input.age.y - 0.01);
 
+	input.age.x = pow(input.age.x, 3);
+	input.age.y = pow(input.age.y, 3);
+
 	float temp = input.age.x / input.age.y;
 	float fractional = frac(temp);
 	
