@@ -90,6 +90,7 @@ void CParticleSystem::UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dComma
 void CParticleSystem::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
 {
 	if (m_bActive == false) return;
+	if (m_nParticles - m_nDeadParticles == 0) return;
 
 	OnPrepareRender();
 
@@ -97,6 +98,8 @@ void CParticleSystem::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera
 
 	D3D12_VERTEX_BUFFER_VIEW pVertexBufferViews[] = { m_pMesh->GetPositionBufferView(), m_d3dInstancingBufferView };
 	pd3dCommandList->IASetVertexBuffers(0, _countof(pVertexBufferViews), pVertexBufferViews);
+
+	sort(m_pParticles.begin(), m_pParticles.end(), compare);
 
 	if (m_nMaterials > 0)
 	{
@@ -113,9 +116,7 @@ void CParticleSystem::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera
 
 	pd3dCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_POINTLIST);
 
-	sort(m_pParticles.begin(), m_pParticles.end(), compare);
-	if(m_nParticles - m_nDeadParticles > 0)
-		pd3dCommandList->DrawInstanced(1, m_nParticles - m_nDeadParticles, 0, 0);
+	pd3dCommandList->DrawInstanced(1, m_nParticles - m_nDeadParticles, 0, 0);
 }
 
 void CParticleSystem::Animate(float fElapsedTime, CCamera* pCamera)
@@ -358,15 +359,12 @@ void CBreathParticle::EmitParticles(float fElapsedTime)
 				m_pParticles[i].m_bActive = true;
 				m_pParticles[i].m_xmf3Position = xmf3OnePos;
 				m_pParticles[i].m_fVelocity = m_fParticleVelocity + RandF(0.5f,1.0f) * m_fParticleVelocityVariation;
-				if (i % 3 == 1) {
-					xmf3Accel = Vector3::Subtract(xmf3Accel, xmf3Right);
-				}
-				else if (i % 3 == 2) {
-					xmf3Accel = Vector3::Add(xmf3Accel, xmf3Right);
-				}
+				if (i % 3 == 1) xmf3Accel = Vector3::Subtract(xmf3Accel, xmf3Right);
+				else if (i % 3 == 2) xmf3Accel = Vector3::Add(xmf3Accel, xmf3Right);
 				m_pParticles[i].m_xmf3Accel = xmf3Accel;
 				m_pParticles[i].m_fParticleAge = 0.0f;
 				m_pParticles[i].m_xmf3Vectors = XMFLOAT3(0.0f, 1.0f, 0.0f);
+				_sinValue = 0.0f;
 				break;
 			}
 		}
@@ -397,6 +395,7 @@ void CBreathParticle::KillParticles()
 {
 	for (int i = 0; i < m_pParticles.size(); ++i)
 	{
+		if (!m_pParticles[i].m_bActive) continue;
 		if (m_pParticles[i].m_fParticleAge < m_fMaxLife) continue;
 
 		m_pParticles[i].m_bActive = false;
@@ -409,9 +408,9 @@ void CBreathParticle::KillParticles()
 		m_pParticles[i].m_xmf3Position.z = xmf3Pos.z + (((float)rand() - (float)rand()) / float(RAND_MAX)) * m_xmf3ParticleRange.z;
 		m_pParticles[i].m_xmf3Position.y = xmf3Pos.y; //+ (((float)rand() - (float)rand()) / float(RAND_MAX)) * m_xmf3ParticleRange.y;
 #endif
-		m_pParticles[i].m_fParticleAge = 0.0f;
-		m_pParticles[i].m_xmf3Vectors = XMFLOAT3(0.0f, 1.0f, 0.0f);
-		_sinValue = 0.0f;
+		//m_pParticles[i].m_fParticleAge = 0.0f;
+		//m_pParticles[i].m_xmf3Vectors = XMFLOAT3(0.0f, 1.0f, 0.0f);
+		//_sinValue = 0.0f;
 
 		++m_nDeadParticles;
 	}
