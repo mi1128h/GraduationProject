@@ -838,6 +838,8 @@ void CScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera
 		_particles->BombParticleController();
 		_isExplosionReady = false;
 	}
+
+	CheckBreathAttack();
 }
 
 void CScene::UIRender(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
@@ -1027,6 +1029,39 @@ bool CScene::CheckCannonAttackOnBoss()
 	}
 
 	return false;
+}
+
+void CScene::CheckBreathAttack()
+{
+	auto p = _particles->GetGameObjects();
+	CBreathParticle* breath = dynamic_cast<CBreathParticle*>(p[0]);
+	if (!breath) return;
+
+	auto particles = breath->m_pParticles;
+	m_pPlayer->GetCollManager()->UpdateCollisions();
+	BoundingBox PlayerBB = m_pPlayer->GetCollManager()->GetBoundingBox(true);
+
+	for (auto& particle : particles) {
+		if (!particle.m_bActive) continue;
+		// check particles & player
+		XMFLOAT3 min = XMFLOAT3(particle.m_xmf3Position.x - 50.0f,
+								particle.m_xmf3Position.y - 50.0f,
+								particle.m_xmf3Position.z - 50.0f);
+		XMFLOAT3 max = XMFLOAT3(particle.m_xmf3Position.x + 50.0f,
+								particle.m_xmf3Position.y + 50.0f,
+								particle.m_xmf3Position.z + 50.0f);
+		XMVECTOR vMin = XMLoadFloat3(&min);
+		XMVECTOR vMax = XMLoadFloat3(&max);
+
+		BoundingBox partBB;
+		BoundingBox::CreateFromPoints(partBB, vMin, vMax);
+		bool result = PlayerBB.Intersects(partBB);
+
+		if (result) {
+			m_pPlayer->DecreaseHp(1);
+			particle.m_fParticleAge = 1000;
+		}
+	}
 }
 
 bool CScene::IsCannonBallCollision()

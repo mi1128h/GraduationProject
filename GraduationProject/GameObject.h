@@ -553,7 +553,7 @@ public:
 		length
 	};
 
-	#define FLY 4.0f
+	#define FLY 40.0f
 	#define FLAME 2.0f
 	#define DEFEND 10.0f
 

@@ -82,6 +82,7 @@ public:
 	void CheckMonsterAttack();
 	void CheckPlayerAttack();
 	bool CheckCannonAttackOnBoss();
+	void CheckBreathAttack();
 
 	bool IsCannonBallCollision();
 
