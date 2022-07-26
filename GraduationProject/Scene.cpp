@@ -766,13 +766,13 @@ void CScene::AnimateObjects(float fTimeElapsed, CCamera* pCamera)
 	m_pBoss->FindTarget(m_pPlayer);
 	m_pBoss->Animate(fTimeElapsed, pCamera);
 
-	//for (int i = 0; i < m_nParticleObjects; i++) {
-	//	m_ppParticleObjects[i]->Animate(fTimeElapsed, pCamera);
+	for (int i = 0; i < m_nParticleObjects; i++) {
+		m_ppParticleObjects[i]->Animate(fTimeElapsed, pCamera);
 
 	//	if (i > 1) continue;
 	//	m_ppParticleObjects[i]->SetVector(XMFLOAT3(1.0f,0.0f,0.0f));
 	//	m_ppParticleObjects[i]->SetPosition(dynamic_cast<CCannonFactory*>(_factory[1])->GetCannonPosition());
-	//}
+	}
 	
 	for (int i = 0; i < m_nShaders; i++) m_ppShaders[i]->AnimateObjects(fTimeElapsed, pCamera);
 	_particles->SetBombParticlePosition(dynamic_cast<CCannonFactory*>(_factory[factory_num::cannon])->GetCannonPosition());
@@ -822,6 +822,10 @@ void CScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera
 	for (int i = 0; i < m_nShaders; i++)
 	{
 		m_ppShaders[i]->Render(pd3dCommandList, pCamera);
+	}
+
+	for (int i = 0; i < m_nParticleObjects; i++) {
+		m_ppParticleObjects[i]->Render(pd3dCommandList, pCamera);
 	}
 
 	for (CCollision* col : collisions)

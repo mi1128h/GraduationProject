@@ -144,6 +144,9 @@ public:
 	CShader** m_ppShaders = NULL;
 	int	m_nShaders = 0;
 
+	CStreamParticleObject** m_ppParticleObjects = nullptr;
+	int m_nParticleObjects = 0;
+
 	BoundingBox						m_xmBoundingBox;
 
 	//루트 시그너쳐를 나타내는 인터페이스 포인터이다. 
