@@ -633,7 +633,7 @@ void CGameFramework::AnimateObjects()
 	float fTimeElapsed = m_GameTimer.GetTimeElapsed();
 	if (m_pScene)
 		m_pScene->AnimateObjects(m_GameTimer.GetTimeElapsed(),m_pCamera);
-	m_pPlayer->Animate(fTimeElapsed,m_pCamera);
+	m_pPlayer->Animate(fTimeElapsed * 1.5, m_pCamera);
 }
 
 void CGameFramework::WaitForGpuComplete()
