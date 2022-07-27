@@ -1048,6 +1048,12 @@ void CScene::CheckBreathAttack()
 		if (!particle.m_bActive) continue;
 		if (!particle.m_fParticleAge >= 1000) continue;
 
+		float fTerrainHeight = m_pTerrain->GetHeight(particle.m_xmf3Position.x, particle.m_xmf3Position.z);
+		if (particle.m_xmf3Position.y - 50.0f < fTerrainHeight) {
+			particle.m_fParticleAge = 1000;
+			continue;
+		}
+
 		XMFLOAT3 min = XMFLOAT3(particle.m_xmf3Position.x - 50.0f,
 								particle.m_xmf3Position.y - 50.0f,
 								particle.m_xmf3Position.z - 50.0f);
