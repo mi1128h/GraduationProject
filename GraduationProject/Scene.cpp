@@ -1038,12 +1038,16 @@ void CScene::CheckBreathAttack()
 	if (!breath) return;
 
 	auto particles = breath->m_pParticles;
+
+	vector<CGameObject*> objects = _factory[0]->GetGameObjects();
+
 	m_pPlayer->GetCollManager()->UpdateCollisions();
 	BoundingBox PlayerBB = m_pPlayer->GetCollManager()->GetBoundingBox(true);
 
 	for (auto& particle : particles) {
 		if (!particle.m_bActive) continue;
-		// check particles & player
+		if (!particle.m_fParticleAge >= 1000) continue;
+
 		XMFLOAT3 min = XMFLOAT3(particle.m_xmf3Position.x - 50.0f,
 								particle.m_xmf3Position.y - 50.0f,
 								particle.m_xmf3Position.z - 50.0f);
@@ -1055,9 +1059,29 @@ void CScene::CheckBreathAttack()
 
 		BoundingBox partBB;
 		BoundingBox::CreateFromPoints(partBB, vMin, vMax);
-		bool result = PlayerBB.Intersects(partBB);
 
-		if (result) {
+		bool objResult = false;
+		bool playerResult = false;
+
+		// check particles & objects
+		for (auto& object : objects)
+		{
+			object->GetCollisionManager()->UpdateCollisions();
+			BoundingBox BB = object->GetCollisionManager()->GetBoundingBox();
+			objResult = BB.Intersects(partBB);
+
+			if (objResult) {
+				particle.m_fParticleAge = 1000;
+				break;
+			}
+		}
+
+		if (objResult) continue;
+
+		// check particles & player
+		playerResult = PlayerBB.Intersects(partBB);
+
+		if (playerResult) {
 			m_pPlayer->DecreaseHp(1);
 			particle.m_fParticleAge = 1000;
 		}
