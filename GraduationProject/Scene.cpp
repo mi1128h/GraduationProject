@@ -1037,14 +1037,14 @@ void CScene::CheckBreathAttack()
 	CBreathParticle* breath = dynamic_cast<CBreathParticle*>(p[0]);
 	if (!breath) return;
 
-	auto particles = breath->m_pParticles;
+	auto particles = &breath->m_pParticles;
 
 	vector<CGameObject*> objects = _factory[0]->GetGameObjects();
 
 	m_pPlayer->GetCollManager()->UpdateCollisions();
 	BoundingBox PlayerBB = m_pPlayer->GetCollManager()->GetBoundingBox(true);
 
-	for (auto& particle : particles) {
+	for (auto& particle : *particles) {
 		if (!particle.m_bActive) continue;
 		if (!particle.m_fParticleAge >= 1000) continue;
 
