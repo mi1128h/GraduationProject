@@ -778,6 +778,16 @@ PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSParticleDraw(GS_PARTICLE_OUTPUT input) : SV_
 	float4 cColor = gtxtParticleTexture.Sample(gSamplerState, input.uv);
 	cColor.rgb *= GetParticleColor(input.age.x, input.age.y);
 
+	input.age.x = min(input.age.x, input.age.y - 0.01);
+
+	input.age.x = pow(input.age.x, 3);
+	input.age.y = pow(input.age.y, 3);
+
+	float temp = input.age.x / input.age.y;
+	float fractional = frac(temp);
+
+	cColor *= 1 - fractional;
+
 	PS_MULTIPLE_RENDER_TARGETS_OUTPUT output;
 	output.f4Scene = output.f4Color = cColor;
 	output.fDepth = 1.0f - input.position.z;
@@ -803,13 +813,12 @@ void GSParticleExStreamOutput(point VS_PARTICLE_INPUT input[1], inout PointStrea
 
 			if (particle.type == PARTICLE_TYPE_EMITTER)
 			{
-				if (particle.size.x <= size_x * 50.0f)
+				if (particle.size.x <= size_x * 500.0f)
 				{
-					float2 size = float2(size_x * 3.5f, size_y * 3.5f) * 8.5f;
+					float2 size = float2(size_x * 3.5f, size_y * 3.5f) * 65.5f;
 					particle.size += size * gfElapsedTime;
 				}
 			}
-			else particle.position += (0.5f * particle.acceleration * particle.velocity * gfElapsedTime);
 
 			output.Append(particle);
 		}
