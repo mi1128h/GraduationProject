@@ -424,6 +424,7 @@ void CGameFramework::OnProcessingMouseMessage
 		::GetCursorPos(&m_ptOldCursorPos);
 		if (m_gameState != GameState::play) {
 			if (m_StartSelected) m_gameState = GameState::play;
+			else PostQuitMessage(0);
 			m_pScene->UpdateUI(m_gameState, m_StartSelected);
 		}
 		break;
@@ -435,8 +436,9 @@ void CGameFramework::OnProcessingMouseMessage
 	case WM_MOUSEMOVE:
 		if (m_gameState != GameState::play) {
 			::GetCursorPos(&m_ptOldCursorPos);
-
-			if (m_ptOldCursorPos.y < 1200 * FRAME_BUFFER_HEIGHT / 1080) {
+			POINT ptTransed = m_ptOldCursorPos;
+			ScreenToClient(hWnd, &ptTransed);
+			if (ptTransed.y < 850 * FRAME_BUFFER_HEIGHT / 1080) {
 				m_StartSelected = true;
 			}
 			else {
