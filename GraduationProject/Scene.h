@@ -83,6 +83,7 @@ public:
 	void CheckPlayerAttack();
 	bool CheckCannonAttackOnBoss();
 	void CheckBreathAttack();
+	void CheckBossAttack();
 
 	bool IsCannonBallCollision();
 

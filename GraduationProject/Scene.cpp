@@ -840,6 +840,7 @@ void CScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera
 	CheckMonsterCollision();
 	CheckPlayerAttack();
 	CheckMonsterAttack();
+	CheckBossAttack();
 
 	if (IsCannonBallCollision())
 	{
@@ -991,6 +992,25 @@ void CScene::CheckMonsterAttack()
 			m_pPlayer->DecreaseHp(object->GetDamage());
 			object->SetAttackEnable(false);
 		}
+	}
+}
+
+
+void CScene::CheckBossAttack()
+{
+	BoundingBox playerBB = m_pPlayer->GetCollManager()->GetBoundingBox();
+
+	bool Enable = (m_pBoss->m_pSkinnedAnimationController) ? m_pBoss->m_pSkinnedAnimationController->GetAttackEnable() : false;
+	if (!Enable) return;
+
+	BoundingBox AttackBB = m_pBoss->GetCollisionManager()->GetBoundingBox(false);
+	CCollisionManager* col = m_pBoss->GetCollisionManager();
+	col->UpdateCollisions();
+
+	if (playerBB.Contains(AttackBB))
+	{
+		m_pPlayer->DecreaseHp(m_pBoss->GetDamage());
+		m_pBoss->SetAttackEnable(false);
 	}
 }
 
