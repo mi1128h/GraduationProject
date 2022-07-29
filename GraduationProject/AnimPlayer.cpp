@@ -148,6 +148,7 @@ void CAnimPlayer::Move(DWORD dwDirection, float fDistance, bool bUpdateVelocity)
 
 bool CAnimPlayer::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
 {
+	if (GetHp() <= 0) return false;
 	if (isMove) return false;
 
 	switch (nMessageID)
@@ -229,7 +230,7 @@ void CAnimPlayer::DecreaseHp(float val)
 	m_fHp -= val;
 	if (m_fHp < 0)
 	{
-		m_pSkinnedAnimationController->SwitchAnimationState(track_name::deth);
+		m_pSkinnedAnimationController->SwitchAnimationState(track_name::death);
 	}
 }
 
@@ -240,6 +241,8 @@ void CAnimPlayer::SetAnimationController(ID3D12Device* pd3dDevice, ID3D12Graphic
 	m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, track_name::length, pModel);
 	m_pSkinnedAnimationController->SetCurrentTrackNum(track_name::idle);
 	m_pSkinnedAnimationController->SetAnimationTracks(bAnimType);
+	m_pSkinnedAnimationController->SetIdleNum(track_name::idle);
+	m_pSkinnedAnimationController->SetDeadNum(track_name::death);
 }
 
 bool CAnimPlayer::SetInteraction(XMFLOAT3& center, XMFLOAT4X4& world)

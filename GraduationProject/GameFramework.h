@@ -104,6 +104,9 @@ public:
 
 	float m_fSpeedVal = 50.0f;
 
+	int m_gameState = GameState::title;
+	bool m_StartSelected = true;
+
 protected:
 	ID3D12Resource* m_pd3dcbFrameworkInfo = NULL;
 	CB_FRAMEWORK_INFO* m_pcbMappedFrameworkInfo = NULL;

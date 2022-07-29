@@ -145,6 +145,12 @@ namespace Descriptor {
 	};
 }
 
+enum GameState {
+	title,
+	play,
+	over
+};
+
 //#define _WITH_SWAPCHAIN_FULLSCREEN_STATE
 
 //#define _WITH_PRESENT_PARAMETERS

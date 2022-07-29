@@ -198,6 +198,7 @@ private:
 	int m_idleNum = 0;
 	int m_deadNum = 0;
 	bool isAttack = false;
+	bool isDead = false;
 
 public:
 	void SetAttackEnable(bool value) { isAttack = value; }
@@ -207,6 +208,7 @@ public:
 	void SetIdleNum(int num) { m_idleNum = num; }
 	void SetDeadNum(int num) { m_deadNum = num; }
 	int GetDeadNum() { return m_deadNum; }
+	bool GetIsDead() { return isDead; }
 	void InitAnimationTime();
 
 	void UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList);

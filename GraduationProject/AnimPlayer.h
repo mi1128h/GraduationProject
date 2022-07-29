@@ -19,7 +19,7 @@ enum track_name
 	handling,
 	lifting,
 	sitting,
-	deth,
+	death,
 	length
 };
 

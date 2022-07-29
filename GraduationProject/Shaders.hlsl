@@ -593,6 +593,31 @@ PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSHp(VS_TEXTURED_OUTPUT input) :SV_TARGET
 	return(output);
 }
 
+// Game title, over
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+VS_TEXTURED_OUTPUT VSScreen(VS_TEXTURED_INPUT input)
+{
+	VS_TEXTURED_OUTPUT output;
+
+	output.position = mul(mul(float4(input.position, 1.0f), gmtxGameObject), gmtxOrthoProjection);
+
+	output.uv = input.uv;
+
+	return(output);
+}
+
+PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSScreen(VS_TEXTURED_OUTPUT input) :SV_TARGET
+{
+	float4 cColor = gtxtTexture.Sample(gSamplerState, input.uv);
+
+	PS_MULTIPLE_RENDER_TARGETS_OUTPUT output;
+	output.f4Scene = output.f4Color = cColor;
+	output.fDepth = 1.0f - input.position.z;
+
+	return(output);
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #define PARTICLE_TYPE_EMITTER	0
 #define PARTICLE_TYPE_FLARE		0x0ff
