@@ -943,3 +943,25 @@ PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSBillboard(GS_BILLBOARD_OUT input) : SV_TARGE
 	return(output);
 }
 
+PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSExplosionBillboard(GS_BILLBOARD_OUT input) : SV_TARGET
+{
+	float4 cColor = gtxtParticleTexture.Sample(gSamplerState, input.uv);
+	cColor.rgb *= GetParticleColor(input.age.x, input.age.y);
+	input.age.x = min(input.age.x, input.age.y - 0.01);
+
+	input.age.x = pow(input.age.x, 3);
+	input.age.y = pow(input.age.y, 3);
+
+	float temp = input.age.x / input.age.y;
+	float fractional = frac(temp);
+
+	cColor *= 1 - fractional;
+
+	PS_MULTIPLE_RENDER_TARGETS_OUTPUT output;
+	output.f4Scene = output.f4Color = cColor;
+	output.fDepth = 1.0f - input.posH.z;
+
+	return(output);
+}
+
+

@@ -704,7 +704,7 @@ void CParticleFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignatur
 	CMaterial* pM2 = new CMaterial(1);
 	pM2->SetTexture(pTexture2);
 
-	CParticleShader* pObjectShader2 = new CParticleShader();
+	CParticleExplosionShader* pObjectShader2 = new CParticleExplosionShader();
 	pObjectShader2->CreateShader(pd3dDevice, pd3dGraphicsRootSignature, 3, pdxgiRtvFormats, DXGI_FORMAT_D32_FLOAT);
 	pM2->SetShader(pObjectShader2);
 
