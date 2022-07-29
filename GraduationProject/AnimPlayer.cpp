@@ -148,6 +148,7 @@ void CAnimPlayer::Move(DWORD dwDirection, float fDistance, bool bUpdateVelocity)
 
 bool CAnimPlayer::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
 {
+	if (GetHp() <= 0) return false;
 	if (isMove) return false;
 
 	switch (nMessageID)

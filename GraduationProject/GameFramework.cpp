@@ -551,9 +551,8 @@ void CGameFramework::ProcessInput()
 	static UCHAR pKeysBuffer[256];
 	bool bProcessedByScene = false;
 
-	if (m_gameState != GameState::play) {
-		return;
-	}
+	if (m_gameState != GameState::play) return;
+	if (m_pPlayer->GetHp() <= 0) return;
 
 	if (GetKeyboardState(pKeysBuffer) && m_pScene) bProcessedByScene = m_pScene->ProcessInput(pKeysBuffer);
 
