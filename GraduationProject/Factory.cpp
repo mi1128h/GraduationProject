@@ -694,8 +694,15 @@ void CParticleFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignatur
 
 	////
 
+	CTexture* pTexture2 = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
+	pTexture2->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/Effect/DustEffect.dds", 0);
+	CScene::CreateShaderResourceViews(pd3dDevice, pTexture2, Signature::Graphics::particle_texture, true);
+	
+	XMFLOAT2 xmf2Size2 = { 10.0f, 10.0f };
+	CParticleMesh* ParticleMesh2 = new CParticleMesh(pd3dDevice, pd3dCommandList, xmf3Position, xmf2Size2);
+
 	CMaterial* pM2 = new CMaterial(1);
-	pM2->SetTexture(pTexture);
+	pM2->SetTexture(pTexture2);
 
 	CParticleShader* pObjectShader2 = new CParticleShader();
 	pObjectShader2->CreateShader(pd3dDevice, pd3dGraphicsRootSignature, 3, pdxgiRtvFormats, DXGI_FORMAT_D32_FLOAT);
@@ -704,7 +711,7 @@ void CParticleFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignatur
 	CParticleSystem* pBombObject = NULL;
 	XMFLOAT3 xmfRange2(500.0f, 500.0f, 500.0f);
 	pBombObject = new CExplosiveParticle(pd3dDevice, pd3dCommandList, xmf3Position, xmfRange2, 1500);
-	pBombObject->SetMesh(ParticleMesh);
+	pBombObject->SetMesh(ParticleMesh2);
 	pBombObject->SetMaterial(0, pM2);
 
 	_gameObjects.emplace_back(pBombObject);
