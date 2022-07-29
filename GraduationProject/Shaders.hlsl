@@ -610,7 +610,6 @@ VS_TEXTURED_OUTPUT VSScreen(VS_TEXTURED_INPUT input)
 PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSScreen(VS_TEXTURED_OUTPUT input) :SV_TARGET
 {
 	float4 cColor = gtxtTexture.Sample(gSamplerState, input.uv);
-	cColor.a = 0.5;
 
 	PS_MULTIPLE_RENDER_TARGETS_OUTPUT output;
 	output.f4Scene = output.f4Color = cColor;

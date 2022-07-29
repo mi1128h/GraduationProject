@@ -1459,7 +1459,7 @@ CScreenShader::~CScreenShader()
 {
 }
 
-D3D12_BLEND_DESC CScreenShader::CreateBlendState(int nPipelineState)
+D3D12_BLEND_DESC CScreenShader::CreateBlendState()
 {
 	D3D12_BLEND_DESC d3dBlendDesc;
 	::ZeroMemory(&d3dBlendDesc, sizeof(D3D12_BLEND_DESC));
