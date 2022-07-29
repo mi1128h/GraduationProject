@@ -73,9 +73,9 @@ public:
 	virtual void AnimateObjects(float fTimeElapsed, CCamera* pCamrea = NULL);
 	void SetTargetMonster(CGameObject* pObject);
 	void SetGameState(int n) { m_gameState = n; }
-	void SetSelectedMenu(int n) { m_selectedMenu = n; }
+	void SetStartSelected(bool b) { m_StartSelected = b; }
 	int GetGameState() { return m_gameState; }
-	int GetSelectedMenu() { return m_selectedMenu; }
+	bool GetSelectedMenu() { return m_StartSelected; }
 
 private:
 	CCamera* m_pCamera = NULL;
@@ -83,7 +83,7 @@ private:
 	CGameObject* m_pOverUi = NULL;
 	CGameObject* m_pMenuPointerUi = NULL;
 	int m_gameState = 0;	// 0: title, 1: play, 2: over
-	int m_selectedMenu = 0;	// 0: start, 1: exit
+	bool m_StartSelected = true;
 };
 
 class CParticleFactory : public CFactory

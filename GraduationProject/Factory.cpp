@@ -644,7 +644,7 @@ void CUIFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3
 	
 	CGameObject* pTitleUIObject = NULL;
 	pTitleUIObject = new CUIObject();
-	pTitleUIObject->SetPosition(0, 0, 0);
+	pTitleUIObject->SetPosition(0, 0, 0.001);
 	pTitleUIObject->SetMesh(pScreenMesh);
 	pTitleUIObject->CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
@@ -664,7 +664,7 @@ void CUIFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3
 
 	CGameObject* pOverUIObject = NULL;
 	pOverUIObject = new CUIObject();
-	pOverUIObject->SetPosition(0, 0, 0);
+	pOverUIObject->SetPosition(0, 0, 0.001);
 	pOverUIObject->SetMesh(pScreenMesh);
 	pOverUIObject->CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
@@ -698,10 +698,22 @@ void CUIFactory::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCa
 {
 	m_pCamera->SetViewportsAndScissorRects(pd3dCommandList);
 	m_pCamera->UpdateShaderVariables(pd3dCommandList);
-	for (auto& object : _gameObjects)
-	{
-		//if (!dynamic_cast<CUIObject*>(object)->IsTarget()) continue;
-		object->Render(pd3dCommandList, pCamera);
+	switch (m_gameState) {
+	case GameState::title:
+		m_pTitleUi->Render(pd3dCommandList, pCamera);
+		m_pMenuPointerUi->Render(pd3dCommandList, pCamera);
+		break;
+	case GameState::play:
+		for (auto& object : _gameObjects)
+		{
+			//if (!dynamic_cast<CUIObject*>(object)->IsTarget()) continue;
+			object->Render(pd3dCommandList, pCamera);
+		}
+		break;
+	case GameState::over:
+		m_pOverUi->Render(pd3dCommandList, pCamera);
+		m_pMenuPointerUi->Render(pd3dCommandList, pCamera);
+		break;
 	}
 	pCamera->UpdateShaderVariables(pd3dCommandList);
 }
@@ -711,6 +723,13 @@ void CUIFactory::AnimateObjects(float fTimeElapsed, CCamera* pCamrea)
 	for (auto& object : _gameObjects)
 	{
 		object->Animate(fTimeElapsed, m_pCamera);
+	}
+	if (m_StartSelected) {
+		m_pMenuPointerUi->SetPosition(0, -250 * FRAME_BUFFER_HEIGHT / 1080, 0);
+	}
+	else {
+		float h = 90 * FRAME_BUFFER_HEIGHT / 1080;
+		m_pMenuPointerUi->SetPosition(0, -250 * FRAME_BUFFER_HEIGHT / 1080 - h, 0);
 	}
 }
 
