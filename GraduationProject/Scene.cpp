@@ -404,10 +404,14 @@ void CScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* p
 
 	////////
 
-	m_nParticleObjects = 1;
+	m_nParticleObjects = 2;
+	m_ppParticleObjects = new CStreamParticleObject * [m_nParticleObjects];
+
 	CStreamParticleObject* pObject_ = new CStreamParticleObject(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, XMFLOAT3(0, 0, 0), XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(1.0f, 0.0f, 0.0f), XMFLOAT2(15.0f, 15.0f), 15.0f, MAX_PARTICLES);
-	m_ppParticleObjects = new CStreamParticleObject*[m_nParticleObjects];
 	m_ppParticleObjects[0] = pObject_;
+
+	CStreamExplosionObject* emptyObject = new CStreamExplosionObject(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, XMFLOAT3(0, 0, 0), XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(1.0f, 0.0f, 0.0f), XMFLOAT2(1.0f, 1.0f), 15.0f, MAX_PARTICLES);
+	m_ppParticleObjects[1] = emptyObject;
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 }
@@ -839,6 +843,7 @@ void CScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera
 
 	if (IsCannonBallCollision())
 	{
+		::gnPatricleMode = 0x30;
 		_particles->BombParticleController();
 		_isExplosionReady = false;
 	}
