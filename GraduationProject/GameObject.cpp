@@ -1920,7 +1920,7 @@ CStreamExplosionObject::CStreamExplosionObject(ID3D12Device* pd3dDevice, ID3D12G
 	m_size.y = xmf2Size.y;
 
 	CTexture* pParticleTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
-	pParticleTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/Effect/DustEffect.dds", 0);
+	pParticleTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/Effect/Fire.dds", 0);
 
 	CMaterial* pMaterial = new CMaterial(1);
 	pMaterial->SetTexture(pParticleTexture);
