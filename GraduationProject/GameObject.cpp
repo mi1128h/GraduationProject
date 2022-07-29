@@ -1584,7 +1584,9 @@ CBossMonster::CBossMonster(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* 
 	SetPosition(9470, 300, 27980);
 	SetScale(0.01, 0.01, 0.01);
 	SetHp(1000);
+	SetMaxHp(1000.0f);
 	SetDetectionRange(8000);
+	SetDamage(30.0f);
 
 	CHeightMapTerrain* pTerrain = (CHeightMapTerrain*)pContext;
 	SetUpdatedContext(pTerrain);
