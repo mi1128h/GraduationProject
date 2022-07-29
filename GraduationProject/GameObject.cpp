@@ -1696,7 +1696,10 @@ void CBossMonster::DoAttackHand(int curTrackNum)
 	if (curTrackNum != track_name::Idle) return;
 
 	if (curTrackNum != track_name::attackHand)
+	{
 		m_pSkinnedAnimationController->SwitchAnimationState(track_name::attackHand);
+		m_pSkinnedAnimationController->SetAttackEnable(true);
+	}
 }
 
 void CBossMonster::DoAttackMouth(int curTrackNum)
@@ -1704,7 +1707,10 @@ void CBossMonster::DoAttackMouth(int curTrackNum)
 	if (curTrackNum != track_name::Idle) return;
 
 	if (curTrackNum != track_name::attackMouth)
+	{
 		m_pSkinnedAnimationController->SwitchAnimationState(track_name::attackMouth);
+		m_pSkinnedAnimationController->SetAttackEnable(true);
+	}
 }
 
 void CBossMonster::DoTakeOff(int curTrackNum)
