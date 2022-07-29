@@ -436,10 +436,6 @@ void CGameFramework::OnProcessingMouseMessage
 		if (m_gameState != GameState::play) {
 			::GetCursorPos(&m_ptOldCursorPos);
 
-			TCHAR pstrDebug[256] = { 0 };
-			_stprintf_s(pstrDebug, 256, _T("Cursor.xy = %f, %f\n"), m_ptOldCursorPos.x, m_ptOldCursorPos.y);
-			OutputDebugString(pstrDebug);
-
 			if (m_ptOldCursorPos.y < 1200 * FRAME_BUFFER_HEIGHT / 1080) {
 				m_StartSelected = true;
 			}
