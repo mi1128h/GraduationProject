@@ -847,6 +847,12 @@ void CScene::UIRender(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCame
 	_ui->Render(pd3dCommandList, pCamera);
 }
 
+void CScene::UpdateUI(int gameState, bool StartSelected)
+{
+	_ui->SetGameState(gameState);
+	_ui->SetStartSelected(StartSelected);
+}
+
 bool CScene::CheckPlayerByObjectBB(XMFLOAT3 xmf3Shift)
 {
 	BoundingBox playerBB = m_pPlayer->GetCollManager()->GetBoundingBox();

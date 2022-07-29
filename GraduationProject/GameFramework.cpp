@@ -422,6 +422,10 @@ void CGameFramework::OnProcessingMouseMessage
 		// 마우스 캡쳐를 하고 현재 마우스 위치를 가져온다.
 		::SetCapture(hWnd);
 		::GetCursorPos(&m_ptOldCursorPos);
+		if (m_gameState != GameState::play) {
+			if (m_StartSelected) m_gameState = GameState::play;
+			m_pScene->UpdateUI(m_gameState, m_StartSelected);
+		}
 		break;
 	case WM_LBUTTONUP:
 	case WM_RBUTTONUP:
@@ -429,6 +433,22 @@ void CGameFramework::OnProcessingMouseMessage
 		::ReleaseCapture();
 		break;
 	case WM_MOUSEMOVE:
+		if (m_gameState != GameState::play) {
+			::GetCursorPos(&m_ptOldCursorPos);
+
+			TCHAR pstrDebug[256] = { 0 };
+			_stprintf_s(pstrDebug, 256, _T("Cursor.xy = %f, %f\n"), m_ptOldCursorPos.x, m_ptOldCursorPos.y);
+			OutputDebugString(pstrDebug);
+
+			if (m_ptOldCursorPos.y < 1200 * FRAME_BUFFER_HEIGHT / 1080) {
+				m_StartSelected = true;
+			}
+			else {
+				m_StartSelected = false;
+			}
+
+			m_pScene->UpdateUI(m_gameState, m_StartSelected);
+		}
 		break;
 	default:
 		break;
@@ -437,6 +457,8 @@ void CGameFramework::OnProcessingMouseMessage
 void CGameFramework::OnProcessingKeyboardMessage
 (HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
 {
+	if (m_gameState != GameState::play) return;
+
 	if (m_pScene) m_pScene->OnProcessingKeyboardMessage(hWnd, nMessageID, wParam, lParam);
 	m_pCamera = m_pPlayer->GetCamera();
 	if (m_pPlayer) m_pPlayer->OnProcessingKeyboardMessage(hWnd, nMessageID, wParam, lParam);
@@ -532,6 +554,11 @@ void CGameFramework::ProcessInput()
 {
 	static UCHAR pKeysBuffer[256];
 	bool bProcessedByScene = false;
+
+	if (m_gameState != GameState::play) {
+		return;
+	}
+
 	if (GetKeyboardState(pKeysBuffer) && m_pScene) bProcessedByScene = m_pScene->ProcessInput(pKeysBuffer);
 
 	bProcessedByScene = dynamic_cast<CAnimPlayer*>(m_pPlayer)->IsPlayerInteraction();
