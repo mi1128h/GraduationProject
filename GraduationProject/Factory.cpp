@@ -214,7 +214,7 @@ void CObjectFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 			float transZ = pz * xmf3TerrainScale.z * terrainSizeOffset + terrainZOffset;
 			float terrainY = pTerrain->GetHeight(transX, transZ);
 
-			XMFLOAT3 position = XMFLOAT3(transX, terrainY + 60.0f * sy, transZ);
+			XMFLOAT3 position = XMFLOAT3(transX, terrainY + 55.0f * sy, transZ);
 			pObject->SetPosition(position);
 			pObject->SetScale(sx, sy, sz);
 			XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
@@ -289,7 +289,7 @@ void CObjectFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 			float transZ = pz * xmf3TerrainScale.z * terrainSizeOffset + terrainZOffset;
 			float terrainY = pTerrain->GetHeight(transX, transZ);
 
-			XMFLOAT3 position = XMFLOAT3(transX, terrainY + 60.0f * sy, transZ);
+			XMFLOAT3 position = XMFLOAT3(transX, terrainY + 55.0f * sy, transZ);
 			pObject->SetPosition(position);
 			pObject->SetScale(sx, sy, sz);
 			XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
