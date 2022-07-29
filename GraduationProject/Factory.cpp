@@ -593,7 +593,7 @@ void CUIFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3
 	m_pCamera->GenerateOrthographicProjectionMatrix(0.0f,1.0f, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT);
 	m_pCamera->CreateShaderVariables(pd3dDevice, pd3dCommandList);
 	
-	///
+	/// player hp
 
 	CGameObject* pObject = NULL;
 	pObject = new CUIObject();
@@ -621,7 +621,7 @@ void CUIFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3
 	pObject->SetMaterial(0, m_pMaterial);
 	_gameObjects.emplace_back(pObject);
 
-	////
+	//// monster hp
 
 	CGameObject* pMonsterUIObject = NULL;
 	pMonsterUIObject = new CUIObject();
@@ -633,6 +633,65 @@ void CUIFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3
 	pMonsterUIObject->SetMaterial(0, m_pMaterial);
 	_gameObjects.emplace_back(pMonsterUIObject);
 
+	//////////////////////////////////////////////////////////
+
+	// title
+	CTexture* pTitletexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
+	pTitletexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/UI/title.dds", 0);
+	CScene::CreateShaderResourceViews(pd3dDevice, pTitletexture, Signature::Graphics::texture, true);
+
+	CBillboardMesh* pScreenMesh = new CBillboardMesh(pd3dDevice, pd3dCommandList, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT);
+	
+	CGameObject* pTitleUIObject = NULL;
+	pTitleUIObject = new CUIObject();
+	pTitleUIObject->SetPosition(0, 0, 0);
+	pTitleUIObject->SetMesh(pScreenMesh);
+	pTitleUIObject->CreateShaderVariables(pd3dDevice, pd3dCommandList);
+
+	CScreenShader* pShader = new CScreenShader();
+	pShader->CreateShader(pd3dDevice, pd3dGraphicsRootSignature, 3, pdxgiRtvFormats, DXGI_FORMAT_D32_FLOAT);
+
+	CMaterial* pTitleMaterial = new CMaterial(1);
+	pTitleMaterial->SetTexture(pTitletexture);
+	pTitleMaterial->SetShader(pShader);
+	pTitleUIObject->SetMaterial(0, pTitleMaterial);
+	m_pTitleUi = pTitleUIObject;
+
+	// over
+	CTexture* pOvertexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
+	pOvertexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/UI/over.dds", 0);
+	CScene::CreateShaderResourceViews(pd3dDevice, pOvertexture, Signature::Graphics::texture, true);
+
+	CGameObject* pOverUIObject = NULL;
+	pOverUIObject = new CUIObject();
+	pOverUIObject->SetPosition(0, 0, 0);
+	pOverUIObject->SetMesh(pScreenMesh);
+	pOverUIObject->CreateShaderVariables(pd3dDevice, pd3dCommandList);
+
+	CMaterial* pOverMaterial = new CMaterial(1);
+	pOverMaterial->SetTexture(pOvertexture);
+	pOverMaterial->SetShader(pShader);
+	pOverUIObject->SetMaterial(0, pOverMaterial);
+	m_pOverUi = pOverUIObject;
+
+	// menu pointer
+	CTexture* pPtrtexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
+	pPtrtexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/UI/menu_pointer.dds", 0);
+	CScene::CreateShaderResourceViews(pd3dDevice, pPtrtexture, Signature::Graphics::texture, true);
+
+	CBillboardMesh* pRectMesh = new CBillboardMesh(pd3dDevice, pd3dCommandList, 370 * FRAME_BUFFER_WIDTH / 1920, 90 * FRAME_BUFFER_HEIGHT / 1080);
+
+	CGameObject* pPtrUIObject = NULL;
+	pPtrUIObject = new CUIObject();
+	pPtrUIObject->SetPosition(0, 0, 0);
+	pPtrUIObject->SetMesh(pRectMesh);
+	pPtrUIObject->CreateShaderVariables(pd3dDevice, pd3dCommandList);
+
+	CMaterial* pPtrMaterial = new CMaterial(1);
+	pPtrMaterial->SetTexture(pPtrtexture);
+	pPtrMaterial->SetShader(pShader);
+	pPtrUIObject->SetMaterial(0, pPtrMaterial);
+	m_pMenuPointerUi = pPtrUIObject;
 }
 
 void CUIFactory::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
@@ -641,7 +700,7 @@ void CUIFactory::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCa
 	m_pCamera->UpdateShaderVariables(pd3dCommandList);
 	for (auto& object : _gameObjects)
 	{
-		if (!dynamic_cast<CUIObject*>(object)->IsTarget()) continue;
+		//if (!dynamic_cast<CUIObject*>(object)->IsTarget()) continue;
 		object->Render(pd3dCommandList, pCamera);
 	}
 	pCamera->UpdateShaderVariables(pd3dCommandList);
