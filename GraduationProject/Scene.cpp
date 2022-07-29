@@ -1015,6 +1015,17 @@ void CScene::CheckPlayerAttack()
 			m_pPlayer->SetAttackEnable(false);
 		}
 	}
+
+	CCollisionManager* col = m_pBoss->GetCollisionManager();
+	col->UpdateCollisions();
+	BoundingBox BB = m_pBoss->GetCollisionManager()->GetBoundingBox();
+
+	if (BB.Contains(AttackBB))
+	{
+		((CBossMonster*)m_pBoss)->DecreaseHp(m_pPlayer->GetDamage());
+		_ui->SetTargetMonster(m_pBoss);
+		m_pPlayer->SetAttackEnable(false);
+	}
 }
 
 bool CScene::CheckCannonAttackOnBoss()
