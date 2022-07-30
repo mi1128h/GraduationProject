@@ -701,6 +701,10 @@ void CUIFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3
 	qTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/UI/quest01.dds", 0);
 	CScene::CreateShaderResourceViews(pd3dDevice, qTexture, Signature::Graphics::texture, true);
 
+	CTexture* qTexture2 = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
+	qTexture2->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/UI/quest02.dds", 0);
+	CScene::CreateShaderResourceViews(pd3dDevice, qTexture2, Signature::Graphics::texture, true);
+
 	// quest ui 
 	CMaterial* questMaterial = new CMaterial(1);
 	questMaterial->SetTexture(qTexture);
@@ -708,13 +712,29 @@ void CUIFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3
 
 	CGameObject* questUI = NULL;
 	questUI = new CUIObject();
-	CBillboardMesh* pMesh3 = new CBillboardMesh(pd3dDevice, pd3dCommandList, 250, 100.0f);
-	questUI->SetPosition(0.0f, FRAME_BUFFER_HEIGHT /6, 0.0f);
+	CBillboardMesh* pMesh3 = new CBillboardMesh(pd3dDevice, pd3dCommandList, 135, 60.0f);
+	questUI->SetPosition(-FRAME_BUFFER_WIDTH / 2 + 100, FRAME_BUFFER_HEIGHT /6, 0.0001f);
 	questUI->SetMesh(pMesh3);
 	questUI->CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
 	questUI->SetMaterial(0, questMaterial);
 	_gameObjects.emplace_back(questUI);
+
+
+	// quest ui 
+	CMaterial* questMaterial2 = new CMaterial(1);
+	questMaterial2->SetTexture(qTexture2);
+	questMaterial2->SetShader(pShader);
+	CBillboardMesh* pMesh4 = new CBillboardMesh(pd3dDevice, pd3dCommandList, 120, 60.0f);
+
+	CGameObject* questUI2 = NULL;
+	questUI2 = new CUIObject();
+	questUI2->SetPosition(-FRAME_BUFFER_WIDTH / 2 + 100, FRAME_BUFFER_HEIGHT / 6 - 30, 0.0f);
+	questUI2->SetMesh(pMesh4);
+	questUI2->CreateShaderVariables(pd3dDevice, pd3dCommandList);
+
+	questUI2->SetMaterial(0, questMaterial2);
+	_gameObjects.emplace_back(questUI2);
 }
 
 void CUIFactory::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
