@@ -530,7 +530,7 @@ public:
 
 	virtual bool OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam);
 	void MonsterDead();
-	void DecreaseHp(float val);
+	bool DecreaseHp(float val);
 };
 
 class CBossMonster : public CMonsterObject

@@ -1036,9 +1036,14 @@ void CScene::CheckPlayerAttack()
 
 		if (BB.Contains(AttackBB))
 		{
-			((CMonsterObject*)object)->DecreaseHp(m_pPlayer->GetDamage());
+			bool isDead = ((CMonsterObject*)object)->DecreaseHp(m_pPlayer->GetDamage());
 			_ui->SetTargetMonster(object);
 			m_pPlayer->SetAttackEnable(false);
+
+			if (isDead)
+			{
+				
+			}
 		}
 	}
 
@@ -1048,9 +1053,14 @@ void CScene::CheckPlayerAttack()
 
 	if (BB.Contains(AttackBB))
 	{
-		((CBossMonster*)m_pBoss)->DecreaseHp(m_pPlayer->GetDamage());
+		bool isDead = ((CBossMonster*)m_pBoss)->DecreaseHp(m_pPlayer->GetDamage());
 		_ui->SetTargetMonster(m_pBoss);
 		m_pPlayer->SetAttackEnable(false);
+
+		if (isDead)
+		{
+
+		}
 	}
 }
 
