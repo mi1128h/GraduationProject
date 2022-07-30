@@ -735,6 +735,18 @@ void CUIFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3
 
 	questUI2->SetMaterial(0, questMaterial2);
 	_gameObjects.emplace_back(questUI2);
+
+
+	CMonsterQusetUIObject* questNumberUI= NULL;
+	CBillboardMesh* pMesh5 = new CBillboardMesh(pd3dDevice, pd3dCommandList, 80, 40.0f);
+
+	questNumberUI = new CMonsterQusetUIObject(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature);
+	questNumberUI->SetPosition(-FRAME_BUFFER_WIDTH / 2 + 200, FRAME_BUFFER_HEIGHT / 6, 0.0f);
+	questNumberUI->SetMesh(pMesh5);
+	questNumberUI->CreateShaderVariables(pd3dDevice, pd3dCommandList);
+
+	_gameObjects.emplace_back(questNumberUI);
+	m_pMonsterQuestUi = questNumberUI;
 }
 
 void CUIFactory::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)

@@ -82,6 +82,7 @@ private:
 	CGameObject* m_pTitleUi = NULL;
 	CGameObject* m_pOverUi = NULL;
 	CGameObject* m_pMenuPointerUi = NULL;
+	CGameObject* m_pMonsterQuestUi = NULL;
 	int m_gameState = 0;	// 0: title, 1: play, 2: over
 	bool m_StartSelected = true;
 };
