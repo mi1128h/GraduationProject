@@ -1042,7 +1042,7 @@ void CScene::CheckPlayerAttack()
 
 			if (isDead)
 			{
-				
+				_ui->MonsterDeadCount();
 			}
 		}
 	}
@@ -1059,7 +1059,7 @@ void CScene::CheckPlayerAttack()
 
 		if (isDead)
 		{
-
+			_ui->BossDeadCount();
 		}
 	}
 }

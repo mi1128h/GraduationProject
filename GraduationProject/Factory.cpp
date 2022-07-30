@@ -758,6 +758,8 @@ void CUIFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3
 	questNumberUI2->setTextureNumber(5 + 1);
 
 	_gameObjects.emplace_back(questNumberUI2);
+	m_pBossQuestUi = questNumberUI2;
+
 }
 
 void CUIFactory::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
@@ -802,6 +804,18 @@ void CUIFactory::AnimateObjects(float fTimeElapsed, CCamera* pCamrea)
 void CUIFactory::SetTargetMonster(CGameObject* pObject)
 {
 	dynamic_cast<CUIObject*>(_gameObjects[1])->SetTarget(pObject);
+}
+
+void CUIFactory::MonsterDeadCount()
+{
+	if (m_pMonsterQuestUi == NULL) return;
+	m_pMonsterQuestUi->MonsterCount();
+}
+
+void CUIFactory::BossDeadCount()
+{
+	if (m_pBossQuestUi == NULL) return;
+	m_pBossQuestUi->BossCount();
 }
 
 ///////////////////////////////

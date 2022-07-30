@@ -76,13 +76,16 @@ public:
 	void SetStartSelected(bool b) { m_StartSelected = b; }
 	int GetGameState() { return m_gameState; }
 	bool GetSelectedMenu() { return m_StartSelected; }
+	void MonsterDeadCount();
+	void BossDeadCount();
 
 private:
 	CCamera* m_pCamera = NULL;
 	CGameObject* m_pTitleUi = NULL;
 	CGameObject* m_pOverUi = NULL;
 	CGameObject* m_pMenuPointerUi = NULL;
-	CGameObject* m_pMonsterQuestUi = NULL;
+	CMonsterQusetUIObject* m_pMonsterQuestUi = NULL;
+	CMonsterQusetUIObject* m_pBossQuestUi = NULL;
 	int m_gameState = 0;	// 0: title, 1: play, 2: over
 	bool m_StartSelected = true;
 };

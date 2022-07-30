@@ -2015,3 +2015,16 @@ void CMonsterQusetUIObject::setTextureNumber(int n)
 	if (_textures.size() < n + 1) return;
 	m_ppMaterials[0]->SetTexture(_textures[n]);
 }
+
+void CMonsterQusetUIObject::MonsterCount()
+{
+	if (currCount >= 5) return;
+	setTextureNumber(++currCount);
+}
+
+void CMonsterQusetUIObject::BossCount()
+{
+	if (currCount + 1 > _textures.size()) return;
+	if (currCount <= 5) return;
+	setTextureNumber(++currCount);
+}

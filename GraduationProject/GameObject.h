@@ -612,11 +612,12 @@ public:
 	virtual ~CMonsterQusetUIObject();
 
 	void setTextureNumber(int n);
+	void MonsterCount();
+	void BossCount();
 
 private:
 	vector<CTexture*> _textures;
-	int maxVal = 0;
-	int curVal = 0;
+	int currCount = 0;
 };
 
 
