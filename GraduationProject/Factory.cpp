@@ -712,7 +712,7 @@ void CUIFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3
 
 	CGameObject* questUI = NULL;
 	questUI = new CUIObject();
-	CBillboardMesh* pMesh3 = new CBillboardMesh(pd3dDevice, pd3dCommandList, 135, 60.0f);
+	CBillboardMesh* pMesh3 = new CBillboardMesh(pd3dDevice, pd3dCommandList, 130, 55.0f);
 	questUI->SetPosition(-FRAME_BUFFER_WIDTH / 2 + 100, FRAME_BUFFER_HEIGHT /6, 0.0001f);
 	questUI->SetMesh(pMesh3);
 	questUI->CreateShaderVariables(pd3dDevice, pd3dCommandList);
@@ -725,11 +725,11 @@ void CUIFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3
 	CMaterial* questMaterial2 = new CMaterial(1);
 	questMaterial2->SetTexture(qTexture2);
 	questMaterial2->SetShader(pShader);
-	CBillboardMesh* pMesh4 = new CBillboardMesh(pd3dDevice, pd3dCommandList, 120, 60.0f);
+	CBillboardMesh* pMesh4 = new CBillboardMesh(pd3dDevice, pd3dCommandList, 130, 55.0f);
 
 	CGameObject* questUI2 = NULL;
 	questUI2 = new CUIObject();
-	questUI2->SetPosition(-FRAME_BUFFER_WIDTH / 2 + 100, FRAME_BUFFER_HEIGHT / 6 - 30, 0.0f);
+	questUI2->SetPosition(-FRAME_BUFFER_WIDTH / 2 + 100, FRAME_BUFFER_HEIGHT / 6 - 32, 0.0f);
 	questUI2->SetMesh(pMesh4);
 	questUI2->CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
