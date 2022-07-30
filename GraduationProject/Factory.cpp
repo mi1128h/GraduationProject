@@ -744,6 +744,8 @@ void CUIFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3
 	questNumberUI->SetPosition(-FRAME_BUFFER_WIDTH / 2 + 200, FRAME_BUFFER_HEIGHT / 6, 0.0f);
 	questNumberUI->SetMesh(pMesh5);
 	questNumberUI->CreateShaderVariables(pd3dDevice, pd3dCommandList);
+	questNumberUI->setTextureNumber(2);
+	questNumberUI->setTextureNumber(3);
 
 	_gameObjects.emplace_back(questNumberUI);
 	m_pMonsterQuestUi = questNumberUI;
