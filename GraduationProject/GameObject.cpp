@@ -1962,3 +1962,35 @@ CStreamExplosionObject::CStreamExplosionObject(ID3D12Device* pd3dDevice, ID3D12G
 CStreamExplosionObject::~CStreamExplosionObject()
 {
 }
+
+////////////////////////////
+
+CMonsterQusetUIObject::CMonsterQusetUIObject(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature) : CUIObject()
+{
+	for (int i = 0; i <= 5; ++i)
+	{
+		CTexture* qTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
+		string str = "../Assets/Image/UI/" + to_string(i) + to_string(5) + ".dds";
+		std::wstring widestr = std::wstring(str.begin(), str.end());
+		const wchar_t* widecstr = widestr.c_str();
+
+		qTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, (wchar_t*)widecstr, 0);
+		CScene::CreateShaderResourceViews(pd3dDevice, qTexture, Signature::Graphics::texture, true);
+		
+		_textures.push_back(qTexture);
+	}
+
+	CScreenShader* pShader = new CScreenShader();
+	DXGI_FORMAT pdxgiRtvFormats[3] = { DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM };
+	pShader->CreateShader(pd3dDevice, pd3dGraphicsRootSignature, 3, pdxgiRtvFormats, DXGI_FORMAT_D32_FLOAT);
+
+	CMaterial* Mater = new CMaterial(1);
+	Mater->SetTexture(_textures[0]);
+	Mater->SetShader(pShader);
+	SetMaterial(0, Mater);
+}
+
+CMonsterQusetUIObject::~CMonsterQusetUIObject()
+{
+}
+

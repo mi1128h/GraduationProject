@@ -582,6 +582,8 @@ struct CB_HP_INFO
 	float ratioHp;
 };
 
+//////////////////////////////////////////
+
 class CUIObject : public CGameObject
 {
 public:
@@ -595,12 +597,25 @@ public:
 	void UpdateHpRatio();
 	bool IsTarget() { return (m_pTargetObject) ? true : false; }
 
-private:
+protected:
 	ID3D12Resource* m_pd3dcbHpInfo = NULL;
 	CB_HP_INFO* m_pcbMappedHpInfo = NULL;
 	CGameObject* m_pTargetObject = NULL;
 
 	float ratioHp = 1.0f;
+};
+
+class CMonsterQusetUIObject : public CUIObject
+{
+public:
+	CMonsterQusetUIObject(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature);
+	virtual ~CMonsterQusetUIObject();
+
+
+private:
+	vector<CTexture*> _textures;
+	int maxVal = 0;
+	int curVal = 0;
 };
 
 
