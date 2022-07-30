@@ -694,7 +694,10 @@ void CGameFramework::FrameAdvance()
 	m_GameTimer.Tick(0.0f);
 
 	bool playerDead = m_pPlayer->m_pSkinnedAnimationController->GetIsDead();
-	if (playerDead) m_gameState = GameState::over;
+	if (playerDead) {
+		m_gameState = GameState::over;
+		InitGameWorld();
+	}
 
 	ProcessInput();
 	AnimateObjects();
@@ -806,4 +809,10 @@ void CGameFramework::ChangeSwapChainState()
 	m_nSwapChainBufferIndex = m_pdxgiSwapChain->GetCurrentBackBufferIndex();
 
 	CreateRenderTargetViews();
+}
+
+void CGameFramework::InitGameWorld()
+{
+	m_pPlayer->SetHp(m_pPlayer->GetMaxHp());
+	m_pPlayer->m_pSkinnedAnimationController->SwitchAnimationState(track_name::idle);
 }
