@@ -323,7 +323,7 @@ CMaterial::~CMaterial()
 
 void CMaterial::SetTexture(CTexture* pTexture, UINT nTexture)
 {
-	if (m_ppTextures[nTexture]) m_ppTextures[nTexture]->Release();
+	//if (m_ppTextures[nTexture]) m_ppTextures[nTexture]->Release();
 	m_ppTextures[nTexture] = pTexture;
 	if (m_ppTextures[nTexture]) m_ppTextures[nTexture]->AddRef();
 }
@@ -1994,3 +1994,8 @@ CMonsterQusetUIObject::~CMonsterQusetUIObject()
 {
 }
 
+void CMonsterQusetUIObject::setTextureNumber(int n)
+{
+	if (_textures.size() < n + 1) return;
+	m_ppMaterials[0]->SetTexture(_textures[n]);
+}
