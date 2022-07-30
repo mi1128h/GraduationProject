@@ -633,6 +633,7 @@ void CUIFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3
 	pMonsterUIObject->SetMaterial(0, m_pMaterial);
 	_gameObjects.emplace_back(pMonsterUIObject);
 
+
 	//////////////////////////////////////////////////////////
 
 	// title
@@ -692,6 +693,28 @@ void CUIFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3
 	pPtrMaterial->SetShader(pShader);
 	pPtrUIObject->SetMaterial(0, pPtrMaterial);
 	m_pMenuPointerUi = pPtrUIObject;
+
+
+	/////////////////
+
+	CTexture* qTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
+	qTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/UI/quest01.dds", 0);
+	CScene::CreateShaderResourceViews(pd3dDevice, qTexture, Signature::Graphics::texture, true);
+
+	// quest ui 
+	CMaterial* questMaterial = new CMaterial(1);
+	questMaterial->SetTexture(qTexture);
+	questMaterial->SetShader(pShader);
+
+	CGameObject* questUI = NULL;
+	questUI = new CUIObject();
+	CBillboardMesh* pMesh3 = new CBillboardMesh(pd3dDevice, pd3dCommandList, 250, 100.0f);
+	questUI->SetPosition(0.0f, FRAME_BUFFER_HEIGHT /6, 0.0f);
+	questUI->SetMesh(pMesh3);
+	questUI->CreateShaderVariables(pd3dDevice, pd3dCommandList);
+
+	questUI->SetMaterial(0, questMaterial);
+	_gameObjects.emplace_back(questUI);
 }
 
 void CUIFactory::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
