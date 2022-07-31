@@ -696,6 +696,10 @@ void CGameFramework::FrameAdvance()
 	//타이머의 시간이 갱신되도록 하고 프레임 레이트를 계산한다. 
 	m_GameTimer.Tick(0.0f);
 
+	bool isGameClear = m_pScene->isGameClear();
+	if (isGameClear) {
+		m_gameState = GameState::clear;
+	}
 	bool playerDead = m_pPlayer->m_pSkinnedAnimationController->GetIsDead();
 	if (playerDead) {
 		m_gameState = GameState::over;
