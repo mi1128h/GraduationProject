@@ -824,7 +824,7 @@ void CScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera
 	//if (m_pSkyBox) m_pSkyBox->Render(pd3dCommandList, pCamera);
 	if (m_pTerrain) m_pTerrain->Render(pd3dCommandList, pCamera);
 	//if (m_pNavMesh) m_pNavMesh->Render(pd3dCommandList, 0);
-	//navObj->Render(pd3dCommandList, pCamera);
+	if (::gbCollisionDebug) navObj->Render(pd3dCommandList, pCamera);
 
 	for (auto& factory : _factory) factory->Render(pd3dCommandList, pCamera);
 
