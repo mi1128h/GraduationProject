@@ -1262,6 +1262,7 @@ CCannonballObject::CCannonballObject(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 
 	SetTag("cannon_ball");
 	SetObjectCollision(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature);
+	SetDamage(100);
 
 	if (pCannonballModel) delete pCannonballModel;
 }
