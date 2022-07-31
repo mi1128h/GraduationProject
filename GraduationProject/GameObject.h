@@ -217,6 +217,8 @@ protected:
 
 	CCell* m_curCell = NULL;
 
+	XMFLOAT4X4 m_initMatrix;
+
 public:
 	void SetMesh(CMesh* pMesh);
 	void SetShader(CShader* pShader);
@@ -304,6 +306,9 @@ public:
 
 	CCell* GetCurCell() { return m_curCell; }
 	void SetCurCell(CCell* cell) { m_curCell = cell; }
+
+	void SetInitMatrix(XMFLOAT4X4 mat) { m_initMatrix = mat; }
+	XMFLOAT4X4 GetInitMatrix() { return m_initMatrix; }
 };
 
 class CRotatingObject : public CGameObject
@@ -575,6 +580,9 @@ private:
 	float FlyCoolDown = FLY;
 	float FlameCoolDown = FLAME;
 	float DefendCoolDown = DEFEND;
+
+public:
+	void SetNoticed(bool b) { bNoticed = b; }
 };
 
 struct CB_HP_INFO

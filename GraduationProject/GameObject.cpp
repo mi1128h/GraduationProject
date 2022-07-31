@@ -1586,6 +1586,8 @@ CBossMonster::CBossMonster(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* 
 	SetHp(1000);
 	SetDetectionRange(8000);
 
+	SetInitMatrix(m_xmf4x4ToParent);
+
 	CHeightMapTerrain* pTerrain = (CHeightMapTerrain*)pContext;
 	SetUpdatedContext(pTerrain);
 

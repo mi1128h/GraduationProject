@@ -534,6 +534,8 @@ void CMonsterFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature
 		XMFLOAT4 xmf4Rotation(rx, ry, rz, rw);
 		pObject->Rotate(&xmf4Rotation);
 
+		pObject->SetInitMatrix(pObject->m_xmf4x4ToParent);
+
 		int IdleTrackNum = rand() % 2 ? CMonsterObject::track_name::idle1 : CMonsterObject::track_name::idle2;
 		int DeadTrackNum = rand() % 2 ? CMonsterObject::track_name::death1 : CMonsterObject::track_name::death2;
 
@@ -580,6 +582,16 @@ void CMonsterFactory::SetNavMesh(CNavMesh* pNavMesh)
 	for (auto& monster : _gameObjects)
 	{
 		dynamic_cast<CMonsterObject*>(monster)->SetNavMesh(pNavMesh);
+	}
+}
+
+void CMonsterFactory::InitMonsters()
+{
+	for (auto& monster : _gameObjects)
+	{
+		monster->SetHp(monster->GetMaxHp());
+		monster->m_xmf4x4ToParent = monster->GetInitMatrix();
+		monster->m_pSkinnedAnimationController->SwitchAnimationState(monster->m_pSkinnedAnimationController->GetIdleNum());
 	}
 }
 
