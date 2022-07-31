@@ -85,6 +85,7 @@ private:
 	CCamera* m_pCamera = NULL;
 	CGameObject* m_pTitleUi = NULL;
 	CGameObject* m_pOverUi = NULL;
+	CGameObject* m_pClearUi = NULL;
 	CGameObject* m_pMenuPointerUi = NULL;
 	CMonsterQusetUIObject* m_pMonsterQuestUi = NULL;
 	CMonsterQusetUIObject* m_pBossQuestUi = NULL;

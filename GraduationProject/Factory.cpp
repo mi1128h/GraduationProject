@@ -687,6 +687,24 @@ void CUIFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3
 	pOverUIObject->SetMaterial(0, pOverMaterial);
 	m_pOverUi = pOverUIObject;
 
+
+	// clear
+	CTexture* pCleartexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
+	pCleartexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/UI/clear.dds", 0);
+	CScene::CreateShaderResourceViews(pd3dDevice, pCleartexture, Signature::Graphics::texture, true);
+
+	CGameObject* pClearUIObject = NULL;
+	pClearUIObject = new CUIObject();
+	pClearUIObject->SetPosition(0, 0, 0.001);
+	pClearUIObject->SetMesh(pScreenMesh);
+	pClearUIObject->CreateShaderVariables(pd3dDevice, pd3dCommandList);
+
+	CMaterial* pClearMaterial = new CMaterial(1);
+	pClearMaterial->SetTexture(pCleartexture);
+	pClearMaterial->SetShader(pShader);
+	pClearUIObject->SetMaterial(0, pClearMaterial);
+	m_pClearUi = pClearUIObject;
+
 	// menu pointer
 	CTexture* pPtrtexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
 	pPtrtexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/UI/menu_pointer.dds", 0);
