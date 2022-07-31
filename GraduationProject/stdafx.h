@@ -148,7 +148,8 @@ namespace Descriptor {
 enum GameState {
 	title,
 	play,
-	over
+	over,
+	clear
 };
 
 //#define _WITH_SWAPCHAIN_FULLSCREEN_STATE

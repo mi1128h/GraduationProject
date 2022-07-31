@@ -424,7 +424,7 @@ void CGameFramework::OnProcessingMouseMessage
 		::GetCursorPos(&m_ptOldCursorPos);
 		if (m_gameState != GameState::play) {
 			if (m_StartSelected) {
-				if (m_gameState == GameState::over) InitGameWorld();
+				if (m_gameState == GameState::over || m_gameState == GameState::clear) InitGameWorld();
 				m_gameState = GameState::play;
 			}
 			else PostQuitMessage(0);
