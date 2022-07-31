@@ -1986,7 +1986,7 @@ CMonsterQusetUIObject::CMonsterQusetUIObject(ID3D12Device* pd3dDevice, ID3D12Gra
 	for (int i = 0; i <= 1; ++i)
 	{
 		CTexture* qTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
-		string str = "../Assets/Image/UI/" + to_string(0) + to_string(1) + ".dds";
+		string str = "../Assets/Image/UI/" + to_string(i) + to_string(1) + ".dds";
 		std::wstring widestr = std::wstring(str.begin(), str.end());
 		const wchar_t* widecstr = widestr.c_str();
 
@@ -2024,7 +2024,8 @@ void CMonsterQusetUIObject::MonsterCount()
 
 void CMonsterQusetUIObject::BossCount()
 {
-	if (currCount + 1 > _textures.size()) return;
+	if (currCount == 0) currCount = 6;
+	if (currCount > _textures.size()) return;
 	if (currCount <= 5) return;
 	setTextureNumber(++currCount);
 }
