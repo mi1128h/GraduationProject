@@ -1614,7 +1614,7 @@ CBossMonster::CBossMonster(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* 
 	SetHp(1000);
 	SetMaxHp(1000.0f);
 	SetDetectionRange(8000);
-	SetDamage(30.0f);
+	SetDamage(80.0f);
 
 	SetInitMatrix(m_xmf4x4ToParent);
 

@@ -511,7 +511,7 @@ void CMonsterFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature
 			pObject->m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, CMonsterObject::track_name::length, pZombieModel);
 			pObject->SetHp(210.0f);
 			pObject->SetMaxHp(210.0f);
-			pObject->SetDamage(30.0f);
+			pObject->SetDamage(50.0f);
 		}
 		if (name.compare("Zombie_2") == 0) {
 			CLoadedModelInfo* pClownModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "../Assets/Model/WhiteClown.bin", NULL);
@@ -521,7 +521,7 @@ void CMonsterFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature
 			pObject->m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, CMonsterObject::track_name::length, pClownModel);
 			pObject->SetHp(200.0f);
 			pObject->SetMaxHp(200.0f);
-			pObject->SetDamage(50.0f);
+			pObject->SetDamage(80.0f);
 		}
 
 		float transX = px * xmf3TerrainScale.x * terrainSizeOffset + terrainXOffset;
