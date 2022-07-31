@@ -782,12 +782,19 @@ void CUIFactory::MonsterDeadCount()
 {
 	if (m_pMonsterQuestUi == NULL) return;
 	m_pMonsterQuestUi->MonsterCount();
+
+	bool isclear = IsClear();
+	if (isclear) GameState::clear;
 }
 
 void CUIFactory::BossDeadCount()
 {
 	if (m_pBossQuestUi == NULL) return;
 	m_pBossQuestUi->BossCount();
+
+	bool isclear = IsClear();
+	if (isclear) GameState::clear;
+}
 
 bool CUIFactory::IsClear()
 {
