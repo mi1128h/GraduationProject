@@ -558,6 +558,18 @@ bool CScene::OnProcessingKeyboardMessage(
 			case 'W': case 'A': case 'S': case 'D':
 				dynamic_cast<CCannonFactory*>(_factory[1])->RotateCannon(wParam);
 				break;
+
+			case '1':
+				_ui->MonsterDeadCount();
+				break;
+
+			case '2':
+				_ui->BossDeadCount();
+				break;
+
+			case '3':
+				m_pPlayer->DecreaseHp(50);
+				break;
 		}
 		break;
 	default:
