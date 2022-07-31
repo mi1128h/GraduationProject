@@ -1078,8 +1078,13 @@ bool CScene::CheckCannonAttackOnBoss()
 
 	if (BB.Contains(BossBB))
 	{
-		((CMonsterObject*)m_pBoss)->DecreaseHp(pCannon->GetDamage());
+		bool isDead = ((CMonsterObject*)m_pBoss)->DecreaseHp(pCannon->GetDamage());
 		_ui->SetTargetMonster(m_pBoss);
+
+		if (isDead)
+		{
+ 			_ui->BossDeadCount();
+		}
 
 		return true;
 	}
