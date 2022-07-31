@@ -206,8 +206,10 @@ public:
 	int GetCurrentTrackNum() { return m_nCurrentTracks; }
 	void SetCurrentTrackNum(int index) { m_nCurrentTracks = index; }
 	void SetIdleNum(int num) { m_idleNum = num; }
+	int GetIdleNum() { return m_idleNum; }
 	void SetDeadNum(int num) { m_deadNum = num; }
 	int GetDeadNum() { return m_deadNum; }
+	void SetIsDead(bool b) { isDead = b; }
 	bool GetIsDead() { return isDead; }
 	void InitAnimationTime();
 
