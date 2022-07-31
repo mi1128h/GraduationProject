@@ -1161,3 +1161,19 @@ bool CScene::IsCannonBallCollision()
 
 	return false;
 }
+
+
+void CScene::InitGameWorld()
+{
+	for (auto& fac : _factory) {
+		CMonsterFactory* p = dynamic_cast<CMonsterFactory*>(fac);
+		if (p) {
+			p->InitMonsters();
+		}
+	}
+
+	m_pBoss->SetHp(m_pBoss->GetMaxHp());
+	m_pBoss->m_xmf4x4ToParent = m_pBoss->GetInitMatrix();
+	m_pBoss->m_pSkinnedAnimationController->SwitchAnimationState(CBossMonster::track_name::Idle);
+	m_pBoss->SetNoticed(false);
+}

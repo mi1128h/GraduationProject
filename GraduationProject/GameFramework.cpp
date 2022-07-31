@@ -423,7 +423,10 @@ void CGameFramework::OnProcessingMouseMessage
 		::SetCapture(hWnd);
 		::GetCursorPos(&m_ptOldCursorPos);
 		if (m_gameState != GameState::play) {
-			if (m_StartSelected) m_gameState = GameState::play;
+			if (m_StartSelected) {
+				if (m_gameState == GameState::over) InitGameWorld();
+				m_gameState = GameState::play;
+			}
 			else PostQuitMessage(0);
 			m_pScene->UpdateUI(m_gameState, m_StartSelected);
 		}
@@ -696,7 +699,6 @@ void CGameFramework::FrameAdvance()
 	bool playerDead = m_pPlayer->m_pSkinnedAnimationController->GetIsDead();
 	if (playerDead) {
 		m_gameState = GameState::over;
-		InitGameWorld();
 	}
 
 	ProcessInput();
@@ -814,5 +816,9 @@ void CGameFramework::ChangeSwapChainState()
 void CGameFramework::InitGameWorld()
 {
 	m_pPlayer->SetHp(m_pPlayer->GetMaxHp());
+	dynamic_cast<CAnimPlayer*>(m_pPlayer)->InitPlayerMatrics(m_pScene->GetTerrain());
 	m_pPlayer->m_pSkinnedAnimationController->SwitchAnimationState(track_name::idle);
+	m_pPlayer->m_pSkinnedAnimationController->SetIsDead(false);
+
+	m_pScene->InitGameWorld();
 }
