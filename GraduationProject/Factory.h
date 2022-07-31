@@ -79,6 +79,7 @@ public:
 	bool GetSelectedMenu() { return m_StartSelected; }
 	void MonsterDeadCount();
 	void BossDeadCount();
+	bool IsClear();
 
 private:
 	CCamera* m_pCamera = NULL;

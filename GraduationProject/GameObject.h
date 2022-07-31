@@ -622,6 +622,7 @@ public:
 	void setTextureNumber(int n);
 	void MonsterCount();
 	void BossCount();
+	int GetCount() { return currCount; }
 
 private:
 	vector<CTexture*> _textures;

@@ -788,6 +788,18 @@ void CUIFactory::BossDeadCount()
 {
 	if (m_pBossQuestUi == NULL) return;
 	m_pBossQuestUi->BossCount();
+
+bool CUIFactory::IsClear()
+{
+	if (m_pBossQuestUi == NULL) return false;
+	if (m_pMonsterQuestUi == NULL) return false;
+
+	int boss_count = m_pBossQuestUi->GetCount();
+	int monster_count = m_pMonsterQuestUi->GetCount();
+
+	if (boss_count != 7) return false;
+	if (monster_count != 5) return false;
+	return true;
 }
 
 ///////////////////////////////
