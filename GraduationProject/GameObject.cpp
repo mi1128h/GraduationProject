@@ -2039,6 +2039,7 @@ CMonsterQusetUIObject::~CMonsterQusetUIObject()
 
 void CMonsterQusetUIObject::setTextureNumber(int n)
 {
+	currCount = n;
 	if (_textures.size() < n + 1) return;
 	m_ppMaterials[0]->SetTexture(_textures[n]);
 }

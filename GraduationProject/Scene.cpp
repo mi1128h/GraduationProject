@@ -1190,4 +1190,5 @@ void CScene::InitGameWorld()
 	m_pBoss->m_xmf4x4ToParent = m_pBoss->GetInitMatrix();
 	m_pBoss->m_pSkinnedAnimationController->SwitchAnimationState(CBossMonster::track_name::Idle);
 	m_pBoss->SetNoticed(false);
+	_ui->initQuest();
 }

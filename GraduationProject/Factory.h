@@ -80,6 +80,7 @@ public:
 	void MonsterDeadCount();
 	void BossDeadCount();
 	bool IsClear();
+	void initQuest();
 
 private:
 	CCamera* m_pCamera = NULL;

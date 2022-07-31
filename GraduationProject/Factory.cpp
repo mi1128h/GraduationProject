@@ -869,6 +869,12 @@ bool CUIFactory::IsClear()
 	return true;
 }
 
+void CUIFactory::initQuest()
+{
+	m_pBossQuestUi->setTextureNumber(6);
+	m_pMonsterQuestUi->setTextureNumber(0);
+}
+
 ///////////////////////////////
 
 void CParticleFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3dGraphicsRootSignature, ID3D12GraphicsCommandList* pd3dCommandList, void* pContext)
