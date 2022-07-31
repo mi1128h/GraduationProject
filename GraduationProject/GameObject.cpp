@@ -1476,8 +1476,21 @@ float CMonsterObject::ChaseTarget(float fTimeElapsed, bool bMove)
 	// 전진
 	float distance = Vector3::Distance(monsterPosition, targetPosition);
 	if (bMove) {
-		if (distance > 200.0f)
+		if (distance > 200.0f) {
+			XMFLOAT4X4 temp = m_xmf4x4ToParent;
+			CCell* tempCell = m_curCell;
+
 			MoveForward(100.0f * fTimeElapsed);
+
+			// navCell 벗어날 경우 원위치로
+			if (!m_pNavMesh->PointInCell(m_curCell, GetPosition())) {
+				m_curCell = m_pNavMesh->FindCell(GetPosition());
+				if (!m_curCell) {
+					m_xmf4x4ToParent = temp;
+					m_curCell = tempCell;
+				}
+			}
+		}
 	}
 	return distance;
 }
