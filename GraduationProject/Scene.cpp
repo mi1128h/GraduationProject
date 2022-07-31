@@ -545,7 +545,7 @@ bool CScene::OnProcessingKeyboardMessage(
 	case WM_KEYDOWN:
 		switch (wParam)
 		{
-			case 'E':
+			case 'F':
 				CheckInteraction();
 				break;
 			case VK_SPACE:
@@ -557,13 +557,6 @@ bool CScene::OnProcessingKeyboardMessage(
 				break;
 			case 'W': case 'A': case 'S': case 'D':
 				dynamic_cast<CCannonFactory*>(_factory[1])->RotateCannon(wParam);
-				break;
-			case 'B':
-				int n = m_pBoss->m_pSkinnedAnimationController->GetCurrentTrackNum();
-				n++;
-				if (n == CBossMonster::track_name::length) n = 0;
-				m_pBoss->m_pSkinnedAnimationController->SwitchAnimationState(n);
-				m_pBoss->m_pSkinnedAnimationController->SetIdleNum(n);
 				break;
 		}
 		break;
