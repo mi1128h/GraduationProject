@@ -772,6 +772,10 @@ void CUIFactory::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCa
 		m_pOverUi->Render(pd3dCommandList, pCamera);
 		m_pMenuPointerUi->Render(pd3dCommandList, pCamera);
 		break;
+
+	case GameState::clear:
+		m_pClearUi->Render(pd3dCommandList, pCamera);
+		m_pMenuPointerUi->Render(pd3dCommandList, pCamera);
 	}
 	pCamera->UpdateShaderVariables(pd3dCommandList);
 }
@@ -802,7 +806,7 @@ void CUIFactory::MonsterDeadCount()
 	m_pMonsterQuestUi->MonsterCount();
 
 	bool isclear = IsClear();
-	if (isclear) GameState::clear;
+	if (isclear) m_gameState = GameState::clear;
 }
 
 void CUIFactory::BossDeadCount()
@@ -811,7 +815,7 @@ void CUIFactory::BossDeadCount()
 	m_pBossQuestUi->BossCount();
 
 	bool isclear = IsClear();
-	if (isclear) GameState::clear;
+	if (isclear) m_gameState = GameState::clear;
 }
 
 bool CUIFactory::IsClear()
