@@ -1398,6 +1398,10 @@ void CMonsterObject::FindTarget(CGameObject* pObject)
 
 void CMonsterObject::CheckStraightToTarget(vector<CGameObject*> pObjects)
 {
+	if (endofmesh) {
+		m_bStraight = false;
+		return;
+	}
 	if (!m_pTargetObject) return;
 	m_bStraight = true;
 	XMFLOAT3 TPos = m_pTargetObject->GetPosition();
@@ -1488,7 +1492,11 @@ float CMonsterObject::ChaseTarget(float fTimeElapsed, bool bMove)
 				if (!m_curCell) {
 					m_xmf4x4ToParent = temp;
 					m_curCell = tempCell;
+					endofmesh = true;
 				}
+			}
+			else {
+				endofmesh = false;
 			}
 		}
 	}

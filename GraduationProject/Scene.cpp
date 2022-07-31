@@ -371,6 +371,14 @@ void CScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* p
 
 	m_pNavMesh = new CNavMesh(pd3dDevice, pd3dCommandList, xmf3Scale, m_pTerrain, true);
 
+	CGameObject* obj = new CGameObject;
+	CCollisionShader* shader = new CCollisionShader();
+	DXGI_FORMAT pdxgiRtvFormats[3] = { DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM };
+	shader->CreateShader(pd3dDevice, m_pd3dGraphicsRootSignature, 3, pdxgiRtvFormats, DXGI_FORMAT_D32_FLOAT);
+	obj->SetMesh(m_pNavMesh);
+	obj->SetShader(shader);
+	navObj = obj;
+
 	m_pSkyBox = new CSkyBox(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 
 	CObjectFactory * pObject = new CObjectFactory();
@@ -816,6 +824,7 @@ void CScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera
 	//if (m_pSkyBox) m_pSkyBox->Render(pd3dCommandList, pCamera);
 	if (m_pTerrain) m_pTerrain->Render(pd3dCommandList, pCamera);
 	//if (m_pNavMesh) m_pNavMesh->Render(pd3dCommandList, 0);
+	//navObj->Render(pd3dCommandList, pCamera);
 
 	for (auto& factory : _factory) factory->Render(pd3dCommandList, pCamera);
 

@@ -507,7 +507,7 @@ private:
 	CNavMesh* m_pNavMesh = NULL;
 	list<int> m_lPath;
 	bool m_bStraight = false;
-
+	bool endofmesh = false;
 public:
 	void SetUpdatedContext(LPVOID pContext) { m_pUpdatedContext = pContext; }
 

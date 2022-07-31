@@ -147,6 +147,7 @@ public:
 	CHeightMapTerrain* m_pTerrain = NULL;
 
 	CNavMesh* m_pNavMesh = NULL;
+	CGameObject* navObj = NULL;
 
 	CShader** m_ppShaders = NULL;
 	int	m_nShaders = 0;
