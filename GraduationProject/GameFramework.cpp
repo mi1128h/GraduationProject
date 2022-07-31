@@ -497,7 +497,8 @@ void CGameFramework::OnProcessingKeyboardMessage
 			//m_pcbMappedFrameworkInfo->m_nBlurMode = DEBUG_BLURRING;
 			break;
 		case 'G':
-			m_pPlayer->SetPosition(XMFLOAT3(9687.0f, 6.0f, 26238.0f));
+			if(!dynamic_cast<CAnimPlayer*>(m_pPlayer)->IsPlayerInteraction())
+				m_pPlayer->SetPosition(XMFLOAT3(9687.0f, 6.0f, 26238.0f));
 			break;
 		case 'Q':
 			m_fSpeedVal += 10.0f;
