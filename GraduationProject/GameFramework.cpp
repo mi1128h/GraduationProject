@@ -823,6 +823,9 @@ void CGameFramework::InitGameWorld()
 	dynamic_cast<CAnimPlayer*>(m_pPlayer)->InitPlayerMatrics(m_pScene->GetTerrain());
 	m_pPlayer->m_pSkinnedAnimationController->SwitchAnimationState(track_name::idle);
 	m_pPlayer->m_pSkinnedAnimationController->SetIsDead(false);
+	m_pPlayer->InitInteraction();
+
+	m_pCamera = m_pPlayer->GetCamera();
 
 	m_pScene->InitGameWorld();
 }

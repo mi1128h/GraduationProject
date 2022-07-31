@@ -1178,11 +1178,11 @@ void CScene::InitGameWorld()
 			p->InitMonsters();
 		}
 	}
+	dynamic_cast<CCannonFactory*>(_factory[factory_num::cannon])->m_pInteractedCannon = NULL;
 
 	m_pBoss->SetHp(m_pBoss->GetMaxHp());
 	m_pBoss->m_xmf4x4ToParent = m_pBoss->GetInitMatrix();
 	m_pBoss->m_pSkinnedAnimationController->SwitchAnimationState(CBossMonster::track_name::Idle);
 	m_pBoss->SetNoticed(false);
 	_ui->initQuest();
-	m_pPlayer->InitInteraction();
 }
