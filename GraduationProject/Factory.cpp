@@ -770,6 +770,24 @@ void CUIFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3
 	_gameObjects.emplace_back(questBack);
 
 
+
+	CTexture* logoTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
+	logoTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/UI/quest.dds", 0);
+	CScene::CreateShaderResourceViews(pd3dDevice, logoTexture, Signature::Graphics::texture, true);
+
+	CMaterial* logoMaterial = new CMaterial(1);
+	logoMaterial->SetTexture(logoTexture);
+	logoMaterial->SetShader(pShader);
+
+	CGameObject* questLogo = NULL;
+	questLogo = new CUIObject();
+	CBillboardMesh* pMesh7 = new CBillboardMesh(pd3dDevice, pd3dCommandList, 130, 50.0f);
+
+	questLogo->SetPosition(-FRAME_BUFFER_WIDTH / 2 + 150, FRAME_BUFFER_HEIGHT / 6 + 35, 0.0001);
+	questLogo->SetMesh(pMesh7);
+	questLogo->CreateShaderVariables(pd3dDevice, pd3dCommandList);
+	questLogo->SetMaterial(0, logoMaterial);
+	_gameObjects.emplace_back(questLogo);
 }
 
 void CUIFactory::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
