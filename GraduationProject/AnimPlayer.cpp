@@ -151,15 +151,20 @@ bool CAnimPlayer::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM
 	if (GetHp() <= 0) return false;
 	if (isMove) return false;
 
+	bool isAttack = false;
+	if (m_pSkinnedAnimationController->GetCurrentTrackNum() == track_name::attack ||
+		m_pSkinnedAnimationController->GetCurrentTrackNum() == track_name::attack_combo ||
+		m_pSkinnedAnimationController->GetCurrentTrackNum() == track_name::attack_magic)
+		isAttack = true;
+
+	if (isAttack) return false;
+
 	switch (nMessageID)
 	{
 		case WM_KEYDOWN:
 			switch (wParam)
 			{
 				case 'Q':
-					if (m_pSkinnedAnimationController->GetCurrentTrackNum() == track_name::attack)
-						return false;
-
 					m_pSkinnedAnimationController->SwitchAnimationState(track_name::attack);
 					m_pSkinnedAnimationController->SetAttackEnable(true);
 					SetDamage(50.0f);
@@ -185,11 +190,7 @@ bool CAnimPlayer::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM
 					m_pSkinnedAnimationController->SetAttackEnable(false);
 					break;
 
-				case '1':
-
-					if (m_pSkinnedAnimationController->GetCurrentTrackNum() == track_name::attack_combo)
-						return false;
-
+				case 'E':
 					m_pSkinnedAnimationController->SwitchAnimationState(track_name::attack_combo);
 					m_pSkinnedAnimationController->SetAttackEnable(true);
 					SetDamage(70.0f);
