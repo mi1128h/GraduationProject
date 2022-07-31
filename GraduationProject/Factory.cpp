@@ -750,6 +750,26 @@ void CUIFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3
 	_gameObjects.emplace_back(questNumberUI2);
 	m_pBossQuestUi = questNumberUI2;
 
+
+	CTexture* backTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0);
+	backTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/UI/back.dds", 0);
+	CScene::CreateShaderResourceViews(pd3dDevice, backTexture, Signature::Graphics::texture, true);
+
+	CMaterial* backMaterial = new CMaterial(1);
+	backMaterial->SetTexture(backTexture);
+	backMaterial->SetShader(pShader);
+
+	CGameObject* questBack = NULL;
+	questBack = new CUIObject();
+	CBillboardMesh* pMesh6 = new CBillboardMesh(pd3dDevice, pd3dCommandList, 202, 62.0f);
+
+	questBack->SetPosition(-FRAME_BUFFER_WIDTH / 2 + 150, FRAME_BUFFER_HEIGHT / 6 - 15, 0.0002);
+	questBack->SetMesh(pMesh6);
+	questBack->CreateShaderVariables(pd3dDevice, pd3dCommandList);
+	questBack->SetMaterial(0, backMaterial);
+	_gameObjects.emplace_back(questBack);
+
+
 }
 
 void CUIFactory::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
