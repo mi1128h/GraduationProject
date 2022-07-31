@@ -128,4 +128,5 @@ public:
 	bool IsPlayerFast();
 	virtual bool SetInteraction(XMFLOAT3& center, XMFLOAT4X4& world) { return false; };
 	virtual void DecreaseHp(float val);
+	virtual void InitInteraction();
 };

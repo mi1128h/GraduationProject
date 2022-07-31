@@ -267,6 +267,14 @@ bool CAnimPlayer::SetInteraction(XMFLOAT3& center, XMFLOAT4X4& world)
 	}
 }
 
+void CAnimPlayer::InitInteraction()
+{
+	isMove = false;
+	int track = track_name::idle;
+	m_pSkinnedAnimationController->SwitchAnimationState(track);
+	ChangeCamera(THIRD_PERSON_CAMERA, 0.0f);
+}
+
 
 void CAnimPlayer::SetPlayerLookAtPos(DirectX::XMFLOAT4X4& world, DirectX::XMFLOAT3& center)
 {

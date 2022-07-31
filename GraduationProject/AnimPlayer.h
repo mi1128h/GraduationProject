@@ -47,6 +47,7 @@ public:
 	void SetAnimationTypes();
 	bool IsPlayerInteraction() { return isMove; }
 	virtual void DecreaseHp(float val);
+	virtual void InitInteraction();
 
 private:
 	bool isMove = false;
