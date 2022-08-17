@@ -730,6 +730,18 @@ void CGameObject::UpdateShaderVariable(ID3D12GraphicsCommandList* pd3dCommandLis
 {
 }
 
+void CGameObject::UpdateTextureShaderVariable(ID3D12GraphicsCommandList* pd3dCommandList, XMFLOAT4X4* pxmf4x4Texture)
+{
+	XMFLOAT4X4 xmf4x4Texture;
+	XMStoreFloat4x4(&xmf4x4Texture, XMMatrixTranspose(XMLoadFloat4x4(pxmf4x4Texture)));
+	pd3dCommandList->SetGraphicsRoot32BitConstants(Signature::Graphics::object, 16, &xmf4x4Texture, 16);
+	/*
+		XMFLOAT4 xmf4Color = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
+		if (!strcmp(m_pstrFrameName, "L_shoulder")) xmf4Color = XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
+		pd3dCommandList->SetGraphicsRoot32BitConstants(1, 4, &xmf4Color, 16);
+	*/
+}
+
 void CGameObject::ReleaseUploadBuffers()
 {
 	if (m_pMesh) m_pMesh->ReleaseUploadBuffers();
