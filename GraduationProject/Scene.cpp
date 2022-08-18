@@ -126,7 +126,7 @@ ID3D12RootSignature* CScene::CreateGraphicsRootSignature(ID3D12Device* pd3dDevic
 	pd3dRootParameters[Signature::Graphics::camera].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
 	pd3dRootParameters[Signature::Graphics::object].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
-	pd3dRootParameters[Signature::Graphics::object].Constants.Num32BitValues = 20; //Game Object
+	pd3dRootParameters[Signature::Graphics::object].Constants.Num32BitValues = 16+16+4; //Game Object
 	pd3dRootParameters[Signature::Graphics::object].Constants.ShaderRegister = 2;
 	pd3dRootParameters[Signature::Graphics::object].Constants.RegisterSpace = 0;
 	pd3dRootParameters[Signature::Graphics::object].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
