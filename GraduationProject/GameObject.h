@@ -698,5 +698,6 @@ public:
 	float m_fSpeed = 0.1f;
 	float m_fTime = 0.0f;
 
-	virtual void Animate(float fTimeElapsed);
+	virtual void Animate(float fTimeElapsed, CCamera* pCamrea = NULL);
+	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
 };

@@ -2106,9 +2106,21 @@ CAnimateEffectObject::~CAnimateEffectObject()
 
 }
 
-void CAnimateEffectObject::Animate(float fTimeElapsed)
+void CAnimateEffectObject::Animate(float fTimeElapsed, CCamera* pCamrea)
 {
 	m_fTime += fTimeElapsed * 0.5f;
 	if (m_fTime >= m_fSpeed) m_fTime = 0.0f;
-	m_ppMaterials[0]->m_ppTextures[0]->AnimateRowColumn(m_fTime);
+	m_pTexture->AnimateRowColumn(m_fTime);
+}
+
+void CAnimateEffectObject::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
+{
+	XMFLOAT3 xmf3CameraPosition = pCamera->GetPosition();
+	XMFLOAT3 xmf3Position(m_xmf4x4World._41, m_xmf4x4World._42, m_xmf4x4World._43);
+	XMFLOAT4X4 mtxLookAt = Matrix4x4::LookAtLH(xmf3Position, xmf3CameraPosition, XMFLOAT3(0.0f, 1.0f, 0.0f));
+	m_xmf4x4World._11 = mtxLookAt._11; m_xmf4x4World._12 = mtxLookAt._21; m_xmf4x4World._13 = mtxLookAt._31;
+	m_xmf4x4World._21 = mtxLookAt._12; m_xmf4x4World._22 = mtxLookAt._22; m_xmf4x4World._23 = mtxLookAt._32;
+	m_xmf4x4World._31 = mtxLookAt._13; m_xmf4x4World._32 = mtxLookAt._23; m_xmf4x4World._33 = mtxLookAt._33;
+
+	CGameObject::Render(pd3dCommandList, pCamera);
 }
