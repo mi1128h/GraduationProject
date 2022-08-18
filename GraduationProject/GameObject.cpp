@@ -70,10 +70,6 @@ CTexture::CTexture(int nTextures, UINT nTextureType, int nSamplers, int nGraphic
 	m_nCols = nCols;
 
 	m_xmf4x4Texture = Matrix4x4::Identity();
-	m_xmf4x4Texture._11 = 1.0f / float(m_nRows);
-	m_xmf4x4Texture._22 = 1.0f / float(m_nCols);
-	m_xmf4x4Texture._31 = float(m_nRow) / float(m_nRows);
-	m_xmf4x4Texture._32 = float(m_nCol) / float(m_nCols);
 }
 
 CTexture::~CTexture()
