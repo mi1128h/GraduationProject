@@ -70,6 +70,10 @@ CTexture::CTexture(int nTextures, UINT nTextureType, int nSamplers, int nGraphic
 	m_nCols = nCols;
 
 	m_xmf4x4Texture = Matrix4x4::Identity();
+	m_xmf4x4Texture._11 = 1.0f / float(m_nRows);
+	m_xmf4x4Texture._22 = 1.0f / float(m_nCols);
+	m_xmf4x4Texture._31 = float(m_nRow) / float(m_nRows);
+	m_xmf4x4Texture._32 = float(m_nCol) / float(m_nCols);
 }
 
 CTexture::~CTexture()
@@ -734,7 +738,7 @@ void CGameObject::UpdateTextureShaderVariable(ID3D12GraphicsCommandList* pd3dCom
 {
 	XMFLOAT4X4 xmf4x4Texture;
 	XMStoreFloat4x4(&xmf4x4Texture, XMMatrixTranspose(XMLoadFloat4x4(pxmf4x4Texture)));
-	pd3dCommandList->SetGraphicsRoot32BitConstants(Signature::Graphics::object, 16, &xmf4x4Texture, 16);
+	pd3dCommandList->SetGraphicsRoot32BitConstants(Signature::Graphics::object, 16, &xmf4x4Texture, 1);
 	/*
 		XMFLOAT4 xmf4Color = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
 		if (!strcmp(m_pstrFrameName, "L_shoulder")) xmf4Color = XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
@@ -772,7 +776,10 @@ void CGameObject::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pC
 
 	if (m_pSkinnedAnimationController) m_pSkinnedAnimationController->UpdateShaderVariables(pd3dCommandList);
 
-	if (m_pTexture) m_pTexture->UpdateGraphicsShaderVariables(pd3dCommandList);
+	if (m_pTexture) {
+		m_pTexture->UpdateGraphicsShaderVariables(pd3dCommandList);
+		UpdateTextureShaderVariable(pd3dCommandList, &m_pTexture->m_xmf4x4Texture);
+	}
 
 	if (m_pMesh)
 	{
@@ -2087,4 +2094,21 @@ void CMonsterQusetUIObject::BossCount()
 	if (currCount > _textures.size()) return;
 	if (currCount <= 5) return;
 	setTextureNumber(++currCount);
+}
+
+CAnimateEffectObject::CAnimateEffectObject()
+{
+
+}
+
+CAnimateEffectObject::~CAnimateEffectObject()
+{
+
+}
+
+void CAnimateEffectObject::Animate(float fTimeElapsed)
+{
+	m_fTime += fTimeElapsed * 0.5f;
+	if (m_fTime >= m_fSpeed) m_fTime = 0.0f;
+	m_ppMaterials[0]->m_ppTextures[0]->AnimateRowColumn(m_fTime);
 }
