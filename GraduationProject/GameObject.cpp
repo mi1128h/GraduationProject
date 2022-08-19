@@ -178,18 +178,19 @@ void CTexture::ReleaseUploadBuffers()
 	}
 }
 
-void CTexture::AnimateRowColumn(float fTime)
+bool CTexture::AnimateRowColumn(float fTime)
 {
 	//	m_xmf4x4Texture = Matrix4x4::Identity();
-	m_xmf4x4Texture._11 = 1.0f / float(m_nRows);
-	m_xmf4x4Texture._22 = 1.0f / float(m_nCols);
-	m_xmf4x4Texture._31 = float(m_nRow) / float(m_nRows);
-	m_xmf4x4Texture._32 = float(m_nCol) / float(m_nCols);
+	m_xmf4x4Texture._11 = 1.0f / float(m_nCols);
+	m_xmf4x4Texture._22 = 1.0f / float(m_nRows);
+	m_xmf4x4Texture._31 = float(m_nCol) / float(m_nCols);
+	m_xmf4x4Texture._32 = float(m_nRow) / float(m_nRows);
 	if (fTime == 0.0f)
 	{
 		if (++m_nCol == m_nCols) { m_nRow++; m_nCol = 0; }
-		if (m_nRow == m_nRows) m_nRow = 0;
+		if (m_nRow == m_nRows) { m_nRow = 0; return true; }
 	}
+	return false;
 }
 
 void CTexture::LoadTextureFromFile(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, wchar_t* pszFileName, UINT nIndex, bool bIsDDSFile)
@@ -2104,9 +2105,13 @@ CAnimateEffectObject::~CAnimateEffectObject()
 
 void CAnimateEffectObject::Animate(float fTimeElapsed, CCamera* pCamrea)
 {
-	m_fTime += fTimeElapsed * 0.5f;
+	m_fTime += fTimeElapsed;
 	if (m_fTime >= m_fSpeed) m_fTime = 0.0f;
-	m_pTexture->AnimateRowColumn(m_fTime);
+	bool isAnimEnd = m_pTexture->AnimateRowColumn(m_fTime);
+
+	if (isAnimEnd) {
+		SetActive(false);
+	}
 }
 
 void CAnimateEffectObject::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)

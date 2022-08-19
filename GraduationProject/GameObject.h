@@ -114,7 +114,7 @@ public:
 
 	void ReleaseUploadBuffers();
 
-	void AnimateRowColumn(float fTime = 0.0f);
+	bool AnimateRowColumn(float fTime = 0.0f);
 };
 
 class CMaterial
@@ -695,7 +695,7 @@ public:
 	CAnimateEffectObject();
 	virtual ~CAnimateEffectObject();
 
-	float m_fSpeed = 0.05f;
+	float m_fSpeed = 0.5f;
 	float m_fTime = 0.0f;
 
 	virtual void Animate(float fTimeElapsed, CCamera* pCamrea = NULL);
