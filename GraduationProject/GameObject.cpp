@@ -2105,6 +2105,8 @@ CAnimateEffectObject::~CAnimateEffectObject()
 
 void CAnimateEffectObject::Animate(float fTimeElapsed, CCamera* pCamrea)
 {
+	if (!m_bActive) return;
+
 	m_fTime += fTimeElapsed;
 	if (m_fTime >= m_fSpeed) m_fTime = 0.0f;
 	bool isAnimEnd = m_pTexture->AnimateRowColumn(m_fTime);
@@ -2116,6 +2118,8 @@ void CAnimateEffectObject::Animate(float fTimeElapsed, CCamera* pCamrea)
 
 void CAnimateEffectObject::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
 {
+	if (!m_bActive) return;
+
 	XMFLOAT3 xmf3CameraPosition = pCamera->GetPosition();
 	XMFLOAT3 xmf3Position(m_xmf4x4World._41, m_xmf4x4World._42, m_xmf4x4World._43);
 	XMFLOAT4X4 mtxLookAt = Matrix4x4::LookAtLH(xmf3Position, xmf3CameraPosition, XMFLOAT3(0.0f, 1.0f, 0.0f));

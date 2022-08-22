@@ -963,3 +963,24 @@ void CParticleFactory::BombParticleController(int index)
 		break;
 	}
 }
+
+void CEffectFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3dGraphicsRootSignature, ID3D12GraphicsCommandList* pd3dCommandList, void* pContext)
+{
+	CGameObject* pHitEffect = new CAnimateEffectObject();
+	pHitEffect->SetPosition(9800, 100, 5900);
+
+	CTexture* pEffectTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0, 4, 4);
+	pEffectTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/Effect/hit_yellow.dds", 0);
+	CScene::CreateShaderResourceViews(pd3dDevice, pEffectTexture, Signature::Graphics::texture, true);
+	pHitEffect->m_pTexture = pEffectTexture;
+
+	CBillboardMesh* pBillMesh = new CBillboardMesh(pd3dDevice, pd3dCommandList, 150.0f, 150.0f);
+	pHitEffect->SetMesh(pBillMesh);
+
+	CAnimEffectShader* AnimShader = new CAnimEffectShader();
+	DXGI_FORMAT pdxgiRtvFormats[3] = { DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM };
+	AnimShader->CreateShader(pd3dDevice, pd3dGraphicsRootSignature, 3, pdxgiRtvFormats, DXGI_FORMAT_D32_FLOAT);
+	pHitEffect->SetShader(AnimShader);
+
+	_gameObjects.emplace_back(pHitEffect);
+}

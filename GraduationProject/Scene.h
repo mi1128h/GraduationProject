@@ -178,6 +178,7 @@ protected:
 	vector<CCollision*> collisions;
 	vector<CFactory*> _factory;
 	CParticleFactory* _particles;
+	CEffectFactory* _effects;
 	CUIFactory* _ui;
 	bool _isExplosionReady = false;
 

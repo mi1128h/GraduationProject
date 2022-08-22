@@ -406,26 +406,8 @@ void CScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* p
 	dynamic_cast<CBreathParticle*>(_particles->GetGameObjects()[0])->SetBoss(m_pBoss);
 
 	// animEffect TEST
-	m_nGameObjects = 1;
-	m_ppGameObjects = new CGameObject * [m_nGameObjects];
-
-	CGameObject* pHitEffect = new CAnimateEffectObject();
-	pHitEffect->SetPosition(9800, 100, 5900);
-
-	CTexture* pEffectTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0, 4, 4);
-	pEffectTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/Effect/hit_yellow.dds", 0);
-	CScene::CreateShaderResourceViews(pd3dDevice, pEffectTexture, Signature::Graphics::texture, true);
-	pHitEffect->m_pTexture = pEffectTexture;
-
-	CBillboardMesh* pBillMesh = new CBillboardMesh(pd3dDevice, pd3dCommandList, 150.0f, 150.0f);
-	pHitEffect->SetMesh(pBillMesh);
-
-	CAnimEffectShader* AnimShader = new CAnimEffectShader();
-	AnimShader->CreateShader(pd3dDevice, m_pd3dGraphicsRootSignature, 3, pdxgiRtvFormats, DXGI_FORMAT_D32_FLOAT);
-	pHitEffect->SetShader(AnimShader);
-
-	m_ppGameObjects[0] = pHitEffect;
-	//
+	_effects = new CEffectFactory();
+	_effects->BuildObjects(pd3dDevice, m_pd3dGraphicsRootSignature, pd3dCommandList, m_pTerrain);
 
 	//////
 	
@@ -820,7 +802,7 @@ void CScene::AnimateObjects(float fTimeElapsed, CCamera* pCamera)
 	if (m_pLights) {}
 	_ui->AnimateObjects(fTimeElapsed, pCamera);
 
-	m_ppGameObjects[0]->Animate(fTimeElapsed, pCamera);
+	_effects->AnimateObjects(fTimeElapsed, pCamera);
 }
 
 void CScene::OnPrepareRender(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
@@ -869,10 +851,10 @@ void CScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera
 		m_ppParticleObjects[i]->Render(pd3dCommandList, pCamera);
 	}
 
+	_effects->Render(pd3dCommandList, pCamera);
+
 	for (CCollision* col : collisions)
 		col->Render(pd3dCommandList, pCamera);
-
-	m_ppGameObjects[0]->Render(pd3dCommandList, pCamera);
 
 	CheckMonsterFindTarget();
 	CheckMonsterStraightToTarget();
