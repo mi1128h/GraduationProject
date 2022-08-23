@@ -1061,6 +1061,8 @@ void CScene::CheckPlayerAttack()
 			_ui->SetTargetMonster(object);
 			m_pPlayer->SetAttackEnable(false);
 
+			_effects->printEffect(AttackBB.Center);
+
 			if (isDead)
 			{
 				_ui->MonsterDeadCount();
