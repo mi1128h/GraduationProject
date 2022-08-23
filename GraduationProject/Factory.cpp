@@ -967,7 +967,8 @@ void CParticleFactory::BombParticleController(int index)
 void CEffectFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3dGraphicsRootSignature, ID3D12GraphicsCommandList* pd3dCommandList, void* pContext)
 {
 	CGameObject* pHitEffect = new CAnimateEffectObject();
-	pHitEffect->SetPosition(9800, 100, 5900);
+	//pHitEffect->SetPosition(9800, 100, 5900);
+	pHitEffect->SetPosition(0, 0, 0);
 
 	CTexture* pEffectTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1, 0, 0, 4, 4);
 	pEffectTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"../Assets/Image/Effect/hit_yellow.dds", 0);
@@ -982,5 +983,19 @@ void CEffectFactory::BuildObjects(ID3D12Device* pd3dDevice, ID3D12RootSignature*
 	AnimShader->CreateShader(pd3dDevice, pd3dGraphicsRootSignature, 3, pdxgiRtvFormats, DXGI_FORMAT_D32_FLOAT);
 	pHitEffect->SetShader(AnimShader);
 
+	pHitEffect->SetActive(false);
+
 	_gameObjects.emplace_back(pHitEffect);
+}
+
+void CEffectFactory::printEffect(XMFLOAT3 pos)
+{
+	for (auto& effect : _gameObjects) {
+		if (!effect->m_bActive) {
+			effect->SetPosition(pos);
+			effect->m_pTexture->InitRowColumn();
+			effect->SetActive(true);
+			break;
+		}
+	}
 }
