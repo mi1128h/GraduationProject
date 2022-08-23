@@ -193,6 +193,13 @@ bool CTexture::AnimateRowColumn(float fTime)
 	return false;
 }
 
+void CTexture::InitRowColumn()
+{
+	m_nCol = 0;
+	m_nRow = 0;
+	m_xmf4x4Texture = Matrix4x4::Identity();
+}
+
 void CTexture::LoadTextureFromFile(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, wchar_t* pszFileName, UINT nIndex, bool bIsDDSFile)
 {
 	if (bIsDDSFile)
