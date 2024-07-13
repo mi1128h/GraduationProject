@@ -38,7 +38,7 @@ public:
 class CNavMesh : public CMesh
 {
 protected:
-	XMFLOAT3						m_xmf3Scale;
+	XMFLOAT3 m_xmf3Scale;
 	vector<CCell> m_NavCells;
 
 	list<CCell*> closed;
