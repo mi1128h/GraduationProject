@@ -68,7 +68,7 @@ CCamera* CAnimPlayer::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
 		SetMaxVelocityY(400.0f);
 		m_pCamera = OnChangeCamera(FIRST_PERSON_CAMERA, nCurrentCameraMode);
 		m_pCamera->SetTimeLag(0.0f);
-		m_pCamera->SetOffset(XMFLOAT3(0.0f, 150.0f, 50.0f));
+		m_pCamera->SetOffset(XMFLOAT3(0.0f, 150.0f, 80.0f));
 		m_pCamera->GeneratePerspectiveProjectionMatrix(1.01f, 50000.0f, ASPECT_RATIO, 60.0f);
 		break;
 	//case SPACESHIP_CAMERA:
